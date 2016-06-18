@@ -263,9 +263,9 @@ class KodiDevicePlayer extends KodiBase
      */
     public function ApplyChanges()
     {
-        $this->Init();
         $this->RegisterVariableBoolean("_isactive", "isplayeractive", "", -5);
         IPS_SetHidden($this->GetIDForIdent('_isactive'), true);
+        $this->Init();
 
         $this->RegisterProfileIntegerEx("Repeat.Kodi", "", "", "", Array(
             //Array(0, "Prev", "", -1),
