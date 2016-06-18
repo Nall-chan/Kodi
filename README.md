@@ -129,13 +129,15 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
 
  **Kodi Playerstatus (KodiDevicePlayer):**  
  PRC-Namensraum : Player  
- TODO  
+ Hinweis: Jeder 'Player' (Audio,Video,Bilder) benötigt eine eigene Instanz.  
+ Player              - Setzen, lesen und visualisieren des Status.  
+ Aktuelle Wiedergabe - Setzen, lesen und visualisieren.  
 
 ---
 
  **Kodi Playlist (KodiDevicePlaylist):**  
  PRC-Namensraum : Playlist  
- Hinweis: Jeder 'Player' (Ausio,Video,Bilder) hat immer nur eine Playlist!  
+ Hinweis: Jeder 'Player' (Audio,Video,Bilder) hat immer eine eigene Playlist!  
 
  Playlist           - Beschreiben, lesen und visualisieren.  
  Player             - Direktes anspringen eines Eintrages.
@@ -733,7 +735,236 @@ boolean KODIINPUT_SendText(integer $InstanzeID, string $Text, boolean $Done);
 
  **Kodi Playerstatus (KodiDevicePlayer):**  
 
- TODO  
+ ```php
+boolean KODIPLAYER_GetItem(integer $InstanzeID);
+```  
+ Holt die Daten des aktuellen wiedergegebenen Items, und gibt Diese als Array zurück.  
+ Rückgabewert ist ein Array mit den Eigenschaften oder FALSE bei einem Fehler.  
+
+| Index                     | Typ       | Beschreibung                  |
+|:-------------------------:|:---------:|:-----------------------------:|
+| channel                   | string    |                               |
+| channeltype               | string    |                               |
+| file                      | string    |                               |
+| sorttitle                 | string    |                               |
+| productioncode            | string    |                               |
+| cast                      | array     |                               |
+| votes                     | string    |                               |
+| duration                  | integer   |                               |
+| trailer                   | string    |                               |
+| albumid                   | integer   |                               |
+| musicbrainzartistid       | string    |                               |
+| mpaa                      | string    |                               |
+| albumlabel                | string    |                               |
+| originaltitle             | string    |                               |
+| writer                    | string[]  |                               |
+| albumartistid             | integer[] |                               |
+| episode                   | integer   |                               |
+| firstaired                | string    |                               |
+| showtitle                 | string    |                               |
+| country                   | string[]  ]                               |
+| mood                      | string[]  |                               |
+| set                       | string    |                               |
+| musicbrainztrackid        | string    |                               |
+| tag                       | string[]  |                               |
+| lyrics                    | string    |                               |
+| top250                    | integer   |                               |
+| comment                   | string    |                               |
+| premiered                 | string    |                               |
+| showlink                  | string[]  |                               |
+| style                     | string[]  |                               |
+| album                     | string    |                               |
+| tvshowid                  | integer   |                               |
+| season                    | integer   |                               |
+| theme                     | string[]  |                               |
+| description               | string    |                               |
+| setid                     | integer   |                               |
+| track                     | integer   |                               |
+| tagline                   | string    |                               |
+| plotoutline               | string    |                               |
+| watchedepisodes           | integer   |                               |
+| disc                      | integer   |                               |
+| albumartist               | string[]  |                               |
+| studio                    | string[]  |                               |
+| uniqueid                  | array     |                               |
+| episodeguide              | string    |                               |
+| imdbnumber                | string    |                               |
+| dateadded                 | string    |                               |
+| lastplayed                | string    |                               |
+| plot                      | string    |                               |
+| streamdetails             | array     |                               |
+| director                  | string[]  |                               |
+| resume                    | array     |                               |
+| runtime                   | integer   |                               |
+| art                       | array     |                               |
+| playcount                 | integer   | Anzahl der Wiedergaben        |
+| displayartist             | string    | Künstler                      |
+| artist                    | string[]  | Array der Künstler            |
+| genreid                   | integer[] | Array der Genre IDs           |
+| musicbrainzalbumartistid  | string    | Music Brainz AlbumArtistID    |
+| year                      | integer   | Erscheinungsjahr              |
+| rating                    | integer   | Bewertung                     |
+| artistid                  | integer[] | Array der Künstler IDs        |
+| title                     | string    | Titel der Datei               |
+| musicbrainzalbumid        | string    | Music Brainz AlbumID          |
+| genre                     | string[]  | Array der Genres              |
+| fanart                    | string    | Pfad zum Fanart               |
+| thumbnail                 | string    | Pfad zum Cover                |
+| hidden                    | boolean   |                               |
+| locked                    | boolean   |                               |
+| channelnumber             | integer   |                               |
+| endtime                   | string    |                               |
+| starttime                 | string    |                               |
+
+
+ ```php
+boolean KODIPLAYER_GoToNext(integer $InstanzeID);
+```  
+ Springt zum nächsten Item in der Wiedergabeliste.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_GoToPrevious(integer $InstanzeID);
+```  
+ Springt zum vorherigen Item in der Wiedergabeliste.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_GoToTrack(integer $InstanzeID, integer $Value);
+```  
+ Springt auf ein bestimmtes Item in der Wiedergabeliste.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadAlbum(integer $InstanzeID, integer $AlbumId);
+```  
+ Lädt ein Album und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLER_LoadArtist(integer $InstanzeID, integer $ArtistId);
+```  
+ Lädt alle Itemes eines Artist und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadDirectory(integer $InstanzeID, string $Directory);
+```  
+ Lädt alle Itemes eines Verzeichnisses und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadDirectoryRecursive(integer $InstanzeID, string $Directory);
+```  
+ Lädt alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadEpisode(integer $InstanzeID, integer $EpisodeId);
+```  
+ Lädt eine Episode und startet die Wiedergabe.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadFile(integer $InstanzeID, string $File);
+```  
+ Lädt eine Datei und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadGenre(integer $InstanzeID, integer $GenreId);
+```  
+ Lädt eine komplettes Genre und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadMovie(integer $InstanzeID, integer $MovieId);
+```  
+ Lädt ein Film und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadMusicVideo(integer $InstanzeID, integer $MusicvideoId);
+```  
+ Lädt ein Musicvideo und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODPLAYER_LoadPlaylist(integer $InstanzeID);
+```  
+ Lädt die Playlist des Players und startet die Wiedergabe.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadSong(integer $InstanzeID, integer $SongId);
+```  
+ Lädt ein Songs und startet die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_Pause(integer $InstanzeID);
+```  
+ Pausiert die Wiedergabe des aktuellen Items.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_Play(integer $InstanzeID);
+```  
+ Starte die Wiedergabe des aktuelle pausierten Items.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_SetAudioStream(integer $InstanzeID, integer $Value);
+```  
+ Aktiviert den Audiostream welcher als Index in $Value übergeben wurde.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_SetPartymode(integer $InstanzeID, boolean $Value);
+```  
+ Aktiviert (TRUE) oder deaktiviert (FALSE) den Partymodus.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_SetPosition(integer $InstanzeID, integer $Value);
+```  
+ Springt auf eine absolute Position innerhalb der aktuellen Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_SetRepeat(integer $InstanzeID, integer $Value);
+```  
+ Setzten den Wiederholungsmodus.  
+ $Value darf folgende Werte enthalten:  
+  [0=aus, 1=Titel, 2=Alle]  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_SetShuffle(integer $InstanzeID, boolean $Value);
+```  
+ Aktiviert (TRUE) oder deaktiviert (FALSE) den Zufallsmodus.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_SetSpeed(integer $InstanzeID, integer $Value);
+```  
+ Setzten die Abspielgeschwindigkeit.  
+ $Value darf folgende Werte enthalten:  
+  [-32, -16, -8, -4, -2, 0, 1, 2, 4, 8, 16, 32]  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_SetSubtitle(integer $InstanzeID, integer $Value);
+```  
+ Aktiviert einen  Untertitel welcher als Index in $Value übergeben wurde.  
+ Wird -1 übergeben, wird der Untertitel deaktiviert.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_Stop(integer $InstanzeID);
+```  
+ Stoppt die Wiedergabe des aktuellen Items.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
 ---
 
@@ -742,9 +973,178 @@ boolean KODIINPUT_SendText(integer $InstanzeID, string $Text, boolean $Done);
 Hinweis: Ein mischen von verschiednen Medien (Audio, Video, Bilder) ist nicht möglich.  
 
  ```php
-boolean KODPLAYLIST_AddAlbum(integer $InstanzeID, integer $AlbumId);
+boolean KODIPLAYLIST_AddAlbum(integer $InstanzeID, integer $AlbumId);
 ```  
- Fügt der Playliste ein Album hinzu.
+ Fügt der Playliste ein Album hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddArtist(integer $InstanzeID, integer $ArtistId);
+```  
+ Fügt der Playliste alle Itemes eines Artist hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddDirectory(integer $InstanzeID, string $Directory);
+```  
+ Fügt der Playliste alle Itemes eines Verzeichnisses hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddDirectoryRecursive(integer $InstanzeID, string $Directory);
+```  
+ Fügt der Playliste alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddEpisode(integer $InstanzeID, integer $EpisodeId);
+```  
+ Fügt der Playliste eine Episode hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddFile(integer $InstanzeID, string $File);
+```  
+ Fügt der Playliste eine Datei hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddGenre(integer $InstanzeID, integer $GenreId);
+```  
+ Fügt der Playliste eine komplettes Genre hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddMovie(integer $InstanzeID, integer $MovieId);
+```  
+ Fügt der Playliste ein Film hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddMusicVideo(integer $InstanzeID, integer $MusicvideoId);
+```  
+ Fügt der Playliste ein Musicvideo hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_AddSong(integer $InstanzeID, integer $SongId);
+```  
+ Fügt der Playliste ein Song hinzu.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_Clear(integer $InstanzeID);
+```  
+ Leert die Playlist.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_Get(integer $InstanzeID);
+```  
+ Gibt alle Einträge Einträge der Playlist als Array zurück.  
+ Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+
+| Index                     | Typ       | Beschreibung                  |
+|:-------------------------:|:---------:|:-----------------------------:|
+| title                     | string    | Titel der Datei               |
+| artist                    | string[]  | Array der Künstler            |
+| albumartist               | string[]  |                               |
+| genre                     | string[]  | Array der Genres              |
+| year                      | integer   | Erscheinungsjahr              |
+| album                     | string    |                               |
+| track                     | integer   |                               |
+| duration                  | integer   |                               |
+| plot                      | string    |                               |
+| runtime                   | integer   |                               |
+| season                    | integer   |                               |
+| episode                   | integer   |                               |
+| showtitle                 | string    |                               |
+| thumbnail                 | string    | Pfad zum Cover                |
+| file                      | string    |                               |
+| disc                      | integer   |                               |
+| albumlabel                | string    |                               |
+
+ ```php
+boolean KODIPLAYLIST_InsertAlbum(integer $InstanzeID, integer $AlbumId, integer $Position);
+```  
+ Fügt in der Playliste ein Album ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertArtist(integer $InstanzeID, integer $ArtistId, integer $Position);
+```  
+ Fügt in der Playliste alle Itemes eines Artist ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertDirectory(integer $InstanzeID, string $Directory, integer $Position);
+```  
+ Fügt in der Playliste alle Itemes eines Verzeichnisses ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertDirectoryRecursive(integer $InstanzeID, string $Directory, integer $Position);
+```  
+ Fügt in der Playliste alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertEpisode(integer $InstanzeID, integer $EpisodeId, integer $Position);
+```  
+ Fügt in der Playliste eine Episode ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertFile(integer $InstanzeID, string $File, integer $Position);
+```  
+ Fügt in der Playliste eine Datei ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertGenre(integer $InstanzeID, integer $GenreId, integer $Position);
+```  
+ Fügt in der Playliste eine komplettes Genre ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertMovie(integer $InstanzeID, integer $MovieId, integer $Position);
+```  
+ Fügt in der Playliste ein Film ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertMusicVideo(integer $InstanzeID, integer $MusicvideoId, integer $Position);
+```  
+ Fügt in der Playliste ein Musicvideo ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_InsertSong(integer $InstanzeID, integer $SongId, integer $Position);
+```  
+ Fügt in der Playliste ein Song ein.  
+ Alle anderen Einträge werden automatisch nach hinten verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_Remove(integer $InstanzeID, integer $Position);
+```  
+ Entfernt einen Eintrag aus der Playlist.  
+ Alle anderen Einträge werden automatisch nach vorne verschoben.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYLIST_Swap(integer $InstanzeID, integer $Position1, integer $Position2);
+```  
+ Tauscht zwei Einträge innerhalb der Playlist.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ---

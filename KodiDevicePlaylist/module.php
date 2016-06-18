@@ -699,11 +699,11 @@ echo serialize($Config);
 ################## PUBLIC
 
     /**
-     * IPS-Instanz-Funktion 'KODIPLAYER_Get'.
-     * Holt sich die Daten des aktuellen wiedergegebenen Items, und gibt die Array zurück.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_Get'.
+     * Gibt alle Einträge Einträge der Playlist als Array zurück.
      * 
      * @access public
-     * @return array|null Das Array mit den Eigenschaften des Item, im Fehlerfall null
+     * @return array Das Array mit den Eigenschaften des Item, im Fehlerfall ein leeren Array.
      */
     public function Get()
     {
@@ -711,7 +711,7 @@ echo serialize($Config);
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
-            return null;
+            return false;
         if ($ret->limits->total > 0)
             return json_decode(json_encode($ret->items), true);
         return array();
@@ -742,7 +742,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddAlbum'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddAlbum'.
      * Fügt der Playlist ein Album hinzu.
      * 
      * @access public
@@ -760,7 +760,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddArtist'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddArtist'.
      * Fügt der Playlist alle Itemes eines Artist hinzu.
      * 
      * @access public
@@ -778,7 +778,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddDirectory'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddDirectory'.
      * Fügt der Playlist alle Itemes eines Verzeichnisses hinzu.
      * 
      * @access public
@@ -796,7 +796,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddDirectoryRecursive'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddDirectoryRecursive'.
      * Fügt der Playlist alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, hinzu.
      * 
      * @access public
@@ -814,7 +814,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddEpisode'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddEpisode'.
      * Fügt der Playlist eine Episode hinzu.
      * 
      * @access public
@@ -832,7 +832,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddFile'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddFile'.
      * Fügt der Playlist eine Datei hinzu.
      * 
      * @access public
@@ -850,7 +850,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddGenre'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddGenre'.
      * Fügt der Playlist eine komplettes Genre hinzu.
      * 
      * @access public
@@ -868,7 +868,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddMovie'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddMovie'.
      * Fügt der Playlist ein Film hinzu.
      * 
      * @access public
@@ -886,7 +886,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddMusicVideo'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddMusicVideo'.
      * Fügt der Playlist ein Musicvideo hinzu.
      * 
      * @access public
@@ -904,7 +904,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_AddSong'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_AddSong'.
      * Fügt der Playlist ein Song hinzu.
      * 
      * @access public
@@ -922,7 +922,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_Clear'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_Clear'.
      * Leert die Playlist
      * 
      * @access public
@@ -972,7 +972,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertAlbum'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertAlbum'.
      * Fügt in der Playlist ein Album ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -992,7 +992,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertArtist'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertArtist'.
      * Fügt in der Playlist alle Items eines Artist ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1012,7 +1012,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertDirectory'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertDirectory'.
      * Fügt in der Playlist alle Itemes eines Verzeichnisses ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1032,7 +1032,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertDirectoryRecursive'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertDirectoryRecursive'.
      * Fügt in der Playlist alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1052,7 +1052,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertEpisode'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertEpisode'.
      * Fügt in der Playlist eine Episode ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1072,7 +1072,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertFile'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertFile'.
      * Fügt in der Playlist eine Datei ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1092,7 +1092,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertGenre'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertGenre'.
      * Fügt in der Playlist eine komplettes Genre ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1112,7 +1112,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertMovie'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertMovie'.
      * Fügt in der Playlist ein Filme ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1132,7 +1132,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertMusicVideo'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertMusicVideo'.
      * Fügt in der Playlist ein Musicvideo ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1152,7 +1152,7 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_InsertSong'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertSong'.
      * Fügt in der Playlist ein Lied ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
@@ -1172,8 +1172,9 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_Remove'.
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_Remove'.
      * Entfernt einen Eintrag aus der Playlist.
+     * Alle anderen Einträge werden automatisch nach vorne verschoben.
      * 
      * @access public
      * @param integer $Position Eintrag welcher entfernt wird.
@@ -1198,8 +1199,8 @@ echo serialize($Config);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYLIST_Swap'.
-     * Tauscht zwei Einträge innerhalb der Playlist
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_Swap'.
+     * Tauscht zwei Einträge innerhalb der Playlist.
      * 
      * @access public
      * @param integer $Position1 | $Position2 Positionen der Einträge welche untereinander getsucht werden.

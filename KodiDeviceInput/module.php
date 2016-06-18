@@ -257,6 +257,8 @@ class KodiDeviceInput extends KodiBase
         $this->RegisterPropertyBoolean("showSVGRemote", true);
         $this->RegisterPropertyBoolean("showNavigationButtons", true);
         $this->RegisterPropertyBoolean("showControlButtons", true);
+        $this->RegisterPropertyBoolean("showInputRequested", true);
+        
     }
 
     /**
@@ -319,7 +321,7 @@ if (isset($_GET["button"]))
         else
             $this->UnregisterVariable("ctrlremote");
 
-        if ($this->ReadPropertyBoolean('showControlButtons'))
+        if ($this->ReadPropertyBoolean('showInputRequested'))
         {
             $this->RegisterVariableBoolean("inputrequested", "Eingabe erwartet", "", 4);
             if (IPS_GetKernelRunlevel() == KR_INIT)
@@ -328,6 +330,7 @@ if (isset($_GET["button"]))
         else
             $this->UnregisterVariable("inputrequested");
 
+        
         parent::ApplyChanges();
     }
 
