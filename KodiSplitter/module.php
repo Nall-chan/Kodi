@@ -224,6 +224,12 @@ class KodiSplitter extends IPSModule
         $KodiData = new Kodi_RPC_Data('System', 'Power', array('data' => $value), 0);
 //        IPS_LogMessage('KODI_PWR_Event', print_r($KodiData, true));
         $this->SendDataToDevice($KodiData);
+        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', array('data' => array('playlistid'=>0)), 0);
+        $this->SendDataToDevice($KodiData);
+        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', array('data' => array('playlistid'=>1)), 0);
+        $this->SendDataToDevice($KodiData);
+        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', array('data' => array('playlistid'=>2)), 0);
+        $this->SendDataToDevice($KodiData);
     }
 
     protected function Decode($Method, $Event)
@@ -526,7 +532,10 @@ class KodiSplitter extends IPSModule
             $ReplayKodiData = $this->WaitForResponse($KodiData->Id);
 
             if ($ReplayKodiData === false)
+            {
+                $this->SetStatus(IS_EBASE+3);
                 throw new Exception('No anwser from Kodi', E_USER_NOTICE);
+            }
 
             $ret = $ReplayKodiData->GetResult();
             if (is_a($ret, 'KodiRPCException'))

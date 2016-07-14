@@ -198,6 +198,7 @@ function wake($ip, $mac)
      */
     protected function Decode($Method, $KodiPayload)
     {
+        
         switch ($Method)
         {
             case 'GetProperties':

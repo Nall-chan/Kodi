@@ -291,7 +291,13 @@ class KodiDevicePlayer extends KodiBase
         ));
 
         $this->RegisterProfileInteger("Intensity.Kodi", "Intensity", "", " %", 0, 100, 1);
-
+                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
+                    Array(0, "Prev", "", -1),
+                    Array(1, "Stop", "", -1),
+                    Array(2, "Play", "", -1),
+                    Array(3, "Pause", "", -1),
+                    Array(4, "Next", "", -1)
+                ));
         switch ($this->PlayerId)
         {
             case self::Audio:
@@ -300,26 +306,11 @@ class KodiDevicePlayer extends KodiBase
                 $this->UnregisterVariable("episode");
                 $this->UnregisterVariable("plot");
                 $this->UnregisterVariable("audiostream");
-//                $this->UnregisterVariable("audiolanguage");
-//                $this->UnregisterVariable("audiochannels");
-//                $this->UnregisterVariable("audiocodec");
-//                $this->UnregisterVariable("audiobitrate");
-//                $this->UnregisterVariable("audiostreams");
-                //$this->UnregisterVariable("subtitleenabled");
                 $this->UnregisterVariable("subtitle");
-//                $this->UnregisterVariable("subtitles");
+                $this->UnregisterProfile("AudioStream." . $this->InstanceID . ".Kodi");
+                $this->UnregisterProfile("Subtitels." . $this->InstanceID . ".Kodi");
 
-                $this->UnregisterProfile("AudioTracks." . $this->InstanceID . ".Kodi");
 
-                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
-                    Array(0, "Prev", "", -1),
-                    Array(1, "Stop", "", -1),
-                    Array(2, "Play", "", -1),
-                    Array(3, "Pause", "", -1),
-                    Array(4, "Next", "", -1)
-                ));
-
-//                $this->RegisterVariableInteger("position", "Playlist Position", "", 9);
                 $this->RegisterVariableString("album", "Album", "", 15);
                 $this->RegisterVariableInteger("track", "Track", "", 16);
                 $this->RegisterVariableInteger("disc", "Disc", "", 17);
@@ -328,7 +319,6 @@ class KodiDevicePlayer extends KodiBase
 
                 break;
             case self::Video:
-//                $this->RegisterVariableInteger("position", "Playlist Position", "", 9);
 //                $this->UnregisterVariable("repeat");
 //                $this->UnregisterVariable("shuffled");
 //                $this->UnregisterVariable("partymode");
@@ -338,12 +328,11 @@ class KodiDevicePlayer extends KodiBase
                 $this->UnregisterVariable("artist");
                 $this->UnregisterVariable("lyrics");
 
-                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
-                    Array(1, "Stop", "", -1),
-                    Array(2, "Play", "", -1),
-                    Array(3, "Pause", "", -1)
-                ));
-//                $this->RegisterProfileInteger("AudioStream." . $this->InstanceID . ".Kodi", "", "", "", 1, 1, 1);
+//                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
+//                    Array(1, "Stop", "", -1),
+//                    Array(2, "Play", "", -1),
+//                    Array(3, "Pause", "", -1)
+//                ));
                 $this->RegisterProfileIntegerEx("AudioStream." . $this->InstanceID . ".Kodi", "", "", "", Array(
                     Array(0, "1", "", -1)
                 ));
@@ -354,32 +343,38 @@ class KodiDevicePlayer extends KodiBase
 
                 $this->RegisterVariableString("plot", "Handlung", "~TextBox", 19);
                 $this->RegisterVariableInteger("audiostream", "Audiospur", "AudioStream." . $this->InstanceID . ".Kodi", 30);
-//                $this->RegisterVariableString("audiolanguage", "Sprache", "", 31);
-//                $this->RegisterVariableInteger("audiochannels", "Audiokanäle", "", 32);
-//                $this->RegisterVariableString("audiocodec", "Audio Codec", "", 23);
-//                $this->RegisterVariableInteger("audiobitrate", "Audio Bitrate", "", 34);
-//                $this->RegisterVariableInteger("audiostreams", "Anzahl Audiotracks", "", 35);
-                //$this->RegisterVariableBoolean("subtitleenabled", "Untertitel aktiv", "~Switch", 40);
-
 
                 $this->RegisterProfileIntegerEx("Subtitels." . $this->InstanceID . ".Kodi", "", "", "", Array(
                     Array(-1, "Aus", "", -1),
                     Array(0, "Extern", "", -1)
                 ));
                 $this->RegisterVariableInteger("subtitle", "Aktiver Untertitel", "Subtitels." . $this->InstanceID . ".Kodi", 41);
-
-//                $this->RegisterVariableInteger("subtitles", "Anzahl Untertitel", "", 42);
-
                 break;
             case self::Pictures:
+
+                                $this->UnregisterVariable("showtitle");
+                $this->UnregisterVariable("season");
+                $this->UnregisterVariable("episode");
+                $this->UnregisterVariable("plot");
+                $this->UnregisterVariable("audiostream");
+                $this->UnregisterVariable("subtitle");
+                $this->UnregisterProfile("AudioStream." . $this->InstanceID . ".Kodi");
+                $this->UnregisterProfile("Subtitels." . $this->InstanceID . ".Kodi");
+                
+                                $this->UnregisterVariable("album");
+                $this->UnregisterVariable("track");
+                $this->UnregisterVariable("disc");
+                $this->UnregisterVariable("artist");
+                $this->UnregisterVariable("lyrics");
+                
 //                $this->UnregisterVariable("position");                
-                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
-                    Array(0, "Prev", "", -1),
-                    Array(1, "Stop", "", -1),
-                    Array(2, "Play", "", -1),
-                    Array(3, "Pause", "", -1),
-                    Array(4, "Next", "", -1)
-                ));
+//                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
+//                    Array(0, "Prev", "", -1),
+//                    Array(1, "Stop", "", -1),
+//                    Array(2, "Play", "", -1),
+//                    Array(3, "Pause", "", -1),
+//                    Array(4, "Next", "", -1)
+//                ));
                 break;
         }
         $this->RegisterVariableInteger("repeat", "Wiederholen", "Repeat.Kodi", 11);
@@ -438,15 +433,8 @@ class KodiDevicePlayer extends KodiBase
         $this->Init();
         $KodiData = new Kodi_RPC_Data(static::$Namespace);
         $KodiData->GetActivePlayers();
-        try
-        {
-            $ret = $this->SendDirect($KodiData);    
-        }
-        catch (Exception $exc)
-        {
-            unset($exc);
-        }
-        
+        $ret = @$this->SendDirect($KodiData);    
+       
         if (is_null($ret) or ( count($ret) == 0))
             $this->isActive = false;
         else
@@ -1556,14 +1544,19 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
+        if ($Value == 1)
+            return $this->Play ();
+        if ($Value == 0)
+            return $this->Pause ();
         $this->Init();
+        
         if (!$this->isActive)
         {
             trigger_error('Player not active', E_USER_NOTICE);
             return false;
         }
 
-        if (!in_array($Value, array(-32, -16, -8, -4, -2, 0, 1, 2, 4, 8, 16, 32)))
+        if (!in_array($Value, array(-32, -16, -8, -4, -2,-1, 0, 1, 2, 4, 8, 16, 32)))
         {
             trigger_error('Invalid Value for speed.', E_USER_NOTICE);
             return false;
@@ -1617,6 +1610,7 @@ class KodiDevicePlayer extends KodiBase
         $ret = $this->Send($KodiData);
         if (is_null($ret))
             return false;
+        // TODO Werte stimmen bei audio nicht =?!
         if ((int) $ret->percentage == $Value)
         {
             $this->SetValueInteger("percentage", $Value);

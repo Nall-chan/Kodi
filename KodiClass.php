@@ -312,7 +312,7 @@ abstract class KodiBase extends IPSModule
         {
             if (in_array($KodiData->Namespace, static::$Namespace))
             {
-                $this->SendDebug($KodiData->Method, $Event, 0);
+//                $this->SendDebug($KodiData->Method, $Event, 0);
                 $this->Decode($KodiData->Method, $Event);
                 return true;
             }
@@ -321,8 +321,8 @@ abstract class KodiBase extends IPSModule
         {
             if ($KodiData->Namespace == static::$Namespace)
             {
-                if ($KodiData->Method <> "Power")
-                    $this->SendDebug($KodiData->Method, $Event, 0);
+  //              if ($KodiData->Method <> "Power")
+    //                $this->SendDebug($KodiData->Method, $Event, 0);
                 $this->Decode($KodiData->Method, $Event);
                 return true;
             }
@@ -388,6 +388,7 @@ abstract class KodiBase extends IPSModule
 
             if ($result === false)
             {
+                IPS_SetInstanceStatus($instance['ConnectionID'],IS_EBASE+3);
                 throw new Exception('Kodi unreachable', E_USER_NOTICE);
             }
             $this->SendDebug("receive", $result, 0);
@@ -1050,7 +1051,6 @@ class Kodi_RPC_Data extends stdClass
             $this->Error = $Data->Error;
         if (property_exists($Data, 'Result'))
             $this->Result = $this->DecodeUTF8($Data->Result);
-//            $this->Typ = Kodi_RPC_Data::$ResultTyp;
         if (property_exists($Data, 'Namespace'))
             $this->Namespace = $Data->Namespace;
         if (property_exists($Data, 'Method'))
@@ -1066,7 +1066,12 @@ class Kodi_RPC_Data extends stdClass
           $this->Typ = Kodi_RPC_Data::$EventTyp;
           } */
         if (property_exists($Data, 'Id'))
+        {
             $this->Id = $Data->Id;
+            $this->Typ = Kodi_RPC_Data::$ResultTyp;
+        } else
+          $this->Typ = Kodi_RPC_Data::$EventTyp;
+            
     }
 
     /**

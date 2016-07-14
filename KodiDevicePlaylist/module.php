@@ -349,8 +349,9 @@ if (isset($_GET["Index"]))
                     }
                 }
                 break;
-            case 'OnPlay':
             case 'OnStop':
+                $this->SetValueInteger("position", 0);
+            case 'OnPlay':
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
                 $KodiData->GetProperties(array('playerid' => $this->PlaylistId, 'properties' => array("playlistid", "position")));
                 $ret = $this->SendDirect($KodiData);
@@ -360,8 +361,12 @@ if (isset($_GET["Index"]))
                 break;
             case 'OnAdd':
             case 'OnRemove':
-            case 'OnClear':
                 $this->RefreshPlaylist();
+                break;
+
+            case 'OnClear':
+                $this->RefreshPlaylist(true);
+                $this->SetValueInteger("position", 0);
                 break;
             default:
                 $this->SendDebug($Method, $KodiPayload, 0);
@@ -374,8 +379,9 @@ if (isset($_GET["Index"]))
      * 
      * @access private
      */
-    private function RefreshPlaylist()
+    private function RefreshPlaylist($Empty = false)
     {
+        //TODO Playlist muss Daten in Inztanz vorhalten und dynamisch die Daten ändern.
         if (!$this->ReadPropertyBoolean('showPlaylist'))
             return;
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
@@ -386,7 +392,10 @@ if (isset($_GET["Index"]))
         $Config = unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
             throw new Exception('Error on read Playlistconfig-Script');
-        $Data = $this->Get();
+
+        $Data = array();
+        if (!$Empty)
+            $Data = $this->Get();
 
         $Name = "Tracklist.Kodi." . $this->InstanceID;
         if (!IPS_VariableProfileExists($Name))
@@ -401,7 +410,7 @@ if (isset($_GET["Index"]))
         }
 
 
-        if (is_null($Data))
+        if ($Data === false)
             return;
 
         $HTMLData = $this->GetTableHeader($Config);
@@ -490,6 +499,7 @@ $Config["Spalten"] = array(
     "Episode"=>"E",
     "Album" => "Album",
     "Track" => "Track",
+    "Disc" => "Disc",
     "Genre" => "Stil",
     "Artist"=>"Interpret",
     "Year" => "Jahr",
@@ -512,6 +522,7 @@ $Config["Spalten"] = array(
 | Album            | string  | Album                               |
 | Artist           | string  | Interpret                           |
 | Runtime          | integer | Länge in Sekunden                   |
+| Disc             | integer | Disc                                |
 | Track            | integer | Tracknummer im Album                |
 | Url              | string  | Pfad der Playlist                   |
 | Year             | integer | Jahr, soweit hinterlegt             |
@@ -526,6 +537,7 @@ $Config["Breite"] = array(
     "Episode" => "50em",
     "Genre" => "200em",
     "Album" => "200em",
+    "Disc" => "50em",
     "Track" => "50em",
     "Artist" => "200em",
     "Year" => "50em",
@@ -553,6 +565,8 @@ $Config["Style"] = array(
     "HFEpisode"  => "color:#ffffff; width:35px; align:left;",
     // <th>-Tag Feld Album:
     "HFAlbum"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Disc:
+    "HFDisc"  => "color:#ffffff; width:35px; align:left;",
     // <th>-Tag Feld Track:
     "HFTrack"  => "color:#ffffff; width:35px; align:left;",
     // <th>-Tag Feld Genre:
@@ -597,6 +611,10 @@ $Config["Style"] = array(
     "DFGAlbum" => "text-align:center;",
     "DFUAlbum" => "text-align:center;",
     "DFAAlbum" => "text-align:center;",
+    // <td>-Tag Feld Disc:
+    "DFGDisc" => "text-align:center;",
+    "DFUDisc" => "text-align:center;",
+    "DFADisc" => "text-align:center;",
     // <td>-Tag Feld Track:
     "DFGTrack" => "text-align:center;",
     "DFUTrack" => "text-align:center;",
@@ -685,7 +703,7 @@ echo serialize($Config);
                 $this->Init();
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
                 $KodiData->GoTo(array('playerid' => $this->PlaylistId, "to" => (int) $Value - 1));
-                $ret = $this->Send($KodiData);
+                $ret = $this->SendDirect($KodiData);
                 if (is_null($ret))
                     return;
                 if ($ret === "OK")
@@ -732,7 +750,7 @@ echo serialize($Config);
         $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
         $KodiData->Add(array_merge(array('playlistid' => $this->PlaylistId, "item" => array($ItemTyp => $ItemValue)), $Ext));
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
         if ($ret === "OK")
@@ -934,7 +952,7 @@ echo serialize($Config);
         $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
         $KodiData->Clear(array('playlistid' => $this->PlaylistId));
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
         if ($ret === "OK")
@@ -962,7 +980,7 @@ echo serialize($Config);
         }
         $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Insert', array_merge(array('playlistid' => $this->PlaylistId, 'position' => $Position, 'item' => array($ItemTyp => $ItemValue)), $Ext));
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
         if ($ret === "OK")
@@ -1189,7 +1207,7 @@ echo serialize($Config);
         }
         $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Remove', array('playlistid' => $this->PlaylistId, 'position' => $Position));
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
         if ($ret === "OK")
@@ -1220,7 +1238,7 @@ echo serialize($Config);
         }
         $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Swap', array('playlistid' => $this->PlaylistId, 'position1' => $Position1, 'position2' => $Position2));
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
         if ($ret === "OK")
