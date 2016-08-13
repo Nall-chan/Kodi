@@ -363,7 +363,7 @@ if (isset($_GET["button"]))
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -436,7 +436,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_Up'. Tastendruck 'Hoch' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Up()
     {
@@ -452,7 +452,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_Down'. Tastendruck 'Runter' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Down()
     {
@@ -468,7 +468,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_Left'. Tastendruck 'Links' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Left()
     {
@@ -484,7 +484,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_Right'. Tastendruck 'Rechts' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Right()
     {
@@ -500,7 +500,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_Back'. Tastendruck 'Zurück' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Back()
     {
@@ -516,7 +516,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_ContextMenu'. Tastendruck 'ContextMenu' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function ContextMenu()
     {
@@ -532,7 +532,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_Home'. Tastendruck 'Home' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Home()
     {
@@ -548,7 +548,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_Info'. Tastendruck 'Info' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Info()
     {
@@ -564,7 +564,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_Select'. Tastendruck 'Select' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Select()
     {
@@ -580,7 +580,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_ShowOSD'. Tastendruck 'ShowOSD' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function ShowOSD()
     {
@@ -596,7 +596,7 @@ if (isset($_GET["button"]))
      * IPS-Instanz-Funktion 'KODIINPUT_ShowCodec'. Tastendruck 'ShowCodec' ausführen.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function ShowCodec()
     {
@@ -613,7 +613,7 @@ if (isset($_GET["button"]))
      *
      * @access public
      * @param string $Action Auszuführende Aktion.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function ExecuteAction(string $Action)
     {
@@ -640,10 +640,10 @@ if (isset($_GET["button"]))
      *
      * @access public
      * @param string $Text Der zu sendene Text.
-     * @param boolean $Done True wenn die Eingabe beendet werden soll, sonst false.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param bool $Done True wenn die Eingabe beendet werden soll, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function SendText(string $Text, boolean $Done)
+    public function SendText(string $Text, bool $Done)
     {
         if (!is_string($Text))
         {

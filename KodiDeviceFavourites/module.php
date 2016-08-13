@@ -75,15 +75,13 @@ class KodiDeviceFavourites extends KodiBase
 
 ################## PUBLIC
 
-    
     /**
      * IPS-Instanz-Funktion 'KODIFAV_GetFavourites'. Liefert die Favoriten.
      *
      * @access public
-     * @param  string $Path Ziel-Verzeichnis für den Export.
-     * @param boolean $Overwrite Vorhandene Daten überschreiben.
-     * @param boolean $includeImages Bilder mit exportieren.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param string $Type Der Typ der zu suchenden Favoriten.
+     *   enum["media"=Media, "window"=Fenster, "script"=Skript, "unknown"=Unbekannt]
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetFavourites(string $Type)
     {
@@ -100,12 +98,11 @@ class KodiDeviceFavourites extends KodiBase
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetFavourites(array("type" => $Type, "properties" => static::$FavouriteItemList ));
+        $KodiData->GetFavourites(array("type" => $Type, "properties" => static::$FavouriteItemList));
         $ret = $this->SendDirect($KodiData);
         if ($ret->limits->total > 0)
             return json_decode(json_encode($ret->favourites), true);
     }
-
 
 }
 

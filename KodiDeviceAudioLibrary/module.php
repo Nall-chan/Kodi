@@ -238,7 +238,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -264,7 +264,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_Clean'. Startet das bereinigen der Datenbank
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Clean()
     {
@@ -281,11 +281,11 @@ class KodiDeviceAudioLibrary extends KodiBase
      *
      * @access public
      * @param  string $Path Ziel-Verzeichnis für den Export.
-     * @param boolean $Overwrite Vorhandene Daten überschreiben.
-     * @param boolean $includeImages Bilder mit exportieren.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param bool $Overwrite Vorhandene Daten überschreiben.
+     * @param bool $includeImages Bilder mit exportieren.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Export(string $Path, boolean $Overwrite, boolean $includeImages)
+    public function Export(string $Path, bool $Overwrite, bool $includeImages)
     {
         if (!is_string($Path) or ( strlen($Path) < 2))
         {
@@ -314,10 +314,10 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetAlbumDetails'. Liest die Eigenschaften eines Album aus.
      *
      * @access public
-     * @param  integer $AlbumID AlbumID des zu lesenden Alben.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $AlbumID AlbumID des zu lesenden Alben.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetAlbumDetails(integer $AlbumID)
+    public function GetAlbumDetails(int $AlbumID)
     {
         if (!is_int($AlbumID))
         {
@@ -337,7 +337,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetAlbums'. Liest die Eigenschaften aller Alben aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetAlbums()
     {
@@ -355,10 +355,10 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetArtistDetails'. Liest die Eigenschaften eines Künstlers aus.
      *
      * @access public
-     * @param  integer $ArtistID ArtistID des zu lesenden Künstlers.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $ArtistID ArtistID des zu lesenden Künstlers.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetArtistDetails(integer $ArtistID)
+    public function GetArtistDetails(int $ArtistID)
     {
         if (!is_int($ArtistID))
         {
@@ -378,7 +378,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetArtists'. Liest die Eigenschaften aller Künstler aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetArtists()
     {
@@ -396,7 +396,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetGenres'. Liest die Eigenschaften aller Genres aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetGenres()
     {
@@ -414,7 +414,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetRecentlyAddedAlbums'. Liest die Eigenschaften der zuletzt hinzugefügten Alben aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetRecentlyAddedAlbums()
     {
@@ -432,7 +432,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetRecentlyAddedSongs'. Liest die Eigenschaften der zuletzt hinzugefügten Songs aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetRecentlyAddedSongs()
     {
@@ -450,7 +450,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetRecentlyPlayedAlbums'. Liest die Eigenschaften der zuletzt abgespielten Alben aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetRecentlyPlayedAlbums()
     {
@@ -468,7 +468,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetRecentlyPlayedSongs'. Liest die Eigenschaften der zuletzt abgespielten Songs aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetRecentlyPlayedSongs()
     {
@@ -486,10 +486,10 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetSongDetails'. Liest die Eigenschaften eines Künstlers aus.
      *
      * @access public
-     * @param  integer $SongID SongID des zu lesenden Songs.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $SongID SongID des zu lesenden Songs.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetSongDetails(integer $SongID)
+    public function GetSongDetails(int $SongID)
     {
         if (!is_int($SongID))
         {
@@ -509,7 +509,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetSongs'. Liest die Eigenschaften aller Songs aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetSongs()
     {
@@ -527,7 +527,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_Scan'. Startet das Scannen der Quellen für neue Einträge in der Datenbank.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Scan()
     {

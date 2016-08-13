@@ -161,7 +161,7 @@ class KodiDeviceGUI extends KodiBase
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -184,10 +184,10 @@ class KodiDeviceGUI extends KodiBase
      * De-/Aktiviert den Vollbildmodus.
      *
      * @access public
-     * @param boolean $Value True für Vollbild aktiv, False bei inaktiv.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param bool $Value True für Vollbild aktiv, False bei inaktiv.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function SetFullscreen(boolean $Value)
+    public function SetFullscreen(bool $Value)
     {
         if (!is_bool($Value))
         {
@@ -211,10 +211,10 @@ class KodiDeviceGUI extends KodiBase
      * @param string $Title
      * @param string $Message
      * @param string $Image
-     * @param integer $Timeout
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param int $Timeout
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function ShowNotification(string $Title, string $Message, string $Image, integer $Timeout)
+    public function ShowNotification(string $Title, string $Message, string $Image, int $Timeout)
     {
         if (!is_string($Title))
         {
@@ -253,7 +253,7 @@ class KodiDeviceGUI extends KodiBase
      *
      * @access public
      * @param string $Window Das zu aktivierende Fenster
-     * @return boolean true bei Erfolg, sonst false.
+     * @return bool true bei Erfolg, sonst false.
      */
     public function ActivateWindow(string $Window)
     {
@@ -275,7 +275,7 @@ class KodiDeviceGUI extends KodiBase
      *
      * @access public
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function RequestState(string $Ident)
     {

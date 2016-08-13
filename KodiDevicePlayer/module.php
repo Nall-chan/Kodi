@@ -23,7 +23,7 @@ class KodiDevicePlayer extends KodiBase
      * PlayerID für Audio
      * 
      * @access private
-     * @static integer
+     * @static int
      * @value 0
      */
     const Audio = 0;
@@ -32,7 +32,7 @@ class KodiDevicePlayer extends KodiBase
      * PlayerID für Video
      * 
      * @access private
-     * @static integer
+     * @static int
      * @value 1
      */
     const Video = 1;
@@ -41,7 +41,7 @@ class KodiDevicePlayer extends KodiBase
      * PlayerID für Bilder
      * 
      * @access private
-     * @static integer
+     * @static int
      * @value 2
      */
     const Picture = 2;
@@ -216,7 +216,7 @@ class KodiDevicePlayer extends KodiBase
      * Eigene PlayerId
      * 
      * @access private
-     *  @var integer Kodi-Player-ID dieser Instanz 
+     *  @var int Kodi-Player-ID dieser Instanz 
      */
     private $PlayerId = null;
 
@@ -224,7 +224,7 @@ class KodiDevicePlayer extends KodiBase
      * Wenn dieser Player in Kodi gerade Active ist, true sonst false.
      * 
      * @access private
-     *  @var boolean true = aktiv, false = inaktiv, null wenn nicht bekannt.
+     *  @var bool true = aktiv, false = inaktiv, null wenn nicht bekannt.
      */
     private $isActive = null;
 
@@ -427,7 +427,7 @@ class KodiDevicePlayer extends KodiBase
     /**
      * Fragt Kodi an ob der Playertyp der Instanz gerade aktiv ist.
      * 
-     * @return boolean true wenn Player aktiv ist, sonset false
+     * @return bool true wenn Player aktiv ist, sonset false
      */
     private function getActivePlayer()
     {
@@ -449,9 +449,9 @@ class KodiDevicePlayer extends KodiBase
      * Setzt die Eigenschaft isActive sowie die dazugehörige IPS-Variable.
      * 
      * @access private
-     * @param boolean $isActive True wenn Player als aktive gesetzt werden soll, sonder false.
+     * @param bool $isActive True wenn Player als aktive gesetzt werden soll, sonder false.
      */
-    private function setActivePlayer(boolean $isActive)
+    private function setActivePlayer(bool $isActive)
     {
         $this->isActive = $isActive;
         $this->SetValueBoolean('_isactive', $isActive);
@@ -462,7 +462,7 @@ class KodiDevicePlayer extends KodiBase
      * 
      * @access protected
      * @param array $Params Enthält den Index "properties", in welchen alle anzufragenden Eigenschaften als Array enthalten sind.
-     * @return boolean true bei erfolgreicher Ausführung und dekodierung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
      */
     protected function RequestProperties(array $Params)
     {
@@ -793,7 +793,7 @@ class KodiDevicePlayer extends KodiBase
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -1156,7 +1156,7 @@ class KodiDevicePlayer extends KodiBase
      * Holt die Daten des aktuellen wiedergegebenen Items, und gibt Diese als Array zurück.
      * 
      * @access public
-     * @return array|boolean Das Array mit den Eigenschaften des Item, im Fehlerfall false
+     * @return array|bool Das Array mit den Eigenschaften des Item, im Fehlerfall false
      */
     public function GetItem()
     {
@@ -1174,10 +1174,10 @@ class KodiDevicePlayer extends KodiBase
      * Deaktiviert oder aktiviert einen Untertitel
      * 
      * @access public
-     * @param integer $Value Index des zu aktivierenden Untertitels, -1 für keinen.
-     * @return boolean true bei erfolgreicher Ausführung und dekodierung, sonst false.
+     * @param int $Value Index des zu aktivierenden Untertitels, -1 für keinen.
+     * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
      */
-    public function SetSubtitle(integer $Value)
+    public function SetSubtitle(int $Value)
     {
         if (!is_int($Value))
         {
@@ -1208,10 +1208,10 @@ class KodiDevicePlayer extends KodiBase
      * Aktiviert einen bestimmten Audiostream.
      * 
      * @access public
-     * @param integer $Value Index des zu aktivierenden Audiostream.
-     * @return boolean true bei erfolgreicher Ausführung und dekodierung, sonst false.
+     * @param int $Value Index des zu aktivierenden Audiostream.
+     * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
      */
-    public function SetAudioStream(integer $Value)
+    public function SetAudioStream(int $Value)
     {
         if (!is_int($Value))
         {
@@ -1241,7 +1241,7 @@ class KodiDevicePlayer extends KodiBase
      * Starte die Wiedergabe des aktuelle pausierten Items.
      * 
      * @access public
-     * @return boolean True bei Erfolg, sonst false.
+     * @return bool True bei Erfolg, sonst false.
      */
     public function Play()
     {
@@ -1275,7 +1275,7 @@ class KodiDevicePlayer extends KodiBase
      * Pausiert die Wiedergabe des aktuellen Items.
      * 
      * @access public
-     * @return boolean True bei Erfolg, sonst false.
+     * @return bool True bei Erfolg, sonst false.
      */
     public function Pause()
     {
@@ -1308,7 +1308,7 @@ class KodiDevicePlayer extends KodiBase
      * Stoppt die Wiedergabe des aktuellen Items.
      * 
      * @access public
-     * @return boolean True bei Erfolg, sonst false.
+     * @return bool True bei Erfolg, sonst false.
      */
     public function Stop()
     {
@@ -1340,7 +1340,7 @@ class KodiDevicePlayer extends KodiBase
      * Springt zum nächsten Item in der Wiedergabeliste.
      * 
      * @access public
-     * @return boolean True bei Erfolg, sonst false.
+     * @return bool True bei Erfolg, sonst false.
      */
     public function GoToNext()
     {
@@ -1352,7 +1352,7 @@ class KodiDevicePlayer extends KodiBase
      * Springt zum vorherigen Item in der Wiedergabeliste.
      * 
      * @access public
-     * @return boolean True bei Erfolg, sonst false.
+     * @return bool True bei Erfolg, sonst false.
      */
     public function GoToPrevious()
     {
@@ -1363,9 +1363,9 @@ class KodiDevicePlayer extends KodiBase
      * Springt auf ein bestimmtes Item in der Wiedergabeliste.
      * 
      * @access private
-     * @param integer|string $Value Index oder String-Enum
+     * @param int|string $Value Index oder String-Enum
      *   enum["previous", "next"]
-     * @return boolean True bei Erfolg, sonst false.
+     * @return bool True bei Erfolg, sonst false.
      */
     private function GoToValue($Value)
     {
@@ -1391,10 +1391,10 @@ class KodiDevicePlayer extends KodiBase
      * Springt auf ein bestimmtes Item in der Wiedergabeliste.
      * 
      * @access public
-     * @param integer $Value Index in der Wiedergabeliste.
-     * @return boolean True bei Erfolg, sonst false.
+     * @param int $Value Index in der Wiedergabeliste.
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function GoToTrack(integer $Value)
+    public function GoToTrack(int $Value)
     {
         if (!is_int($Value))
         {
@@ -1425,10 +1425,10 @@ class KodiDevicePlayer extends KodiBase
      * Setzt den Zufallsmodus.
      * 
      * @access public
-     * @param boolean $Value True für Zufallswiedergabe aktiv, false für deaktiv.
-     * @return boolean True bei Erfolg, sonst false.
+     * @param bool $Value True für Zufallswiedergabe aktiv, false für deaktiv.
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function SetShuffle(boolean $Value)
+    public function SetShuffle(bool $Value)
     {
         if (!is_bool($Value))
         {
@@ -1459,11 +1459,11 @@ class KodiDevicePlayer extends KodiBase
      * Setzten den Wiederholungsmodus.
      * 
      * @access public
-     * @param integer $Value Modus der Wiederholung.
+     * @param int $Value Modus der Wiederholung.
      *   enum[0=aus, 1=Titel, 2=Alle]
-     * @return boolean True bei Erfolg, sonst false.
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function SetRepeat(integer $Value)
+    public function SetRepeat(int $Value)
     {
         if (!is_int($Value))
         {
@@ -1500,10 +1500,10 @@ class KodiDevicePlayer extends KodiBase
      * Setzt den Partymodus.
      * 
      * @access public
-     * @param boolean $Value True für Partymodus aktiv, false für deaktiv.
-     * @return boolean True bei Erfolg, sonst false.
+     * @param bool $Value True für Partymodus aktiv, false für deaktiv.
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function SetPartymode(boolean $Value)
+    public function SetPartymode(bool $Value)
     {
         if (!is_bool($Value))
         {
@@ -1534,11 +1534,11 @@ class KodiDevicePlayer extends KodiBase
      * Setzten die Abspielgeschwindigkeit.
      * 
      * @access public
-     * @param integer $Value Geschwindigkeit.
+     * @param int $Value Geschwindigkeit.
      *   enum[-32, -16, -8, -4, -2, 0, 1, 2, 4, 8, 16, 32]
-     * @return boolean True bei Erfolg, sonst false.
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function SetSpeed(integer $Value)
+    public function SetSpeed(int $Value)
     {
         if (!is_int($Value))
         {
@@ -1584,10 +1584,10 @@ class KodiDevicePlayer extends KodiBase
      * Springt auf eine absolute Position innerhalb einer Wiedergabe.
      * 
      * @access public
-     * @param integer $Value Position in Prozent
-     * @return boolean True bei Erfolg, sonst false.
+     * @param int $Value Position in Prozent
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function SetPosition(integer $Value)
+    public function SetPosition(int $Value)
     {
         if (!is_int($Value))
         {
@@ -1631,7 +1631,7 @@ class KodiDevicePlayer extends KodiBase
      * @param string $ItemTyp Der Typ des Item.
      * @param string $ItemValue Der Wert des Item.
      * @param array $Ext Array welches mit übergeben werden soll (optional).
-     * @return boolean True bei Erfolg. Sonst false.
+     * @return bool True bei Erfolg. Sonst false.
      */
     private function Load(string $ItemTyp, string $ItemValue, $Ext = array())
     {
@@ -1652,10 +1652,10 @@ class KodiDevicePlayer extends KodiBase
      * Lädt ein Album und startet die Wiedergabe.
      * 
      * @access public
-     * @param integer $AlbumId ID des Album.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $AlbumId ID des Album.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function LoadAlbum(integer $AlbumId)
+    public function LoadAlbum(int $AlbumId)
     {
         if (!is_int($AlbumId))
         {
@@ -1670,10 +1670,10 @@ class KodiDevicePlayer extends KodiBase
      * Lädt alle Itemes eines Artist und startet die Wiedergabe.
      * 
      * @access public
-     * @param integer $ArtistId ID des Artist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $ArtistId ID des Artist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function LoadArtist(integer $ArtistId)
+    public function LoadArtist(int $ArtistId)
     {
         if (!is_int($ArtistId))
         {
@@ -1689,7 +1689,7 @@ class KodiDevicePlayer extends KodiBase
      * 
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
     public function LoadDirectory(string $Directory)
     {
@@ -1707,7 +1707,7 @@ class KodiDevicePlayer extends KodiBase
      * 
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
     public function LoadDirectoryRecursive(string $Directory)
     {
@@ -1724,10 +1724,10 @@ class KodiDevicePlayer extends KodiBase
      * Lädt eine Episode und startet die Wiedergabe.
      * 
      * @access public
-     * @param integer $EpisodeId ID der Episode.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $EpisodeId ID der Episode.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function LoadEpisode(integer $EpisodeId)
+    public function LoadEpisode(int $EpisodeId)
     {
         if (!is_int($EpisodeId))
         {
@@ -1743,7 +1743,7 @@ class KodiDevicePlayer extends KodiBase
      * 
      * @access public
      * @param string $File Pfad zu einer Datei.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
     public function LoadFile(string $File)
     {
@@ -1760,10 +1760,10 @@ class KodiDevicePlayer extends KodiBase
      * Lädt eine komplettes Genre und startet die Wiedergabe.
      * 
      * @access public
-     * @param integer $GenreId ID des Genres.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $GenreId ID des Genres.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function LoadGenre(integer $GenreId)
+    public function LoadGenre(int $GenreId)
     {
         if (!is_int($GenreId))
         {
@@ -1778,10 +1778,10 @@ class KodiDevicePlayer extends KodiBase
      * Lädt ein Film und startet die Wiedergabe.
      * 
      * @access public
-     * @param integer $MovieId ID des Filmes.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $MovieId ID des Filmes.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function LoadMovie(integer $MovieId)
+    public function LoadMovie(int $MovieId)
     {
         if (!is_int($MovieId))
         {
@@ -1796,10 +1796,10 @@ class KodiDevicePlayer extends KodiBase
      * Lädt ein Musicvideo und startet die Wiedergabe.
      * 
      * @access public
-     * @param integer $MusicvideoId ID des Musicvideos.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $MusicvideoId ID des Musicvideos.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function LoadMusicvideo(integer $MusicvideoId)
+    public function LoadMusicvideo(int $MusicvideoId)
     {
         if (!is_int($MusicvideoId))
         {
@@ -1814,7 +1814,7 @@ class KodiDevicePlayer extends KodiBase
      * Lädt die Playlist und startet die Wiedergabe.
      * 
      * @access public
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
     public function LoadPlaylist()
     {
@@ -1827,10 +1827,10 @@ class KodiDevicePlayer extends KodiBase
      * Lädt ein Songs und startet die Wiedergabe.
      * 
      * @access public
-     * @param integer $SongId ID des Songs.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $SongId ID des Songs.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function LoadSong(integer $SongId)
+    public function LoadSong(int $SongId)
     {
         if (!is_int($SongId))
         {
@@ -1843,7 +1843,7 @@ class KodiDevicePlayer extends KodiBase
     /**
      * Liefert den Parent der Instanz.
      * 
-     * @return integer|boolean InstanzID des Parent, false wenn kein Parent vorhanden.
+     * @return int|bool InstanzID des Parent, false wenn kein Parent vorhanden.
      */
     protected function GetParent()
     {

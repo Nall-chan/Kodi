@@ -231,7 +231,7 @@ function wake($ip, $mac)
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -261,10 +261,10 @@ function wake($ip, $mac)
      * IPS-Instanz-Funktion 'KODISYS_Power'. Schaltet Kodi ein oder aus. Einschalten erfolgt per hinterlegten PHP-Script in der Instanz. Der Modus für das Ausschalten ist ebenfalls in der Instanz zu konfigurieren.
      *
      * @access public
-     * @param boolean $Value True für Einschalten, False für Ausschalten.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param bool $Value True für Einschalten, False für Ausschalten.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Power(boolean $Value)
+    public function Power(bool $Value)
     {
         if (!is_bool($Value))
         {
@@ -305,7 +305,7 @@ function wake($ip, $mac)
      * IPS-Instanz-Funktion 'KODISYS_WakeUp'. Schaltet 'Kodi' ein.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function WakeUp()
     {
@@ -328,7 +328,7 @@ function wake($ip, $mac)
      * IPS-Instanz-Funktion 'KODISYS_Shutdown'. Führt einen Shutdown auf Betriebssystemebene aus.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Shutdown()
     {
@@ -349,7 +349,7 @@ function wake($ip, $mac)
      * IPS-Instanz-Funktion 'KODISYS_Hibernate'. Führt einen Hibernate auf Betriebssystemebene aus.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Hibernate()
     {
@@ -370,7 +370,7 @@ function wake($ip, $mac)
      * IPS-Instanz-Funktion 'KODISYS_Suspend'. Führt einen Suspend auf Betriebssystemebene aus.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Suspend()
     {
@@ -391,7 +391,7 @@ function wake($ip, $mac)
      * IPS-Instanz-Funktion 'KODISYS_Reboot'. Führt einen Reboot auf Betriebssystemebene aus.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Reboot()
     {
@@ -412,7 +412,7 @@ function wake($ip, $mac)
      * IPS-Instanz-Funktion 'KODISYS_EjectOpticalDrive'. Öffnet das Optische Laufwerk.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function EjectOpticalDrive()
     {
@@ -429,7 +429,7 @@ function wake($ip, $mac)
      *
      * @access public
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function RequestState(string $Ident)
     {

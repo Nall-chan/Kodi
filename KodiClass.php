@@ -195,6 +195,28 @@ abstract class KodiBase extends IPSModule
         $this->ConnectParent("{D2F106B5-4473-4C19-A48F-812E8BAA316C}");
     }
 
+    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+        switch ($Message)
+        {
+
+            case DM_CONNECT:
+            case DM_DISCONNECT:
+                $this->ForceRefresh();
+                break;
+        }
+    }
+
+    /* protected function KernelReady()
+      {
+      $this->ApplyChanges();
+      } */
+
+    protected function ForceRefresh()
+    {
+        $this->ApplyChanges();
+    }
+
     /**
      * Interne Funktion des SDK.
      * 
@@ -202,27 +224,48 @@ abstract class KodiBase extends IPSModule
      */
     public function ApplyChanges()
     {
+        //IPS_LogMessage('KODI_Applychanges', print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true));
+        $this->RegisterMessage($this->InstanceID, DM_CONNECT);
+        $this->RegisterMessage($this->InstanceID, DM_DISCONNECT);
+        // Wenn Kernel nicht bereit, dann warten... KR_READY über Splitter kommt ja gleich
+
+        if (IPS_GetKernelRunlevel() <> KR_READY)
+            return;
         parent::ApplyChanges();
         $this->UnregisterVariable("_ReplyJSONData");
-        if (IPS_GetKernelRunlevel() == KR_READY)
-            if ($this->HasActiveParent())
-                $this->RequestProperties(array("properties" => static::$Properties));
+
+        if (is_array(static::$Namespace))
+        {
+            $Lines = array();
+            foreach (static::$Namespace as $Trigger)
+            {
+                $Lines[] = '.*"Namespace":"' . $Trigger . '".*';
+            }
+            $Line = implode('|', $Lines);
+            $this->SetReceiveDataFilter("(" . $Line . ")");
+        }
+        else
+        {
+            $this->SetReceiveDataFilter('.*"Namespace":"' . static::$Namespace . '".*');
+        }
+        if ($this->HasActiveParent())
+            $this->RequestProperties(array("properties" => static::$Properties));
     }
 
-################## PRIVATE     
+################## PRIVATE   
 
     /**
      * Werte der Eigenschaften anfragen.
      * 
      * @access protected
      * @param array $Params Enthält den Index "properties", in welchen alle anzufragenden Eigenschaften als Array enthalten sind.
-     * @return boolean true bei erfolgreicher Ausführung und dekodierung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
      */
     protected function RequestProperties(array $Params)
     {
         if (count($Params["properties"]) == 0)
             return true;
-        $this->SendDebug('RequestProperties', implode(',' , $Params["properties"]), 0);
+        $this->SendDebug('RequestProperties', implode(',', $Params["properties"]), 0);
         $KodiData = new Kodi_RPC_Data(static::$Namespace, 'GetProperties', $Params);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
@@ -245,7 +288,7 @@ abstract class KodiBase extends IPSModule
      * Erzeugt ein lesbares Zeitformat.
      * 
      * @access protected
-     * @param object|integer $name Description $name Description object| $Time Die zu formatierende Zeit als Kodi-Objekt oder als Sekunden.
+     * @param object|int $name Description $name Description object| $Time Die zu formatierende Zeit als Kodi-Objekt oder als Sekunden.
      * @return string Gibt die formatierte Zeit zurück.
      */
     protected function ConvertTime($Time)
@@ -276,7 +319,7 @@ abstract class KodiBase extends IPSModule
      *
      * @access public
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function RequestState(string $Ident)
     {
@@ -299,15 +342,14 @@ abstract class KodiBase extends IPSModule
      *
      * @access public
      * @param string $JSONString Das Datenpaket als JSON formatierter String.
-     * @return boolean true bei erfolgreicher Datenannahme, sonst false.
+     * @return bool true bei erfolgreicher Datenannahme, sonst false.
      */
     public function ReceiveData($JSONString)
     {
-        $this->SendDebug('ReceiveData', $JSONString, 0);
 
         $Data = json_decode($JSONString);
-        if ($Data->DataID <> '{73249F91-710A-4D24-B1F1-A72F216C2BDC}')
-            return false;
+//        if ($Data->DataID <> '{73249F91-710A-4D24-B1F1-A72F216C2BDC}')
+//            return false;
 
         $KodiData = new Kodi_RPC_Data();
         $KodiData->CreateFromGenericObject($Data);
@@ -315,25 +357,29 @@ abstract class KodiBase extends IPSModule
             return false;
 
         $Event = $KodiData->GetEvent();
-        if (is_array(static::$Namespace))
-        {
-            if (in_array($KodiData->Namespace, static::$Namespace))
-            {
-//                $this->SendDebug($KodiData->Method, $Event, 0);
-                $this->Decode($KodiData->Method, $Event);
-                return true;
-            }
-        }
-        else
-        {
-            if ($KodiData->Namespace == static::$Namespace)
-            {
-                //              if ($KodiData->Method <> "Power")
-                //                $this->SendDebug($KodiData->Method, $Event, 0);
-                $this->Decode($KodiData->Method, $Event);
-                return true;
-            }
-        }
+        $this->SendDebug('Event', $Event, 0);
+
+        $this->Decode($KodiData->Method, $Event);
+        /*
+          if (is_array(static::$Namespace))
+          {
+          if (in_array($KodiData->Namespace, static::$Namespace))
+          {
+          //                $this->SendDebug($KodiData->Method, $Event, 0);
+          $this->Decode($KodiData->Method, $Event);
+          return true;
+          }
+          }
+          else
+          {
+          if ($KodiData->Namespace == static::$Namespace)
+          {
+          //              if ($KodiData->Method <> "Power")
+          //                $this->SendDebug($KodiData->Method, $Event, 0);
+          $this->Decode($KodiData->Method, $Event);
+          return true;
+          }
+          } */
         return false;
     }
 
@@ -348,11 +394,14 @@ abstract class KodiBase extends IPSModule
     {
         $JSONData = $KodiData->ToJSONString('{0222A902-A6FA-4E94-94D3-D54AA4666321}');
         $anwser = $this->SendDataToParent($JSONData);
-        $this->SendDebug('JSONString', $JSONData, 0);
+        $this->SendDebug('Send', $JSONData, 0);
         if ($anwser === false)
+        {
+            $this->SendDebug('Receive', 'No answer', 0);
             return NULL;
+        }
         $result = unserialize($anwser);
-        $this->SendDebug('Kodi-Dev-Result', $result, 0);
+        $this->SendDebug('Receive', $result, 0);
         return $result;
     }
 
@@ -390,7 +439,7 @@ abstract class KodiBase extends IPSModule
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 1000);
             curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
             curl_setopt($ch, CURLOPT_TIMEOUT_MS, 300000);
-            $this->SendDebug("send", $Data, 0);
+            $this->SendDebug("Send Direct", $Data, 0);
             $result = curl_exec($ch);
             curl_close($ch);
 
@@ -399,7 +448,7 @@ abstract class KodiBase extends IPSModule
                 IPS_SetInstanceStatus($instance['ConnectionID'], IS_EBASE + 3);
                 throw new Exception('Kodi unreachable', E_USER_NOTICE);
             }
-            $this->SendDebug("receive", $result, 0);
+            $this->SendDebug("Receive Direct", $result, 0);
 
             $ReplayKodiData = new Kodi_RPC_Data();
             $ReplayKodiData->CreateFromJSONString($result);
@@ -408,14 +457,17 @@ abstract class KodiBase extends IPSModule
             {
                 throw $ret;
             }
+            $this->SendDebug("Receive Direct", $ReplayKodiData, 0);
             return $ret;
         }
         catch (KodiRPCException $ex)
         {
+            $this->SendDebug("Receive Direct", $ex, 0);
             trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
         }
         catch (Exception $ex)
         {
+            $this->SendDebug("Receive Direct", $ex->getMessage(), 0);
             trigger_error($ex->getMessage(), $ex->getCode());
         }
         return NULL;
@@ -427,7 +479,7 @@ abstract class KodiBase extends IPSModule
      * Löscht eine Statusvariable, sofern vorhanden.
      *
      * @access private
-     * @param integer $Ident Ident der Variable.
+     * @param int $Ident Ident der Variable.
      */
     protected function UnregisterScript($Ident)
     {
@@ -436,7 +488,7 @@ abstract class KodiBase extends IPSModule
             return;
         if (!IPS_ScriptExists($sid))
             return; //bail out
-        IPS_DeleteScript($sid,true);
+        IPS_DeleteScript($sid, true);
     }
 
     /**
@@ -444,7 +496,7 @@ abstract class KodiBase extends IPSModule
      *
      * @access private
      * @param string $WebHook URI des WebHook.
-     * @param integer $TargetID Ziel-Script des WebHook.
+     * @param int $TargetID Ziel-Script des WebHook.
      */
     protected function RegisterHook($WebHook, $TargetID)
     {
@@ -507,7 +559,7 @@ abstract class KodiBase extends IPSModule
      * @access protected
      * @param string $Message Nachrichten-Feld.
      * @param string|array|Kodi_RPC_Data $Data Daten-Feld.
-     * @param integer $Format Ausgabe in Klartext(0) oder Hex(1)
+     * @param int $Format Ausgabe in Klartext(0) oder Hex(1)
      */
     protected function SendDebug($Message, $Data, $Format)
     {
@@ -523,9 +575,14 @@ abstract class KodiBase extends IPSModule
                     $this->SendDebug($Message . " Result", $Data->GetResult(), 0);
                     break;
                 default:
+            //        $this->SendDebug($Message . " Method", $Data->Namespace . '.' . $Data->Method, 0);
                     $this->SendDebug($Message . " Params", $Data->Params, 0);
                     break;
             }
+        }
+        elseif (is_a($Data, 'KodiRPCException'))
+        {
+            $this->SendDebug($Message, $Data->getMessage(), 0);
         }
         elseif (is_array($Data))
         {
@@ -550,7 +607,7 @@ abstract class KodiBase extends IPSModule
     /**
      * Prüft den Parent auf vorhandensein und Status.
      * 
-     * @return boolean True wenn Parent vorhanden und in Status 102, sonst false.
+     * @return bool True wenn Parent vorhanden und in Status 102, sonst false.
      */
     protected function HasActiveParent()
     {
@@ -565,12 +622,12 @@ abstract class KodiBase extends IPSModule
     }
 
     /**
-     * Setzte eine IPS-Variable vom Typ boolean auf den Wert von $value
+     * Setzte eine IPS-Variable vom Typ bool auf den Wert von $value
      *
      * @access protected
      * @param string $Ident Ident der Statusvariable.
-     * @param boolean $value Neuer Wert der Statusvariable.
-     * @return boolean true wenn der neue Wert vom alten abweicht, sonst false.
+     * @param bool $value Neuer Wert der Statusvariable.
+     * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
     protected function SetValueBoolean($Ident, $value)
     {
@@ -590,8 +647,8 @@ abstract class KodiBase extends IPSModule
      *
      * @access protected
      * @param string $Ident Ident der Statusvariable.
-     * @param integer $value Neuer Wert der Statusvariable.
-     * @return boolean true wenn der neue Wert vom alten abweicht, sonst false.
+     * @param int $value Neuer Wert der Statusvariable.
+     * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
     protected function SetValueInteger($Ident, $value)
     {
@@ -620,7 +677,7 @@ abstract class KodiBase extends IPSModule
      * @access protected
      * @param string $Ident Ident der Statusvariable.
      * @param string $value Neuer Wert der Statusvariable.
-     * @return boolean true wenn der neue Wert vom alten abweicht, sonst false.
+     * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
     protected function SetValueString($Ident, $value)
     {
@@ -650,9 +707,9 @@ abstract class KodiBase extends IPSModule
      * @param string $Icon Name des Icon.
      * @param string $Prefix Prefix für die Darstellung.
      * @param string $Suffix Suffix für die Darstellung.
-     * @param integer $MinValue Minimaler Wert.
-     * @param integer $MaxValue Maximaler wert.
-     * @param integer $StepSize Schrittweite
+     * @param int $MinValue Minimaler Wert.
+     * @param int $MaxValue Maximaler wert.
+     * @param int $StepSize Schrittweite
      */
     protected function RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, $StepSize)
     {
@@ -755,12 +812,12 @@ class KodiRPCException extends Exception
  * @method null GetAddonDetails
  * @method null SetAddonEnabled
  * 
- * @method null SetVolume(array $Params (integer "volume" Neue Lautstärke)) Setzen der Lautstärke.
- * @method null SetMute(array $Params (boolean "mute" Neuer Wert der Stummschaltung)) Setzen der Stummschaltung.
+ * @method null SetVolume(array $Params (int "volume" Neue Lautstärke)) Setzen der Lautstärke.
+ * @method null SetMute(array $Params (bool "mute" Neuer Wert der Stummschaltung)) Setzen der Stummschaltung.
  * @method null Quit(null) Beendet Kodi.
  * 
  * @method null Clean(null) Startet das bereinigen der Datenbank.
- * @method null Export(array $Params (array "options" (string "path" Ziel-Verzeichnis für den Export) (boolean "overwrite" Vorhandene Daten überschreiben.) (boolean "images" Bilder mit exportieren.)) Exportiert die Audio Datenbank.
+ * @method null Export(array $Params (array "options" (string "path" Ziel-Verzeichnis für den Export) (bool "overwrite" Vorhandene Daten überschreiben.) (bool "images" Bilder mit exportieren.)) Exportiert die Audio Datenbank.
  * @method null GetAlbumDetails(array $Params (string "albumid" AlbumID) (array "properties" Zu lesende Album-Eigenschaften) Liest die Eigenschaften eines Album aus.
  * @method null GetAlbums(null) Liest einen Teil der Eigenschaften aller Alben aus.
  * @method null GetArtistDetails (array $Params (string "artistid" ArtistID) (array "properties" Zu lesende Künstler-Eigenschaften) Liest die Eigenschaften eines Künstler aus.
@@ -777,9 +834,9 @@ class KodiRPCException extends Exception
  * @method null GetSources(array $Params (string "media"  enum["video", "music", "pictures", "files", "programs"])) Liest die Quellen.
  * @method null GetFileDetails(array $Params (string "file" Dateiname) (string "media"  enum["video", "music", "pictures", "files", "programs"]) (array "properties" Zu lesende Eigenschaften)) Liest die Quellen.
  * @method null GetDirectory(array $Params (string "directory" Verzeichnis welches gelesen werden soll.)) Liest ein Verzeichnis aus.
- * @method null SetFullscreen(array $Params (boolean "fullscreen"))
+ * @method null SetFullscreen(array $Params (bool "fullscreen"))
  * @method null ShowNotification($Data) ??? 
- * @method null ActivateWindow(array $Params (integer "window" ID des Fensters)) Aktiviert ein Fenster.
+ * @method null ActivateWindow(array $Params (int "window" ID des Fensters)) Aktiviert ein Fenster.
  * @method null Up(null) Tastendruck hoch.
  * @method null Down(null) Tastendruck runter.
  * @method null Left(null) Tastendruch links.
@@ -792,9 +849,9 @@ class KodiRPCException extends Exception
  * @method null ShowOSD(null) OSD Anzeigen.
  * @method null ShowCodec(null) Codec-Info anzeigen.
  * @method null ExecuteAction(array $Params (string "action" Die auszuführende Aktion)) Sendet eine Aktion.
- * @method null SendText(array $Params (string "text" Zu sender String) (boolean "done" True zum beenden der Eingabe)) Sendet einen Eingabetext.
+ * @method null SendText(array $Params (string "text" Zu sender String) (bool "done" True zum beenden der Eingabe)) Sendet einen Eingabetext.
  * 
- * @method null Record(array $Params (boolean "record" Starten/Stoppen) (string "channel" Kanal für die Aufnahme)) Startet/Beendet eine laufende Aufnahme.
+ * @method null Record(array $Params (bool "record" Starten/Stoppen) (string "channel" Kanal für die Aufnahme)) Startet/Beendet eine laufende Aufnahme.
  * 
  * @method null GetBroadcasts
  * @method null GetBroadcastDetails
@@ -852,8 +909,8 @@ class KodiRPCException extends Exception
  * @method null GetSeasons (array $Params (string "tvshowid" TVShowID) (array "properties" Zu lesende Season Eigenschaften) Liest die Eigenschaften einer Season aus.
  * @method null GetTVShowDetails (array $Params (string "tvshowid" TVShowID) (array "properties" Zu lesende TV-Serien Eigenschaften) Liest die Eigenschaften einer TV-Serie.
  * @method null GetTVShows (null) Liest die Eigenschaften alle TV-Serien.
- * @property-read integer $Id Id des RPC-Objektes
- * @property-read integer $Typ Typ des RPC-Objektes 
+ * @property-read int $Id Id des RPC-Objektes
+ * @property-read int $Typ Typ des RPC-Objektes 
  * @property-read string $Namespace Namespace der RPC-Methode
  * @property-read string $Method RPC-Funktion
  */
@@ -916,7 +973,7 @@ class Kodi_RPC_Data extends stdClass
     /**
      * Id des RPC-Objektes
      * @access private
-     * @var integer
+     * @var int
      */
     private $Id;
 
@@ -938,7 +995,7 @@ class Kodi_RPC_Data extends stdClass
      * @param string $Namespace [optional] Der RPC Namespace
      * @param string $Method [optional] RPC-Methode
      * @param object $Params [optional] Parameter der Methode
-     * @param integer $Id [optional] Id des RPC-Objektes
+     * @param int $Id [optional] Id des RPC-Objektes
      * @return Kodi_RPC_Data
      */
     public function __construct($Namespace = null, $Method = null, $Params = null, $Id = null)

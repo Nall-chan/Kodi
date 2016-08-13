@@ -162,7 +162,7 @@ class KodiDeviceFiles extends KodiBase
      * @access public
      * @param string $Media Der Typ der zu suchenden Quellen.
      *   enum["video"=Video, "music"=Musik, "pictures"=Bilder, "files"=Dateien, "programs"=Programme]
-     * @return array|boolean Array mit den Quellen oder false bei Fehler.
+     * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
     public function GetSources(string $Media)
     {
@@ -196,7 +196,7 @@ class KodiDeviceFiles extends KodiBase
      * @param string $File Dateipfad und Name der gesuchten Datei.
      * @param string $Media Der Typ der Datei gibt die zu suchenden Eigenschaften an.
      *   enum["video"=Video, "music"=Musik, "pictures"=Bilder, "files"=Dateien, "programs"=Programme]
-     * @return array|boolean Array mit den Quellen oder false bei Fehler.
+     * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
     public function GetFileDetails(string $File, string $Media)
     {
@@ -231,7 +231,7 @@ class KodiDeviceFiles extends KodiBase
      * 
      * @access public
      * @param string $Directory Verzeichnis welches durchsucht werden soll.
-     * @return array|boolean Array mit den Quellen oder false bei Fehler.
+     * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
     public function GetDirectory(string $Directory)
     {
@@ -258,7 +258,7 @@ class KodiDeviceFiles extends KodiBase
      * @param string $Directory Verzeichnis welches durchsucht werden soll.
      * @param string $Media Der Typ der Datei gibt die zu liefernden Eigenschaften an.
      *   enum["video"=Video, "music"=Musik, "pictures"=Bilder, "files"=Dateien, "programs"=Programme]
-     * @return array|boolean Array mit den Quellen oder false bei Fehler.
+     * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
     public function GetDirectoryDetails(string $Directory, string $Media)
     {

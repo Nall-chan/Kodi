@@ -82,7 +82,7 @@ class KodiDeviceAddons extends KodiBase
      * 
      * @access public
      * @param string $AddonId Das zu startenden Addon.
-     * @return true bei Erfolg oder false bei Fehler.
+     * @return bool true bei Erfolg oder false bei Fehler.
      */
     public function ExecuteAddon(string $AddonId)
     {
@@ -105,7 +105,7 @@ class KodiDeviceAddons extends KodiBase
      * 
      * @access public
      * @param string $AddonId Das zu startenden Addon.
-     * @return true bei Erfolg oder false bei Fehler.
+     * @return bool true bei Erfolg oder false bei Fehler.
      */
     public function ExecuteAddonWait(string $AddonId)
     {
@@ -129,7 +129,7 @@ class KodiDeviceAddons extends KodiBase
      * @access public
      * @param string $AddonId Das zu startenden Addon.
      * @param string $Params Die zu übergebenden Parameter an das AddOn als JSON-String.
-     * @return true bei Erfolg oder false bei Fehler.
+     * @return bool true bei Erfolg oder false bei Fehler.
      */
     public function ExecuteAddonEx(string $AddonId, string $Params)
     {
@@ -158,7 +158,7 @@ class KodiDeviceAddons extends KodiBase
      * @access public
      * @param string $AddonId Das zu startenden Addon.
      * @param string $Params Die zu übergebenden Parameter an das AddOn als JSON-String.
-     * @return true bei Erfolg oder false bei Fehler.
+     * @return bool true bei Erfolg oder false bei Fehler.
      */
     public function ExecuteAddonExWait(string $AddonId, string $Params)
     {
@@ -186,7 +186,7 @@ class KodiDeviceAddons extends KodiBase
      * 
      * @access public
      * @param string $AddonId Addon welches gelesen werden soll.
-     * @return array|boolean Array mit den Eigenschaften des Addon oder false bei Fehler.
+     * @return array|bool Array mit den Eigenschaften des Addon oder false bei Fehler.
      */
     public function GetAddonDetails(string $AddonId)
     {
@@ -207,7 +207,7 @@ class KodiDeviceAddons extends KodiBase
      * IPS-Instanz-Funktion 'KODIADDONS_GetAddons'. Liefert Informationen zu allen Addons.
      * 
      * @access public
-     * @return array|boolean Array mit den Eigenschaften der Addons oder false bei Fehler.
+     * @return array|bool Array mit den Eigenschaften der Addons oder false bei Fehler.
      */
     public function GetAddons()
     {
@@ -227,10 +227,10 @@ class KodiDeviceAddons extends KodiBase
      * 
      * @access public
      * @param string $AddonId Addon welches aktiviert/deaktiviert werden soll.
-     * @param boolean $Value True zum aktivieren, false zum deaktivieren des Addon.
-     * @return true bei Erfolg oder false bei Fehler.
+     * @param bool $Value True zum aktivieren, false zum deaktivieren des Addon.
+     * @return bool true bei Erfolg oder false bei Fehler.
      */
-    public function SetAddonEnabled(string $AddonId, boolean $Value)
+    public function SetAddonEnabled(string $AddonId, bool $Value)
     {
         if (!is_string($AddonId))
         {

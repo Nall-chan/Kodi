@@ -228,7 +228,7 @@ class KodiDevicePVR extends KodiBase
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -253,7 +253,7 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_Scan'. Startet einen Suchlauf.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Scan()
     {
@@ -269,11 +269,11 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_Record'. Startet/Beendet eine Aufnahme.
      *
      * @access public
-     * @param boolean $Record True für starten, false zum stoppen.
+     * @param bool $Record True für starten, false zum stoppen.
      * @param string $Channel Kanalname.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Record(boolean $Record, string $Channel)
+    public function Record(bool $Record, string $Channel)
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Record(array("record" => $Record, "channel" => $Channel));
@@ -288,7 +288,7 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      * @param string $ChannelTyp [enum "tv", "radio"] Kanaltyp welcher gelesen werden soll.
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
     public function GetChannels(string $ChannelTyp)
     {
@@ -312,10 +312,10 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_GetChannelDetails'. Liefert die Eigenschaften eines Kanals.
      *
      * @access public
-     * @param integer $ChannelId Kanal welcher gelesen werden soll.
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @param int $ChannelId Kanal welcher gelesen werden soll.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetChannelDetails(integer $ChannelId)
+    public function GetChannelDetails(int $ChannelId)
     {
         if (!is_int($ChannelId))
         {
@@ -338,7 +338,7 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      * @param string $ChannelTyp [enum "tv", "radio"] Kanaltyp welcher gelesen werden soll.
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
     public function GetChannelGroups(string $ChannelTyp)
     {
@@ -362,10 +362,10 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_GetChannelGroupDetails'. Liefert die Eigenschaften einer Kanalgruppe.
      *
      * @access public
-     * @param integer $ChannelGroupdId Kanal welcher gelesen werden soll.
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @param int $ChannelGroupdId Kanal welcher gelesen werden soll.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetChannelGroupDetails(integer $ChannelGroupdId)
+    public function GetChannelGroupDetails(int $ChannelGroupdId)
     {
         if (!is_int($ChannelGroupdId))
         {
@@ -388,9 +388,9 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      * @param string $ChannelId  Kanal welcher gelesen werden soll.
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetBroadcasts(integer $ChannelId)
+    public function GetBroadcasts(int $ChannelId)
     {
         if (!is_int($ChannelId))
         {
@@ -412,10 +412,10 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_GetBroadcastDetails'. Liefert die Eigenschaften einer Sendung.
      *
      * @access public
-     * @param integer $BroadcastId Sendung welche gelesen werden soll.
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @param int $BroadcastId Sendung welche gelesen werden soll.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetBroadcastDetails(integer $BroadcastId)
+    public function GetBroadcastDetails(int $BroadcastId)
     {
         if (!is_int($BroadcastId))
         {
@@ -435,7 +435,7 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_GetRecordings'. Liefert alle Aufnahmen.
      *
      * @access public
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
     public function GetRecordings()
     {
@@ -453,10 +453,10 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_GetRecordingDetails'. Liefert die Eigenschaften einer Aufnahme.
      *
      * @access public
-     * @param integer $RecordingId Aufnahme welche gelesen werden soll.
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @param int $RecordingId Aufnahme welche gelesen werden soll.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetRecordingDetails(integer $RecordingId)
+    public function GetRecordingDetails(int $RecordingId)
     {
         if (!is_int($RecordingId))
         {
@@ -476,7 +476,7 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_GetTimers'. Liefert alle Aufnahmetimer.
      *
      * @access public
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
     public function GetTimers()
     {
@@ -494,10 +494,10 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_GetTimerDetails'. Liefert die Eigenschaften einer Aufnahmetimers.
      *
      * @access public
-     * @param integer $TimerId Timers welcher gelesen werden soll.
-     * @return array|boolean Ein Array mit den Daten oder FALSE bei Fehler.
+     * @param int $TimerId Timers welcher gelesen werden soll.
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetTimerDetails(integer $TimerId)
+    public function GetTimerDetails(int $TimerId)
     {
         if (!is_int($TimerId))
         {
@@ -518,7 +518,7 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function RequestState(string $Ident)
     {

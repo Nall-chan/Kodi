@@ -332,7 +332,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -358,7 +358,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDOLIB_Clean'. Startet das bereinigen der Datenbank
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Clean()
     {
@@ -375,11 +375,11 @@ class KodiDeviceVideoLibrary extends KodiBase
      *
      * @access public
      * @param  string $Path Ziel-Verzeichnis für den Export.
-     * @param boolean $Overwrite Vorhandene Daten überschreiben.
-     * @param boolean $includeImages Bilder mit exportieren.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param bool $Overwrite Vorhandene Daten überschreiben.
+     * @param bool $includeImages Bilder mit exportieren.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Export(string $Path, boolean $Overwrite, boolean $includeImages)
+    public function Export(string $Path, bool $Overwrite, bool $includeImages)
     {
         if (!is_string($Path) or ( strlen($Path) < 2))
         {
@@ -408,10 +408,10 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetEpisodeDetails'. Liest die Eigenschaften eines Künstlers aus.
      *
      * @access public
-     * @param  integer $EpisodeId EpisodenID der zu lesenden Episode.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $EpisodeId EpisodenID der zu lesenden Episode.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-        public function GetEpisodeDetails(integer $EpisodeId)
+        public function GetEpisodeDetails(int $EpisodeId)
     {
         if (!is_int($EpisodeId))
         {
@@ -431,7 +431,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetEpisodes'. Liest die Eigenschaften aller Songs aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetEpisodes()
     {
@@ -453,7 +453,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @param string $Type Der Typ der zu suchenden Genres.
      *   enum["movie"=Filme, "tvshow"=Serien, "musicvideo"=Musikvideos]
-*    * @return array | boolean Array mit den Daten oder false bei Fehlern.
+*    * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetGenres(string $Type)
     {
@@ -478,10 +478,10 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMovieDetails'. Liest die Eigenschaften eines Films aus.
      *
      * @access public
-     * @param  integer $MovieId MovieID des zu lesenden Films.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $MovieId MovieID des zu lesenden Films.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMovieDetails(integer $MovieId)
+    public function GetMovieDetails(int $MovieId)
     {
         if (!is_int($MovieId))
         {
@@ -501,7 +501,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMovies'. Liest die Eigenschaften aller Filme aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetMovies()
     {
@@ -519,10 +519,10 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMovieSetDetails'. Liest die Eigenschaften eines Film-Sets aus.
      *
      * @access public
-     * @param  integer $SetId SetId des zu lesenden Film-Sets.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $SetId SetId des zu lesenden Film-Sets.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMovieSetDetails(integer $SetId)
+    public function GetMovieSetDetails(int $SetId)
     {
         if (!is_int($SetId))
         {
@@ -542,7 +542,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMovieSets'. Liest die Eigenschaften aller Film-Sets.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetMovieSets()
     {
@@ -560,10 +560,10 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMusicVideoDetails'. Liest die Eigenschaften eines Musikvideos aus.
      *
      * @access public
-     * @param  integer $MusicVideoId MusicVideoId des zu lesenden Musikvideos.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $MusicVideoId MusicVideoId des zu lesenden Musikvideos.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMusicVideoDetails(integer $MusicVideoId)
+    public function GetMusicVideoDetails(int $MusicVideoId)
     {
         if (!is_int($MusicVideoId))
         {
@@ -583,7 +583,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMusicVideos'. Liest die Eigenschaften aller Musikvideos.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetMusicVideos()
     {
@@ -601,7 +601,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetRecentlyAddedEpisodes'. Liest die Eigenschaften der zuletzt hinzugefügten Episoden aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetRecentlyAddedEpisodes()
     {
@@ -619,7 +619,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetRecentlyAddedMovies'. Liest die Eigenschaften der zuletzt hinzugefügten Filme aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetRecentlyAddedMovies()
     {
@@ -637,7 +637,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetRecentlyAddedMusicVideos'. Liest die Eigenschaften der zuletzt hinzugefügten Filme aus.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetRecentlyAddedMusicVideos()
     {
@@ -655,10 +655,10 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetSeasons'. Liest die Eigenschaften eines Musikvideos aus.
      *
      * @access public
-     * @param  integer $TvShowId TvShowId der zu lesenden Serie.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $TvShowId TvShowId der zu lesenden Serie.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetSeasons(integer $TvShowId)
+    public function GetSeasons(int $TvShowId)
     {
         if (!is_int($TvShowId))
         {
@@ -678,10 +678,10 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetTVShowDetails'. Liest die Eigenschaften eines TV-Serie aus.
      *
      * @access public
-     * @param  integer $TvShowId TvShowId der zu lesenden TV-Serie.
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @param  int $TvShowId TvShowId der zu lesenden TV-Serie.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetTVShowDetails(integer $TvShowId)
+    public function GetTVShowDetails(int $TvShowId)
     {
         if (!is_int($TvShowId))
         {
@@ -701,7 +701,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetTVShows'. Liest die Eigenschaften aller TV-Serien.
      *
      * @access public
-     * @return array | boolean Array mit den Daten oder false bei Fehlern.
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetTVShows()
     {
@@ -719,7 +719,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_Scan'. Startet das Scannen der Quellen für neue Einträge in der Datenbank.
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Scan()
     {

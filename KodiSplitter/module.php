@@ -99,11 +99,11 @@ class KodiSplitter extends IPSModule
     public function ApplyChanges()
     {
 
-        IPS_LogMessage('KODISplitter_Applychanges', print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true));
+        //IPS_LogMessage('KODISplitter_Applychanges', print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true));
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
         $this->RegisterMessage($this->InstanceID, DM_CONNECT);
         $this->RegisterMessage($this->InstanceID, DM_DISCONNECT);
-        // Wenn Kernel nicht bereit, dann warten... DM_CONNECT oder IPS_KERNELMESSAGE kommt ja gleich
+        // Wenn Kernel nicht bereit, dann warten... KR_READY kommt ja gleich
 
         if (IPS_GetKernelRunlevel() <> KR_READY)
             return;
@@ -274,7 +274,7 @@ class KodiSplitter extends IPSModule
      * Ermöglicht es dass der Child vom Typ KodiDeviceSystem den aktuellen an/aus Zustand von Kodi kennt.
      * 
      * @access private
-     * @param boolean $value true für an, false für aus.
+     * @param bool $value true für an, false für aus.
      */
     private function SendPowerEvent($value)
     {
@@ -355,7 +355,7 @@ class KodiSplitter extends IPSModule
      * Sendet einen RPC-Ping an Kodi und prüft die erreichbarkeit.
      * 
      * @access public
-     * @result boolean true wenn Kodi erreichbar, sonst false.
+     * @result bool true wenn Kodi erreichbar, sonst false.
      */
     public function KeepAlive()
     {
@@ -411,11 +411,11 @@ class KodiSplitter extends IPSModule
      * 
      * @access public
      * @param string $JSONString Ein Kodi_RPC_Data-Objekt welches als JSONString kodiert ist.
-     * @result boolean true wenn Daten gesendet werden konnten, sonst false.
+     * @result bool true wenn Daten gesendet werden konnten, sonst false.
      */
     public function ForwardData($JSONString)
     {
-        $this->SendDebug('JSONString', $JSONString, 0);
+        $this->SendDebug('Forward', $JSONString, 0);
 
         $Data = json_decode($JSONString);
         if ($Data->DataID <> "{0222A902-A6FA-4E94-94D3-D54AA4666321}")
@@ -470,7 +470,7 @@ class KodiSplitter extends IPSModule
 
 ################## SENDQUEUE
 
-    private function SendQueuePush(integer $Id)
+    private function SendQueuePush(int $Id)
     {
 //        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
         if (!$this->lock('ReplyJSONData'))
@@ -483,7 +483,7 @@ class KodiSplitter extends IPSModule
         $this->unlock('ReplyJSONData');
     }
 
-    private function SendQueueUpdate(integer $Id, Kodi_RPC_Data $KodiData)
+    private function SendQueueUpdate(int $Id, Kodi_RPC_Data $KodiData)
     {
 //        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
         if (!$this->lock('ReplyJSONData'))
@@ -496,7 +496,7 @@ class KodiSplitter extends IPSModule
         $this->unlock('ReplyJSONData');
     }
 
-    private function SendQueuePop(integer $Id)
+    private function SendQueuePop(int $Id)
     {
 //        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
 //        $data = unserialize(GetValueString($ReplyJSONDataID));
@@ -508,7 +508,7 @@ class KodiSplitter extends IPSModule
         return $Result;
     }
 
-    private function SendQueueRemove(integer $Id)
+    private function SendQueueRemove(int $Id)
     {
 //        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
         if (!$this->lock('ReplyJSONData'))
@@ -528,7 +528,7 @@ class KodiSplitter extends IPSModule
      * 
      * @access public
      * @param string $JSONString Das empfangene JSON-kodierte Objekt vom Parent.
-     * @result boolean True wenn Daten verarbeitet wurden, sonst false.
+     * @result bool True wenn Daten verarbeitet wurden, sonst false.
      */
     public function ReceiveData($JSONString)
     {
@@ -611,7 +611,7 @@ class KodiSplitter extends IPSModule
         {
             if (!$this->HasActiveParent())
                 throw new Exception('Intance has no active parent.', E_USER_NOTICE);
-
+            $this->SendDebug('Send', $KodiData, 0);
             $this->SendQueuePush($KodiData->Id);
             $this->SendDataToParent($KodiData);
             $ReplayKodiData = $this->WaitForResponse($KodiData->Id);
@@ -627,14 +627,17 @@ class KodiSplitter extends IPSModule
             {
                 throw $ret;
             }
+            $this->SendDebug('Receive', $ReplayKodiData, 0);
             return $ret;
         }
         catch (KodiRPCException $ex)
         {
+            $this->SendDebug("Receive", $ex, 0);
             trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
         }
         catch (Exception $ex)
         {
+            $this->SendDebug("Receive", $ex->getMessage(), 0);
             trigger_error($ex->getMessage(), $ex->getCode());
         }
         return NULL;
@@ -645,7 +648,7 @@ class KodiSplitter extends IPSModule
      * 
      * @access protected
      * @param Kodi_RPC_Data $Data Das Objekt welches versendet werden soll.
-     * @result boolean true
+     * @result bool true
      */
     protected function SendDataToParent($Data)
     {
@@ -661,7 +664,7 @@ class KodiSplitter extends IPSModule
      * Wartet wuf eine RPC-Antwort.
      * 
      * @access private
-     * @param integer $Id Die RPC-ID auf die gewartet wird.
+     * @param int $Id Die RPC-ID auf die gewartet wird.
      * @result mixed Enthält ein Kodi_RPC_Data-Objekt mit der Antwort, oder false bei einem Timeout.
      */
     private function WaitForResponse($Id)
@@ -692,7 +695,6 @@ class KodiSplitter extends IPSModule
     {
         if (is_a($Data, 'Kodi_RPC_Data'))
         {
-            parent::SendDebug($Message . " Method", $Data->Namespace . '.' . $Data->Method, 0);
             switch ($Data->Typ)
             {
                 case Kodi_RPC_Data::$EventTyp:
@@ -702,6 +704,7 @@ class KodiSplitter extends IPSModule
                     $this->SendDebug($Message . " Result", $Data->GetResult(), 0);
                     break;
                 default:
+                    parent::SendDebug($Message . " Method", $Data->Namespace . '.' . $Data->Method, 0);
                     $this->SendDebug($Message . " Params", $Data->Params, 0);
                     break;
             }
@@ -729,7 +732,7 @@ class KodiSplitter extends IPSModule
     /**
      * Liefert den Parent der Instanz.
      * 
-     * @return integer|boolean InstanzID des Parent, false wenn kein Parent vorhanden.
+     * @return int|bool InstanzID des Parent, false wenn kein Parent vorhanden.
      */
     protected function GetParent()
     {
@@ -740,7 +743,7 @@ class KodiSplitter extends IPSModule
     /**
      * Prüft den Parent auf vorhandensein und Status.
      * 
-     * @return boolean True wenn Parent vorhanden und in Status 102, sonst false.
+     * @return bool True wenn Parent vorhanden und in Status 102, sonst false.
      */
     protected function HasActiveParent()
     {
@@ -791,7 +794,7 @@ class KodiSplitter extends IPSModule
      * Setzt den Status dieser Instanz auf den übergebenen Status.
      * Prüft vorher noch ob sich dieser vom aktuellen Status unterscheidet.
      * 
-     * @param integer $InstanceStatus
+     * @param int $InstanceStatus
      */
     protected function SetStatus($InstanceStatus)
     {
@@ -808,7 +811,7 @@ class KodiSplitter extends IPSModule
      * Setzt einen 'Lock'.
      *      * 
      * @param string $ident Ident der Semaphore
-     * @return boolean True bei Erfolg, false bei Misserfolg.
+     * @return bool True bei Erfolg, false bei Misserfolg.
      */
     private function lock(string $ident)
     {

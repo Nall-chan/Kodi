@@ -131,7 +131,7 @@ class KodiDeviceApplication extends KodiBase
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -163,10 +163,10 @@ class KodiDeviceApplication extends KodiBase
      * IPS-Instanz-Funktion 'KODIAPP_SetMute'. De-/Aktiviert die Stummschaltung
      *
      * @access public
-     * @param boolean $Value True für Stummschaltung aktiv, False bei inaktiv.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param bool $Value True für Stummschaltung aktiv, False bei inaktiv.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function SetMute(boolean $Value)
+    public function SetMute(bool $Value)
     {
         if (!is_bool($Value))
         {
@@ -186,10 +186,10 @@ class KodiDeviceApplication extends KodiBase
      * IPS-Instanz-Funktion 'KODIAPP_SetVolume'. Setzen der Lautstärke
      *
      * @access public
-     * @param integer $Value Neue Lautstärke
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @param int $Value Neue Lautstärke
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function SetVolume(integer $Value)
+    public function SetVolume(int $Value)
     {
         if (!is_int($Value))
         {
@@ -209,7 +209,7 @@ class KodiDeviceApplication extends KodiBase
      * IPS-Instanz-Funktion 'KODIAPP_Quit'. Beendet die Kodi-Anwendung
      *
      * @access public
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Quit()
     {
@@ -226,7 +226,7 @@ class KodiDeviceApplication extends KodiBase
      *
      * @access public
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
-     * @return boolean true bei erfolgreicher Ausführung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function RequestState(string $Ident)
     {

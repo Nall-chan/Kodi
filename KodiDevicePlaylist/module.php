@@ -23,7 +23,7 @@ class KodiDevicePlaylist extends KodiBase
      * PlaylistID für Audio
      * 
      * @access private
-     * @static integer
+     * @static int
      * @value 0
      */
     const Audio = 0;
@@ -32,7 +32,7 @@ class KodiDevicePlaylist extends KodiBase
      * PlaylistID für Video
      * 
      * @access private
-     * @static integer
+     * @static int
      * @value 1
      */
     const Video = 1;
@@ -41,7 +41,7 @@ class KodiDevicePlaylist extends KodiBase
      * PlaylistID für Bilder
      * 
      * @access private
-     * @static integer
+     * @static int
      * @value 2
      */
     const Pictures = 2;
@@ -188,7 +188,7 @@ class KodiDevicePlaylist extends KodiBase
      * Eigene PlaylistId
      * 
      * @access private
-     *  @var integer Kodi-Playlist-ID dieser Instanz 
+     *  @var int Kodi-Playlist-ID dieser Instanz 
      */
     private $PlaylistId = null;
 
@@ -283,7 +283,7 @@ if (isset($_GET["Index"]))
      * 
      * @access protected
      * @param array $Params Enthält den Index "properties", in welchen alle anzufragenden Eigenschaften als Array enthalten sind.
-     * @return boolean true bei erfolgreicher Ausführung und dekodierung, sonst false.
+     * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
      */
 //    protected function RequestProperties(array $Params)
 //    {
@@ -693,7 +693,7 @@ echo serialize($Config);
      * 
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
-     * @param boolean|float|integer|string $Value Der angeforderte neue Wert.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
@@ -742,7 +742,7 @@ echo serialize($Config);
      * @param string $ItemTyp Der Typ des Item.
      * @param string $ItemValue Der Wert des Item.
      * @param array $Ext Array welches mit übergeben werden soll (optional).
-     * @return boolean True bei Erfolg. Sonst false.
+     * @return bool True bei Erfolg. Sonst false.
      */
     private function Add(string $ItemTyp, string $ItemValue, $Ext = array())
     {
@@ -764,10 +764,10 @@ echo serialize($Config);
      * Fügt der Playlist ein Album hinzu.
      * 
      * @access public
-     * @param integer $AlbumId ID des Album.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $AlbumId ID des Album.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function AddAlbum(integer $AlbumId)
+    public function AddAlbum(int $AlbumId)
     {
         if (!is_int($AlbumId))
         {
@@ -782,14 +782,14 @@ echo serialize($Config);
      * Fügt der Playlist alle Itemes eines Artist hinzu.
      * 
      * @access public
-     * @param integer $ArtistId ID des Artist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $ArtistId ID des Artist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function AddArtist(integer $ArtistId)
+    public function AddArtist(int $ArtistId)
     {
         if (!is_int($ArtistId))
         {
-            trigger_error('ArtistId must be integer', E_USER_NOTICE);
+            trigger_error('ArtistId must be int', E_USER_NOTICE);
             return false;
         }
         return $this->Add("artistid", $ArtistId);
@@ -801,7 +801,7 @@ echo serialize($Config);
      * 
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
     public function AddDirectory(string $Directory)
     {
@@ -819,7 +819,7 @@ echo serialize($Config);
      * 
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
     public function AddDirectoryRecursive(string $Directory)
     {
@@ -836,10 +836,10 @@ echo serialize($Config);
      * Fügt der Playlist eine Episode hinzu.
      * 
      * @access public
-     * @param integer $EpisodeId ID der Episode.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $EpisodeId ID der Episode.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function AddEpisode(integer $EpisodeId)
+    public function AddEpisode(int $EpisodeId)
     {
         if (!is_int($EpisodeId))
         {
@@ -855,7 +855,7 @@ echo serialize($Config);
      * 
      * @access public
      * @param string $File Pfad zu einer Datei.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
     public function AddFile(string $File)
     {
@@ -872,10 +872,10 @@ echo serialize($Config);
      * Fügt der Playlist eine komplettes Genre hinzu.
      * 
      * @access public
-     * @param integer $GenreId ID des Genres.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE. 
+     * @param int $GenreId ID des Genres.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE. 
      */
-    public function AddGenre(integer $GenreId)
+    public function AddGenre(int $GenreId)
     {
         if (!is_int($GenreId))
         {
@@ -890,14 +890,14 @@ echo serialize($Config);
      * Fügt der Playlist ein Film hinzu.
      * 
      * @access public
-     * @param integer $MovieId ID des Filmes.
-     * @return boolean True bei Erfolg. Sonst false.
+     * @param int $MovieId ID des Filmes.
+     * @return bool True bei Erfolg. Sonst false.
      */
-    public function AddMovie(integer $MovieId)
+    public function AddMovie(int $MovieId)
     {
         if (!is_int($MovieId))
         {
-            trigger_error('MovieId must be integer', E_USER_NOTICE);
+            trigger_error('MovieId must be int', E_USER_NOTICE);
             return false;
         }
         return $this->Add("movieid", $MovieId);
@@ -908,14 +908,14 @@ echo serialize($Config);
      * Fügt der Playlist ein Musicvideo hinzu.
      * 
      * @access public
-     * @param integer $MusicvideoId ID des Musicvideos.
-     * @return boolean True bei Erfolg. Sonst false.
+     * @param int $MusicvideoId ID des Musicvideos.
+     * @return bool True bei Erfolg. Sonst false.
      */
-    public function AddMusicVideo(integer $MusicvideoId)
+    public function AddMusicVideo(int $MusicvideoId)
     {
         if (!is_int($MusicvideoId))
         {
-            trigger_error('MusicvideoId must be integer', E_USER_NOTICE);
+            trigger_error('MusicvideoId must be int', E_USER_NOTICE);
             return false;
         }
         return $this->Add("musicvideoid", $MusicvideoId);
@@ -926,10 +926,10 @@ echo serialize($Config);
      * Fügt der Playlist ein Song hinzu.
      * 
      * @access public
-     * @param integer $SongId ID des Songs.
-     * @return boolean True bei Erfolg. Sonst false.
+     * @param int $SongId ID des Songs.
+     * @return bool True bei Erfolg. Sonst false.
      */
-    public function AddSong(integer $SongId)
+    public function AddSong(int $SongId)
     {
         if (!is_int($SongId))
         {
@@ -944,7 +944,7 @@ echo serialize($Config);
      * Leert die Playlist
      * 
      * @access public
-     * @return boolean True bei Erfolg. Sonst false.
+     * @return bool True bei Erfolg. Sonst false.
      */
     public function Clear()
     {
@@ -965,13 +965,13 @@ echo serialize($Config);
      * Fügt der Playlist ein Item, an einer bestimmten Position, hinzu.
      * 
      * @access private
-     * @param integer $Position Position des Item in der Playlist.
+     * @param int $Position Position des Item in der Playlist.
      * @param string $ItemTyp Der Typ des Item.
      * @param string $ItemValue Der Wert des Item.
      * @param array $Ext Array welches mit übergeben werden soll (optional).
-     * @return boolean True bei Erfolg. Sonst false.
+     * @return bool True bei Erfolg. Sonst false.
      */
-    private function Insert(integer $Position, string $ItemTyp, string $ItemValue, $Ext = array())
+    private function Insert(int $Position, string $ItemTyp, string $ItemValue, $Ext = array())
     {
         if (!is_int($Position))
         {
@@ -995,11 +995,11 @@ echo serialize($Config);
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
      * @access public
-     * @param integer $AlbumId ID des Album.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $AlbumId ID des Album.
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertAlbum(integer $AlbumId, integer $Position)
+    public function InsertAlbum(int $AlbumId, int $Position)
     {
         if (!is_int($AlbumId))
         {
@@ -1015,11 +1015,11 @@ echo serialize($Config);
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
      * @access public
-     * @param integer $ArtistId ID des Artist.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $ArtistId ID des Artist.
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertArtist(integer $ArtistId, integer $Position)
+    public function InsertArtist(int $ArtistId, int $Position)
     {
         if (!is_int($ArtistId))
         {
@@ -1036,10 +1036,10 @@ echo serialize($Config);
      * 
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertDirectory(string $Directory, integer $Position)
+    public function InsertDirectory(string $Directory, int $Position)
     {
         if (!is_string($Directory))
         {
@@ -1056,10 +1056,10 @@ echo serialize($Config);
      * 
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertDirectoryRecursive(string $Directory, integer $Position)
+    public function InsertDirectoryRecursive(string $Directory, int $Position)
     {
         if (!is_string($Directory))
         {
@@ -1075,15 +1075,15 @@ echo serialize($Config);
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
      * @access public
-     * @param integer $EpisodeId ID der Episode.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $EpisodeId ID der Episode.
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertEpisode(integer $EpisodeId, integer $Position)
+    public function InsertEpisode(int $EpisodeId, int $Position)
     {
         if (!is_int($EpisodeId))
         {
-            trigger_error('EpisodeId must be integer', E_USER_NOTICE);
+            trigger_error('EpisodeId must be int', E_USER_NOTICE);
             return false;
         }
         return $this->Insert($Position, "episodeid", $EpisodeId);
@@ -1096,10 +1096,10 @@ echo serialize($Config);
      * 
      * @access public
      * @param string $File Pfad zu einer Datei.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertFile(string $File, integer $Position)
+    public function InsertFile(string $File, int $Position)
     {
         if (!is_string($File))
         {
@@ -1115,11 +1115,11 @@ echo serialize($Config);
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
      * @access public
-     * @param integer $GenreId ID des Genres welches hinzugefügt werden soll.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $GenreId ID des Genres welches hinzugefügt werden soll.
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertGenre(integer $GenreId, integer $Position)
+    public function InsertGenre(int $GenreId, int $Position)
     {
         if (!is_int($GenreId))
         {
@@ -1135,11 +1135,11 @@ echo serialize($Config);
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
      * @access public
-     * @param integer $MovieId ID des Filmes.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $MovieId ID des Filmes.
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertMovie(integer $MovieId, integer $Position)
+    public function InsertMovie(int $MovieId, int $Position)
     {
         if (!is_int($MovieId))
         {
@@ -1155,11 +1155,11 @@ echo serialize($Config);
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
      * @access public
-     * @param integer $MusicvideoId ID des Musicvideos.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $MusicvideoId ID des Musicvideos.
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertMusicVideo(integer $MusicvideoId, integer $Position)
+    public function InsertMusicVideo(int $MusicvideoId, int $Position)
     {
         if (!is_int($MusicvideoId))
         {
@@ -1175,11 +1175,11 @@ echo serialize($Config);
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      * 
      * @access public
-     * @param integer $SongId ID des Songs.
-     * @param integer $Position Startposition des Album in der Playlist.
-     * @return boolean TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @param int $SongId ID des Songs.
+     * @param int $Position Startposition des Album in der Playlist.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function InsertSong(integer $SongId, integer $Position)
+    public function InsertSong(int $SongId, int $Position)
     {
         if (!is_int($SongId))
         {
@@ -1195,10 +1195,10 @@ echo serialize($Config);
      * Alle anderen Einträge werden automatisch nach vorne verschoben.
      * 
      * @access public
-     * @param integer $Position Eintrag welcher entfernt wird.
-     * @return boolean True bei Erfolg. Sonst false.
+     * @param int $Position Eintrag welcher entfernt wird.
+     * @return bool True bei Erfolg. Sonst false.
      */
-    public function Remove(integer $Position)
+    public function Remove(int $Position)
     {
         if (!is_int($Position))
         {
@@ -1221,10 +1221,10 @@ echo serialize($Config);
      * Tauscht zwei Einträge innerhalb der Playlist.
      * 
      * @access public
-     * @param integer $Position1 | $Position2 Positionen der Einträge welche untereinander getsucht werden.
-     * @return boolean True bei Erfolg. Sonst false.
+     * @param int $Position1 | $Position2 Positionen der Einträge welche untereinander getsucht werden.
+     * @return bool True bei Erfolg. Sonst false.
      */
-    public function Swap(integer $Position1, integer $Position2)
+    public function Swap(int $Position1, int $Position2)
     {
         if (!is_int($Position1))
         {
