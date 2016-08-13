@@ -44,7 +44,7 @@ class KodiDevicePlayer extends KodiBase
      * @static integer
      * @value 2
      */
-    const Pictures = 2;
+    const Picture = 2;
 
     /**
      * RPC-Namespace
@@ -240,6 +240,7 @@ class KodiDevicePlayer extends KodiBase
         "video" => 1,
         "episode" => 1,
         "movie" => 1,
+        "picture" => 2,
         "pictures" => 2
     );
 
@@ -291,13 +292,13 @@ class KodiDevicePlayer extends KodiBase
         ));
 
         $this->RegisterProfileInteger("Intensity.Kodi", "Intensity", "", " %", 0, 100, 1);
-                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
-                    Array(0, "Prev", "", -1),
-                    Array(1, "Stop", "", -1),
-                    Array(2, "Play", "", -1),
-                    Array(3, "Pause", "", -1),
-                    Array(4, "Next", "", -1)
-                ));
+        $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
+            Array(0, "Prev", "", -1),
+            Array(1, "Stop", "", -1),
+            Array(2, "Play", "", -1),
+            Array(3, "Pause", "", -1),
+            Array(4, "Next", "", -1)
+        ));
         switch ($this->PlayerId)
         {
             case self::Audio:
@@ -350,9 +351,9 @@ class KodiDevicePlayer extends KodiBase
                 ));
                 $this->RegisterVariableInteger("subtitle", "Aktiver Untertitel", "Subtitels." . $this->InstanceID . ".Kodi", 41);
                 break;
-            case self::Pictures:
+            case self::Picture:
 
-                                $this->UnregisterVariable("showtitle");
+                $this->UnregisterVariable("showtitle");
                 $this->UnregisterVariable("season");
                 $this->UnregisterVariable("episode");
                 $this->UnregisterVariable("plot");
@@ -360,13 +361,13 @@ class KodiDevicePlayer extends KodiBase
                 $this->UnregisterVariable("subtitle");
                 $this->UnregisterProfile("AudioStream." . $this->InstanceID . ".Kodi");
                 $this->UnregisterProfile("Subtitels." . $this->InstanceID . ".Kodi");
-                
-                                $this->UnregisterVariable("album");
+
+                $this->UnregisterVariable("album");
                 $this->UnregisterVariable("track");
                 $this->UnregisterVariable("disc");
                 $this->UnregisterVariable("artist");
                 $this->UnregisterVariable("lyrics");
-                
+
 //                $this->UnregisterVariable("position");                
 //                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
 //                    Array(0, "Prev", "", -1),
@@ -433,8 +434,8 @@ class KodiDevicePlayer extends KodiBase
         $this->Init();
         $KodiData = new Kodi_RPC_Data(static::$Namespace);
         $KodiData->GetActivePlayers();
-        $ret = @$this->SendDirect($KodiData);    
-       
+        $ret = @$this->SendDirect($KodiData);
+
         if (is_null($ret) or ( count($ret) == 0))
             $this->isActive = false;
         else
@@ -1545,18 +1546,18 @@ class KodiDevicePlayer extends KodiBase
             return false;
         }
         if ($Value == 1)
-            return $this->Play ();
+            return $this->Play();
         if ($Value == 0)
-            return $this->Pause ();
+            return $this->Pause();
         $this->Init();
-        
+
         if (!$this->isActive)
         {
             trigger_error('Player not active', E_USER_NOTICE);
             return false;
         }
 
-        if (!in_array($Value, array(-32, -16, -8, -4, -2,-1, 0, 1, 2, 4, 8, 16, 32)))
+        if (!in_array($Value, array(-32, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 32)))
         {
             trigger_error('Invalid Value for speed.', E_USER_NOTICE);
             return false;

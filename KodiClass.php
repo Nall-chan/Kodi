@@ -179,6 +179,11 @@ abstract class KodiBase extends IPSModule
      */
     static $Properties;
 
+    public function __construct($InstanceID)
+    {
+        parent::__construct($InstanceID);
+    }
+
     /**
      * Interne Funktion des SDK.
      *
@@ -217,6 +222,7 @@ abstract class KodiBase extends IPSModule
     {
         if (count($Params["properties"]) == 0)
             return true;
+        $this->SendDebug('RequestProperties', implode(',' , $Params["properties"]), 0);
         $KodiData = new Kodi_RPC_Data(static::$Namespace, 'GetProperties', $Params);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
@@ -297,13 +303,14 @@ abstract class KodiBase extends IPSModule
      */
     public function ReceiveData($JSONString)
     {
+        $this->SendDebug('ReceiveData', $JSONString, 0);
+
         $Data = json_decode($JSONString);
         if ($Data->DataID <> '{73249F91-710A-4D24-B1F1-A72F216C2BDC}')
             return false;
 
         $KodiData = new Kodi_RPC_Data();
         $KodiData->CreateFromGenericObject($Data);
-
         if ($KodiData->Typ <> Kodi_RPC_Data::$EventTyp)
             return false;
 
@@ -321,8 +328,8 @@ abstract class KodiBase extends IPSModule
         {
             if ($KodiData->Namespace == static::$Namespace)
             {
-  //              if ($KodiData->Method <> "Power")
-    //                $this->SendDebug($KodiData->Method, $Event, 0);
+                //              if ($KodiData->Method <> "Power")
+                //                $this->SendDebug($KodiData->Method, $Event, 0);
                 $this->Decode($KodiData->Method, $Event);
                 return true;
             }
@@ -341,6 +348,7 @@ abstract class KodiBase extends IPSModule
     {
         $JSONData = $KodiData->ToJSONString('{0222A902-A6FA-4E94-94D3-D54AA4666321}');
         $anwser = $this->SendDataToParent($JSONData);
+        $this->SendDebug('JSONString', $JSONData, 0);
         if ($anwser === false)
             return NULL;
         $result = unserialize($anwser);
@@ -388,7 +396,7 @@ abstract class KodiBase extends IPSModule
 
             if ($result === false)
             {
-                IPS_SetInstanceStatus($instance['ConnectionID'],IS_EBASE+3);
+                IPS_SetInstanceStatus($instance['ConnectionID'], IS_EBASE + 3);
                 throw new Exception('Kodi unreachable', E_USER_NOTICE);
             }
             $this->SendDebug("receive", $result, 0);
@@ -428,7 +436,7 @@ abstract class KodiBase extends IPSModule
             return;
         if (!IPS_ScriptExists($sid))
             return; //bail out
-        IPS_DeleteScript($sid);
+        IPS_DeleteScript($sid,true);
     }
 
     /**
@@ -1069,9 +1077,9 @@ class Kodi_RPC_Data extends stdClass
         {
             $this->Id = $Data->Id;
             $this->Typ = Kodi_RPC_Data::$ResultTyp;
-        } else
-          $this->Typ = Kodi_RPC_Data::$EventTyp;
-            
+        }
+        else
+            $this->Typ = Kodi_RPC_Data::$EventTyp;
     }
 
     /**

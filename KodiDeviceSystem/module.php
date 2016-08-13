@@ -112,7 +112,7 @@ class KodiDeviceSystem extends KodiBase
         $Address = str_replace('-', '', $Address);
         $Address = str_replace(':', '', $Address);
         if (strlen($Address) == 12)
-            return '"'.strtoupper($Address) . '"';
+            return '"' . strtoupper($Address) . '"';
         return '"00AABB112233" /* Platzhalter für richtige Adresse */';
     }
 
@@ -198,7 +198,7 @@ function wake($ip, $mac)
      */
     protected function Decode($Method, $KodiPayload)
     {
-        
+
         switch ($Method)
         {
             case 'GetProperties':
@@ -435,7 +435,6 @@ function wake($ip, $mac)
     {
         return parent::RequestState($Ident);
     }
-
 
 }
 

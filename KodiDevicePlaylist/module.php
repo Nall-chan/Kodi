@@ -261,7 +261,7 @@ if (isset($_GET["Index"]))
 //        }
         parent::ApplyChanges();
 
-        $this->RequestState('ALL');
+        //$this->RequestState('ALL');
     }
 
 ################## PRIVATE     
