@@ -46,6 +46,51 @@ class KodiSplitter extends IPSModule
         $this->RegisterPropertyInteger("Interval", 5);
     }
 
+    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+        switch ($Message)
+        {
+            case IPS_KERNELMESSAGE:
+                if ($Data[0] == KR_READY)
+                {
+                    try
+                    {
+                        $this->KernelReady();
+                    }
+                    catch (Exception $exc)
+                    {
+                        return;
+                    }
+                }
+                break;
+            case DM_CONNECT:
+            case DM_DISCONNECT:
+                $this->ForceRefresh();
+                break;
+            case IM_CHANGESTATUS:
+                if (($SenderID == @IPS_GetInstance($this->InstanceID)['ConnectionID']) and ( $Data[0] == IS_ACTIVE))
+                    try
+                    {
+                        $this->ForceRefresh();
+                    }
+                    catch (Exception $exc)
+                    {
+                        return;
+                    }
+                break;
+        }
+    }
+
+    protected function KernelReady()
+    {
+        $this->ApplyChanges();
+    }
+
+    protected function ForceRefresh()
+    {
+        $this->ApplyChanges();
+    }
+
     /**
      * Interne Funktion des SDK.
      * 
@@ -53,8 +98,20 @@ class KodiSplitter extends IPSModule
      */
     public function ApplyChanges()
     {
+
+        IPS_LogMessage('KODISplitter_Applychanges', print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true));
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+        $this->RegisterMessage($this->InstanceID, DM_CONNECT);
+        $this->RegisterMessage($this->InstanceID, DM_DISCONNECT);
+        // Wenn Kernel nicht bereit, dann warten... DM_CONNECT oder IPS_KERNELMESSAGE kommt ja gleich
+
+        if (IPS_GetKernelRunlevel() <> KR_READY)
+            return;
+
         parent::ApplyChanges();
-        // Zwangskonfiguration des ClientSocket
+        // Kurzinfo setzen
+        $this->SetSummary($this->ReadPropertyString('Host'));
+        // Config prüfen
         $Open = $this->ReadPropertyBoolean('Open');
         $NewState = IS_ACTIVE;
         if (!$Open)
@@ -89,8 +146,12 @@ class KodiSplitter extends IPSModule
         }
         $ParentID = $this->GetParent();
 
+        // Zwangskonfiguration des ClientSocket
         if ($ParentID > 0)
         {
+            // Dup Applychange vermeiden
+            $this->UnregisterMessage($ParentID, IM_CHANGESTATUS);
+
             //IPS_LogMessage('Kodi', '7');
 
             if (IPS_GetProperty($ParentID, 'Host') <> $this->ReadPropertyString('Host'))
@@ -124,7 +185,7 @@ class KodiSplitter extends IPSModule
             }
         }
         // Eigene Profile
-          $this->UnregisterVariable("BufferIN");
+        $this->UnregisterVariable("BufferIN");
 //        $BufferINID = $this->RegisterVariableString("BufferIN", "BufferIN", "", -1);
 //        IPS_SetHidden($BufferINID, true);
 //        SetValueString($BufferINID, "");
@@ -144,56 +205,47 @@ class KodiSplitter extends IPSModule
 
         if ($Open)
         {
-            switch (IPS_GetKernelRunlevel())
+            if ($this->HasActiveParent($ParentID))
             {
-                case KR_READY:
-                    if ($this->HasActiveParent($ParentID))
-                    {
-                        $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
-                        $ret = $this->Send($KodiData);
-                        if ($ret == "pong")
-                        {
-                            $this->SendPowerEvent(true);
-                            $WatchdogTimer = 0;
-                            $this->SetTimerInterval("KeepAlive", 60 * 1000);
+                $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
+                $ret = $this->Send($KodiData);
+                if ($ret == "pong")
+                {
+                    $this->SendPowerEvent(true);
+                    $WatchdogTimer = 0;
+                    $this->SetTimerInterval("KeepAlive", 60 * 1000);
 
-                            $InstanceIDs = IPS_GetInstanceList();
-                            foreach ($InstanceIDs as $IID)
-                                if (IPS_GetInstance($IID)['ConnectionID'] == $this->InstanceID)
-                                    @IPS_ApplyChanges($IID);
-                        }
-                        else
-                        {
-                            if (IPS_GetProperty($ParentID, 'Open'))
-                            {
-                                IPS_SetProperty($ParentID, 'Open', false);
-                                @IPS_ApplyChanges($ParentID);
-                            }
-                            $this->SendPowerEvent(false);
-                            $WatchdogTimer = $this->ReadPropertyInteger('Interval');
-                            $this->SetTimerInterval("KeepAlive", 0);
-                            $NewState = IS_EBASE + 3;
-                            trigger_error('No answer', E_USER_NOTICE);
-                        }
-                    }
-                    else
+                    $InstanceIDs = IPS_GetInstanceList();
+                    foreach ($InstanceIDs as $IID)
+                        if (IPS_GetInstance($IID)['ConnectionID'] == $this->InstanceID)
+                            @IPS_ApplyChanges($IID);
+                }
+                else
+                {
+                    if (IPS_GetProperty($ParentID, 'Open'))
                     {
-                        if (IPS_GetProperty($ParentID, 'Open'))
-                        {
-                            IPS_SetProperty($ParentID, 'Open', false);
-                            @IPS_ApplyChanges($ParentID);
-                        }
-                        $this->SendPowerEvent(false);
-                        $WatchdogTimer = $this->ReadPropertyInteger('Interval');
-                        $this->SetTimerInterval("KeepAlive", 0);
-                        $NewState = IS_EBASE + 3;
-                        trigger_error('could not connect', E_USER_NOTICE);
+                        IPS_SetProperty($ParentID, 'Open', false);
+                        @IPS_ApplyChanges($ParentID);
                     }
-                    break;
-                case KR_INIT:
-                    if ($NewState == IS_ACTIVE)
-                        $NewState = IS_EBASE + 3;
-                    break;
+                    $this->SendPowerEvent(false);
+                    $WatchdogTimer = $this->ReadPropertyInteger('Interval');
+                    $this->SetTimerInterval("KeepAlive", 0);
+                    $NewState = IS_EBASE + 3;
+                    trigger_error('No answer', E_USER_NOTICE);
+                }
+            }
+            else
+            {
+                if (IPS_GetProperty($ParentID, 'Open'))
+                {
+                    IPS_SetProperty($ParentID, 'Open', false);
+                    @IPS_ApplyChanges($ParentID);
+                }
+                $this->SendPowerEvent(false);
+                $WatchdogTimer = $this->ReadPropertyInteger('Interval');
+                $this->SetTimerInterval("KeepAlive", 0);
+                $NewState = IS_EBASE + 3;
+                trigger_error('could not connect', E_USER_NOTICE);
             }
         }
         else
@@ -201,6 +253,9 @@ class KodiSplitter extends IPSModule
             $this->SendPowerEvent(false);
             $this->SetTimerInterval("KeepAlive", 0);
         }
+
+        $this->GetParentData();
+
         $this->SetStatus($NewState);
 
         if ($this->ReadPropertyBoolean('Watchdog'))
@@ -238,6 +293,27 @@ class KodiSplitter extends IPSModule
     {
 //        IPS_LogMessage('KODI_Event:' . $Method, print_r($Event, true));
         $this->SendDebug('KODI_Event', $Event, 0);
+    }
+
+    /**
+     * Ermittelt den Parent und verwaltet die Einträge des Parent im MessageSink
+     * Ermöglicht es das Statusänderungen des Parent empfangen werden können.
+     * 
+     * @access private
+     */
+    private function GetParentData()
+    {
+        $OldParentId = $this->GetBuffer('Parent');
+        $ParentId = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if ($OldParentId > 0)
+            $this->UnregisterMessage($OldParentId, IM_CHANGESTATUS);
+        if ($ParentId > 0)
+        {
+            $this->RegisterMessage($ParentId, IM_CHANGESTATUS);
+            $this->SetBuffer('Parent', $ParentId);
+        }
+        else
+            $this->SetBuffer('Parent', 0);
     }
 
 ################## PUBLIC
@@ -400,10 +476,10 @@ class KodiSplitter extends IPSModule
         if (!$this->lock('ReplyJSONData'))
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
 //        $data = unserialize(GetValueString($ReplyJSONDataID));
-        $data = unserialize($this->GetBuffer('ReplyJSONData'));        
+        $data = unserialize($this->GetBuffer('ReplyJSONData'));
         $data[$Id] = "";
 //        SetValueString($ReplyJSONDataID, serialize($data));
-        $this->SetBuffer('ReplyJSONData', serialize($data));        
+        $this->SetBuffer('ReplyJSONData', serialize($data));
         $this->unlock('ReplyJSONData');
     }
 
@@ -413,10 +489,10 @@ class KodiSplitter extends IPSModule
         if (!$this->lock('ReplyJSONData'))
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
 //        $data = unserialize(GetValueString($ReplyJSONDataID));
-        $data = unserialize($this->GetBuffer('ReplyJSONData'));        
+        $data = unserialize($this->GetBuffer('ReplyJSONData'));
         $data[$Id] = $KodiData->ToJSONString("");
 //        SetValueString($ReplyJSONDataID, serialize($data));
-        $this->SetBuffer('ReplyJSONData', serialize($data));        
+        $this->SetBuffer('ReplyJSONData', serialize($data));
         $this->unlock('ReplyJSONData');
     }
 
@@ -424,7 +500,7 @@ class KodiSplitter extends IPSModule
     {
 //        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
 //        $data = unserialize(GetValueString($ReplyJSONDataID));
-        $data = unserialize($this->GetBuffer('ReplyJSONData'));        
+        $data = unserialize($this->GetBuffer('ReplyJSONData'));
         $Result = new Kodi_RPC_Data();
         $JSONObject = json_decode($data[$Id]);
         $Result->CreateFromGenericObject($JSONObject);
@@ -438,10 +514,10 @@ class KodiSplitter extends IPSModule
         if (!$this->lock('ReplyJSONData'))
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
 //        $data = unserialize(GetValueString($ReplyJSONDataID));
-        $data = unserialize($this->GetBuffer('ReplyJSONData'));        
+        $data = unserialize($this->GetBuffer('ReplyJSONData'));
         unset($data[$Id]);
 //        SetValueString($ReplyJSONDataID, serialize($data));
-        $this->SetBuffer('ReplyJSONData', serialize($data));        
+        $this->SetBuffer('ReplyJSONData', serialize($data));
         $this->unlock('ReplyJSONData');
     }
 
@@ -458,7 +534,6 @@ class KodiSplitter extends IPSModule
     {
         $data = json_decode($JSONString);
 //        $bufferID = $this->GetIDForIdent("BufferIN");
-
         // Empfangs Lock setzen
         if (!$this->lock("bufferin"))
         {
@@ -470,7 +545,7 @@ class KodiSplitter extends IPSModule
 //        $head = GetValueString($bufferID);
         $head = $this->GetBuffer('BufferIN');
 //        SetValueString($bufferID, '');
-        $this->SetBuffer('BufferIN','');
+        $this->SetBuffer('BufferIN', '');
         //IPS_LogMessage('Buffer', print_r($data, true));
         $Data = $head . utf8_decode($data->Buffer);
 
@@ -486,9 +561,8 @@ class KodiSplitter extends IPSModule
             $this->SetBuffer('BufferIN', $tail);
         }
         else
-            $this->SetBuffer('BufferIN', '');            
-            //SetValueString($bufferID, '');
-
+            $this->SetBuffer('BufferIN', '');
+        //SetValueString($bufferID, '');
         // Empfangs Lock aufheben
         $this->unlock("bufferin");
 
@@ -595,13 +669,13 @@ class KodiSplitter extends IPSModule
 //        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
         for ($i = 0; $i < 1000; $i++)
         {
-  //          if (GetValueString($ReplyJSONDataID) === 'a:0:{}') // wenn wenig los, gleich warten
-          if ($this->GetBuffer('ReplyJSONData') === 'a:0:{}') // wenn wenig los, gleich warten            
+            //          if (GetValueString($ReplyJSONDataID) === 'a:0:{}') // wenn wenig los, gleich warten
+            if ($this->GetBuffer('ReplyJSONData') === 'a:0:{}') // wenn wenig los, gleich warten            
                 IPS_Sleep(5);
             else
             {
 //                $ret = unserialize(GetValueString($ReplyJSONDataID));
-                $ret = unserialize($this->GetBuffer('ReplyJSONData'));                
+                $ret = unserialize($this->GetBuffer('ReplyJSONData'));
                 if (!array_key_exists(intval($Id), $ret))
                     return false;
                 if ($ret[$Id] <> "")
