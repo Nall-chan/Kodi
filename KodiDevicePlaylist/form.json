@@ -3,7 +3,7 @@
             [{
                     "name": "PlaylistID",
                     "type": "Select",
-                    "caption": "Playlist:",
+                    "caption": "Playlist for player:",
                     "options": [
                         {
                             "label": "Audio",
@@ -14,7 +14,7 @@
                             "value": 1
                         },
                         {
-                            "label": "Bilder",
+                            "label": "Pictures",
                             "value": 2
                         }
                     ]
@@ -22,12 +22,16 @@
                 {
                     "name": "showPlaylist",
                     "type": "CheckBox",
-                    "caption": "Playlist als HTML-Box anzeigen"
-                }, 
+                    "caption": "Show playlist as HTML-Box"
+                },
+                {
+                    "type": "Label",
+                    "label": "Script for HTML-Box Desgin:"
+                },
                 {
                     "name": "Playlistconfig",
                     "type": "SelectScript",
-                    "caption": "Playlist Config"
+                    "caption": "Script:"
                 }
             ]
 

@@ -1,0 +1,12 @@
+{
+    "translations": {
+        "de": {
+            "Show Variable DB scanning": "Status-Variable Datenbankscan anlegen",
+            "Show Action-Variable for DB scan": "Aktions-Variable für Starten des Scan anlegen",
+            "Show Variable DB cleaning": "Status-Variable Datenbankbereinigung anlegen",
+            "Show Action-Variable for DB clean": "Aktions-Variable für Bereinigung anlegen",
+            "Scan": "Scannen",
+            "Clean": "Bereinigen"
+        }
+    }
+}

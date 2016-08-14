@@ -1,6 +1,10 @@
 {
     "elements":
             [{
+                    "type": "Label",
+                    "label": "Change off Player affected Status-Variables!"
+                },
+                {
                     "name": "PlayerID",
                     "type": "Select",
                     "caption": "Player:",
@@ -14,7 +18,7 @@
                             "value": 1
                         },
                         {
-                            "label": "Bilder",
+                            "label": "Pictures",
                             "value": 2
                         }
                     ]
@@ -22,7 +26,7 @@
                 {
                     "name": "CoverSize",
                     "type": "NumberSpinner",
-                    "caption": "Höhe Cover"
+                    "caption": "Cover height"
                 },
                 {
                     "name": "CoverTyp",
@@ -30,19 +34,19 @@
                     "caption": "Cover:",
                     "options": [
                         {
-                            "label": "Thumbnail (alle)",
+                            "label": "thumbnail (all)",
                             "value": "thumb"
                         },
                         {
-                            "label": "Artist vor Thumbnail (Audio)",
+                            "label": "artist for thumbnail (audio)",
                             "value": "artist"
                         },
                         {
-                            "label": "Poster vor Banner (Video)",
+                            "label": "poster for banner (video)",
                             "value": "poster"
                         },
                         {
-                            "label": "Banner vor Poster (Video)",
+                            "label": "banner for poster (video)",
                             "value": "banner"
                         }
                     ]
@@ -52,7 +56,7 @@
             [
                 {
                     "type": "Button",
-                    "label": "Request State",
+                    "label": "Request all states",
                     "onClick": "KODIPLAYER_RequestState($id,'ALL');"
                 }
             ]

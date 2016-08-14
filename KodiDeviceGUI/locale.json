@@ -1,0 +1,14 @@
+{
+    "translations": {
+        "de": {
+            "Show variable for current Window": "Variable für aktuelles Fenster anlegen",
+            "Show variable for current control": "Variable für aktuelles Control anlegen",
+            "Show variable for current skin": "Variable für aktuellen Skin anlegen",
+            "Show variable for fullscreen mode": "Variable für Vollbildmodus anlegen",
+            "Show variable for screensaver": "Variable für Bildschirmschoner anlegen",
+            "Fullscreen on": "Vollbild an",
+            "Fullscreen off": "Vollbild aus",
+            "Request all states": "Status lesen"
+        }
+    }
+}

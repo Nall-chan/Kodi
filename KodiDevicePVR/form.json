@@ -3,45 +3,45 @@
             [{
                     "name": "showIsAvailable",
                     "type": "CheckBox",
-                    "caption": "Status-Variable PVR-Verfügbarkeit anzeigen"
+                    "caption": "Show Variable PVR avaiable"
                 }, {
                     "name": "showIsRecording",
                     "type": "CheckBox",
-                    "caption": "Status-Variable Aufzeichnung aktiv anzeigen"
+                    "caption": "Show Variable for active recording"
                 }, {
                     "name": "showDoRecording",
                     "type": "CheckBox",
-                    "caption": "Aktions-Variable zum steuern einer Aufzeichnung anzeige"
+                    "caption": "Show Action-Variable for control recording"
                 }, {
                     "name": "showIsScanning",
                     "type": "CheckBox",
-                    "caption": "Status-Variable für sktive Kanalsuche anzeigen"
+                    "caption": "Show Variable for searching channels"
                 }, {
                     "name": "showDoScanning",
                     "type": "CheckBox",
-                    "caption": "Aktions-Variable zum starten einer Kanalsuche anzeigen"
+                    "caption": "Show Action-Variable for serach channels"
                 }
             ],
     "actions":
             [
                 {
                     "type": "Button",
-                    "label": "Record on",
+                    "label": "Record start",
                     "onClick": "KODIPVR_Record($id,true,'current');"
                 },
                 {
                     "type": "Button",
-                    "label": "Record off",
+                    "label": "Record stop",
                     "onClick": "KODIPVR_Record($id,false,'current');"
                 },
                 {
                     "type": "Button",
-                    "label": "Channelscan",
+                    "label": "Search channels",
                     "onClick": "KODIPVR_Scan($id);"
                 },
                 {
                     "type": "Button",
-                    "label": "Request State",
+                    "label": "Request all states",
                     "onClick": "KODIPVR_RequestState($id,'ALL');"
                 }
             ]

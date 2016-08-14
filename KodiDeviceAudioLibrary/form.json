@@ -3,19 +3,19 @@
             [{
                     "name": "showScan",
                     "type": "CheckBox",
-                    "caption": "Variable Datenbankscan"
+                    "caption": "Show Variable DB scanning"
                 }, {
                     "name": "showDoScan",
                     "type": "CheckBox",
-                    "caption": "Aktions-Variable für Starten des Scan"
+                    "caption": "Show Action-Variable for DB scan"
                 }, {
                     "name": "showClean",
                     "type": "CheckBox",
-                    "caption": "Variable Datenbankbereinigung"
+                    "caption": "Show Variable DB cleaning"
                 }, {
                     "name": "showDoClean",
                     "type": "CheckBox",
-                    "caption": "Aktions-Variable für Bereinigung"
+                    "caption": "Show Action-Variable for DB clean"
                 }
             ],
     "actions":

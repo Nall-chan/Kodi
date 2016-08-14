@@ -3,38 +3,38 @@
             [{
                     "name": "showCurrentWindow",
                     "type": "CheckBox",
-                    "caption": "Variable für aktuelles Fenster anlegen"
+                    "caption": "Show variable for current Window"
                 }, {
                     "name": "showCurrentControl",
                     "type": "CheckBox",
-                    "caption": "Variable für aktuelles Control anlegen"
+                    "caption": "Show variable for current control"
                 }, {
                     "name": "showSkin",
                     "type": "CheckBox",
-                    "caption": "Variable für aktuellen Skin anlegen"
+                    "caption": "Show variable for current skin"
                 }, {
                     "name": "showFullscreen",
                     "type": "CheckBox",
-                    "caption": "Variable für Vollbildmodus anlegen"
+                    "caption": "Show variable for fullscreen mode"
                 }, {
                     "name": "showScreensaver",
                     "type": "CheckBox",
-                    "caption": "Variable für Bildschirmschoner anlegen"
+                    "caption": "Show variable for screensaver"
                 }
             ],
     "actions":
             [
                 {
                     "type": "Button",
-                    "label": "Vollbild an",
+                    "label": "Fullscreen on",
                     "onClick": "KODIGUI_SetFullscreen($id,true);"
-                },{
+                }, {
                     "type": "Button",
-                    "label": "Vollbild aus",
+                    "label": "Fullscreen off",
                     "onClick": "KODIGUI_SetFullscreen($id,false);"
-                },{
+                }, {
                     "type": "Button",
-                    "label": "Request State",
+                    "label": "Request all states",
                     "onClick": "KODIGUI_RequestState($id,'ALL');"
                 }
             ]

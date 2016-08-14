@@ -1,0 +1,15 @@
+{
+    "translations": {
+        "de": {
+            "Show Variable PVR avaiable": "Status-Variable PVR-Verfügbarkeit anlegen",
+            "Show Variable for active recording": "Status-Variable Aufzeichnung aktiv anlegen",
+            "Show Action-Variable for control recording": "Aktions-Variable zum steuern einer Aufzeichnung anlegen",
+            "Show Variable for searching channels": "Status-Variable für aktive Kanalsuche anlegen",
+            "Show Action-Variable for serach channels": "Aktions-Variable zum starten einer Kanalsuche anlegen",
+            "Record start:": "Aufnahme starten:",
+            "Record stop": "Aufnahme stoppen",
+            "Search channels": "Kanalsuche",
+            "Request all states": "Status lesen"
+        }
+    }
+}

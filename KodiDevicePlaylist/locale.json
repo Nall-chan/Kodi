@@ -1,0 +1,13 @@
+{
+    "translations": {
+        "de": {
+            "Playlist for player:": "Playlist für Player:",
+            "Audio": "Audio",
+            "Video": "Video",
+            "Pictures": "Bilder",
+            "Show playlist as HTML-Box": "Playlist als HTML-Box anlegen",
+            "Script for HTML-Box Desgin:": "Script für HTML-Box Aussehen:",
+            "Script:": "Script:"
+        }
+    }
+}

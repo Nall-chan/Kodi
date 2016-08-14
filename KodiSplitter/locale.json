@@ -1,0 +1,17 @@
+{
+    "translations": {
+        "de": {
+            "Open": "Aktiv",
+            "Host": "Adresse",
+            "JSON-RPC TCP-Port": "JSON-RPC TCP-Port",
+            "Webserver-Port": "Webserver-Port",
+            "Advanced power watchdog": "Erweiterte Power-On Überwachung",
+            "Enabled": "Aktiv",
+            "seconds": "Sekunden",
+            "Kodi found.": "Kodi ereichbar.",
+            "Interface closed.": "Interface geschlossen.",
+            "Host or port is empty.": "Adresse und Port darf nicht leer sein.",
+            "Connection to Kodi lost.":"Verbindung zu Kodi verloren."
+        }
+    }
+}

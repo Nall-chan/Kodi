@@ -3,11 +3,11 @@
             [{
                     "name": "showSVGRemote",
                     "type": "CheckBox",
-                    "caption": "SVG-Remote anzeigen"
+                    "caption": "Show SVG-Remotecontrol"
                 }, {
                     "name": "showNavigationButtons",
                     "type": "CheckBox",
-                    "caption": "Aktions-Variable zum navigieren anzeigen"
+                    "caption": "Show Action-Variable for navigate"
                 }, {
                     "name": "showControlButtons",
                     "type": "CheckBox",
@@ -15,7 +15,7 @@
                 }, {
                     "name": "showInputRequested",
                     "type": "CheckBox",
-                    "caption": "Anzeigen wenn Eingaben nötig sind"
+                    "caption": "Status-Variable für 'Eingabe erwartet'"
                 }
             ],
     "actions":
@@ -46,7 +46,7 @@
                     "onClick": "KODIINPUT_Back($id);"
                 }, {
                     "type": "Button",
-                    "label": "ContextMenu",
+                    "label": "Contextmenu",
                     "onClick": "KODIINPUT_ContextMenu($id);"
                 }
             ]

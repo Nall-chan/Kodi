@@ -3,43 +3,39 @@
             [{
                     "name": "showName",
                     "type": "CheckBox",
-                    "caption": "Variable für Namen anlegen"
+                    "caption": "Show variable for systemname"
                 }, {
                     "name": "showVersion",
                     "type": "CheckBox",
-                    "caption": "Variable für Version anlegen"
+                    "caption": "Show variable for version"
                 }, {
                     "name": "showExit",
                     "type": "CheckBox",
-                    "caption": "Aktions-Variable für beenden anlegen"
+                    "caption": "Show Action-Variable for exit Kodi"
                 }
             ],
     "actions":
             [
                 {
                     "type": "Button",
-                    "label": "Request State",
-                    "onClick": "KODIAPP_RequestState($id,'ALL');"
-                }, {
-                    "type": "Label",
-                    "label": "Mute:"
-                }, {
-                    "type": "Button",
-                    "label": "ON",
+                    "label": "Mute on",
                     "onClick": "KODIAPP_SetMute($id, true);"
                 }, {
                     "type": "Button",
-                    "label": "OFF",
+                    "label": "Mute off",
                     "onClick": "KODIAPP_SetMute($id, false);"
                 }, {
-                    "type": "Label",
-                    "label": "Volume:"
-                }, {
                     "name": "Slider",
+                    "caption": "Volume:",
                     "type": "HorizontalSlider",
                     "minimum": 0,
                     "maximum": 100,
                     "onChange": "KODIAPP_SetVolume($id, $Slider);"
+                },
+                {
+                    "type": "Button",
+                    "label": "Request all states",
+                    "onClick": "KODIAPP_RequestState($id,'ALL');"
                 }
             ]
 }

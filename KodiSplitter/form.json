@@ -9,7 +9,7 @@
                 {
                     "name": "Host",
                     "type": "ValidationTextBox",
-                    "caption": "Adresse"
+                    "caption": "Host"
                 },
                 {
                     "name": "Port",
@@ -19,16 +19,16 @@
                 {
                     "name": "Webport",
                     "type": "NumberSpinner",
-                    "caption": "Webserver Port"
+                    "caption": "Webserver-Port"
                 },
                 {
                     "type": "Label",
-                    "label": "Erweiterte Power-On Überwachung"
+                    "label": "Advanced power watchdog"
                 },
                 {
                     "name": "Watchdog",
                     "type": "CheckBox",
-                    "caption": "Active"
+                    "caption": "Enabled"
                 },
                 {
                     "name": "Interval",
@@ -41,17 +41,17 @@
                 {
                     "code": 102,
                     "icon": "active",
-                    "caption": "Kodi ereichbar."
+                    "caption": "Kodi found."
                 },
                 {
                     "code": 104,
                     "icon": "inactive",
-                    "caption": "Interface geschlossen."
+                    "caption": "Interface closed."
                 },
                 {
                     "code": 202,
                     "icon": "error",
-                    "caption": "Adresse und Port darf nicht leer sein."
+                    "caption": "Host or port is empty."
                 },
                 {
                     "code": 203,

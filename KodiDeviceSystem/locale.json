@@ -1,0 +1,23 @@
+{
+    "translations": {
+        "de": {
+            "Power-On script:": "Einschalt-Script:",
+            "Power-Off method:": "Ausschalt-Methode:",
+            "Shutdown": "Herunterfahren",
+            "Hibernate": "Ruhezustand",
+            "Suspend": "Standby",
+            "Model for Power-On script": "Vorlagen für Einschalt-Script",
+            "Model:": "Vorlage:",
+            "no change": "keine Änderung",
+            "WOL with PHP": "WOL per PHP",
+            "WOL with Fritz-Box Project": "WOL über Fritz-Box Project",
+            "MAC-Adress:": "MAC-Adresse:",
+            "Power ON": "Einschalten",
+            "Power OFF": "Ausschalten",
+            "WakeUp": "Aufwecken",
+            "Reboot": "Neustart",
+            "Eject Optical": "Laufwerk öffnen",
+            "Request all states": "Status lesen"
+        }
+    }
+}
