@@ -252,9 +252,25 @@ class KodiDevicePlayer extends KodiBase
     public function Create()
     {
         parent::Create();
-        $this->RegisterPropertyInteger('PlayerID', 0);
+        $this->RegisterPropertyInteger('PlayerID', static::Audio);
         $this->RegisterPropertyInteger('CoverSize', 300);
         $this->RegisterPropertyString('CoverTyp', 'thumb');
+        $this->SetCover('');
+    }
+
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    public function Destroy()
+    {
+        parent::Destroy();
+        if (IPS_GetKernelRunlevel() <> KR_READY)
+            return;
+        $CoverID = @IPS_GetObjectIDByIdent('CoverIMG', $this->InstanceID);
+        if ($CoverID > 0)
+            @IPS_DeleteMedia($CoverID, true);
     }
 
     /**
@@ -264,8 +280,9 @@ class KodiDevicePlayer extends KodiBase
      */
     public function ApplyChanges()
     {
-        $this->RegisterVariableBoolean("_isactive", "isplayeractive", "", -5);
-        IPS_SetHidden($this->GetIDForIdent('_isactive'), true);
+//        $this->RegisterVariableBoolean("_isactive", "isplayeractive", "", -5);
+//        IPS_SetHidden($this->GetIDForIdent('_isactive'), true);
+
         $this->Init();
 
         $this->RegisterProfileIntegerEx("Repeat.Kodi", "", "", "", Array(
@@ -421,7 +438,8 @@ class KodiDevicePlayer extends KodiBase
         if (is_null($this->PlayerId))
             $this->PlayerId = $this->ReadPropertyInteger('PlayerID');
         if (is_null($this->isActive))
-            $this->isActive = GetValueBoolean($this->GetIDForIdent('_isactive'));
+        //$this->isActive = GetValueBoolean($this->GetIDForIdent('_isactive'));
+            $this->isActive = $this->GetBuffer('_isactive');
     }
 
     /**
@@ -441,7 +459,8 @@ class KodiDevicePlayer extends KodiBase
         else
             $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
 
-        $this->SetValueBoolean('_isactive', $this->isActive);
+        //$this->SetValueBoolean('_isactive', $this->isActive);
+        $this->SetBuffer('_isactive', $this->isActive);
         return (bool) $this->isActive;
     }
 
@@ -454,7 +473,8 @@ class KodiDevicePlayer extends KodiBase
     private function setActivePlayer(bool $isActive)
     {
         $this->isActive = $isActive;
-        $this->SetValueBoolean('_isactive', $isActive);
+        //$this->SetValueBoolean('_isactive', $isActive);
+        $this->SetBuffer('_isactive', $this->isActive);
     }
 
     /**

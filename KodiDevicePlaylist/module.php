@@ -213,6 +213,17 @@ class KodiDevicePlaylist extends KodiBase
      * 
      * @access public
      */
+    public function Destroy()
+    {
+        if (IPS_GetKernelRunlevel() == KR_READY)
+            $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
+    }
+
+    /**
+     * Interne Funktion des SDK.
+     * 
+     * @access public
+     */
     public function ApplyChanges()
     {
 

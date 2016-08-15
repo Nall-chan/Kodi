@@ -18,7 +18,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  */
 class KodiDeviceInput extends KodiBase
 {
-           
+
     /**
      * RPC-Namespace
      * 
@@ -258,7 +258,17 @@ class KodiDeviceInput extends KodiBase
         $this->RegisterPropertyBoolean("showNavigationButtons", true);
         $this->RegisterPropertyBoolean("showControlButtons", true);
         $this->RegisterPropertyBoolean("showInputRequested", true);
-        
+    }
+
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    public function Destroy()
+    {
+        if (IPS_GetKernelRunlevel() == KR_READY)
+            $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
     }
 
     /**
@@ -330,7 +340,7 @@ if (isset($_GET["button"]))
         else
             $this->UnregisterVariable("inputrequested");
 
-        
+
         parent::ApplyChanges();
     }
 
@@ -657,7 +667,6 @@ if (isset($_GET["button"]))
             return false;
         return $ret === 'OK';
     }
-
 
 }
 

@@ -1,0 +1,26 @@
+{
+    "translations": {
+        "de": {
+            "Push the buttons to create instances.":"Buttons betätigen um Instanzen zu erzeugen.",
+            "All / All missing":"Alle / Alle fehlenden",
+            "PVR": "PVR",
+            "Application": "Anwendung",
+            "Favourites": "Favoriten",
+            "Audio Library": "Audio Datenbank",
+            "System": "System",
+            "Addons": "Addons",
+            "Files": "Files",
+            "GUI": "GUI",
+            "Input": "Input",
+            "Video Library": "Video Datenbank",
+            "Audio Player": "Audio Player",
+            "Video Player": "Video Player",
+            "Picture Player": "Bilder Player",
+            "Audio Playlist": "Audio Playlist",
+            "Video Playlist": "Video Playlist",
+            "Picture Playlist": "Bilder Playlist",
+            "All instances are created.":"Alle Instanzen sind erzeugt.",
+            "Not connected to Splitter.":"Nicht mit einem Splitter verbunden."
+        }
+    }
+}
