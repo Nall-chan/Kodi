@@ -23,11 +23,6 @@
 						Kodi					</a>
 
 						</li>
-				<li>
-					<a href="package-None.html">
-						None					</a>
-
-						</li>
 			</ul>
 		</div>
 
@@ -37,6 +32,7 @@
 		<div id="elements">
 			<h3>Classes</h3>
 			<ul>
+				<li><a href="class-Kodi_RPC_Data.html">Kodi_RPC_Data</a></li>
 				<li><a href="class-KodiBase.html">KodiBase</a></li>
 				<li class="active"><a href="class-KodiConfigurator.html">KodiConfigurator</a></li>
 				<li><a href="class-KodiDeviceAddons.html">KodiDeviceAddons</a></li>
@@ -56,6 +52,10 @@
 
 
 
+			<h3>Exceptions</h3>
+			<ul>
+				<li><a href="class-KodiRPCException.html">KodiRPCException</a></li>
+			</ul>
 
 
 		</div>
@@ -216,11 +216,11 @@ IPSModule
 		<code>CreateAllInstances( )</code>
 
 		<div class="description short">
-			
+			<p>Erzeugt alle fehlenden Kodi-Instanzen eines Splitters.</p>
 		</div>
 
 		<div class="description detailed hidden">
-			
+			<p>Erzeugt alle fehlenden Kodi-Instanzen eines Splitters.</p>
 
 
 
@@ -246,13 +246,18 @@ IPSModule
 		<code>CreateInstance( <span>string <var>$ModuleID</var></span> )</code>
 
 		<div class="description short">
-			
+			<p>Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und verbindet sie mit den aktuellen Splitter des Konfigurators.</p>
 		</div>
 
 		<div class="description detailed hidden">
-			
+			<p>Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und verbindet sie mit den aktuellen Splitter des Konfigurators.</p>
 
 
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$ModuleID</var></dt>
+					<dd>GUID der zu erzeugenden Instanz.</dd>
+				</dl></div>
 
 
 
@@ -276,13 +281,20 @@ IPSModule
 		<code>CreatePlaylistInstance( <span>string <var>$ModuleID</var></span>, <span>integer <var>$Typ</var></span> )</code>
 
 		<div class="description short">
-			
+			<p>Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und MedienTyp und verbindet sie mit den aktuellen Splitter des Konfigurators.</p>
 		</div>
 
 		<div class="description detailed hidden">
-			
+			<p>Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und MedienTyp und verbindet sie mit den aktuellen Splitter des Konfigurators.</p>
 
 
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$ModuleID</var></dt>
+					<dd>GUID der zu erzeugenden Instanz.</dd>
+					<dt><var>$Typ</var></dt>
+					<dd>Meidentyp der zu erzeugenden Instanz.</dd>
+				</dl></div>
 
 
 
@@ -306,13 +318,20 @@ IPSModule
 		<code>CreatePlayerInstance( <span>string <var>$ModuleID</var></span>, <span>integer <var>$Typ</var></span> )</code>
 
 		<div class="description short">
-			
+			<p>Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und MedienTyp und verbindet sie mit den aktuellen Splitter des Konfigurators.</p>
 		</div>
 
 		<div class="description detailed hidden">
-			
+			<p>Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und MedienTyp und verbindet sie mit den aktuellen Splitter des Konfigurators.</p>
 
 
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$ModuleID</var></dt>
+					<dd>GUID der zu erzeugenden Instanz.</dd>
+					<dt><var>$Typ</var></dt>
+					<dd>Meidentyp der zu erzeugenden Instanz.</dd>
+				</dl></div>
 
 
 
@@ -336,11 +355,11 @@ IPSModule
 		<code>GetConfigurationForm( )</code>
 
 		<div class="description short">
-			
+			<p>Interne Funktion des SDK.</p>
 		</div>
 
 		<div class="description detailed hidden">
-			
+			<p>Interne Funktion des SDK.</p>
 
 
 
@@ -486,11 +505,11 @@ IPSModule
 		<td class="name">
 <var>$Types</var>
 			<div class="description short">
-				
+				<p>Zuordnung der möglichen Kodi-Instanzen zu den GUIDs</p>
 			</div>
 
 			<div class="description detailed hidden">
-				
+				<p>Zuordnung der möglichen Kodi-Instanzen zu den GUIDs</p>
 
 			</div>
 		</td>
@@ -521,11 +540,11 @@ IPSModule
 		<td class="name">
 <var>$PlayerTypes</var>
 			<div class="description short">
-				
+				<p>Zuordnung der möglichen Player-Instanzen zu den GUIDs und Medientyp.</p>
 			</div>
 
 			<div class="description detailed hidden">
-				
+				<p>Zuordnung der möglichen Player-Instanzen zu den GUIDs und Medientyp.</p>
 
 			</div>
 		</td>
@@ -549,11 +568,11 @@ IPSModule
 		<td class="name">
 <var>$PlayeListTypes</var>
 			<div class="description short">
-				
+				<p>Zuordnung der möglichen Playlist-Instanzen zu den GUIDs und Medientyp.</p>
 			</div>
 
 			<div class="description detailed hidden">
-				
+				<p>Zuordnung der möglichen Playlist-Instanzen zu den GUIDs und Medientyp.</p>
 
 			</div>
 		</td>
