@@ -6,10 +6,12 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @addtogroup kodi
  * @{
  *
- * @package       Kodi
+ * @category      Kodi
+ * @package       KodiConfigurator
  * @file          module.php
  * @author        Michael Tröger
- * @copyright     Michael Tröger
+ * @copyright     2016 Michael Tröger
+ * @author        Michael Tröger <micha@nall-chan.net>
  * @license       [CC BY-NC-SA 4.0] (https://creativecommons.org/licenses/by-nc-sa/4.0/)
  * @version       1.0
  *
@@ -22,6 +24,15 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  */
 class KodiConfigurator extends IPSModule
 {
+    /*
+     * @category      Kodi
+     * @package       KodiConfigurator
+     * @author        Michael Tröger
+     * @copyright     2016 Michael Tröger
+     * @author        Michael Tröger <micha@nall-chan.net>
+     * @license       [CC BY-NC-SA 4.0] (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+     * @version       1.0
+     */
 
     /**
      * PlayerID für Audio
@@ -260,7 +271,7 @@ class KodiConfigurator extends IPSModule
             if ($this->SearchPlayerInstance($SplitterID, $ModuleData['GUID'], $ModuleData['Typ']) == FALSE)
                 $Line[] = '{"type": "Button","label": "' . $Name . '","onClick": "KODICONF_CreatePlayerInstance($id,\'' . $ModuleData['GUID'] . '\',\'' . $ModuleData['Typ'] . '\');"}';
         }
-        
+
         foreach (static::$PlayeListTypes as $Name => $ModuleData)
         {
             if ($this->SearchPlaylistInstance($SplitterID, $ModuleData['GUID'], $ModuleData['Typ']) === FALSE)
