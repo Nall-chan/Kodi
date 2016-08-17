@@ -23,6 +23,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @todo HTML-Tabelle mit allen Favoriten und möglichkeit diese direkt zu laden.
  */
 class KodiDeviceFavourites extends KodiBase
 {

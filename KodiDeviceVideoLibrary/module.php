@@ -23,6 +23,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle. 
  */
 class KodiDeviceVideoLibrary extends KodiBase
 {
@@ -334,14 +335,9 @@ class KodiDeviceVideoLibrary extends KodiBase
         switch ($Ident)
         {
             case "doclean":
-                if ($this->Clean() === false)
-                    trigger_error('Error start cleaning', E_USER_NOTICE);
-                break;
+                return $this->Clean();
             case "doscan":
-                if ($this->Scan() === false)
-                    trigger_error('Error start scanning', E_USER_NOTICE);
-                break;
-
+                return $this->Scan();
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
@@ -362,7 +358,10 @@ class KodiDeviceVideoLibrary extends KodiBase
         $ret = $this->Send($KodiData);
         if (is_null($ret))
             return false;
-        return $ret === "OK";
+        if ($ret === "OK")
+            return true;
+        trigger_error('Error start cleaning', E_USER_NOTICE);
+        return false;
     }
 
     /**
@@ -721,7 +720,10 @@ class KodiDeviceVideoLibrary extends KodiBase
         $ret = $this->Send($KodiData);
         if (is_null($ret))
             return false;
-        return $ret === "OK";
+        if ($ret === "OK")
+            return true;
+        trigger_error('Error start scanning', E_USER_NOTICE);
+        return false;
     }
 
 }

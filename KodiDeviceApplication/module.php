@@ -146,20 +146,11 @@ class KodiDeviceApplication extends KodiBase
         switch ($Ident)
         {
             case "mute":
-                if ($this->SetMute($Value) === false)
-                    trigger_error('Error set mute', E_USER_NOTICE);
-
-                break;
+                return $this->SetMute($Value);
             case "volume":
-                if ($this->SetVolume($Value) === false)
-                    trigger_error('Error set volume', E_USER_NOTICE);
-
-                break;
+                return $this->SetVolume($Value);
             case "quit":
-                if ($this->Quit() === false)
-                    trigger_error('Error exit Kodi', E_USER_NOTICE);
-
-                break;
+                return $this->Quit();
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
@@ -187,7 +178,10 @@ class KodiDeviceApplication extends KodiBase
         if (is_null($ret))
             return false;
         $this->SetValueBoolean("mute", $ret);
-        return $ret === $Value;
+        if ($ret === $Value)
+            return true;
+        trigger_error('Error on set mute.', E_USER_NOTICE);
+        return false;
     }
 
     /**
@@ -210,7 +204,10 @@ class KodiDeviceApplication extends KodiBase
         if (is_null($ret))
             return false;
         $this->SetValueInteger("volume", $ret);
-        return $ret === $Value;
+        if ($ret === $Value)
+            return true;
+        trigger_error('Error on set volume.', E_USER_NOTICE);
+        return false;
     }
 
     /**
@@ -226,7 +223,10 @@ class KodiDeviceApplication extends KodiBase
         $ret = $this->Send($KodiData);
         if (is_null($ret))
             return false;
-        return true;
+        if ($ret === 'OK')
+            return true;
+        trigger_error('Error on quit Kodi.', E_USER_NOTICE);
+        return false;
     }
 
     /**

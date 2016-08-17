@@ -246,17 +246,13 @@ function wake($ip, $mac)
         switch ($Ident)
         {
             case "Power":
-                if (!$this->Power($Value))
-                    trigger_error('Error on send powerstate', E_USER_NOTICE);
-                break;
+                return $this->Power($Value);
             case "shutdown":
             case "reboot":
             case "hibernate":
             case "suspend":
             case "ejectOpticalDrive":
-                if (!$this->{ucfirst($Ident)}())
-                    trigger_error('Error on send ' . ucfirst($Ident), E_USER_NOTICE);
-                break;
+                return $this->{ucfirst($Ident)}();
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
                 break;
@@ -289,23 +285,14 @@ function wake($ip, $mac)
             switch ($this->ReadPropertyInteger('PowerOff'))
             {
                 case 0:
-                    $ret = $this->Shutdown();
-                    break;
+                    return $this->Shutdown();
                 case 1:
-                    $ret = $this->Hibernate();
-                    break;
+                    return $this->Hibernate();
                 case 2:
-                    $ret = $this->Suspend();
-                    break;
+                    return $this->Suspend();
                 default:
-                    $ret = false;
-                    break;
+                    return false;
             }
-            if (!$ret)
-            {
-                trigger_error('Error on send power off', E_USER_NOTICE);
-            }
-            return $ret;
         }
     }
 
@@ -350,6 +337,7 @@ function wake($ip, $mac)
             $this->SetValueBoolean('Power', false);
             return true;
         }
+        trigger_error('Error on send shutdown', E_USER_NOTICE);
         return false;
     }
 
@@ -371,6 +359,7 @@ function wake($ip, $mac)
             $this->SetValueBoolean('Power', false);
             return true;
         }
+        trigger_error('Error on send hibernate', E_USER_NOTICE);
         return false;
     }
 
@@ -392,6 +381,7 @@ function wake($ip, $mac)
             $this->SetValueBoolean('Power', false);
             return true;
         }
+        trigger_error('Error on send suspend', E_USER_NOTICE);
         return false;
     }
 
@@ -413,6 +403,7 @@ function wake($ip, $mac)
             $this->SetValueBoolean('Power', false);
             return true;
         }
+        trigger_error('Error on send reboot', E_USER_NOTICE);
         return false;
     }
 
@@ -429,7 +420,10 @@ function wake($ip, $mac)
         $ret = $this->Send($KodiData);
         if (is_null($ret))
             return false;
-        return $ret === 'OK';
+        if ($ret === 'OK')
+            return true;
+        trigger_error('Error on eject optical drive', E_USER_NOTICE);
+        return false;
     }
 
     /**

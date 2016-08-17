@@ -26,7 +26,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  */
 class KodiDevicePVR extends KodiBase
 {
-           
+
     /**
      * RPC-Namespace
      * 
@@ -219,7 +219,7 @@ class KodiDevicePVR extends KodiBase
                 }
                 break;
             default:
-                $this->SendDebug('KODI_Event', $KodiPayload,0);
+                $this->SendDebug('KODI_Event', $KodiPayload, 0);
                 break;
         }
     }
@@ -238,13 +238,9 @@ class KodiDevicePVR extends KodiBase
         switch ($Ident)
         {
             case "scan":
-                if ($this->Scan() === false)
-                    trigger_error('Error start scan', E_USER_NOTICE);
-                break;
+                return $this->Scan();
             case "record":
-                if ($this->Record($Value, "current") === false)
-                    trigger_error('Error start recording', E_USER_NOTICE);
-                break;
+                return $this->Record($Value, "current");
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
@@ -265,7 +261,10 @@ class KodiDevicePVR extends KodiBase
         $ret = $this->Send($KodiData);
         if (is_null($ret))
             return false;
-        return $ret === "OK";
+        if ($ret === "OK")
+            return true;
+        trigger_error('Error start scan', E_USER_NOTICE);
+        return false;
     }
 
     /**
@@ -283,7 +282,10 @@ class KodiDevicePVR extends KodiBase
         $ret = $this->Send($KodiData);
         if (is_null($ret))
             return false;
-        return $ret === "OK";
+        if ($ret === "OK")
+            return true;
+        trigger_error('Error start recording', E_USER_NOTICE);
+        return false;
     }
 
     /**

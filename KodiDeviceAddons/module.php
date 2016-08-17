@@ -24,6 +24,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @todo HTML-Tabelle mit allen Addons und möglichkeit diese zu dis/enablen
  */
 class KodiDeviceAddons extends KodiBase
 {

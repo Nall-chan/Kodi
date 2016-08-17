@@ -5,7 +5,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @addtogroup kodi
  * @{
  *
-  * @package       Kodi
+ * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2016 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
@@ -23,10 +23,11 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @todo Einige activate Window und SendNotification über das WF?
  */
 class KodiDeviceGUI extends KodiBase
 {
-          
+
     /**
      * RPC-Namespace
      * 
@@ -176,8 +177,7 @@ class KodiDeviceGUI extends KodiBase
         switch ($Ident)
         {
             case "fullscreen":
-                if ($this->SetFullscreen($Value) === false)
-                    trigger_error('Error set fullscreen.', E_USER_NOTICE);
+                return $this->SetFullscreen($Value);
                 break;
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
@@ -208,7 +208,10 @@ class KodiDeviceGUI extends KodiBase
         if (is_null($ret))
             return false;
         $this->SetValueBoolean("fullscreen", $ret);
-        return $ret === $Value;
+        if ($ret === $Value)
+            return true;
+        trigger_error('Error set fullscreen.', E_USER_NOTICE);
+        return false;
     }
 
     /**

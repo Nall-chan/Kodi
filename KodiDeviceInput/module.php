@@ -422,7 +422,7 @@ if (isset($_GET["button"]))
                         $ret = $this->ExecuteAction("rewind");
                         break;
                     case 2:
-                        $ret = $this->ExecuteAction("menu");
+                        $ret = $this->ExecuteAction("mplayerosd");
                         break;
                     case 3:
                         $ret = $this->ExecuteAction("play");

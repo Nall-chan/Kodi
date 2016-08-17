@@ -24,6 +24,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @todo Suche über WF einbauen. String und Int-Var für Text suche in Album/Artist etc... Ergebnis als HTML-Tabelle.
  */
 class KodiDeviceFiles extends KodiBase
 {
