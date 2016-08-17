@@ -6,13 +6,11 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @addtogroup kodi
  * @{
  *
- * @category      Kodi
- * @package       KodiConfigurator
+ * @package       Kodi
  * @file          module.php
- * @author        Michael Tröger
- * @copyright     2016 Michael Tröger
  * @author        Michael Tröger <micha@nall-chan.net>
- * @license       [CC BY-NC-SA 4.0] (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  *
  */
@@ -20,19 +18,16 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
 /**
  * KodiConfigurator Klasse für die einfache Erstellungvon IPS-Instanzen in IPS.
  * Erweitert IPSModule.
- * 
+ *
+ * @package       Kodi
+ * @author        Michael Tröger <micha@nall-chan.net>
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @version       1.0
+ * @example <b>Ohne</b>
  */
 class KodiConfigurator extends IPSModule
 {
-    /*
-     * @category      Kodi
-     * @package       KodiConfigurator
-     * @author        Michael Tröger
-     * @copyright     2016 Michael Tröger
-     * @author        Michael Tröger <micha@nall-chan.net>
-     * @license       [CC BY-NC-SA 4.0] (https://creativecommons.org/licenses/by-nc-sa/4.0/)
-     * @version       1.0
-     */
 
     /**
      * PlayerID für Audio

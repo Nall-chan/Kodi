@@ -1,21 +1,31 @@
 <?
 
 require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+
 /*
  * @addtogroup kodi
  * @{
  *
  * @package       Kodi
  * @file          module.php
- * @author        Michael Tröger
+ * @author        Michael Tröger <micha@nall-chan.net>
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @version       1.0
  *
  */
 
 /**
  * KodiSplitter Klasse für die Kommunikation mit der Kodi-RPC-Api.
- * Enthält außerdem den Namespace JSONRPC.
+ * Enthält den Namespace JSONRPC.
  * Erweitert IPSModule.
  * 
+ * @package       Kodi
+ * @author        Michael Tröger <micha@nall-chan.net>
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @version       1.0 
+ * @example <b>Ohne</b>
  */
 class KodiSplitter extends IPSModule
 {
