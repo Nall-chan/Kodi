@@ -5,16 +5,24 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @addtogroup kodi
  * @{
  *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger
- *
+  * @package       Kodi
+ * @author        Michael Tröger <micha@nall-chan.net>
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @version       1.0
+ * @example <b>Ohne</b>
  */
 
 /**
  * KodiDeviceVideoLibrary Klasse für den Namespace VideoLibrary der KODI-API.
  * Erweitert KodiBase.
  *
+ * @package       Kodi
+ * @author        Michael Tröger <micha@nall-chan.net>
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @version       1.0
+ * @example <b>Ohne</b>
  */
 class KodiDeviceVideoLibrary extends KodiBase
 {

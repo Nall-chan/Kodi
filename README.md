@@ -12,10 +12,10 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 4. [Vorbereitungen](#4-vorbereitungen)
 5. [Einrichten der Instanzen in IPS](#5-einrichten-der--instanzen-in-ips)
 6. [Funktionen der Instanzen] (#6-funktionen-der-instanzen)
-7. [PHP-Befehlsreferenz](#6-php-befehlsreferenz) 
-8. [Parameter / Modul-Infos](#7-parameter--modul-infos) 
-9. [Tips & Tricks](#8-tips--tricks) 
-10. [Anhang](#9-anhang)
+7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz) 
+8. [Parameter / Modul-Infos](#8-parameter--modul-infos) 
+9. [Tips & Tricks](#9-tips--tricks) 
+10. [Anhang](#10-anhang)
 11. [Lizenz] (#11-lizenz)
 
 ## 1. Funktionsumfang
@@ -32,14 +32,16 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 ## 2. Voraussetzungen
 
  - IPS ab Version 4.1
- - Installierte Systeme mit der Software Kodi 
+ - Installiertes System mit der Software Kodi 
 
 
 ## 3. Installation
 
 **IPS 4.1:**  
-   Über das Modul-Control folgende URL hinzufügen.  
+   Bei privater Nutzung: Über das Modul-Control folgende URL hinzufügen.  
    `git://github.com/Nall-chan/IPSKodi.git`  
+
+   **Bei kommerzieller Nutzung (z.B. als Errichter oder Integrator) wenden Sie sich bitte an den Autor.**  
 
 ## 4. Vorbereitungen
 

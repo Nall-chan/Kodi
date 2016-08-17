@@ -148,10 +148,12 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
 /* * @addtogroup kodi
  * @{
  *
- * @package Kodi
- * @file          KodiClass.php
- * @author        Michael Tröger
- *
+ * @package       Kodi
+ * @author        Michael Tröger <micha@nall-chan.net>
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @version       1.0
+ * @example <b>Ohne</b>
  */
 
 /**
@@ -159,6 +161,12 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
  * Erweitert IPSModule.
  * 
  * @abstract
+ * @package       Kodi
+ * @author        Michael Tröger <micha@nall-chan.net>
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @version       1.0
+ * @example <b>Ohne</b>
  */
 abstract class KodiBase extends IPSModule
 {
