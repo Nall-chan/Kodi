@@ -16,7 +16,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 8. [Parameter / Modul-Infos](#7-parameter--modul-infos) 
 9. [Tips & Tricks](#8-tips--tricks) 
 10. [Anhang](#9-anhang)
-11. [Lizenz] (#10-lizenz)
+11. [Lizenz] (#11-lizenz)
 
 ## 1. Funktionsumfang
 
