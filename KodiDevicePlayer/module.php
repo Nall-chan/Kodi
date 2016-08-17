@@ -725,7 +725,7 @@ class KodiDevicePlayer extends KodiBase
         {
             $ParentID = $this->GetParent();
             if ($ParentID !== false)
-                $CoverRAW = KODIRPC_GetImage($ParentID, $file);
+                $CoverRAW = @KODIRPC_GetImage($ParentID, $file);
         }
 
         if (!($CoverRAW === false))

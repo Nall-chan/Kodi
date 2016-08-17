@@ -350,7 +350,14 @@ class KodiSplitter extends IPSModule
         curl_setopt($ch, CURLOPT_URL, $CoverURL);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        $this->SendDebug('Cover', $CoverURL, 0);
         $CoverRAW = curl_exec($ch);
+        $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+        if ($http_code >= 400)
+        {
+            $this->SendDebug('Cover Error', $http_code, 0);
+            $CoverRAW = false;
+        }
         curl_close($ch);
         if ($CoverRAW === false)
             trigger_error('Error on load image from Kodi.', E_USER_NOTICE);
