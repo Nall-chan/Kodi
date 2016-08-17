@@ -1,6 +1,7 @@
 <?
 
 require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+
 /*
  * @addtogroup kodi
  * @{
@@ -8,6 +9,9 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @package       Kodi
  * @file          module.php
  * @author        Michael Tröger
+ * @copyright     Michael Tröger
+ * @license       [CC BY-NC-SA 4.0] (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+ * @version       1.0
  *
  */
 

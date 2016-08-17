@@ -16,6 +16,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 8. [Parameter / Modul-Infos](#7-parameter--modul-infos) 
 9. [Tips & Tricks](#8-tips--tricks) 
 10. [Anhang](#9-anhang)
+11. [Lizenz] (#10-lizenz)
 
 ## 1. Funktionsumfang
 
@@ -1673,6 +1674,7 @@ GUIDs der Instanzen (z.B. wenn Instanz per PHP angelegt werden soll):
 | KodiDevicePlayer       | {BA014AD9-9568-4F12-BE31-17D37BFED06D} |
 | KodiDeviceSystem       | {03E18A60-02FD-45E8-8A2C-1F8E247C92D0} |
 | KodiDeviceVideoLibrary | {07943DF4-FAB9-454F-AA9E-702A5F9C9D57} |
+| KodiConfigurator       | {7B4F8B62-7AB4-4877-AD60-F3B294DDB43E} |
 | KodiSplitter           | {D2F106B5-4473-4C19-A48F-812E8BAA316C} |
 
 Eigenschaften von KodiDeviceAddons:  
@@ -1759,7 +1761,11 @@ keine
 | showClean   | boolean | true         | Aktions-Variable zum starten des Scan anlegen        |
 | showDoClean | boolean | true         | Aktions-Variable zum starten der Bereinigung anlegen |
 
- Eigenschaften von KodiSplitter:  
+ Eigenschaften von KodiConfigurator:  
+
+keine  
+
+Eigenschaften von KodiSplitter:  
 
 | Eigenschaft | Typ     | Standardwert | Funktion                                                       |
 | :---------: | :-----: | :----------: | :------------------------------------------------------------: |
@@ -1780,4 +1786,8 @@ keine
 
 **Changlog:**
 
-0.1	:  Beginn
+0.1	:  Beginn  
+
+## 11. Lizenz  
+
+[CC BY-NC-SA 4.0] (https://creativecommons.org/licenses/by-nc-sa/4.0/)  
