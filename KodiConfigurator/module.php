@@ -67,6 +67,13 @@ class KodiConfigurator extends IPSModule
         self::Video => 'Video',
         self::Picture => 'Picture'
     );
+
+    /**
+     * Zuordnung der möglichen Kodi-Instanzen zu den GUIDs
+     * 
+     * @access private
+     *  @var array Key ist der Name, Value ist die GUID
+     */
     static $Types = array(
         "Addons" => "{0731DD94-99E6-43D8-9BE3-2854B0C6EF24}",
         "Application" => "{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}",
@@ -79,11 +86,25 @@ class KodiConfigurator extends IPSModule
         "System" => "{03E18A60-02FD-45E8-8A2C-1F8E247C92D0}",
         "Video Library" => "{07943DF4-FAB9-454F-AA9E-702A5F9C9D57}"
     );
+
+    /**
+     * Zuordnung der möglichen Player-Instanzen zu den GUIDs und Medientyp.
+     * 
+     * @access private
+     *  @var array Key ist der Name, Index "GUID" ist die GUID und Index "Typ" ist der Medientyp.
+     */
     static $PlayerTypes = array(
         "Audio Player" => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", "Typ" => self::Audio),
         "Video Player" => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", "Typ" => self::Video),
         "Picture Player" => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", "Typ" => self::Picture),
     );
+
+    /**
+     * Zuordnung der möglichen Playlist-Instanzen zu den GUIDs und Medientyp.
+     * 
+     * @access private
+     *  @var array Key ist der Name, Index "GUID" ist die GUID und Index "Typ" ist der Medientyp.
+     */
     static $PlayeListTypes = array(
         "Audio Playlist" => array("GUID" => "{7D73D0FF-0CC7-43D0-A196-0D6143E52756}", "Typ" => self::Audio),
         "Video Playlist" => array("GUID" => "{7D73D0FF-0CC7-43D0-A196-0D6143E52756}", "Typ" => self::Video),
@@ -113,6 +134,12 @@ class KodiConfigurator extends IPSModule
 
 ################## PRIVATE     
 
+    /**
+     * Liefert den aktuell verbundenen Splitter.
+     * 
+     * @access private
+     * @return bool|int FALSE wenn kein Splitter vorhanden, sonst die ID des Splitter.
+     */
     private function GetSplitter()
     {
         $SplitterID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
@@ -124,6 +151,14 @@ class KodiConfigurator extends IPSModule
         return $SplitterID;
     }
 
+    /**
+     * Sucht anhand einer GUID eine mit dem Splitter verbundene Instanz.
+     * 
+     * @access private
+     * @param int $SplitterID ID des Splitter
+     * @param string $ModuleID GUID der Instanz welche gesucht wird
+     * @return bool|int FALSE wenn keine Instanz gefunden, sonst die ID der Instanz.
+     */
     private function SearchInstance(int $SplitterID, string $ModuleID)
     {
         $InstanceIDs = IPS_GetInstanceListByModuleID($ModuleID);
@@ -135,6 +170,15 @@ class KodiConfigurator extends IPSModule
         return FALSE;
     }
 
+    /**
+     * Sucht anhand einer GUID und eines Medientyp eine mit dem Splitter verbundene Instanz.
+     * 
+     * @access private
+     * @param int $SplitterID ID des Splitter
+     * @param string $ModuleID GUID der Instanz welche gesucht wird
+     * @param int $Typ Medientyp
+     * @return bool|int FALSE wenn keine Instanz gefunden, sonst die ID der Instanz.
+     */
     private function SearchPlayerInstance(int $SplitterID, string $ModuleID, int $Typ)
     {
         $InstanceIDs = IPS_GetInstanceListByModuleID($ModuleID);
@@ -147,6 +191,15 @@ class KodiConfigurator extends IPSModule
         return FALSE;
     }
 
+    /**
+     * Sucht anhand einer GUID und eines Medientyp eine mit dem Splitter verbundene Instanz.
+     * 
+     * @access private
+     * @param int $SplitterID ID des Splitter
+     * @param string $ModuleID GUID der Instanz welche gesucht wird
+     * @param int $Typ Medientyp
+     * @return bool|int FALSE wenn keine Instanz gefunden, sonst die ID der Instanz.
+     */
     private function SearchPlaylistInstance(int $SplitterID, string $ModuleID, int $Typ)
     {
         $InstanceIDs = IPS_GetInstanceListByModuleID($ModuleID);
@@ -161,6 +214,11 @@ class KodiConfigurator extends IPSModule
 
 ################## PUBLIC
 
+    /**
+     * Erzeugt alle fehlenden Kodi-Instanzen eines Splitters.
+     * 
+     * @access public
+     */
     public function CreateAllInstances()
     {
         $SplitterID = $this->GetSplitter();
@@ -186,6 +244,12 @@ class KodiConfigurator extends IPSModule
         }
     }
 
+    /**
+     * Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und verbindet sie mit den aktuellen Splitter des Konfigurators.
+     * 
+     * @access public
+     * @param string $ModuleID GUID der zu erzeugenden Instanz.
+     */
     public function CreateInstance(string $ModuleID)
     {
         $SplitterID = $this->GetSplitter();
@@ -207,6 +271,13 @@ class KodiConfigurator extends IPSModule
             trigger_error('Instance already exists.' . PHP_EOL, E_USER_WARNING);
     }
 
+    /**
+     * Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und MedienTyp und verbindet sie mit den aktuellen Splitter des Konfigurators.
+     * 
+     * @access public
+     * @param string $ModuleID GUID der zu erzeugenden Instanz.
+     * @param int $Typ Meidentyp der zu erzeugenden Instanz.
+     */
     public function CreatePlaylistInstance(string $ModuleID, int $Typ)
     {
         $SplitterID = $this->GetSplitter();
@@ -230,6 +301,13 @@ class KodiConfigurator extends IPSModule
             trigger_error('Instance already exists.' . PHP_EOL, E_USER_WARNING);
     }
 
+    /**
+     * Erzeugt eine Kodi-Instanzen anhand der übergebene GUID und MedienTyp und verbindet sie mit den aktuellen Splitter des Konfigurators.
+     * 
+     * @access public
+     * @param string $ModuleID GUID der zu erzeugenden Instanz.
+     * @param int $Typ Meidentyp der zu erzeugenden Instanz.
+     */
     public function CreatePlayerInstance(string $ModuleID, int $Typ)
     {
         $SplitterID = $this->GetSplitter();
@@ -253,6 +331,11 @@ class KodiConfigurator extends IPSModule
             trigger_error('Instance already exists.' . PHP_EOL, E_USER_WARNING);
     }
 
+    /**
+     * Interne Funktion des SDK.
+     * 
+     * @access public
+     */
     public function GetConfigurationForm()
     {
         $SplitterID = @$this->GetSplitter();
@@ -288,10 +371,6 @@ class KodiConfigurator extends IPSModule
             array_unshift($Line, '{"type": "Button","label": "All / All missing","onClick": "KODICONF_CreateAllInstances($id);"}');
             array_unshift($Line, '{"type": "Label","label": "Push the buttons to create instances."}');
         }
-
-
-        //IPS_LogMessage('JSON', '{"actions":[' . implode(',', $Line) . ']}');
-
         return '{"actions":[' . implode(',', $Line) . ']}';
     }
 

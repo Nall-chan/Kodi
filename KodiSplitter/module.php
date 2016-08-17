@@ -56,6 +56,11 @@ class KodiSplitter extends IPSModule
         $this->RegisterPropertyInteger("Interval", 5);
     }
 
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
     {
         switch ($Message)
@@ -91,11 +96,17 @@ class KodiSplitter extends IPSModule
         }
     }
 
+    /**
+     * Wird ausgeführt wenn der Kernel hochgefahren wurde.
+     */
     protected function KernelReady()
     {
         $this->ApplyChanges();
     }
 
+    /**
+     * Wird ausgeführt wenn sich der Parent ändert.
+     */
     protected function ForceRefresh()
     {
         $this->ApplyChanges();
@@ -108,8 +119,6 @@ class KodiSplitter extends IPSModule
      */
     public function ApplyChanges()
     {
-
-        //IPS_LogMessage('KODISplitter_Applychanges', print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true));
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
         $this->RegisterMessage($this->InstanceID, DM_CONNECT);
         $this->RegisterMessage($this->InstanceID, DM_DISCONNECT);
@@ -162,8 +171,6 @@ class KodiSplitter extends IPSModule
             // Dup Applychange vermeiden
             $this->UnregisterMessage($ParentID, IM_CHANGESTATUS);
 
-            //IPS_LogMessage('Kodi', '7');
-
             if (IPS_GetProperty($ParentID, 'Host') <> $this->ReadPropertyString('Host'))
                 IPS_SetProperty($ParentID, 'Host', $this->ReadPropertyString('Host'));
 
@@ -196,21 +203,14 @@ class KodiSplitter extends IPSModule
         }
         // Eigene Profile
         $this->UnregisterVariable("BufferIN");
-//        $BufferINID = $this->RegisterVariableString("BufferIN", "BufferIN", "", -1);
-//        IPS_SetHidden($BufferINID, true);
-//        SetValueString($BufferINID, "");
-
         $this->UnregisterVariable("ReplyJSONData");
-//        $ReplyJSONDataID = $this->RegisterVariableString("ReplyJSONData", "ReplyJSONData", "", -3);
-//        IPS_SetHidden($ReplyJSONDataID, true);
-//        SetValueString($ReplyJSONDataID, "");
 
         $this->RegisterTimer('KeepAlive', 0, 'KODIRPC_KeepAlive($_IPS[\'TARGET\']);');
         if ($this->ReadPropertyBoolean('Watchdog'))
             $this->RegisterTimer('Watchdog', 0, 'KODIRPC_Watchdog($_IPS[\'TARGET\']);');
         else
             $this->UnregisterTimer('Watchdog');
-//        
+
         // Wenn wir verbunden sind,  mit Kodi, dann anmelden für Events
 
         if ($Open)
@@ -289,7 +289,6 @@ class KodiSplitter extends IPSModule
     private function SendPowerEvent($value)
     {
         $KodiData = new Kodi_RPC_Data('System', 'Power', array('data' => $value), 0);
-//        IPS_LogMessage('KODI_PWR_Event', print_r($KodiData, true));
         $this->SendDataToDevice($KodiData);
         $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', array('data' => array('playlistid' => 0)), 0);
         $this->SendDataToDevice($KodiData);
@@ -299,9 +298,15 @@ class KodiSplitter extends IPSModule
         $this->SendDataToDevice($KodiData);
     }
 
+    /**
+     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     * 
+     * @access protected
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
     protected function Decode($Method, $Event)
     {
-//        IPS_LogMessage('KODI_Event:' . $Method, print_r($Event, true));
         $this->SendDebug('KODI_Event', $Event, 0);
     }
 
@@ -327,14 +332,6 @@ class KodiSplitter extends IPSModule
     }
 
 ################## PUBLIC
-    /*
-      public function RawSend(string $Namespace, string $Method, $Params)
-      {
-      $KodiData = new Kodi_RPC_Data($Namespace, $Method, $Params);
-      $ret = $this->Send($KodiData);
-      return $ret;
-      }
-     */
 
     /**
      * IPS-Instanz-Funktion 'KODIRPC_GetImage'. Holt ein Bild vom Kodi-Webfront.
@@ -392,18 +389,11 @@ class KodiSplitter extends IPSModule
      */
     public function Watchdog()
     {
-//        $this->SetTimerInterval("Watchdog", 0);
         $ParentID = $this->GetParent();
         if ($ParentID > 0)
         {
             if (!@Sys_Ping($this->ReadPropertyString('Host'), 500))
-            {
-//                $this->SendPowerEvent(false);
-//                $this->SetStatus(203);
-//                $WatchdogTimer = $this->ReadPropertyInteger('Interval');
-//                $this->SetTimerInterval("Watchdog", $WatchdogTimer * 1000);
                 return;
-            }
             $Parent = IPS_GetInstance($ParentID);
             if ($Parent['InstanceStatus'] <> IS_ACTIVE)
             {
@@ -448,24 +438,6 @@ class KodiSplitter extends IPSModule
 ################## DATAPOINTS DEVICE
 
     /**
-     * Sendet Kodi_RPC_Data an den Parent.
-     * 
-     * @access private
-     * @param Kodi_RPC_Data $KodiData Ein Kodi_RPC_Data-Objekt.
-     */
-//    private function ForwardDataToParent(Kodi_RPC_Data $KodiData)
-//    {
-//        try
-//        {
-//            $this->SendDataToParent($KodiData);
-//        }
-//        catch (Exception $ex)
-//        {
-//            throw new Exception($ex->getMessage(), $ex->getCode());
-//        }
-//    }
-
-    /**
      * Sendet Kodi_RPC_Data an die Childs.
      * 
      * @access private
@@ -480,36 +452,48 @@ class KodiSplitter extends IPSModule
 
 ################## SENDQUEUE
 
+    /**
+     * Fügt eine Anfrage in die SendQueue ein.
+     * 
+     * @access private
+     * @param int $Id die RPC-ID des versendeten RPC-Objektes.
+     */
     private function SendQueuePush(int $Id)
     {
-//        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
         if (!$this->lock('ReplyJSONData'))
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
-//        $data = unserialize(GetValueString($ReplyJSONDataID));
         $data = unserialize($this->GetBuffer('ReplyJSONData'));
         $data[$Id] = "";
-//        SetValueString($ReplyJSONDataID, serialize($data));
         $this->SetBuffer('ReplyJSONData', serialize($data));
         $this->unlock('ReplyJSONData');
     }
 
+    /**
+     * Fügt eine RPC-Antwort in die SendQueue ein.
+     * 
+     * @access private
+     * @param int $Id die RPC-ID des empfangenen Objektes.
+     * @param Kodi_RPC_Data $KodiData Das empfangene RPC-Result.
+     */
     private function SendQueueUpdate(int $Id, Kodi_RPC_Data $KodiData)
     {
-//        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
         if (!$this->lock('ReplyJSONData'))
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
-//        $data = unserialize(GetValueString($ReplyJSONDataID));
         $data = unserialize($this->GetBuffer('ReplyJSONData'));
         $data[$Id] = $KodiData->ToJSONString("");
-//        SetValueString($ReplyJSONDataID, serialize($data));
         $this->SetBuffer('ReplyJSONData', serialize($data));
         $this->unlock('ReplyJSONData');
     }
 
+    /**
+     * Holt eine RPC-Antwort aus der SendQueue.
+     * 
+     * @access private
+     * @param int $Id die RPC-ID des empfangenen Objektes.
+     * @return Kodi_RPC_Data Das empfangene RPC-Result.
+     */
     private function SendQueuePop(int $Id)
     {
-//        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
-//        $data = unserialize(GetValueString($ReplyJSONDataID));
         $data = unserialize($this->GetBuffer('ReplyJSONData'));
         $Result = new Kodi_RPC_Data();
         $JSONObject = json_decode($data[$Id]);
@@ -518,15 +502,18 @@ class KodiSplitter extends IPSModule
         return $Result;
     }
 
+    /**
+     * Löscht einen RPC-Eintrag aus der SendQueue.
+     * 
+     * @access private
+     * @param int $Id Die RPC-ID des zu löschenden Objektes.
+     */
     private function SendQueueRemove(int $Id)
     {
-//        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
         if (!$this->lock('ReplyJSONData'))
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
-//        $data = unserialize(GetValueString($ReplyJSONDataID));
         $data = unserialize($this->GetBuffer('ReplyJSONData'));
         unset($data[$Id]);
-//        SetValueString($ReplyJSONDataID, serialize($data));
         $this->SetBuffer('ReplyJSONData', serialize($data));
         $this->unlock('ReplyJSONData');
     }
@@ -543,8 +530,6 @@ class KodiSplitter extends IPSModule
     public function ReceiveData($JSONString)
     {
         $data = json_decode($JSONString);
-//        $bufferID = $this->GetIDForIdent("BufferIN");
-        // Empfangs Lock setzen
         if (!$this->lock("bufferin"))
         {
             trigger_error("ReceiveBuffer is locked", E_USER_WARNING);
@@ -552,11 +537,8 @@ class KodiSplitter extends IPSModule
         }
 
         // Datenstream zusammenfügen
-//        $head = GetValueString($bufferID);
         $head = $this->GetBuffer('BufferIN');
-//        SetValueString($bufferID, '');
         $this->SetBuffer('BufferIN', '');
-        //IPS_LogMessage('Buffer', print_r($data, true));
         $Data = $head . utf8_decode($data->Buffer);
 
         // Stream in einzelne Pakete schneiden
@@ -567,12 +549,11 @@ class KodiSplitter extends IPSModule
         {
             // Rest vom Stream wieder in den Empfangsbuffer schieben
             $tail = array_pop($JSONLine);
-            //SetValueString($bufferID, $tail);
             $this->SetBuffer('BufferIN', $tail);
         }
         else
             $this->SetBuffer('BufferIN', '');
-        //SetValueString($bufferID, '');
+
         // Empfangs Lock aufheben
         $this->unlock("bufferin");
 
@@ -581,7 +562,6 @@ class KodiSplitter extends IPSModule
         {
             $KodiData = new Kodi_RPC_Data();
             $KodiData->CreateFromJSONString($JSON);
-            //IPS_LogMessage("receive", print_r($KodiData, true));
             if ($KodiData->Typ == Kodi_RPC_Data::$ResultTyp) // Reply
             {
                 try
@@ -595,10 +575,6 @@ class KodiSplitter extends IPSModule
             }
             else if ($KodiData->Typ == Kodi_RPC_Data::$EventTyp) // Event
             {
-//                ob_start();
-//                var_dump($KodiData);
-//                $dump = ob_get_clean();
-//                IPS_LogMessage('KODI_Event', $dump);
                 $this->SendDebug('KODI_Event', $KodiData, 0);
                 $this->SendDataToDevice($KodiData);
                 if (self::$Namespace == $KodiData->Namespace)
@@ -671,7 +647,7 @@ class KodiSplitter extends IPSModule
     }
 
     /**
-     * Wartet wuf eine RPC-Antwort.
+     * Wartet auf eine RPC-Antwort.
      * 
      * @access private
      * @param int $Id Die RPC-ID auf die gewartet wird.
@@ -679,15 +655,12 @@ class KodiSplitter extends IPSModule
      */
     private function WaitForResponse($Id)
     {
-//        $ReplyJSONDataID = $this->GetIDForIdent('ReplyJSONData');
         for ($i = 0; $i < 1000; $i++)
         {
-            //          if (GetValueString($ReplyJSONDataID) === 'a:0:{}') // wenn wenig los, gleich warten
             if ($this->GetBuffer('ReplyJSONData') === 'a:0:{}') // wenn wenig los, gleich warten            
                 IPS_Sleep(5);
             else
             {
-//                $ret = unserialize(GetValueString($ReplyJSONDataID));
                 $ret = unserialize($this->GetBuffer('ReplyJSONData'));
                 if (!array_key_exists(intval($Id), $ret))
                     return false;
@@ -701,6 +674,14 @@ class KodiSplitter extends IPSModule
 
 ################## DUMMYS / WORKAROUNDS - protected
 
+    /**
+     * Formatiert eine DebugAusgabe und gibt sie an IPS weiter.
+     *
+     * @access protected
+     * @param string $Message Nachrichten-Feld.
+     * @param string|array|Kodi_RPC_Data $Data Daten-Feld.
+     * @param int $Format Ausgabe in Klartext(0) oder Hex(1)
+     */
     protected function SendDebug($Message, $Data, $Format)
     {
         if (is_a($Data, 'Kodi_RPC_Data'))
@@ -757,7 +738,6 @@ class KodiSplitter extends IPSModule
      */
     protected function HasActiveParent()
     {
-//        IPS_LogMessage(__CLASS__, __FUNCTION__); //          
         $instance = IPS_GetInstance($this->InstanceID);
         if ($instance['ConnectionID'] > 0)
         {
@@ -808,9 +788,6 @@ class KodiSplitter extends IPSModule
      */
     protected function SetStatus($InstanceStatus)
     {
-        //IPS_LogMessage('NewState', $InstanceStatus);
-        //IPS_LogMessage('NewState', IPS_GetInstance($this->InstanceID)['InstanceStatus']);
-
         if ($InstanceStatus <> IPS_GetInstance($this->InstanceID)['InstanceStatus'])
             parent::SetStatus($InstanceStatus);
     }
@@ -828,13 +805,9 @@ class KodiSplitter extends IPSModule
         for ($i = 0; $i < 100; $i++)
         {
             if (IPS_SemaphoreEnter("KODI_" . (string) $this->InstanceID . (string) $ident, 1))
-            {
                 return true;
-            }
             else
-            {
                 IPS_Sleep(mt_rand(1, 5));
-            }
         }
         return false;
     }

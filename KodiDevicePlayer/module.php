@@ -288,11 +288,7 @@ class KodiDevicePlayer extends KodiBase
      */
     public function ApplyChanges()
     {
-//        $this->RegisterVariableBoolean("_isactive", "isplayeractive", "", -5);
-//        IPS_SetHidden($this->GetIDForIdent('_isactive'), true);
-
         $this->Init();
-
         $this->RegisterProfileIntegerEx("Repeat.Kodi", "", "", "", Array(
             //Array(0, "Prev", "", -1),
             Array(0, "Aus", "", -1),
@@ -345,20 +341,12 @@ class KodiDevicePlayer extends KodiBase
 
                 break;
             case self::Video:
-//                $this->UnregisterVariable("repeat");
-//                $this->UnregisterVariable("shuffled");
-//                $this->UnregisterVariable("partymode");
                 $this->UnregisterVariable("album");
                 $this->UnregisterVariable("track");
                 $this->UnregisterVariable("disc");
                 $this->UnregisterVariable("artist");
                 $this->UnregisterVariable("lyrics");
 
-//                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
-//                    Array(1, "Stop", "", -1),
-//                    Array(2, "Play", "", -1),
-//                    Array(3, "Pause", "", -1)
-//                ));
                 $this->RegisterProfileIntegerEx("AudioStream." . $this->InstanceID . ".Kodi", "", "", "", Array(
                     Array(0, "1", "", -1)
                 ));
@@ -393,14 +381,6 @@ class KodiDevicePlayer extends KodiBase
                 $this->UnregisterVariable("artist");
                 $this->UnregisterVariable("lyrics");
 
-//                $this->UnregisterVariable("position");                
-//                $this->RegisterProfileIntegerEx("Status." . $this->InstanceID . ".Kodi", "Information", "", "", Array(
-//                    Array(0, "Prev", "", -1),
-//                    Array(1, "Stop", "", -1),
-//                    Array(2, "Play", "", -1),
-//                    Array(3, "Pause", "", -1),
-//                    Array(4, "Next", "", -1)
-//                ));
                 break;
         }
         $this->RegisterVariableInteger("repeat", "Wiederholen", "Repeat.Kodi", 11);
@@ -467,7 +447,6 @@ class KodiDevicePlayer extends KodiBase
         else
             $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
 
-        //$this->SetValueBoolean('_isactive', $this->isActive);
         $this->SetBuffer('_isactive', $this->isActive);
         return (bool) $this->isActive;
     }
@@ -481,7 +460,6 @@ class KodiDevicePlayer extends KodiBase
     private function setActivePlayer(bool $isActive)
     {
         $this->isActive = $isActive;
-        //$this->SetValueBoolean('_isactive', $isActive);
         $this->SetBuffer('_isactive', $this->isActive);
     }
 
@@ -496,7 +474,6 @@ class KodiDevicePlayer extends KodiBase
     {
         $this->Init();
         $Param = array_merge($Params, array("playerid" => $this->PlayerId));
-        //parent::RequestProperties($Params);
         if (!$this->isActive)
             return false;
         $KodiData = new Kodi_RPC_Data(static::$Namespace);
@@ -558,7 +535,6 @@ class KodiDevicePlayer extends KodiBase
                             else
                                 $this->EnableAction('subtitle');
                             break;
-//                            $this->SetValueInteger($param, );
                         case "subtitleenabled":
                             if ($this->PlayerId <> self::Video)
                                 break;
@@ -613,42 +589,6 @@ class KodiDevicePlayer extends KodiBase
                                 $this->SetValueInteger('audiostream', 0);
                             }
                             break;
-
-//                            if (is_object($value))
-//                            {
-//                                if (property_exists($value, 'bitrate'))
-//                                    $this->SetValueInteger('audiobitrate', (int) $value->bitrate);
-//                                else
-//                                    $this->SetValueInteger('audiobitrate', 0);
-//
-//                                if (property_exists($value, 'channels'))
-//                                    $this->SetValueInteger('audiochannels', (int) $value->channels);
-//                                else
-//                                    $this->SetValueInteger('audiochannels', 0);
-//
-//                                if (property_exists($value, 'index'))
-//                                    $this->SetValueInteger('audioindex', (int) $value->index);
-//                                else
-//                                    $this->SetValueInteger('audioindex', 0);
-//
-//                                if (property_exists($value, 'language'))
-//                                    $this->SetValueString('audiolanguage', (string) $value->language);
-//                                else
-//                                    $this->SetValueString('audiolanguage', "");
-//
-//                                if (property_exists($value, 'name'))
-//                                    $this->SetValueString('audiocodec', (string) $value->name);
-//                                else
-//                                    $this->SetValueString('audiocodec', "");
-//                            } else
-//                            {
-//                                $this->SetValueInteger('audiobitrate', 0);
-//                                $this->SetValueInteger('audiochannels', 0);
-//                                $this->SetValueInteger('audioindex', 0);
-//                                $this->SetValueString('audiolanguage', "");
-//                                $this->SetValueString('audiocodec', "");
-//                            }
-//                            break;
                         //time
                         case "totaltime":
                             $this->SetValueString('duration', $this->ConvertTime($value));
@@ -752,7 +692,6 @@ class KodiDevicePlayer extends KodiBase
                 IPS_RunScriptText('<? KODIPLAYER_RequestState(' . $this->InstanceID . ',"speed");');
                 break;
             default:
-//                IPS_LogMessage($Method, print_r($KodiPayload, true));
                 $this->SendDebug($Method, $KodiPayload, 0);
                 break;
         }
@@ -872,7 +811,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function GetItemInternal()
     {
-//        return;
         $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetItem(array('playerid' => $this->PlayerId, 'properties' => self::$ItemList));
@@ -885,8 +823,6 @@ class KodiDevicePlayer extends KodiBase
         {
             case self::Audio:
                 $this->SetValueString('label', $ret->label);
-//                $this->SetValueString('type', $ret->type);
-
                 if (property_exists($ret, 'displayartist'))
                     $this->SetValueString('artist', $ret->displayartist);
                 else
@@ -1223,8 +1159,6 @@ class KodiDevicePlayer extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetSubtitle(array("playerid" => $this->PlayerId, "subtitle" => $Value));
         $ret = $this->Send($KodiData);
-//        if (is_null($ret))
-//            return false;
         if ($ret === "OK")
             return true;
         trigger_error('Error on set audiostream.', E_USER_NOTICE);
@@ -1256,8 +1190,6 @@ class KodiDevicePlayer extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetAudioStream(array("playerid" => $this->PlayerId, "stream" => $Value));
         $ret = $this->Send($KodiData);
-//        if (is_null($ret))
-//            return false;
         if ($ret === "OK")
             return true;
         trigger_error('Error on set audiostream.', E_USER_NOTICE);
@@ -1277,9 +1209,6 @@ class KodiDevicePlayer extends KodiBase
         if (!$this->isActive)
             return $this->LoadPlaylist();
 
-//        {
-//            trigger_error('Player not active', E_USER_NOTICE);
-//        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->PlayPause(array("playerid" => $this->PlayerId, "play" => true));
         $ret = $this->Send($KodiData);
@@ -1430,22 +1359,6 @@ class KodiDevicePlayer extends KodiBase
             return false;
         }
         return $this->GoToValue($Value + 1);
-        /* $this->Init();
-          if (!$this->isActive)
-          {
-          trigger_error('Player not active', E_USER_NOTICE);
-          return false;
-          }
-
-          $KodiData = new Kodi_RPC_Data(self::$Namespace);
-          $Kodi->GoTo(array("playerid" => $this->PlayerId, "to" => $Value + 1));
-          $ret = $this->Send($KodiData);
-          if (is_null($ret))
-          return false;
-          if ($ret === "OK")
-          return true;
-          trigger_error('Error on goto track.', E_USER_NOTICE);
-          return false; */
     }
 
     /**
@@ -1667,8 +1580,6 @@ class KodiDevicePlayer extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Open(array_merge(array("item" => array($ItemTyp => $ItemValue)), $Ext));
         $ret = $this->Send($KodiData);
-//        if (is_null($ret))
-//            return false;
         if ($ret === "OK")
             return true;
         trigger_error('Error on load ' . $ItemTyp . '.', E_USER_NOTICE);
@@ -1879,6 +1790,11 @@ class KodiDevicePlayer extends KodiBase
         return ($instance['ConnectionID'] > 0) ? $instance['ConnectionID'] : false;
     }
 
+    /**
+     * Erzeugt aus einem Objekt ein Array für ein IPS-Variablenprofil
+     * 
+     * @return array Werteliste für das Variablenprofil.
+     */
     private function CreateProfilArray($Data, $Assos = Array())
     {
 
@@ -1898,6 +1814,9 @@ class KodiDevicePlayer extends KodiBase
         return $Assos;
     }
 
+    /**
+     * Erzeugt aus einem Objekt von Untertiteln ein IPS-Variablenprofil.
+     */
     private function CreateSubtitleProfil($Subtitles)
     {
         $Assos[0] = Array(-1, "Aus", "", -1);
@@ -1906,6 +1825,9 @@ class KodiDevicePlayer extends KodiBase
         $this->RegisterProfileIntegerEx("Subtitels." . $this->InstanceID . ".Kodi", "", "", "", $Assos);
     }
 
+    /**
+     * Erzeugt aus einem Objekt von Audiostreams ein IPS-Variablenprofil.
+     */
     private function CreateAudioProfil($AudioStream)
     {
         $Assos = $this->CreateProfilArray($AudioStream);

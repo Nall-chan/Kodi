@@ -263,24 +263,7 @@ if (isset($_GET["Index"]))
         $this->EnableAction("position");
 
         $this->Init();
-//        switch ($this->PlaylistId)
-//        {
-//            case self::Audio:
-////
-//
-//                break;
-//            case self::Video:
-////                $this->RegisterVariableInteger("position", "Playlist Position", "", 9);
-//
-//                break;
-//            case self::Pictures:
-////                $this->UnregisterVariable("position");
-//
-//                break;
-//        }
         parent::ApplyChanges();
-
-        //$this->RequestState('ALL');
     }
 
 ################## PRIVATE     
@@ -296,30 +279,6 @@ if (isset($_GET["Index"]))
         if (is_null($this->PlaylistId))
             $this->PlaylistId = $this->ReadPropertyInteger('PlaylistID');
     }
-
-    /**
-     * Werte der Eigenschaften anfragen.
-     * 
-     * @access protected
-     * @param array $Params Enthält den Index "properties", in welchen alle anzufragenden Eigenschaften als Array enthalten sind.
-     * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
-     */
-//    protected function RequestProperties(array $Params)
-//    {
-//        $this->Init();
-    /*
-      $Param = array_merge($Params, array("playerid" => $this->PlaylistId));
-      //parent::RequestProperties($Params);
-      if (!$this->isActive)
-      return false;
-      $KodiData = new Kodi_RPC_Data(static::$Namespace[0], 'GetProperties', $Param);
-      $ret = $this->Send($KodiData);
-      if (is_null($ret))
-      return false;
-      $this->Decode('GetProperties', $ret);
-     */
-//        return true;
-//    }
 
     /**
      * Dekodiert die empfangenen Daten und führt die Statusvariablen nach.
@@ -397,17 +356,16 @@ if (isset($_GET["Index"]))
      * Erzeugt aus der Playlist eine HTML-Tabelle für eine ~HTMLBox-Variable.
      * 
      * @access private
+     * @todo   Playlist muss Daten in Inztanz vorhalten und dynamisch die Daten ändern.
      */
     private function RefreshPlaylist($Empty = false)
     {
-        //TODO Playlist muss Daten in Inztanz vorhalten und dynamisch die Daten ändern.
         if (!$this->ReadPropertyBoolean('showPlaylist'))
             return;
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
         if ($ScriptID == 0)
             return;
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
-        //var_dump($Config);
         $Config = unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
             throw new Exception('Error on read Playlistconfig-Script');
@@ -427,7 +385,6 @@ if (isset($_GET["Index"]))
             if (IPS_GetVariableProfile($Name)['MaxValue'] <> count($Data))
                 IPS_SetVariableProfileValues($Name, 1, count($Data), 1);
         }
-
 
         if ($Data === false)
             return;

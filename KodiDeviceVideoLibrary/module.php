@@ -5,7 +5,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @addtogroup kodi
  * @{
  *
-  * @package       Kodi
+ * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2016 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
@@ -78,6 +78,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         "uniqueid",
         "art"
     );
+
     /**
      * Ein Teil der Eigenschaften von Episoden.
      * 
@@ -86,31 +87,17 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     static $EpisodeItemListSmall = array(
         "title",
-//        "plot",
-//        "votes",
-//        "rating",
-//        "writer",
-//        "firstaired",
         "playcount",
-////        "runtime",
-//        "director",
-//        "productioncode",
         "season",
         "episode",
         "originaltitle",
         "showtitle",
-//        "cast",
-//        "streamdetails",
-//        "lastplayed",
         "fanart",
         "thumbnail",
         "file",
-////        "resume",
-        "tvshowid",
-//        "dateadded",
-////        "uniqueid",
-//        "art"
+        "tvshowid"
     );
+
     /**
      * Alle Eigenschaften von Filmen.
      * 
@@ -419,7 +406,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param  int $EpisodeId EpisodenID der zu lesenden Episode.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-        public function GetEpisodeDetails(int $EpisodeId)
+    public function GetEpisodeDetails(int $EpisodeId)
     {
         if (!is_int($EpisodeId))
         {
@@ -445,9 +432,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetEpisodes(array("properties" => static::$EpisodeItemListSmall));
-        //ini_set("memory_limit","64M");        
         $ret = $this->SendDirect($KodiData);
-//        var_dump($ret);
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
@@ -461,7 +446,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @param string $Type Der Typ der zu suchenden Genres.
      *   enum["movie"=Filme, "tvshow"=Serien, "musicvideo"=Musikvideos]
-*    * @return array | bool Array mit den Daten oder false bei Fehlern.
+     *    * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
     public function GetGenres(string $Type)
     {
@@ -471,9 +456,9 @@ class KodiDeviceVideoLibrary extends KodiBase
             trigger_error('Media must be "movie", "tvshow", or "musicvideo".', E_USER_NOTICE);
             return false;
         }
-        
+
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetGenres(array("properties" => static::$GenreItemList,"type"=>$Type));
+        $KodiData->GetGenres(array("properties" => static::$GenreItemList, "type" => $Type));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
