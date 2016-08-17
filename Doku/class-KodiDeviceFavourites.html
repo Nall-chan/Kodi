@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class KodiDeviceFavourites</title>
+
+	<link rel="stylesheet" href="resources/style.css?e99947befd7bf673c6b43ff75e9e0f170c88a60e">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+		</div>
+
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-Kodi_RPC_Data.html">Kodi_RPC_Data</a></li>
+				<li><a href="class-KodiBase.html">KodiBase</a></li>
+				<li><a href="class-KodiConfigurator.html">KodiConfigurator</a></li>
+				<li><a href="class-KodiDeviceAddons.html">KodiDeviceAddons</a></li>
+				<li><a href="class-KodiDeviceApplication.html">KodiDeviceApplication</a></li>
+				<li><a href="class-KodiDeviceAudioLibrary.html">KodiDeviceAudioLibrary</a></li>
+				<li class="active"><a href="class-KodiDeviceFavourites.html">KodiDeviceFavourites</a></li>
+				<li><a href="class-KodiDeviceFiles.html">KodiDeviceFiles</a></li>
+				<li><a href="class-KodiDeviceGUI.html">KodiDeviceGUI</a></li>
+				<li><a href="class-KodiDeviceInput.html">KodiDeviceInput</a></li>
+				<li><a href="class-KodiDevicePlayer.html">KodiDevicePlayer</a></li>
+				<li><a href="class-KodiDevicePlaylist.html">KodiDevicePlaylist</a></li>
+				<li><a href="class-KodiDevicePVR.html">KodiDevicePVR</a></li>
+				<li><a href="class-KodiDeviceSystem.html">KodiDeviceSystem</a></li>
+				<li><a href="class-KodiDeviceVideoLibrary.html">KodiDeviceVideoLibrary</a></li>
+				<li><a href="class-KodiSplitter.html">KodiSplitter</a></li>
+			</ul>
+
+
+
+			<h3>Exceptions</h3>
+			<ul>
+				<li><a href="class-KodiRPCException.html">KodiRPCException</a></li>
+			</ul>
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text" placeholder="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class KodiDeviceFavourites</h1>
+
+
+	<div class="description">
+	<p>KodiDeviceFavourites Klasse für den Namespace Favourites der KODI-API.
+Erweitert KodiBase.</p>
+	</div>
+
+	<dl class="tree">
+		<dd style="padding-left:0px">
+IPSModule
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-KodiBase.html"><span>KodiBase</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:60px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>KodiDeviceFavourites</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		
+		
+
+			<b>Located at</b> KodiDeviceFavourites/module.php		<br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="Create" id="_Create">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_Create">#</a>
+		<code>Create( )</code>
+
+		<div class="description short">
+			<p>Interne Funktion des SDK.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Interne Funktion des SDK.</p>
+
+
+
+
+
+
+				<h4>Overrides</h4>
+				<div class="list"><code><a href="class-KodiBase.html#_Create">KodiBase::Create()</a></code></div>
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="GetFavourites" id="_GetFavourites">
+
+		<td class="attributes"><code>
+			 public 
+
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_GetFavourites">#</a>
+		<code>GetFavourites( <span>string <var>$Type</var></span> )</code>
+
+		<div class="description short">
+			<p>IPS-Instanz-Funktion 'KODIFAV_GetFavourites'. Liefert die Favoriten.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>IPS-Instanz-Funktion 'KODIFAV_GetFavourites'. Liefert die Favoriten.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Type</var></dt>
+					<dd><p>Der Typ der zu suchenden Favoriten.
+  enum["media"=Media, "window"=Fenster, "script"=Skript, "unknown"=Unbekannt]</p></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array<br>| bool Array mit den Daten oder false bei Fehlern.
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+	<table class="summary inherited">
+	<caption>Methods inherited from <a href="class-KodiBase.html#methods">KodiBase</a></caption>
+	<tr>
+		<td><code>
+			<a href="class-KodiBase.html#_ApplyChanges">ApplyChanges()</a>, 
+			<a href="class-KodiBase.html#_MessageSink">MessageSink()</a>, 
+			<a href="class-KodiBase.html#_ReceiveData">ReceiveData()</a>, 
+			<a href="class-KodiBase.html#_RequestState">RequestState()</a>, 
+			<a href="class-KodiBase.html#___construct">__construct()</a>
+		</code></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+	<table class="summary properties" id="properties">
+	<caption>Properties summary</caption>
+	<tr data-order="Namespace" id="$Namespace">
+		<td class="attributes"><code>
+			public static 
+			string
+		</code></td>
+
+		<td class="name">
+<var>$Namespace</var>
+			<div class="description short">
+				<p>RPC-Namespace</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>RPC-Namespace</p>
+
+					<h4>Value</h4>
+					<div class="list">
+							'Favourites'<br>
+					</div>
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$Namespace" class="anchor">#</a>
+				<code><span class="php-quote">'Favourites'</span></code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="Properties" id="$Properties">
+		<td class="attributes"><code>
+			public static 
+			array
+		</code></td>
+
+		<td class="name">
+<var>$Properties</var>
+			<div class="description short">
+				<p>Alle Properties des RPC-Namespace</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Alle Properties des RPC-Namespace</p>
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$Properties" class="anchor">#</a>
+				<code><span class="php-keyword1">array</span>(
+)</code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="FavouriteItemList" id="$FavouriteItemList">
+		<td class="attributes"><code>
+			public static 
+			array
+		</code></td>
+
+		<td class="name">
+<var>$FavouriteItemList</var>
+			<div class="description short">
+				<p>Alle Eigenschaften eines Favoriten.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Alle Eigenschaften eines Favoriten.</p>
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$FavouriteItemList" class="anchor">#</a>
+				<code><span class="php-keyword1">array</span>(
+    <span class="php-quote">&quot;window&quot;</span>,
+    <span class="php-quote">&quot;windowparameter&quot;</span>,
+    <span class="php-quote">&quot;thumbnail&quot;</span>,
+    <span class="php-quote">&quot;path&quot;</span>
+)</code>
+			</div>
+		</td>
+	</tr>
+	</table>
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		 API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>
