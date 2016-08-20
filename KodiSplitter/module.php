@@ -52,6 +52,9 @@ class KodiSplitter extends IPSModule
         $this->RegisterPropertyBoolean("Open", false);
         $this->RegisterPropertyInteger("Port", 9090);
         $this->RegisterPropertyInteger("Webport", 80);
+        $this->RegisterPropertyBoolean("BasisAuth", false);
+        $this->RegisterPropertyString("Username", "");
+        $this->RegisterPropertyString("Password", "");
         $this->RegisterPropertyBoolean("Watchdog", false);
         $this->RegisterPropertyInteger("Interval", 5);
     }
@@ -134,33 +137,26 @@ class KodiSplitter extends IPSModule
         $Open = $this->ReadPropertyBoolean('Open');
         $NewState = IS_ACTIVE;
         if (!$Open)
-        {
             $NewState = IS_INACTIVE;
-            $WatchdogTimer = 0;
-        }
         else
         {
-            $WatchdogTimer = $this->ReadPropertyInteger('Interval');
             if ($this->ReadPropertyString('Host') == '')
             {
                 $NewState = IS_EBASE + 2;
                 $Open = false;
                 trigger_error('Host is empty', E_USER_NOTICE);
-                $WatchdogTimer = 0;
             }
             if ($this->ReadPropertyInteger('Port') == 0)
             {
                 $NewState = IS_EBASE + 2;
                 $Open = false;
                 trigger_error('Port is empty', E_USER_NOTICE);
-                $WatchdogTimer = 0;
             }
             if ($this->ReadPropertyInteger('Webport') == 0)
             {
                 $NewState = IS_EBASE + 2;
                 $Open = false;
                 trigger_error('Webport is empty', E_USER_NOTICE);
-                $WatchdogTimer = 0;
             }
         }
         $ParentID = $this->GetParent();
@@ -182,16 +178,9 @@ class KodiSplitter extends IPSModule
             {
                 $Open = @Sys_Ping($this->ReadPropertyString('Host'), 500);
                 if (!$Open)
-                {
                     $NewState = IS_INACTIVE;
-                    $WatchdogTimer = $this->ReadPropertyInteger('Interval');
-                }
             }
-            if (IPS_GetProperty($ParentID, 'Open') <> $Open)
-                IPS_SetProperty($ParentID, 'Open', $Open);
-
-            if (IPS_HasChanges($ParentID))
-                @IPS_ApplyChanges($ParentID);
+            $this->OpenIOParent($ParentID, $Open);
         }
         else
         {
@@ -221,63 +210,158 @@ class KodiSplitter extends IPSModule
                 $ret = $this->Send($KodiData);
                 if ($ret == "pong")
                 {
-                    $this->SendPowerEvent(true);
-                    $WatchdogTimer = 0;
-                    $this->SetTimerInterval("KeepAlive", 60 * 1000);
-
-                    $InstanceIDs = IPS_GetInstanceList();
-                    foreach ($InstanceIDs as $IID)
-                        if (IPS_GetInstance($IID)['ConnectionID'] == $this->InstanceID)
-                            @IPS_ApplyChanges($IID);
+                    if (!$this->CheckWebserver())
+                    {
+                        $NewState = IS_EBASE + 4;
+                        trigger_error('Could not connect to webserver.', E_USER_NOTICE);
+                    }
                 }
                 else
                 {
-                    if (IPS_GetProperty($ParentID, 'Open'))
-                    {
-                        IPS_SetProperty($ParentID, 'Open', false);
-                        @IPS_ApplyChanges($ParentID);
-                    }
-                    $this->SendPowerEvent(false);
-                    $WatchdogTimer = $this->ReadPropertyInteger('Interval');
-                    $this->SetTimerInterval("KeepAlive", 0);
                     $NewState = IS_EBASE + 3;
                     trigger_error('No answer', E_USER_NOTICE);
                 }
             }
             else
             {
-                if (IPS_GetProperty($ParentID, 'Open'))
-                {
-                    IPS_SetProperty($ParentID, 'Open', false);
-                    @IPS_ApplyChanges($ParentID);
-                }
-                $this->SendPowerEvent(false);
-                $WatchdogTimer = $this->ReadPropertyInteger('Interval');
-                $this->SetTimerInterval("KeepAlive", 0);
                 $NewState = IS_EBASE + 3;
-                trigger_error('could not connect', E_USER_NOTICE);
+                trigger_error('Could not connect RPC-Server.', E_USER_NOTICE);
             }
-        }
-        else
-        {
-            $this->SendPowerEvent(false);
-            $this->SetTimerInterval("KeepAlive", 0);
         }
 
         $this->GetParentData();
 
         $this->SetStatus($NewState);
 
-        if ($this->ReadPropertyBoolean('Watchdog'))
+
+        switch ($NewState)
         {
-            if ($WatchdogTimer >= 5)
-                $this->SetTimerInterval("Watchdog", $WatchdogTimer * 1000);
-            else
-                $this->SetTimerInterval("Watchdog", 0);
+            case IS_ACTIVE:
+                $this->SetWatchdogTimer(false);
+                $this->SetTimerInterval("KeepAlive", 60 * 1000);
+                $InstanceIDs = IPS_GetInstanceList();
+                foreach ($InstanceIDs as $IID)
+                {
+                    if (IPS_GetInstance($IID)['ConnectionID'] == $this->InstanceID)
+                        @IPS_ApplyChanges($IID);
+                }
+                $this->SendPowerEvent(true);
+                break;
+            case IS_INACTIVE:
+                $this->SetWatchdogTimer(true);
+                $this->SendPowerEvent(false);
+                break;
+            case IS_EBASE + 2: //misconfig
+                $this->SetWatchdogTimer(false);
+                $this->SetTimerInterval("KeepAlive", 0);
+                break;
+            case IS_EBASE + 3: //ERROR
+            case IS_EBASE + 4: //ERROR WebServer
+                $this->OpenIOParent($ParentID, false);
+                $this->SetWatchdogTimer(true);
+                $this->SetTimerInterval("KeepAlive", 0);
+                $this->SendPowerEvent(false);
+                break;
         }
     }
 
 ################## PRIVATE     
+
+    /**
+     * Prüft die Verbindung zum WebServer.
+     * 
+     * @return boolean True bei Erfolg, sonst false.
+     */
+    private function CheckWebserver()
+    {
+        $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
+        $JSON = $KodiData->ToRawRPCJSONString();
+        $Result = $this->DoWebserverRequest("/jsonrpc?request=" . rawurlencode($JSON));
+        if ($Result !== false)
+        {
+            $KodiResult = new Kodi_RPC_Data();
+            $KodiResult->CreateFromJSONString($Result);
+            $ret = $KodiResult->GetResult();
+            if (is_a($ret, 'KodiRPCException'))
+            {
+                trigger_error('Error (' . $ret->getCode() . '): ' . $ret->getMessage(), E_USER_NOTICE);
+            }
+            if ($KodiResult->GetResult() == "pong")
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Führt eine Anfrage an den Kodi-Webserver aus.
+     * 
+     * @param string $URI URI welche angefragt wird.
+     * @return boolean|string Inhalt der Antwort, False bei Fehler.
+     */
+    private function DoWebserverRequest(string $URI)
+    {
+        $Host = $this->ReadPropertyString('Host');
+        $Port = $this->ReadPropertyInteger('Webport');
+        $UseBasisAuth = $this->ReadPropertyBoolean('BasisAuth');
+        $User = $this->ReadPropertyString('Username');
+        $Pass = $this->ReadPropertyInteger('Password');
+        $URL = "http://" . $Host . ":" . $Port . $URI;
+        $ch = curl_init();
+        $timeout = 1; // 0 wenn kein Timeout
+        curl_setopt($ch, CURLOPT_URL, $URL);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000);
+        if ($UseBasisAuth)
+        {
+            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($ch, CURLOPT_USERPWD, $User . ':' . $Pass);
+        }
+        $this->SendDebug('DoWebrequest', $URL, 0);
+        $Result = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($http_code >= 400)
+        {
+            $this->SendDebug('Webrequest Error', $http_code, 0);
+            $Result = false;
+        }
+        else
+            $this->SendDebug('Webrequest Result:' . $http_code, substr($Result, 0, 100), 0);
+        curl_close($ch);
+        return $Result;
+    }
+
+    /**
+     * Öffnet oder schließt den übergeordneten IO-Parent
+     * @param int $ParentID
+     * @param bool $Open True für öffnen, false für schließen.
+     */
+    private function OpenIOParent(int $ParentID, bool $Open)
+    {
+        if ($ParentID == 0)
+            return;
+        IPS_SetProperty($ParentID, 'Open', $Open);
+        if (IPS_HasChanges($ParentID))
+            @IPS_ApplyChanges($ParentID);
+    }
+
+    /**
+     * Aktiviert / Deaktiviert den WatchdogTimer.
+     * 
+     * @param bool $Active True für aktiv, false für deaktiv.
+     */
+    private function SetWatchdogTimer(bool $Active)
+    {
+        if ($this->ReadPropertyBoolean('Watchdog'))
+        {
+            $Interval = $this->ReadPropertyInteger('Interval');
+            $Interval = ($Interval <= 5) ? 0 : $Interval;
+            if ($Active)
+                $this->SetTimerInterval("Watchdog", $Interval * 1000);
+            else
+                $this->SetTimerInterval("Watchdog", 0);
+        }
+    }
 
     /**
      * Sendet ein PowerEvent an die Childs.
@@ -342,23 +426,11 @@ class KodiSplitter extends IPSModule
      */
     public function GetImage(string $path)
     {
-        $Host = $this->ReadPropertyString('Host');
-        $Port = $this->ReadPropertyInteger('Webport');
-        $CoverURL = "http://" . $Host . ":" . $Port . "/image/" . urlencode($path);
-        $ch = curl_init();
-        $timeout = 1; // 0 wenn kein Timeout
-        curl_setopt($ch, CURLOPT_URL, $CoverURL);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        $this->SendDebug('Cover', $CoverURL, 0);
-        $CoverRAW = curl_exec($ch);
-        $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);
-        if ($http_code >= 400)
-        {
-            $this->SendDebug('Cover Error', $http_code, 0);
-            $CoverRAW = false;
-        }
-        curl_close($ch);
+        $CoverRAW = $this->DoWebserverRequest("/image/" . urlencode($path));
+
+        if ($CoverRAW === false)
+            trigger_error('Error on load image from Kodi.', E_USER_NOTICE);
+
         if ($CoverRAW === false)
             trigger_error('Error on load image from Kodi.', E_USER_NOTICE);
         return $CoverRAW;

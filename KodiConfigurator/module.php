@@ -286,16 +286,23 @@ class KodiConfigurator extends IPSModule
 
         if ($this->SearchPlaylistInstance($SplitterID, $ModuleID, $Typ) === FALSE)
         {
-            $DeviceID = IPS_CreateInstance($ModuleID);
-            if (IPS_GetInstance($DeviceID)['ConnectionID'] <> $SplitterID)
+            $DeviceID = @IPS_CreateInstance($ModuleID);
+            if ($DeviceID === false)
             {
-                IPS_DisconnectInstance($DeviceID);
-                IPS_ConnectInstance($DeviceID, $SplitterID);
+                trigger_error('Error on create PlaylistInstance.' . PHP_EOL, E_USER_WARNING);
             }
-            IPS_SetName($DeviceID, 'Kodi ' . self::$PlayerName[$Typ] . ' Playlist');
-            IPS_SetProperty($DeviceID, 'PlaylistID', $Typ);
-            IPS_ApplyChanges($DeviceID);
-            return $DeviceID;
+            else
+            {
+                if (IPS_GetInstance($DeviceID)['ConnectionID'] <> $SplitterID)
+                {
+                    IPS_DisconnectInstance($DeviceID);
+                    IPS_ConnectInstance($DeviceID, $SplitterID);
+                }
+                IPS_SetName($DeviceID, 'Kodi ' . self::$PlayerName[$Typ] . ' Playlist');
+                IPS_SetProperty($DeviceID, 'PlaylistID', $Typ);
+                IPS_RunScriptText('IPS_ApplyChanges(' . $DeviceID . ');');
+                return $DeviceID;
+            }
         }
         else
             trigger_error('Instance already exists.' . PHP_EOL, E_USER_WARNING);
@@ -317,15 +324,23 @@ class KodiConfigurator extends IPSModule
         if ($this->SearchPlayerInstance($SplitterID, $ModuleID, $Typ) === FALSE)
         {
             $DeviceID = IPS_CreateInstance($ModuleID);
-            if (IPS_GetInstance($DeviceID)['ConnectionID'] <> $SplitterID)
+            if ($DeviceID === false)
             {
-                IPS_DisconnectInstance($DeviceID);
-                IPS_ConnectInstance($DeviceID, $SplitterID);
+                trigger_error('Error on create PlayerInstance.' . PHP_EOL, E_USER_WARNING);
             }
-            IPS_SetName($DeviceID, 'Kodi ' . self::$PlayerName[$Typ] . ' Player');
-            IPS_SetProperty($DeviceID, 'PlayerID', $Typ);
-            IPS_ApplyChanges($DeviceID);
-            return $DeviceID;
+            else
+            {
+
+                if (IPS_GetInstance($DeviceID)['ConnectionID'] <> $SplitterID)
+                {
+                    IPS_DisconnectInstance($DeviceID);
+                    IPS_ConnectInstance($DeviceID, $SplitterID);
+                }
+                IPS_SetName($DeviceID, 'Kodi ' . self::$PlayerName[$Typ] . ' Player');
+                IPS_SetProperty($DeviceID, 'PlayerID', $Typ);
+                IPS_RunScriptText('IPS_ApplyChanges(' . $DeviceID . ');');
+                return $DeviceID;
+            }
         }
         else
             trigger_error('Instance already exists.' . PHP_EOL, E_USER_WARNING);

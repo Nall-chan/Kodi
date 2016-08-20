@@ -1681,7 +1681,12 @@ GUIDs der Instanzen (z.B. wenn Instanz per PHP angelegt werden soll):
 
 Eigenschaften von KodiDeviceAddons:  
 
-keine  
+| Eigenschaft     | Typ     | Standardwert | Funktion                                      |
+| :-------------: | :-----: | :----------: | :-------------------------------------------: |
+| showAddonlist   | boolean | true         | HTML-Tabelle mit den Addons erzeugen          |
+| Addonlistconfig | integer | auto         | Script mit den Style für die HTML-Tabelle     |
+| ThumbSize       | integer | 100          | Breite der Thumbnails                         |
+  
 
 Eigenschaften von KodiDeviceApplication:  
 
@@ -1702,7 +1707,11 @@ Eigenschaften von KodiDeviceAudioLibrary:
 
  Eigenschaften von KodiDeviceFavourites:  
 
-keine  
+| Eigenschaft    | Typ     | Standardwert | Funktion                                      |
+| :------------: | :-----: | :----------: | :-------------------------------------------: |
+| showFavlist    | boolean | true         | HTML-Tabelle mit den Favoriten erzeugen       |
+| Favlistconfig  | integer | auto         | Script mit den Style für die HTML-Tabelle     |
+| ThumbSize      | integer | 100          | Breite der Thumbnails                         |
 
  Eigenschaften von KodiDeviceFiles:  
 
@@ -1745,13 +1754,21 @@ keine
 | CoverSize   | integer | 300          | Die Höhe vom Cover in Pixel auf welche das 'Cover' skaliert wird |
 | CoverTyp    | string  | thumb        | Varianten: 'thumb', 'artist', 'poster', 'banner'                 |
 
+ Eigenschaften von KodiDevicePlaylist:  
+
+| Eigenschaft    | Typ     | Standardwert | Funktion                                      |
+| :------------: | :-----: | :----------: | :-------------------------------------------: |
+| PlaylistID     | integer | 0            | Playermodus: 0 = Audio, 1 = Video, 2 = Bilder |
+| showPlaylist   | boolean | true         | HTML-Tabelle mit der Playlist erzeugen        |
+| Playlistconfig | integer | auto         | Script mit den Style für die HTML-Tabelle     |
+
  Eigenschaften von KodiDeviceSystem:  
 
 | Eigenschaft     | Typ     | Standardwert | Funktion                                                         |
 | :-------------: | :-----: | :----------: | :--------------------------------------------------------------: |
 | PowerScript     | integer | 0            | Script welches zum einschalten des System ausgeführt werden soll |
 | PowerOff        | integer | 0            | Ausschalt-Methode: 0 = OFF, 1 = Hibernate, 2 = Standby           |
-| PreSelectScript | integer  | 0            | immer 0 nach Appylchanges, Erzeugt eine PowerScript aus Vorlagen |
+| PreSelectScript | integer | 0            | immer 0 nach Appylchanges, Erzeugt eine PowerScript aus Vorlagen |
 | MACAddress      | string  |              | MAC-Adresse für PowerScript                                      |
 
  Eigenschaften von KodiDeviceVideoLibrary:  

@@ -17,9 +17,32 @@
                     "caption": "JSON-RPC TCP-Port"
                 },
                 {
+                    "type": "Label",
+                    "label": "Kodi-Webserver is needed for image download."
+                },
+                
+                {
                     "name": "Webport",
                     "type": "NumberSpinner",
                     "caption": "Webserver-Port"
+                },                {
+                    "type": "Label",
+                    "label": "Optional HTTP Basic-Authentication:"
+                },
+{
+                    "name": "BasisAuth",
+                    "type": "CheckBox",
+                    "caption": "Active"
+                },
+                {
+                    "name": "Username",
+                    "type": "ValidationTextBox",
+                    "caption": "Username"
+                },
+                {
+                    "name": "Password",
+                    "type": "PasswordTextBox",
+                    "caption": "Password"
                 },
                 {
                     "type": "Label",
@@ -56,7 +79,12 @@
                 {
                     "code": 203,
                     "icon": "error",
-                    "caption": "Verbindung zu Kodi verloren."
+                    "caption": "Could not connect RPC-Server."
+                },
+                {
+                    "code": 204,
+                    "icon": "error",
+                    "caption": "Could not connect to webserver."
                 }
             ]
 }

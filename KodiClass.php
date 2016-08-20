@@ -255,10 +255,12 @@ abstract class KodiBase extends IPSModule
             }
             $Line = implode('|', $Lines);
             $this->SetReceiveDataFilter("(" . $Line . ")");
+            $this->SendDebug("SetFilter", "(" . $Line . ")", 0);
         }
         else
         {
             $this->SetReceiveDataFilter('.*"Namespace":"' . static::$Namespace . '".*');
+            $this->SendDebug("SetFilter", '.*"Namespace":"' . static::$Namespace . '".*', 0);
         }
         if ($this->HasActiveParent())
             $this->RequestProperties(array("properties" => static::$Properties));
@@ -324,6 +326,100 @@ abstract class KodiBase extends IPSModule
         }
     }
 
+    /**
+     * Liefert den Header der HTML-Tabelle.
+     * 
+     * @access private
+     * @param array $Config Die Kofiguration der Tabelle
+     * @return string HTML-String
+     */
+    protected function GetTableHeader($Config)
+    {
+        // Button Styles erzeugen
+        $html = "";
+        if (isset($Config['Button']))
+        {
+            $html = "<style>" . PHP_EOL;
+            foreach ($Config['Button'] as $Class => $Button)
+            {
+                $html.= '.' . $Class . ' {' . $Button . '}' . PHP_EOL;
+            }
+            $html .="</style>" . PHP_EOL;
+        }
+        // Kopf der Tabelle erzeugen
+        $html .= '<table style="' . $Config['Style']['T'] . '">' . PHP_EOL;
+        $html .= '<colgroup>' . PHP_EOL;
+        foreach ($Config['Spalten'] as $Index => $Value)
+        {
+            $html .= '<col width="' . $Config['Breite'][$Index] . '" />' . PHP_EOL;
+        }
+        $html .= '</colgroup>' . PHP_EOL;
+        $html .= '<thead style="' . $Config['Style']['H'] . '">' . PHP_EOL;
+        $html .= '<tr style="' . $Config['Style']['HR'] . '">';
+        foreach ($Config['Spalten'] as $Index => $Value)
+        {
+            $html .= '<th style="' . $Config['Style']['HF' . $Index] . '">' . $Value . '</th>';
+        }
+        $html .= '</tr>' . PHP_EOL;
+        $html .= '</thead>' . PHP_EOL;
+        $html .= '<tbody style="' . $Config['Style']['B'] . '">' . PHP_EOL;
+        return $html;
+    }
+
+    /**
+     * Liefert den Footer der HTML-Tabelle.
+     * 
+     * @access private
+     * @return string HTML-String
+     */
+    protected function GetTableFooter()
+    {
+        $html = '</tbody>' . PHP_EOL;
+        $html .= '</table>' . PHP_EOL;
+        return $html;
+    }
+
+    /**
+     * Holt das über $file übergebene Thumbnail vom Kodi-Webinterface, skaliert und konvertiert dieses.
+     * 
+     * @access private
+     * @param int $ParentID ID des Splitters.
+     * @param string $file Path zum Thumbnail im Kodi-Webserver
+     */
+    protected function GetThumbnail(int $ParentID, string $file, $SizeWidth = 0, $SizeHeight = 0)
+    {
+        if ($file == "")
+            $ThumbRAW = FALSE;
+        $ThumbRAW = @KODIRPC_GetImage($ParentID, $file);
+
+        if ($ThumbRAW !== false)
+        {
+            $image = @imagecreatefromstring($ThumbRAW);
+            if ($image !== false)
+            {
+                $width = imagesx($image);
+                $height = imagesy($image);
+                $factorw = 1;
+                $factorh = 1;
+                if ($SizeWidth > 0)
+                    if ($width > $SizeWidth)
+                        $factorw = $width / $SizeWidth;
+                if ($SizeHeight > 0)
+                    if ($height > $SizeHeight)
+                        $factorh = $height / $SizeHeight;
+                $factor = ($factorh < $factorw ? $factorw : $factorh);
+                if ($factor <> 1)
+                    $image = imagescale($image, $width / $factor, $height / $factor);
+                ob_start();
+                @imagepng($image);
+                $ThumbRAW = ob_get_contents(); // read from buffer                
+                ob_end_clean(); // delete buffer                
+            }
+        }
+
+        return $ThumbRAW;
+    }
+
 ################## PUBLIC
 
     /**
@@ -366,7 +462,7 @@ abstract class KodiBase extends IPSModule
             return false;
 
         $Event = $KodiData->GetEvent();
-        $this->SendDebug('Event', $Event, 0);
+        //$this->SendDebug('Event', $Event, 0);
 
         $this->Decode($KodiData->Method, $Event);
         return false;
@@ -413,6 +509,10 @@ abstract class KodiBase extends IPSModule
             $Data = $KodiData->ToRawRPCJSONString();
 
             $URI = IPS_GetProperty($instance['ConnectionID'], "Host") . ":" . IPS_GetProperty($instance['ConnectionID'], "Webport") . "/jsonrpc";
+            $UseBasisAuth = IPS_GetProperty($instance['ConnectionID'], 'BasisAuth');
+            $User = IPS_GetProperty($instance['ConnectionID'], 'Username');
+            $Pass = IPS_GetProperty($instance['ConnectionID'], 'Password');
+
             $header[] = "Accept: application/json";
             $header[] = "Cache-Control: max-age=0";
             $header[] = "Connection: close";
@@ -428,6 +528,12 @@ abstract class KodiBase extends IPSModule
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 1000);
             curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
             curl_setopt($ch, CURLOPT_TIMEOUT_MS, 300000);
+            if ($UseBasisAuth)
+            {
+                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                curl_setopt($ch, CURLOPT_USERPWD, $User . ':' . $Pass);
+            }
+
             $this->SendDebug("Send Direct", $Data, 0);
             $result = curl_exec($ch);
             curl_close($ch);
@@ -530,12 +636,14 @@ abstract class KodiBase extends IPSModule
             {
                 if ($hook['Hook'] == $WebHook)
                 {
-                    unset($hooks[$index]);
-                    $found = true;
+                    $found = $index;
+                    break;
                 }
             }
-            if ($found)
+
+            if ($found !== false)
             {
+                array_splice($hooks, $index, 1);
                 IPS_SetProperty($ids[0], "Hooks", json_encode($hooks));
                 IPS_ApplyChanges($ids[0]);
             }
@@ -607,6 +715,18 @@ abstract class KodiBase extends IPSModule
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Liefert den Parent der Instanz.
+     * 
+
+     * @return int|bool InstanzID des Parent, false wenn kein Parent vorhanden.
+     */
+    protected function GetParent()
+    {
+        $instance = IPS_GetInstance($this->InstanceID);
+        return ($instance['ConnectionID'] > 0) ? $instance['ConnectionID'] : false;
     }
 
     /**

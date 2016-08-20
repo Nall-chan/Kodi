@@ -1,6 +1,28 @@
 {
     "elements":
-            [
+            [{
+                    "name": "showAddonlist",
+                    "type": "CheckBox",
+                    "caption": "Show HTML-Box for Addons"
+                },
+                {
+                    "type": "Label",
+                    "label": "Script for HTML-Box Desgin:"
+                },
+                {
+                    "name": "Addonlistconfig",
+                    "type": "SelectScript",
+                    "caption": "Script:"
+                },
+                {
+                    "type": "Label",
+                    "label": "Size (width) for addon thumnails:"
+                },
+                {
+                    "name": "ThumbSize",
+                    "type": "NumberSpinner",
+                    "caption": "Thumb width"
+                }
             ],
     "actions":
             [

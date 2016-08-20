@@ -275,8 +275,9 @@ class KodiDeviceInput extends KodiBase
      */
     public function Destroy()
     {
-        if (IPS_GetKernelRunlevel() == KR_READY)
-            $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
+        if (IPS_GetKernelRunlevel() <> KR_READY)
+            return;
+        $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
     }
 
     /**

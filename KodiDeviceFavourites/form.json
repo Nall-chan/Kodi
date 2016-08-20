@@ -1,6 +1,28 @@
 {
     "elements":
-            [
+            [{
+                    "name": "showFavlist",
+                    "type": "CheckBox",
+                    "caption": "Show HTML-Box for favourites"
+                },
+                {
+                    "type": "Label",
+                    "label": "Script for HTML-Box Desgin:"
+                },
+                {
+                    "name": "Favlistconfig",
+                    "type": "SelectScript",
+                    "caption": "Script:"
+                },
+                {
+                    "type": "Label",
+                    "label": "Size (width) for favourites thumnails:"
+                },
+                {
+                    "name": "ThumbSize",
+                    "type": "NumberSpinner",
+                    "caption": "Thumb width"
+                }
             ],
     "actions":
             [
