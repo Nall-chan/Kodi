@@ -316,7 +316,7 @@ $Config["Spalten"] = array(
 // Breite der Spalten (Reihenfolge ist egal)
 $Config["Breite"] = array(
     "Thumbnail"=>"100em",
-    "Enabled" =>"50em",
+    "Enabled" =>"120em",
     "Name"=>"200em",
     "Version" => "100em",
     "Summary"=>"400em",
@@ -329,7 +329,7 @@ $Config["Breite"] = array(
 //    "Rating"=>"50em",
 //    "Type" => "100em",
 //    "Addonid" => "200em",
-    "Execute" => "100em"    
+	"Execute" => "100em"      
 
 );
 // Style Informationen der Tabelle
@@ -424,13 +424,17 @@ $Config["Style"] = array(
  );
  
 // CSS-Styles für die Klassen der Buttons.
-// enabled => Button für Addon aktivieren
-// disabled => Button für Addon deaktivieren
+// isenabled => Button für Addon ist aktivieren
+// isdisabled => Button für Addon ist deaktivieren
+// doenabled => Button für Addon aktivieren
+// dodisabled => Button für Addon deaktivieren
 //execute => Button für Addon ausführen
 $Config["Button"]= array(
-	"enabled" => "font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(0, 255, 0, 0.3);",
-	"disabled"=> "font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.3);",
-	"execute"=> "font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(0, 255, 0, 0.3);"
+	"isenabled" => "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgb(0, 255, 0);",
+	"isdisabled"=> "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.3);",
+	"doenabled" => "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(0, 255, 0, 0.3);",
+	"dodisabled"=> "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.1);",
+	"execute"=> "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 100%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgb(0, 255, 0);"
 );
 
 ### Konfig ENDE !!!
