@@ -14,7 +14,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  */
 
 /**
- * KodiDeviceApplication Klasse für den Namespace Player der KODI-API.
+ * KodiDevicePlayer Klasse für den Namespace Player der KODI-API.
  * Erweitert KodiBase.
  *
  * @package       Kodi
@@ -519,7 +519,9 @@ class KodiDevicePlayer extends KodiBase
         if (is_null($this->PlayerId))
             $this->PlayerId = $this->ReadPropertyInteger('PlayerID');
         if (is_null($this->isActive))
-            $this->isActive = $this->GetBuffer('_isactive');
+            $this->isActive = (bool)$this->GetBuffer('_isactive');
+        $this->SendDebug("isActive", ($this->isActive ? "TRUE" : "FALSE"),0);
+        
     }
 
     /**
@@ -539,7 +541,9 @@ class KodiDevicePlayer extends KodiBase
         else
             $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
 
-        $this->SetBuffer('_isactive', $this->isActive);
+        $this->SetBuffer('_isactive', (string)$this->isActive);
+        $this->SendDebug("getActivePlayer", ($this->isActive ? "TRUE" : "FALSE"),0);
+        
         return (bool) $this->isActive;
     }
 
@@ -552,7 +556,8 @@ class KodiDevicePlayer extends KodiBase
     private function setActivePlayer(bool $isActive)
     {
         $this->isActive = $isActive;
-        $this->SetBuffer('_isactive', $this->isActive);
+        $this->SetBuffer('_isactive', (string)$this->isActive);
+        $this->SendDebug("setActive", ($this->isActive ? "TRUE" : "FALSE"),0);
     }
 
     /**

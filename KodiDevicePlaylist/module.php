@@ -83,6 +83,7 @@ class KodiDevicePlaylist extends KodiBase
         "video" => 1,
         "episode" => 1,
         "movie" => 1,
+        "picture" => 2,
         "pictures" => 2
     );
 
@@ -266,7 +267,7 @@ if (isset($_GET["Index"]))
 
         $this->RegisterVariableInteger("position", "Playlist Position", "Tracklist." . $this->InstanceID . ".Kodi", 1);
         $this->EnableAction("position");
-
+        $this->ClearBufferList();
         $this->Init();
         parent::ApplyChanges();
     }
@@ -317,6 +318,9 @@ if (isset($_GET["Index"]))
 
         $this->SendDebug($Method, $KodiPayload, 0);
 
+        if (property_exists($KodiPayload, 'property'))
+            $KodiPayload = $KodiPayload->property;
+
         switch ($Method)
         {
             case 'GetProperties':
@@ -329,6 +333,34 @@ if (isset($_GET["Index"]))
                             if ($this->SetValueInteger($param, (int) $value + 1))// and ( $KodiPayload->playlistid <> -1))
                                 $this->RefreshPlaylist();
                             break;
+                        case "shuffled":
+                            $this->ClearBufferList();
+                            $this->SetBuffer('LastAddonItem', 0);
+                            $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall,));
+                            $ret = $this->SendDirect($KodiData);
+                            if (is_null($ret))
+                                break;
+                            if ($ret->limits->total > 0)
+                                $items = json_decode(json_encode($ret->items), true);
+                            else
+                                break;
+                            foreach ($items as $Index => $item)
+                            {
+                                if ($item['title'] == "")
+                                {
+                                    if ($item['label'] <> "")
+                                        $item['title'] = $item['label'];
+                                    else
+                                    {
+                                        $parts = explode('/', $item['file']);
+                                        $item['title'] = array_pop($parts);
+                                    }
+                                }
+                                $this->AddItemToBufferList($Index, $item);
+                            }
+                            $this->SetBuffer('LastAddonItem', $Index);
+                            $this->RefreshPlaylist(); //Liste neu bauen
+                            break;
                     }
                 }
                 break;
@@ -338,37 +370,71 @@ if (isset($_GET["Index"]))
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
                 $KodiData->GetProperties(array('playerid' => $this->PlaylistId, 'properties' => array("playlistid", "position")));
                 $ret = $this->SendDirect($KodiData);
-                if (is_null($ret))
-                    return;
-                $this->Decode('GetProperties', $ret);
-                break;
-            case 'OnAdd':
-                $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => array('start' => $KodiPayload->position, 'end' => $KodiPayload->position + 1)));
+                if (!is_null($ret))
+                    $this->Decode('GetProperties', $ret);
+                $LastAddonItem = (int) $this->GetBuffer('LastAddonItem');
+                if ($LastAddonItem > 0)
+                    break;
+
+                $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall,));
                 $ret = $this->SendDirect($KodiData);
                 if (is_null($ret))
                     break;
                 if ($ret->limits->total > 0)
-                    $item = json_decode(json_encode($ret->items), true)[0];
+                    $items = json_decode(json_encode($ret->items), true);
                 else
                     break;
-
-                if ($item['title'] == "")
+                foreach ($items as $Index => $item)
                 {
-                    if ($item['label'] <> "")
-                        $item['title'] = $item['label'];
-                    else
+                    if ($item['title'] == "")
                     {
-                        $parts = explode('/', $item['file']);
-                        $item['title'] = array_pop($parts);
+                        if ($item['label'] <> "")
+                            $item['title'] = $item['label'];
+                        else
+                        {
+                            $parts = explode('/', $item['file']);
+                            $item['title'] = array_pop($parts);
+                        }
                     }
+                    $this->AddItemToBufferList($Index, $item);
                 }
-                $this->SendDebug("AddBuffer", $KodiPayload, 0);
-                $this->AddItemToBufferList($KodiPayload->position, $item);
-                if ($ret->limits->total == $KodiPayload->position + 1)
+                $this->SetBuffer('LastAddonItem', $Index);
+                $this->RefreshPlaylist(); //Liste neu bauen
+                break;
+            case 'OnAdd':
+                $LastAddonItem = (int) $this->GetBuffer('LastAddonItem');
+                if (($LastAddonItem > 0 ) and ( $LastAddonItem >= $KodiPayload->position))
+                    break;
+                $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => array('start' => $LastAddonItem)));
+                $ret = $this->SendDirect($KodiData);
+                if (is_null($ret))
+                    break;
+                if ($ret->limits->total > 0)
+                    $items = json_decode(json_encode($ret->items), true);
+                else
+                    break;
+                foreach ($items as $Index => $item)
                 {
-                    $this->SendDebug('REFRESH_HTML', 'REFRESH_HTML', 0);
-                    $this->RefreshPlaylist(); //Liste neu bauen
+
+                    if ($item['title'] == "")
+                    {
+                        if ($item['label'] <> "")
+                            $item['title'] = $item['label'];
+                        else
+                        {
+                            $parts = explode('/', $item['file']);
+                            $item['title'] = array_pop($parts);
+                        }
+                    }
+                    $this->SendDebug("AddBuffer", $item, 0);
+                    $this->AddItemToBufferList($Index + $LastAddonItem, $item);
                 }
+                $this->SetBuffer('LastAddonItem', $Index + $LastAddonItem);
+//                if ($ret->limits->total == $KodiPayload->position + 1)
+//                {
+                $this->SendDebug('REFRESH_HTML', 'REFRESH_HTML', 0);
+                $this->RefreshPlaylist(); //Liste neu bauen
+//                }
                 break;
             case 'OnRemove':
                 // function welche ein Item aus dem Buff entfernt
@@ -524,6 +590,7 @@ if (isset($_GET["Index"]))
             }
             $this->SetBuffer("Bufferlist", "");
         }
+        $this->SetBuffer('LastAddonItem', 0);
     }
 
     /**
@@ -649,6 +716,7 @@ $Config["Spalten"] = array(
     "Position"=>"Pos",
     "Type" => "Type",
     "Title"=>"Titel",
+    "Showtitle"=>"Serie",    
     "Season"=>"S",
     "Episode"=>"E",
     "Album" => "Album",
@@ -670,6 +738,7 @@ $Config["Spalten"] = array(
 | Type             | string  | Typ des Eintrags                    |
 | Id               | integer | UID der Datei in der Kodi-Datenbank |
 | Title            | string  | Titel                               |
+| Showtitle        | string  | Serienname                          |
 | Season           | integer | Season                              |
 | Episode          | integer | Episode                             | 
 | Genre            | string  | Genre                               |
@@ -686,6 +755,7 @@ $Config["Breite"] = array(
     "Play" =>"50em",
     "Position" => "50em",
     "Type" => "100em",
+    "Showtitle" => "300em",
     "Title" => "300em",
     "Season" => "50em",
     "Episode" => "50em",
@@ -713,6 +783,8 @@ $Config["Style"] = array(
     "HFType"  => "color:#ffffff; width:35px; align:left;",
     // <th>-Tag Feld Title:
     "HFTitle"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Showtitle:
+    "HFShowtitle"  => "color:#ffffff; width:35px; align:left;",
     // <th>-Tag Feld Season:
     "HFSeason"  => "color:#ffffff; width:35px; align:left;",
     // <th>-Tag Feld Episode:
@@ -749,6 +821,10 @@ $Config["Style"] = array(
     "DFGType" => "text-align:center;",
     "DFUType" => "text-align:center;",
     "DFAType" => "text-align:center;",
+    // <td>-Tag Feld Showtitle:
+    "DFGShowtitle" => "text-align:center;",
+    "DFUShowtitle" => "text-align:center;",
+    "DFAShowtitle" => "text-align:center;",
     // <td>-Tag Feld Title:
     "DFGTitle" => "text-align:center;",
     "DFUTitle" => "text-align:center;",

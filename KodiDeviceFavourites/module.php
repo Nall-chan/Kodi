@@ -218,7 +218,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
     protected function FilterFav($Fav)
     {
 
-        if (($Fav["type"] == "window") or ( $Fav["type"] == "media"))
+        if (($Fav["type"] == "window") or ( $Fav["type"] == "media")or ( $Fav["type"] == "script"))
             return true;
         return false;
     }
@@ -245,7 +245,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
                 $this->SendDebug('create script HOOK', $Data, 0);
                 break;
             case "unknown":
-                $this->SendDebug('create nknown HOOK', $Data, 0);
+                $this->SendDebug('create unknown HOOK', $Data, 0);
                 break;
             default:
                 $this->SendDebug('create illegal HOOK', $Data, 0);
@@ -374,6 +374,12 @@ echo serialize($Config);
                 break;
             case "script":
                 $this->SendDebug('script HOOK', $Path, 0);
+                $KodiData = new Kodi_RPC_Data('Addons');
+                $KodiData->ExecuteAddon(array("addonid" => $Path));
+                $ret = $this->SendDirect($KodiData);
+                $this->SendDebug('script HOOK', $ret, 0);
+                // ret = OK...aber wie Fehler ausgeben ?!
+
                 break;
             case "unknown":
                 $this->SendDebug('unknown HOOK', $Path, 0);

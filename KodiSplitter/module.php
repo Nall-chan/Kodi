@@ -238,7 +238,7 @@ class KodiSplitter extends IPSModule
         {
             case IS_ACTIVE:
                 $this->SetWatchdogTimer(false);
-                $this->SetTimerInterval("KeepAlive", 60 * 1000);
+                $this->SetTimerInterval("KeepAlive", 180 * 1000);
                 $InstanceIDs = IPS_GetInstanceList();
                 foreach ($InstanceIDs as $IID)
                 {
@@ -355,7 +355,7 @@ class KodiSplitter extends IPSModule
         if ($this->ReadPropertyBoolean('Watchdog'))
         {
             $Interval = $this->ReadPropertyInteger('Interval');
-            $Interval = ($Interval <= 5) ? 0 : $Interval;
+            $Interval = ($Interval < 5) ? 0 : $Interval;
             if ($Active)
                 $this->SetTimerInterval("Watchdog", $Interval * 1000);
             else
