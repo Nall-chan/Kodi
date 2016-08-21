@@ -21,7 +21,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 ## 1. Funktionsumfang
 
  Ermöglicht das Steuern und das empfangen von Statusänderungen, von der Mediacenter-Software Kodi über das Netzwerk.
- Direkte (eingeschränkte) Bedienung im WebFront möglich.
+ Direkte Bedienung im WebFront möglich.
  Abbilden fast der gesamten Kodi-API in vollen Funktionsumfangs in PHP-Befehlen für eigene Scripte in IPS.
  Folgende Namespaces der API wurden aktuell nicht berücksichtigt, sollte hier Bedarf bestehen, so können Diese noch nachgepflegt werden:
 - Profiles  
@@ -51,8 +51,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
     - Allow programs on other systems to control Kodi.
  - In Settings/Services/Webserver
     - Allow control of Kodi via HTTP
-
-Aktuell wird eine Authentifizierung des Webservers nicht unterstützt.
+    - Username und Password nach eigenen Ermessen.
 
 
 ## 5. Einrichten der Instanzen in IPS
@@ -74,7 +73,7 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
  **Kodi Addons (KodiDeviceAddons):**  
  RPC-Namensraum : Addons
  
- Addons                 - de/aktivieren, lesen und ausführen.  
+ Addons                 - de/aktivieren, lesen, visualisieren und ausführen.  
  
 ---
 
@@ -103,7 +102,7 @@ Das Setzen von Daten in der Datenbank ist nicht möglich!
 **Kodi Favoriten (KodiDeviceFavourites):**  
  RPC-Namensraum : Favourites  
 
- Favoriten   - Lesen
+ Favoriten   - Lesen, visualisieren und ausführen.
 
 ---
 
