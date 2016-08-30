@@ -482,7 +482,7 @@ abstract class KodiBase extends IPSModule
         $this->SendDebug('Send', $JSONData, 0);
         if ($anwser === false)
         {
-            $this->SendDebug('Receive', 'No answer', 0);
+            $this->SendDebug('Receive', 'No valid answer', 0);
             return NULL;
         }
         $result = unserialize($anwser);
@@ -1039,6 +1039,7 @@ class KodiRPCException extends Exception
 class Kodi_RPC_Data extends stdClass
 {
 
+    static $MethodTyp = 0;
     static $EventTyp = 1;
     static $ResultTyp = 2;
 
@@ -1116,24 +1117,23 @@ class Kodi_RPC_Data extends stdClass
     {
         if (!is_null($Namespace))
             $this->Namespace = $Namespace;
-        if (!is_null($Method))
+        if (is_null($Method))
+            $this->Typ = Kodi_RPC_Data::$ResultTyp;
+        else
+        {
             $this->Method = $Method;
+            $this->Typ = Kodi_RPC_Data::$MethodTyp;
+        }
         if (is_array($Params))
             $this->Params = (object) $Params;
         if (is_object($Params))
             $this->Params = (object) $Params;
         if (is_null($Id))
-        {
             $this->Id = round(explode(" ", microtime())[0] * 10000);
-            $this->Typ = Kodi_RPC_Data::$ResultTyp;
-        }
         else
         {
             if ($Id > 0)
-            {
                 $this->Id = $Id;
-                $this->Typ = Kodi_RPC_Data::$ResultTyp;
-            }
             else
                 $this->Typ = Kodi_RPC_Data::$EventTyp;
         }
@@ -1150,6 +1150,7 @@ class Kodi_RPC_Data extends stdClass
     public function __call($name, $arguments)
     {
         $this->Method = $name;
+        $this->Typ = self::$MethodTyp;
         if (count($arguments) == 0)
             $this->Params = new stdClass ();
         else
@@ -1172,13 +1173,9 @@ class Kodi_RPC_Data extends stdClass
     public function GetResult()
     {
         if (!is_null($this->Error))
-        {
             return $this->GetErrorObject();
-        }
         if (!is_null($this->Result))
-        {
             return $this->Result;
-        }
         return array();
     }
 
@@ -1232,18 +1229,22 @@ class Kodi_RPC_Data extends stdClass
         if (property_exists($Data, 'Namespace'))
             $this->Namespace = $Data->Namespace;
         if (property_exists($Data, 'Method'))
-            $this->Method = $Data->Method;
-        if (property_exists($Data, 'Params'))
-            $this->Params = $this->DecodeUTF8($Data->Params);
-        if (property_exists($Data, 'Typ'))
-            $this->Typ = $Data->Typ;
-        if (property_exists($Data, 'Id'))
         {
-            $this->Id = $Data->Id;
-            $this->Typ = Kodi_RPC_Data::$ResultTyp;
+            $this->Method = $Data->Method;
+            $this->Typ = self::$MethodTyp;
         }
         else
+            $this->Typ = self::$ResultTyp;
+        if (property_exists($Data, 'Params'))
+            $this->Params = $this->DecodeUTF8($Data->Params);
+
+        if (property_exists($Data, 'Id'))
+            $this->Id = $Data->Id;
+        else
             $this->Typ = Kodi_RPC_Data::$EventTyp;
+
+        if (property_exists($Data, 'Typ'))
+            $this->Typ = $Data->Typ;
     }
 
     /**

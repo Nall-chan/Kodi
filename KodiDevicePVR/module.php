@@ -173,13 +173,13 @@ class KodiDevicePVR extends KodiBase
             $this->UnregisterVariable("available");
 
         if ($this->ReadPropertyBoolean('showIsRecording'))
-            $this->RegisterVariableBoolean("recording", "Aufnahame läuft", "", 3);
+            $this->RegisterVariableBoolean("recording", "Aufnahme läuft", "", 3);
         else
             $this->UnregisterVariable("recording");
 
         if ($this->ReadPropertyBoolean('showDoRecording'))
         {
-            $this->RegisterVariableBoolean("record", "Aufnahame aktueller Kanal", "~Switch", 4);
+            $this->RegisterVariableBoolean("record", "Aufnahme aktueller Kanal", "~Switch", 4);
             $this->EnableAction("record");
         }
         else
@@ -197,7 +197,7 @@ class KodiDevicePVR extends KodiBase
         }
         else
             $this->UnregisterVariable("scan");
-        parent::ApplyChanges();
+        @parent::ApplyChanges();
     }
 
 ################## PRIVATE     
@@ -333,9 +333,7 @@ class KodiDevicePVR extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->channeldetails), true);
-        return array();
+        return json_decode(json_encode($ret->channeldetails), true);
     }
 
     /**
@@ -429,7 +427,7 @@ class KodiDevicePVR extends KodiBase
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetBroadcastDetails(array("broadcastid" => $BroadcastId, "properties" => static::$BroadcastItemList));
+        $KodiData->GetBroadcastDetails(array("broadcastid" => $BroadcastId));//, "properties" => static::$BroadcastItemList));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;

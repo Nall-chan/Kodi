@@ -422,6 +422,7 @@ echo serialize($Config);
         $ret = $this->SendDirect($KodiData);
         if ($ret->limits->total > 0)
             return json_decode(json_encode($ret->favourites), true);
+        return array();
     }
 
 }

@@ -494,7 +494,7 @@ class KodiSplitter extends IPSModule
      */
     public function ForwardData($JSONString)
     {
-        $this->SendDebug('Forward', $JSONString, 0);
+//        $this->SendDebug('Forward', $JSONString, 0);
 
         $Data = json_decode($JSONString);
         if ($Data->DataID <> "{0222A902-A6FA-4E94-94D3-D54AA4666321}")
@@ -504,6 +504,7 @@ class KodiSplitter extends IPSModule
         try
         {
             $anwser = $this->Send($KodiData);
+            //          $this->SendDebug('Result', $anwser, 0);
             if (!is_null($anwser))
                 return serialize($anwser);
         }
@@ -672,6 +673,7 @@ class KodiSplitter extends IPSModule
      */
     protected function Send(Kodi_RPC_Data $KodiData)
     {
+
         try
         {
             if (!$this->HasActiveParent())
@@ -778,6 +780,10 @@ class KodiSplitter extends IPSModule
                     $this->SendDebug($Message . " Params", $Data->Params, 0);
                     break;
             }
+        }
+        else if (is_a($Data, 'KodiRPCException'))
+        {
+            parent::SendDebug('Error', $Data->getCode() . ' : ' . $Data->getMessage(), 0);
         }
         elseif (is_array($Data))
         {

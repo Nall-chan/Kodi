@@ -259,13 +259,20 @@ class KodiConfigurator extends IPSModule
         if ($this->SearchInstance($SplitterID, $ModuleID) === FALSE)
         {
             $DeviceID = IPS_CreateInstance($ModuleID);
-            if (IPS_GetInstance($DeviceID)['ConnectionID'] <> $SplitterID)
+            if ($DeviceID === false)
             {
-                IPS_DisconnectInstance($DeviceID);
-                IPS_ConnectInstance($DeviceID, $SplitterID);
+                trigger_error('Error on create ' . IPS_GetModule($ModuleID)["Aliases"][0] . '.' . PHP_EOL, E_USER_WARNING);
             }
-            IPS_SetName($DeviceID, IPS_GetModule($ModuleID)["Aliases"][0]);
-            return $DeviceID;
+            else
+            {
+                if (IPS_GetInstance($DeviceID)['ConnectionID'] <> $SplitterID)
+                {
+                    IPS_DisconnectInstance($DeviceID);
+                    IPS_ConnectInstance($DeviceID, $SplitterID);
+                }
+                IPS_SetName($DeviceID, IPS_GetModule($ModuleID)["Aliases"][0]);
+                return $DeviceID;
+            }
         }
         else
             trigger_error('Instance already exists.' . PHP_EOL, E_USER_WARNING);
