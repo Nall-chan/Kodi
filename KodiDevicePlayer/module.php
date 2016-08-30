@@ -490,7 +490,7 @@ class KodiDevicePlayer extends KodiBase
         $this->RegisterVariableString("label", "Titel", "", 14);
         $this->RegisterVariableInteger("Status", "Status", "Status.Kodi", 3);
         $this->EnableAction("Status");
-        $this->RegisterVariableInteger("speed", "Geschwindigkeit", "Speed.Kodi", 10);
+        $this->RegisterVariableInteger("speed", "Geschwindigkeit", "Speed." . $this->InstanceID . ".Kodi", 10);
         $this->RegisterVariableInteger("percentage", "Position", "Intensity.Kodi", 26);
         $this->EnableAction("percentage");
 
