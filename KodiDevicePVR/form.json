@@ -20,6 +20,36 @@
                     "name": "showDoScanning",
                     "type": "CheckBox",
                     "caption": "Show Action-Variable for serach channels"
+                }, {
+                    "name": "showTVChannellist",
+                    "type": "CheckBox",
+                    "caption": "Show HTML-Box for TV channels"
+                }, {
+                    "type": "Label",
+                    "label": "Max channels to be displayed:"
+                },
+                {
+                    "name": "showMaxTVChannels",
+                    "type": "NumberSpinner",
+                    "caption": "Channels"
+                },
+                {
+                    "type": "Label",
+                    "label": "Script for HTML-Box Desgin:"
+                },
+                {
+                    "name": "TVChannellistconfig",
+                    "type": "SelectScript",
+                    "caption": "Script:"
+                },
+                {
+                    "type": "Label",
+                    "label": "Size (width) for favourites thumnails:"
+                },
+                {
+                    "name": "TVThumbSize",
+                    "type": "NumberSpinner",
+                    "caption": "Thumb width"
                 }
             ],
     "actions":

@@ -150,6 +150,9 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
         $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
         if ($ScriptID == 0)
             return;
+                if (!IPS_ScriptExists($ScriptID))
+            return;
+
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
@@ -174,13 +177,16 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
                 }
                 if (array_key_exists('Thumbnail', $Config["Spalten"]))
                 {
-                    $CoverRAW = false;
-                    if ($ParentID !== false)
-                        $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("ThumbSize"), 0);
-                    if ($CoverRAW === false)
-                        $Line['Thumbnail'] = "";
-                    else
-                        $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                    if ($Line['Thumbnail'] <> "")
+                    {
+                        $CoverRAW = false;
+                        if ($ParentID !== false)
+                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("ThumbSize"), 0);
+                        if ($CoverRAW === false)
+                            $Line['Thumbnail'] = "";
+                        else
+                            $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                    }
                 }
                 if (!array_key_exists('Path', $Line))
                     if (array_key_exists('Windowparameter', $Line))
@@ -421,7 +427,7 @@ echo serialize($Config);
 
         $ret = $this->SendDirect($KodiData);
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->favourites), true);
+            return $KodiData->ToArray($ret->favourites);
         return array();
     }
 

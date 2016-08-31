@@ -161,6 +161,9 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
         $ScriptID = $this->ReadPropertyInteger('Addonlistconfig');
         if ($ScriptID == 0)
             return;
+        if (!IPS_ScriptExists($ScriptID))
+            return;
+        
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
@@ -186,13 +189,16 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
                 }
                 if (array_key_exists('Thumbnail', $Config["Spalten"]))
                 {
-                    $CoverRAW = false;
-                    if ($ParentID !== false)
-                        $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("ThumbSize"), 0);
-                    if ($CoverRAW === false)
-                        $Line['Thumbnail'] = "";
-                    else
-                        $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                    if ($Line['Thumbnail'] <> "")
+                    {
+                        $CoverRAW = false;
+                        if ($ParentID !== false)
+                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("ThumbSize"), 0);
+                        if ($CoverRAW === false)
+                            $Line['Thumbnail'] = "";
+                        else
+                            $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                    }
                 }
                 if ((array_key_exists('Fanart', $Config["Spalten"])) and ( $Line['Fanart'] <> ""))
                 {
@@ -625,7 +631,7 @@ echo serialize($Config);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->addon), true);
+        return $KodiData->ToArray($ret->addon);
     }
 
     /**
@@ -643,7 +649,7 @@ echo serialize($Config);
             return false;
 
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->addons), true);
+            return $KodiData->ToArray($ret->addons);
         return array();
     }
 

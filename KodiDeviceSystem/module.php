@@ -307,6 +307,9 @@ function wake($ip, $mac)
         $ID = $this->ReadPropertyInteger('PowerScript');
         if ($ID > 0)
         {
+            if (!IPS_ScriptExists($ScriptID))
+                return false;
+
             if (IPS_RunScriptWaitEx($ID, array("SENDER" => "Kodi.System")) == "")
             {
                 $this->SetValueBoolean('Power', true);

@@ -418,7 +418,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->episodedetails), true);
+        return $KodiData->ToArray($ret->episodedetails);
     }
 
     /**
@@ -435,7 +435,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->episodes), true);
+            return $KodiData->ToArray($ret->episodes);
         return array();
     }
 
@@ -462,7 +462,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->genres), true);
+            return $KodiData->ToArray($ret->genres);
         return array();
     }
 
@@ -486,7 +486,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->moviedetails), true);
+        return $KodiData->ToArray($ret->moviedetails);
     }
 
     /**
@@ -503,7 +503,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->movies), true);
+            return $KodiData->ToArray($ret->movies);
         return array();
     }
 
@@ -527,7 +527,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->setdetails), true);
+        return $KodiData->ToArray($ret->setdetails);
     }
 
     /**
@@ -544,7 +544,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->sets), true);
+            return $KodiData->ToArray($ret->sets);
         return array();
     }
 
@@ -568,7 +568,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->musicvideodetails), true);
+        return $KodiData->ToArray($ret->musicvideodetails);
     }
 
     /**
@@ -585,7 +585,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->musicvideos), true);
+            return $KodiData->ToArray($ret->musicvideos);
         return array();
     }
 
@@ -603,7 +603,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->episodes), true);
+            return $KodiData->ToArray($ret->episodes);
         return array();
     }
 
@@ -621,7 +621,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->movies), true);
+            return $KodiData->ToArray($ret->movies);
         return array();
     }
 
@@ -639,7 +639,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->musicvideos), true);
+            return $KodiData->ToArray($ret->musicvideos);
         return array();
     }
 
@@ -663,7 +663,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->seasons), true);
+        return $KodiData->ToArray($ret->seasons);
     }
 
     /**
@@ -686,7 +686,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->tvshowdetails), true);
+        return $KodiData->ToArray($ret->tvshowdetails);
     }
 
     /**
@@ -703,7 +703,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->tvshows), true);
+            return $KodiData->ToArray($ret->tvshows);
         return array();
     }
 

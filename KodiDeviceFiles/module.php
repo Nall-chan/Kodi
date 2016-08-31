@@ -194,7 +194,7 @@ class KodiDeviceFiles extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->sources), true);
+            return $KodiData->ToArray($ret->sources);
         return array();
     }
 
@@ -232,7 +232,7 @@ class KodiDeviceFiles extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->filedetails), true);
+        return $KodiData->ToArray($ret->filedetails);
     }
 
     /**
@@ -256,7 +256,7 @@ class KodiDeviceFiles extends KodiBase
             return false;
 
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->files), true);
+            return $KodiData->ToArray($ret->files);
         return array();
     }
 
@@ -296,7 +296,7 @@ class KodiDeviceFiles extends KodiBase
             return false;
 
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->files), true);
+            return $KodiData->ToArray($ret->files);
         return array();
     }
 

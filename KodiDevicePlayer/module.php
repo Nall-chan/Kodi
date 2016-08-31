@@ -248,6 +248,7 @@ class KodiDevicePlayer extends KodiBase
         "video" => 1,
         "episode" => 1,
         "movie" => 1,
+        "channel"=>1,
         "picture" => 2,
         "pictures" => 2
     );
@@ -431,6 +432,7 @@ class KodiDevicePlayer extends KodiBase
                 ));
 
                 $this->RegisterVariableString("showtitle", "Serie", "", 13);
+                $this->RegisterVariableString("channel", "Kanal", "", 13);
                 $this->RegisterVariableInteger("season", "Staffel", "", 15);
                 $this->RegisterVariableInteger("episode", "Episode", "", 16);
 
@@ -1022,7 +1024,15 @@ class KodiDevicePlayer extends KodiBase
                 else
                     $this->SetValueString('showtitle', "");
 
-                $this->SetValueString('label', $ret->label);
+                if (property_exists($ret, 'title'))
+                    $this->SetValueString('label', $ret->title);
+                else
+                    $this->SetValueString('label', $ret->label);
+                
+                if (property_exists($ret, 'channel'))
+                    $this->SetValueString('channel', $ret->channel);
+                else
+                    $this->SetValueString('channel', "");
 
                 if (property_exists($ret, 'season'))
                     $this->SetValueInteger('season', $ret->season);
@@ -1245,13 +1255,11 @@ class KodiDevicePlayer extends KodiBase
     {
         $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetItem(array('playerid'
-            => $this->PlayerId, 'properties' => self::$ItemList))
-        ;
+        $KodiData->GetItem(array('playerid'=> $this->PlayerId, 'properties' => self::$ItemList));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->item), true);
+        return $KodiData->ToArray($ret->item);
     }
 
     /**

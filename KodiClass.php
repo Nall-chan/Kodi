@@ -410,6 +410,8 @@ abstract class KodiBase extends IPSModule
                 $factor = ($factorh < $factorw ? $factorw : $factorh);
                 if ($factor <> 1)
                     $image = imagescale($image, $width / $factor, $height / $factor);
+                imagealphablending($image, false);
+                imagesavealpha($image, true);
                 ob_start();
                 @imagepng($image);
                 $ThumbRAW = ob_get_contents(); // read from buffer                
@@ -1347,6 +1349,18 @@ class Kodi_RPC_Data extends stdClass
     }
 
     /**
+     * Erzeugt aus dem $Item ein Array.
+     * 
+     * @access public
+     * @param object $Item Das Objekt welches zu einem Array kovertiert wird.
+     * @return array Das konvertierte Objekt als Array.
+     */
+    public function ToArray($Item)
+    {
+        return $this->DecodeUTF8(json_decode(json_encode($this->EncodeUTF8($Item)), true));
+    }
+
+    /**
      * Führt eine UTF8-Dekodierung für einen String oder ein Objekt durch (rekursiv)
      * 
      * @access private
@@ -1364,6 +1378,14 @@ class Kodi_RPC_Data extends stdClass
                 $item->{$property} = $this->DecodeUTF8($value);
             }
         }
+        else if (is_array($item))
+        {
+            foreach ($item as $property => $value)
+            {
+                $item[$property] = $this->DecodeUTF8($value);
+            }
+        }
+
         return $item;
     }
 
@@ -1383,6 +1405,13 @@ class Kodi_RPC_Data extends stdClass
             foreach ($item as $property => $value)
             {
                 $item->{$property} = $this->EncodeUTF8($value);
+            }
+        }
+        else if (is_array($item))
+        {
+            foreach ($item as $property => $value)
+            {
+                $item[$property] = $this->EncodeUTF8($value);
             }
         }
         return $item;

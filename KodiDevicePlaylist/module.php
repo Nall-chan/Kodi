@@ -341,7 +341,7 @@ if (isset($_GET["Index"]))
                             if (is_null($ret))
                                 break;
                             if ($ret->limits->total > 0)
-                                $items = json_decode(json_encode($ret->items), true);
+                                $items = $KodiData->ToArray($ret->items);
                             else
                                 break;
                             foreach ($items as $Index => $item)
@@ -381,7 +381,7 @@ if (isset($_GET["Index"]))
                 if (is_null($ret))
                     break;
                 if ($ret->limits->total > 0)
-                    $items = json_decode(json_encode($ret->items), true);
+                    $items = $KodiData->ToArray($ret->items);
                 else
                     break;
                 foreach ($items as $Index => $item)
@@ -410,7 +410,7 @@ if (isset($_GET["Index"]))
                 if (is_null($ret))
                     break;
                 if ($ret->limits->total > 0)
-                    $items = json_decode(json_encode($ret->items), true);
+                    $items = $KodiData->ToArray($ret->items);
                 else
                     break;
                 foreach ($items as $Index => $item)
@@ -606,6 +606,9 @@ if (isset($_GET["Index"]))
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
         if ($ScriptID == 0)
             return;
+                if (!IPS_ScriptExists($ScriptID))
+            return;
+
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
@@ -918,7 +921,7 @@ echo serialize($Config);
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->items), true);
+            return $KodiData->ToArray($ret->items);
         return array();
     }
 
@@ -938,7 +941,7 @@ echo serialize($Config);
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->items), true);
+            return $KodiData->ToArray($ret->items);
         return array();
     }
 

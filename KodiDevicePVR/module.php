@@ -64,6 +64,23 @@ class KodiDevicePVR extends KodiBase
     );
 
     /**
+     * Alle Eigenschaften von Kanal-Items.
+     * 
+     * @access private
+     *  @var array 
+     */
+    static $ChanneltemListFull = array(
+        "thumbnail",
+        "channeltype",
+        "hidden",
+        "locked",
+        "channel",
+        "lastplayed",
+        "broadcastnow",
+        "broadcastnext"
+    );
+
+    /**
      * Alle Eigenschaften von Sendung-Items.
      * 
      * @access private
@@ -155,6 +172,27 @@ class KodiDevicePVR extends KodiBase
         $this->RegisterPropertyBoolean("showDoRecording", true);
         $this->RegisterPropertyBoolean("showIsScanning", true);
         $this->RegisterPropertyBoolean("showDoScanning", true);
+
+        $this->RegisterPropertyBoolean('showTVChannellist', true);
+        $this->RegisterPropertyInteger('showMaxTVChannels', 20);
+        $ID = @$this->GetIDForIdent('TVChannellistDesign');
+        if ($ID == false)
+            $ID = $this->RegisterScript('TVChannellistDesign', 'TV Channellist Config', $this->CreateTVChannellistConfigScript(), -7);
+        IPS_SetHidden($ID, true);
+        $this->RegisterPropertyInteger("TVChannellistconfig", $ID);
+        $this->RegisterPropertyInteger("TVThumbSize", 100);
+    }
+
+    /**
+     * Interne Funktion des SDK.
+     * 
+     * @access public
+     */
+    public function Destroy()
+    {
+        if (IPS_GetKernelRunlevel() <> KR_READY)
+            return;
+        $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
     }
 
     /**
@@ -197,7 +235,34 @@ class KodiDevicePVR extends KodiBase
         }
         else
             $this->UnregisterVariable("scan");
-        @parent::ApplyChanges();
+
+        if ($this->ReadPropertyBoolean('showTVChannellist'))
+        {
+            $this->RegisterVariableString("TVChannellist", "TV Kanäle", "~HTMLBox", 1);
+            $sid = $this->RegisterScript("WebHookTVChannellist", "WebHookTVChannellist", '<? //Do not delete or modify.
+if (isset($_GET["ID"]))
+    KODIPVR_ProcessHookdata(' . $this->InstanceID . ',"tv",$_GET);
+', -8);
+            IPS_SetHidden($sid, true);
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->RegisterHook('/hook/KodiTVChannellist' . $this->InstanceID, $sid);
+
+            $ID = @$this->GetIDForIdent('TVChannellistDesign');
+            if ($ID == false)
+                $ID = $this->RegisterScript('TVChannellistDesign', 'TVChannellist Config', $this->CreateTVChannellistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->RefreshTVChannellist();
+        }
+        else
+        {
+            $this->UnregisterVariable("TVChannellist");
+            $this->UnregisterScript("WebHookTVChannellist");
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
+        }
+
+        parent::ApplyChanges();
     }
 
 ################## PRIVATE     
@@ -224,6 +289,238 @@ class KodiDevicePVR extends KodiBase
         }
     }
 
+    /**
+     * Erzeugt aus der Liste der Favoriten eine HTML-Tabelle für eine ~HTMLBox-Variable.
+     * 
+     * @access private
+     */
+    private function RefreshTVChannellist()
+    {
+        if (!$this->ReadPropertyBoolean('showTVChannellist'))
+            return;
+        $ScriptID = $this->ReadPropertyInteger('TVChannellistconfig');
+        if ($ScriptID == 0)
+            return;
+        if (!IPS_ScriptExists($ScriptID))
+            return;
+        $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
+        $Config = @unserialize($result);
+        if (($Config === false) or ( !is_array($Config)))
+            throw new Exception('Error on read TV Channelistconfig-Script');
+
+        //$Channels = $this->GetChannels('tv');
+        $Max = $this->ReadPropertyInteger('showMaxTVChannels');
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetChannels(array("channelgroupid" => "alltv", "properties" => static::$ChanneltemListFull, 'limits' => array('end' => $Max)));
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret))
+            return;
+        if ($ret->limits->total == 0)
+            return;
+        $Channels = $KodiData->ToArray($ret->channels);
+
+        $Data = array_filter($Channels, array($this, "FilterChannels"), ARRAY_FILTER_USE_BOTH);
+        $HTMLData = $this->GetTableHeader($Config);
+        $pos = 0;
+
+        $ParentID = $this->GetParent();
+        if (count($Data) > 0)
+        {
+            foreach ($Data as $line)
+            {
+                $Line = array();
+                foreach ($line as $key => $value)
+                {
+                    if (is_string($key))
+                        $Line[ucfirst($key)] = $value;
+                    else
+                        $Line[$key] = $value; //$key is not a string
+                }
+                if (array_key_exists('Thumbnail', $Config["Spalten"]))
+                {
+                    if ($Line['Thumbnail'] <> "")
+                    {
+                        $CoverRAW = false;
+                        if ($ParentID !== false)
+                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("TVThumbSize"), 0);
+                        if ($CoverRAW === false)
+                            $Line['Thumbnail'] = "";
+                        else
+                            $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                    }
+                }
+                $this->SendDebug('Test', array_keys($Line), 0);
+                if (array_key_exists('Now', $Config["Spalten"]) and array_key_exists('Broadcastnow', $Line))
+                {
+                    if (array_key_exists("title", $Line['Broadcastnow']))
+                    {
+                        $Line['Now'] = $Line['Broadcastnow']['title'];
+                        if (array_key_exists("episodename", $Line['Broadcastnow']))
+                        {
+                            if ($Line['Broadcastnow']['episodename'] <> "")
+                                $Line['Now'] .= ' - ' . $Line['Broadcastnow']['episodename'];
+                        }
+                        if (array_key_exists("progresspercentage", $Line['Broadcastnow']))
+                        {
+                            $Line['Now'] .= ' (' . (int) $Line['Broadcastnow']['progresspercentage'] . '%)';
+                        }
+                    }
+                }
+                else
+                    $Line['Now'] = 'No Info';
+                if (array_key_exists('Next', $Config["Spalten"]) and array_key_exists('Broadcastnext', $Line))
+                {
+                    if (array_key_exists("title", $Line['Broadcastnext']))
+                    {
+                        $Line['Next'] = $Line['Broadcastnext']['title'];
+                        if (array_key_exists("episodename", $Line['Broadcastnext']))
+                        {
+                            if ($Line['Broadcastnext']['episodename'] <> "")
+                                $Line['Next'] .= ' - ' . $Line['Broadcastnext']['episodename'];
+                        }
+                        if (array_key_exists("starttime", $Line['Broadcastnext']))
+                        {
+                            $Line['Next'] .= ' (' . $Line['Broadcastnext']['starttime'] . ')';
+                        }
+                    }
+                }
+                else
+                    $Line['Next'] = 'No Info';
+
+                /*                if (!array_key_exists('Path', $Line))
+                  if (array_key_exists('Windowparameter', $Line))
+                  $Line['Path'] = $Line['Windowparameter'];
+                  else
+                  $Line['Path'] = ""; */
+
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet=function xhrGet(o) {var HTTP = new XMLHttpRequest();HTTP.open(\'GET\',o.url,true);HTTP.send();};window.xhrGet({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+
+                foreach ($Config['Spalten'] as $feldIndex => $value)
+                {
+                    if (!array_key_exists($feldIndex, $Line))
+                        $Line[$feldIndex] = '';
+                    if ($Line[$feldIndex] === -1)
+                        $Line[$feldIndex] = '';
+                    if (is_array($Line[$feldIndex]))
+                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
+                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
+                }
+                $HTMLData .= '</tr>' . PHP_EOL;
+                $pos++;
+//                if ($pos == $max)
+//                    break;
+            }
+        }
+        $HTMLData .= $this->GetTableFooter();
+        $this->SetValueString('TVChannellist', $HTMLData);
+    }
+
+    /**
+     * Filter die aktuell versteckten Kanäle aus.
+     * 
+     * @param array $Channel Array mit allen Kanälen.
+     * @return boolean True für behalten, False für verwerfen.
+     */
+    protected function FilterChannels($Channel)
+    {
+
+        return !$Channel["hidden"];
+    }
+
+    /**
+     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der TV Kanal-Tabelle enthält.
+     * 
+     * @access private
+     * @return string Ein PHP-Script welche als Grundlage für die User dient.
+     */
+    private function CreateTVChannellistConfigScript()
+    {
+        $Script = '<?
+### Konfig ab Zeile 10 !!!
+
+if ($_IPS["SENDER"] <> "Kodi")
+{
+	echo "Dieses Script kann nicht direkt ausgeführt werden!";
+	return;
+}
+##########   KONFIGURATION
+#### Tabellarische Ansicht
+# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die TV Kanäle dargestellt werden.
+
+// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
+// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
+$Config["Spalten"] = array(
+    "Thumbnail"=>"",
+    "Label" =>"Name",
+//    "Lastplayed" => "zuletzt gesehen",
+    "Now" => "es läuft",
+    "Next" => "gleich läuft"
+    
+);
+#### Mögliche Index-Felder
+/*
+        
+| Index       | Typ     | Beschreibung                        |
+| :---------: | :-----: | :---------------------------------: |
+| Thumbnail   | string  | Senderlogo                          |
+| Label       | string  | Name des Kanals                     |
+| Lastplayed  | string  | Wann zuletzt gesehen                |
+*/
+// Breite der Spalten (Reihenfolge ist egal)
+$Config["Breite"] = array(
+    "Thumbnail"=>"100em",
+    "Label"=>"150em",
+    "Now"=>"300em",
+    "Next"=>"300em",
+//    "Lastplayed"=>"300em"
+);
+// Style Informationen der Tabelle
+$Config["Style"] = array(
+    // <table>-Tag:
+    "T"    => "margin:0 auto; font-size:0.8em;",
+    // <thead>-Tag:
+    "H"    => "",
+    // <tr>-Tag im thead-Bereich:
+    "HR"   => "",
+    // <th>-Tag Feld Thumbnail:
+    "HFThumbnail"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Label:
+    "HFLabel"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Now:
+    "HFNow"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Next:
+    "HFNext"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Lastplayed:
+    "HFLastplayed"  => "color:#ffffff; width:35px; align:left;",
+    // <tbody>-Tag:
+    "B"    => "",
+    // <tr>-Tag:
+    "BRG"  => "background-color:#000000; color:#ffffff;",
+    "BRU"  => "background-color:#080808; color:#ffffff;",
+    // <td>-Tag Feld Thumbnail:
+    "DFGThumbnail" => "text-align:center;",
+    "DFUThumbnail" => "text-align:center;",
+    // <td>-Tag Feld Label:
+    "DFGLabel" => "text-align:center;",
+    "DFULabel" => "text-align:center;",
+    // <td>-Tag Feld Now:
+    "DFGNow" => "text-align:center;",
+    "DFUNow" => "text-align:center;",
+    // <td>-Tag Feld Next:
+    "DFGNext" => "text-align:center;",
+    "DFUNext" => "text-align:center;",
+    // <td>-Tag Feld Lastplayed:
+    "DFGLastplayed" => "text-align:center;",
+    "DFULastplayed" => "text-align:center;",
+    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade.
+ );
+ 
+### Konfig ENDE !!!
+echo serialize($Config);
+?>';
+        return $Script;
+    }
+
 ################## ActionHandler
 
     /**
@@ -247,6 +544,24 @@ class KodiDevicePVR extends KodiBase
     }
 
 ################## PUBLIC
+    /**
+     * IPS-Instanz-Funktion 'KODIFAV_ProcessHookdata'. Verarbeitet Daten aus dem Webhook.
+     * 
+     * @access public
+     * @param array $HookData Daten des Webhook.
+     */
+
+    public function ProcessHookdata($Typ, $HookData)
+    {
+        if (!isset($HookData["ID"]))
+            return;
+//        $Path = rawurldecode($HookData["Path"]);
+        $this->SendDebug($Typ . ' HOOK', $HookData["ID"], 0);
+        $KodiData = new Kodi_RPC_Data('Player');
+        $KodiData->Open(array("item" => array('channelid' => (int) $HookData["ID"])));
+        $ret = $this->Send($KodiData);
+        // ret = OK...aber wie Fehler ausgeben ?!
+    }
 
     /**
      * IPS-Instanz-Funktion 'KODIPVR_Scan'. Startet einen Suchlauf.
@@ -309,7 +624,7 @@ class KodiDevicePVR extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->channels), true);
+            return $KodiData->ToArray($ret->channels);
         return array();
     }
 
@@ -329,11 +644,11 @@ class KodiDevicePVR extends KodiBase
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetChannelDetails(array("channelid" => $ChannelId, "properties" => static::$ChanneltemList));
+        $KodiData->GetChannelDetails(array("channelid" => $ChannelId, "properties" => static::$ChanneltemListFull));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->channeldetails), true);
+        return $KodiData->ToArray($ret->channeldetails);
     }
 
     /**
@@ -357,7 +672,7 @@ class KodiDevicePVR extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->channelgroups), true);
+            return $KodiData->ToArray($ret->channelgroups);
         return array();
     }
 
@@ -382,7 +697,7 @@ class KodiDevicePVR extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->channelgroupdetails), true);
+            return $KodiData->ToArray($ret->channelgroupdetails);
         return array();
     }
 
@@ -407,7 +722,7 @@ class KodiDevicePVR extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->broadcasts), true);
+            return $KodiData->ToArray($ret->broadcasts);
         return array();
     }
 
@@ -427,11 +742,11 @@ class KodiDevicePVR extends KodiBase
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetBroadcastDetails(array("broadcastid" => $BroadcastId));//, "properties" => static::$BroadcastItemList));
+        $KodiData->GetBroadcastDetails(array("broadcastid" => $BroadcastId)); //, "properties" => static::$BroadcastItemList));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->broadcastdetails), true);
+        return $KodiData->ToArray($ret->broadcastdetails);
     }
 
     /**
@@ -448,7 +763,7 @@ class KodiDevicePVR extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->recordings), true);
+            return $KodiData->ToArray($ret->recordings);
         return array();
     }
 
@@ -472,7 +787,7 @@ class KodiDevicePVR extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->recordingdetails), true);
+        return $KodiData->ToArray($ret->recordingdetails);
     }
 
     /**
@@ -489,7 +804,7 @@ class KodiDevicePVR extends KodiBase
         if (is_null($ret))
             return false;
         if ($ret->limits->total > 0)
-            return json_decode(json_encode($ret->timers), true);
+            return $KodiData->ToArray($ret->timers);
         return array();
     }
 
@@ -513,7 +828,7 @@ class KodiDevicePVR extends KodiBase
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
-        return json_decode(json_encode($ret->timerdetails), true);
+        return $KodiData->ToArray($ret->timerdetails);
     }
 
     /**
