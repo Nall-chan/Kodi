@@ -150,7 +150,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
         $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
         if ($ScriptID == 0)
             return;
-                if (!IPS_ScriptExists($ScriptID))
+        if (!IPS_ScriptExists($ScriptID))
             return;
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
@@ -257,7 +257,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
                 $this->SendDebug('create illegal HOOK', $Data, 0);
                 return "";
         }
-        return 'onclick="window.xhrGet=function xhrGet(o) {var HTTP = new XMLHttpRequest();HTTP.open(\'GET\',o.url,true);HTTP.send();};window.xhrGet({ url: \'hook/KodiFavlist' . $this->InstanceID . '?Type=' . $Data['Type'] . '&Path=' . rawurlencode($Data['Path']) . $Extra . '\' })"';
+        return 'onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiFavlist' . $this->InstanceID . '?Type=' . $Data['Type'] . '&Path=' . rawurlencode($Data['Path']) . $Extra . '\' })"';
     }
 
     /**
@@ -358,7 +358,12 @@ echo serialize($Config);
     public function ProcessHookdata($HookData)
     {
         if (!((isset($HookData["Type"])) and ( isset($HookData["Path"]))))
+        {
+            $this->SendDebug('illegal HOOK', $HookData, 0);
+            trigger_error('Illegal hook', E_USER_NOTICE);
             return;
+        }
+
         $Path = rawurldecode($HookData["Path"]);
         switch ($HookData['Type'])
         {
@@ -368,7 +373,7 @@ echo serialize($Config);
                 $KodiData->Open(array("item" => array('file' => utf8_encode($Path))));
                 $ret = $this->Send($KodiData);
                 $this->SendDebug('media HOOK', $ret, 0);
-                // ret = OK...aber wie Fehler ausgeben ?!
+                echo $ret;
                 break;
             case "window":
                 $this->SendDebug('window HOOK', $Path, 0);
@@ -376,7 +381,7 @@ echo serialize($Config);
                 $KodiData->ActivateWindow(array('window' => $HookData['Window'], 'parameters' => array($Path)));
                 $ret = $this->Send($KodiData);
                 $this->SendDebug('window HOOK', $ret, 0);
-                // ret = OK...aber wie Fehler ausgeben ?!
+                echo $ret;
                 break;
             case "script":
                 $this->SendDebug('script HOOK', $Path, 0);
@@ -384,14 +389,15 @@ echo serialize($Config);
                 $KodiData->ExecuteAddon(array("addonid" => $Path));
                 $ret = $this->SendDirect($KodiData);
                 $this->SendDebug('script HOOK', $ret, 0);
-                // ret = OK...aber wie Fehler ausgeben ?!
-
+                echo $ret;
                 break;
             case "unknown":
+                trigger_error('unknown hook', E_USER_NOTICE);
                 $this->SendDebug('unknown HOOK', $Path, 0);
                 break;
             default:
                 $this->SendDebug('illegal HOOK', $HookData, 0);
+                trigger_error('Illegal hook', E_USER_NOTICE);
                 break;
         }
     }

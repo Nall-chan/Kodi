@@ -163,7 +163,7 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
             return;
         if (!IPS_ScriptExists($ScriptID))
             return;
-        
+
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
@@ -242,7 +242,7 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
      */
     private function GetWebHookLink(string $Addonid, string $Action)
     {
-        return 'onclick="window.xhrGet=function xhrGet(o) {var HTTP = new XMLHttpRequest();HTTP.open(\'GET\',o.url,true);HTTP.send();};window.xhrGet({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
+        return 'onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
     }
 
     /**
@@ -436,11 +436,11 @@ $Config["Style"] = array(
 // dodisabled => Button für Addon deaktivieren
 //execute => Button für Addon ausführen
 $Config["Button"]= array(
-	"isenabled" => "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgb(0, 255, 0);",
-	"isdisabled"=> "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.3);",
-	"doenabled" => "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(0, 255, 0, 0.3);",
-	"dodisabled"=> "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.1);",
-	"execute"=> "background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 100%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgb(0, 255, 0);"
+	"isenabled" => "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgb(0, 255, 0);",
+	"isdisabled"=> "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.3);",
+	"doenabled" => "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(0, 255, 0, 0.3);",
+	"dodisabled"=> "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.1);",
+	"execute"=> "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 100%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgb(0, 255, 0);"
 );
 
 ### Konfig ENDE !!!
@@ -460,21 +460,29 @@ echo serialize($Config);
     public function ProcessHookdata($HookData)
     {
         if (!((isset($HookData["Addonid"])) and ( isset($HookData["Action"]))))
+        {
+            $this->SendDebug('illegal HOOK', $HookData, 0);
+            trigger_error('Illegal hook', E_USER_NOTICE);
             return;
+        }
 
         switch ($HookData['Action'])
         {
             case 'Execute':
-                $this->ExecuteAddon($HookData["Addonid"]);
+                if ($this->ExecuteAddon($HookData["Addonid"]) === true)
+                    echo 'OK';
                 break;
             case 'Enable':
-                $this->EnableAddon($HookData["Addonid"], true);
+                if ($this->EnableAddon($HookData["Addonid"], true) === true)
+                    echo 'OK';
                 break;
             case 'Disable':
-                $this->EnableAddon($HookData["Addonid"], false);
+                if ($this->EnableAddon($HookData["Addonid"], false) === true)
+                    echo 'OK';
                 break;
             default:
                 $this->SendDebug('illegal HOOK', $HookData, 0);
+                trigger_error('Illegal hook', E_USER_NOTICE);
                 break;
         }
     }

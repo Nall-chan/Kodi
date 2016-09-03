@@ -80,9 +80,11 @@ class KodiDevicePlaylist extends KodiBase
     static $Playertype = array(
         "song" => 0,
         "audio" => 0,
+        "radio" => 0,
         "video" => 1,
         "episode" => 1,
         "movie" => 1,
+        "tv" => 1,
         "picture" => 2,
         "pictures" => 2
     );
@@ -244,7 +246,7 @@ class KodiDevicePlaylist extends KodiBase
             $this->RegisterVariableString("Playlist", "Playlist", "~HTMLBox", 2);
             $sid = $this->RegisterScript("WebHookPlaylist", "WebHookPlaylist", '<? //Do not delete or modify.
 if (isset($_GET["Index"]))
-    IPS_RequestAction(' . $this->InstanceID . ',"position",$_GET["Index"]);
+    if (IPS_RequestAction(' . $this->InstanceID . ',"position",$_GET["Index"]) === true) echo "OK";
 ', -8);
             IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
@@ -308,13 +310,37 @@ if (isset($_GET["Index"]))
             if ($KodiPayload->player->playerid <> $this->PlaylistId)
                 return;
         }
-        elseif (property_exists($KodiPayload, 'item'))
-        {
-            if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlaylistId)
-                return false;
-        }
         else
-            return false;
+        {
+            if (property_exists($KodiPayload, 'type'))
+            {
+                if (self::$Playertype[(string) $KodiPayload->type] <> $this->PlayerId)
+                    return false;
+            }
+            else
+            {
+                if (property_exists($KodiPayload, 'item'))
+                {
+                    if (property_exists($KodiPayload->item, 'channeltype'))
+                    {
+                        if (self::$Playertype[(string) $KodiPayload->item->channeltype] <> $this->PlaylistId)
+                            return false;
+                    }
+                    else
+                    {
+                        if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlaylistId)
+                            return false;
+                    }
+                }
+            }
+        }
+//        elseif (property_exists($KodiPayload, 'item'))
+//        {
+//            if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlaylistId)
+//                return false;
+//        }
+//        else
+//            return false;
 
         $this->SendDebug($Method, $KodiPayload, 0);
 
@@ -606,7 +632,7 @@ if (isset($_GET["Index"]))
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
         if ($ScriptID == 0)
             return;
-                if (!IPS_ScriptExists($ScriptID))
+        if (!IPS_ScriptExists($ScriptID))
             return;
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
@@ -670,8 +696,7 @@ if (isset($_GET["Index"]))
 
                 $Line['Play'] = ($Line['Position'] == $CurrentTrack ? '<div class="iconMediumSpinner ipsIconArrowRight" style="width: 100%; background-position: center center;"></div>' : '');
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"
-                        onclick="window.xhrGet=function xhrGet(o) {var HTTP = new XMLHttpRequest();HTTP.open(\'GET\',o.url,true);HTTP.send();};window.xhrGet({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
                     if (!array_key_exists($feldIndex, $Line))
@@ -895,7 +920,7 @@ echo serialize($Config);
                 $KodiData->GoTo(array('playerid' => $this->PlaylistId, "to" => (int) $Value - 1));
                 $ret = $this->SendDirect($KodiData);
                 if (is_null($ret))
-                    return;
+                    return false;
                 if ($ret === "OK")
                     return true;
                 return trigger_error('Error on GoTo Track.', E_USER_NOTICE);

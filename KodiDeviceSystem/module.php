@@ -304,13 +304,13 @@ function wake($ip, $mac)
      */
     public function WakeUp()
     {
-        $ID = $this->ReadPropertyInteger('PowerScript');
-        if ($ID > 0)
+        $ScriptID = $this->ReadPropertyInteger('PowerScript');
+        if ($ScriptID > 0)
         {
             if (!IPS_ScriptExists($ScriptID))
                 return false;
 
-            if (IPS_RunScriptWaitEx($ID, array("SENDER" => "Kodi.System")) == "")
+            if (IPS_RunScriptWaitEx($ScriptID, array("SENDER" => "Kodi.System")) == "")
             {
                 $this->SetValueBoolean('Power', true);
                 return true;

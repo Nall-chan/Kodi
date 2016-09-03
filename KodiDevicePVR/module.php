@@ -172,7 +172,6 @@ class KodiDevicePVR extends KodiBase
         $this->RegisterPropertyBoolean("showDoRecording", true);
         $this->RegisterPropertyBoolean("showIsScanning", true);
         $this->RegisterPropertyBoolean("showDoScanning", true);
-
         $this->RegisterPropertyBoolean('showTVChannellist', true);
         $this->RegisterPropertyInteger('showMaxTVChannels', 20);
         $ID = @$this->GetIDForIdent('TVChannellistDesign');
@@ -181,6 +180,23 @@ class KodiDevicePVR extends KodiBase
         IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger("TVChannellistconfig", $ID);
         $this->RegisterPropertyInteger("TVThumbSize", 100);
+        $this->RegisterPropertyBoolean('showRadioChannellist', true);
+        $this->RegisterPropertyInteger('showMaxRadioChannels', 20);
+        $ID = @$this->GetIDForIdent('RadioChannellistDesign');
+        if ($ID == false)
+            $ID = $this->RegisterScript('RadioChannellistDesign', 'Radio Channellist Config', $this->CreateRadioChannellistConfigScript(), -7);
+        IPS_SetHidden($ID, true);
+        $this->RegisterPropertyInteger("RadioChannellistconfig", $ID);
+        $this->RegisterPropertyInteger("RadioThumbSize", 100);
+
+        $this->RegisterPropertyBoolean('showRecordinglist', true);
+        $this->RegisterPropertyInteger('showMaxRecording', 20);
+        $ID = @$this->GetIDForIdent('RecordinglistDesign');
+        if ($ID == false)
+            $ID = $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
+        IPS_SetHidden($ID, true);
+        $this->RegisterPropertyInteger("Recordinglistconfig", $ID);
+        $this->RegisterPropertyInteger("RecordingThumbSize", 100);
     }
 
     /**
@@ -193,6 +209,8 @@ class KodiDevicePVR extends KodiBase
         if (IPS_GetKernelRunlevel() <> KR_READY)
             return;
         $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
+        $this->UnregisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
+        $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
     }
 
     /**
@@ -236,6 +254,9 @@ class KodiDevicePVR extends KodiBase
         else
             $this->UnregisterVariable("scan");
 
+        @parent::ApplyChanges();
+
+
         if ($this->ReadPropertyBoolean('showTVChannellist'))
         {
             $this->RegisterVariableString("TVChannellist", "TV Kanäle", "~HTMLBox", 1);
@@ -262,7 +283,59 @@ if (isset($_GET["ID"]))
                 $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
         }
 
-        parent::ApplyChanges();
+        if ($this->ReadPropertyBoolean('showRadioChannellist'))
+        {
+            $this->RegisterVariableString("RadioChannellist", "Radio Kanäle", "~HTMLBox", 1);
+            $sid = $this->RegisterScript("WebHookRadioChannellist", "WebHookRadioChannellist", '<? //Do not delete or modify.
+if (isset($_GET["ID"]))
+    KODIPVR_ProcessHookdata(' . $this->InstanceID . ',"radio",$_GET);
+', -8);
+            IPS_SetHidden($sid, true);
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->RegisterHook('/hook/KodiRadioChannellist' . $this->InstanceID, $sid);
+
+            $ID = @$this->GetIDForIdent('RadioChannellistDesign');
+            if ($ID == false)
+                $ID = $this->RegisterScript('RadioChannellistDesign', 'RadioChannellist Config', $this->CreateRadioChannellistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->RefreshRadioChannellist();
+        }
+        else
+        {
+            $this->UnregisterVariable("RadioChannellist");
+            $this->UnregisterScript("WebHookRadioChannellist");
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->UnregisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
+        }
+
+        if ($this->ReadPropertyBoolean('showRecordinglist'))
+        {
+            $this->RegisterVariableString("Recordinglist", "Aufzeichnungen", "~HTMLBox", 1);
+            $sid = $this->RegisterScript("WebHookRecordinglist", "WebHookRecordinglist", '<? //Do not delete or modify.
+if (isset($_GET["ID"]))
+    KODIPVR_ProcessHookdata(' . $this->InstanceID . ',"recording",$_GET);
+', -8);
+            IPS_SetHidden($sid, true);
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->RegisterHook('/hook/KodiRecordinglist' . $this->InstanceID, $sid);
+
+            $ID = @$this->GetIDForIdent('RecordinglistDesign');
+            if ($ID == false)
+                $ID = $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->RefreshRecordinglist();
+            $this->RegisterTimer('RefreshRecords', 15 * 60 * 1000, 'KODIPVR_RefreshRecordinglist(' . $this->InstanceID . ');');
+        }
+        else
+        {
+            $this->UnregisterVariable("Recordinglist");
+            $this->UnregisterScript("WebHookRecordinglist");
+            $this->UnregisterTimer('RefreshRecords');
+            if (IPS_GetKernelRunlevel() == KR_READY)
+                $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
+        }
     }
 
 ################## PRIVATE     
@@ -290,7 +363,7 @@ if (isset($_GET["ID"]))
     }
 
     /**
-     * Erzeugt aus der Liste der Favoriten eine HTML-Tabelle für eine ~HTMLBox-Variable.
+     * Erzeugt aus der Liste der TV-Kanäle eine HTML-Tabelle für eine ~HTMLBox-Variable.
      * 
      * @access private
      */
@@ -349,7 +422,6 @@ if (isset($_GET["ID"]))
                             $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
                     }
                 }
-                $this->SendDebug('Test', array_keys($Line), 0);
                 if (array_key_exists('Now', $Config["Spalten"]) and array_key_exists('Broadcastnow', $Line))
                 {
                     if (array_key_exists("title", $Line['Broadcastnow']))
@@ -387,13 +459,7 @@ if (isset($_GET["ID"]))
                 else
                     $Line['Next'] = 'No Info';
 
-                /*                if (!array_key_exists('Path', $Line))
-                  if (array_key_exists('Windowparameter', $Line))
-                  $Line['Path'] = $Line['Windowparameter'];
-                  else
-                  $Line['Path'] = ""; */
-
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet=function xhrGet(o) {var HTTP = new XMLHttpRequest();HTTP.open(\'GET\',o.url,true);HTTP.send();};window.xhrGet({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
@@ -413,6 +479,207 @@ if (isset($_GET["ID"]))
         }
         $HTMLData .= $this->GetTableFooter();
         $this->SetValueString('TVChannellist', $HTMLData);
+    }
+
+    /**
+     * Erzeugt aus der Liste der Radio Kanäle eine HTML-Tabelle für eine ~HTMLBox-Variable.
+     * 
+     * @access private
+     */
+    private function RefreshRadioChannellist()
+    {
+        if (!$this->ReadPropertyBoolean('showRadioChannellist'))
+            return;
+        $ScriptID = $this->ReadPropertyInteger('RadioChannellistconfig');
+        if ($ScriptID == 0)
+            return;
+        if (!IPS_ScriptExists($ScriptID))
+            return;
+        $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
+        $Config = @unserialize($result);
+        if (($Config === false) or ( !is_array($Config)))
+            throw new Exception('Error on read radio Channelistconfig-Script');
+
+        $Max = $this->ReadPropertyInteger('showMaxRadioChannels');
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetChannels(array("channelgroupid" => "allradio", "properties" => static::$ChanneltemListFull, 'limits' => array('end' => $Max)));
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret))
+            return;
+        if ($ret->limits->total == 0)
+            return;
+        $Channels = $KodiData->ToArray($ret->channels);
+
+        $Data = array_filter($Channels, array($this, "FilterChannels"), ARRAY_FILTER_USE_BOTH);
+        $HTMLData = $this->GetTableHeader($Config);
+        $pos = 0;
+
+        $ParentID = $this->GetParent();
+        if (count($Data) > 0)
+        {
+            foreach ($Data as $line)
+            {
+                $Line = array();
+                foreach ($line as $key => $value)
+                {
+                    if (is_string($key))
+                        $Line[ucfirst($key)] = $value;
+                    else
+                        $Line[$key] = $value; //$key is not a string
+                }
+                if (array_key_exists('Thumbnail', $Config["Spalten"]))
+                {
+                    if ($Line['Thumbnail'] <> "")
+                    {
+                        $CoverRAW = false;
+                        if ($ParentID !== false)
+                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("RadioThumbSize"), 0);
+                        if ($CoverRAW === false)
+                            $Line['Thumbnail'] = "";
+                        else
+                            $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                    }
+                }
+                if (array_key_exists('Now', $Config["Spalten"]) and array_key_exists('Broadcastnow', $Line))
+                {
+                    if (array_key_exists("title", $Line['Broadcastnow']))
+                    {
+                        $Line['Now'] = $Line['Broadcastnow']['title'];
+                        if (array_key_exists("episodename", $Line['Broadcastnow']))
+                        {
+                            if ($Line['Broadcastnow']['episodename'] <> "")
+                                $Line['Now'] .= ' - ' . $Line['Broadcastnow']['episodename'];
+                        }
+                        if (array_key_exists("progresspercentage", $Line['Broadcastnow']))
+                        {
+                            $Line['Now'] .= ' (' . (int) $Line['Broadcastnow']['progresspercentage'] . '%)';
+                        }
+                    }
+                }
+                else
+                    $Line['Now'] = 'No Info';
+                if (array_key_exists('Next', $Config["Spalten"]) and array_key_exists('Broadcastnext', $Line))
+                {
+                    if (array_key_exists("title", $Line['Broadcastnext']))
+                    {
+                        $Line['Next'] = $Line['Broadcastnext']['title'];
+                        if (array_key_exists("episodename", $Line['Broadcastnext']))
+                        {
+                            if ($Line['Broadcastnext']['episodename'] <> "")
+                                $Line['Next'] .= ' - ' . $Line['Broadcastnext']['episodename'];
+                        }
+                        if (array_key_exists("starttime", $Line['Broadcastnext']))
+                        {
+                            $Line['Next'] .= ' (' . $Line['Broadcastnext']['starttime'] . ')';
+                        }
+                    }
+                }
+                else
+                    $Line['Next'] = 'No Info';
+
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+
+                foreach ($Config['Spalten'] as $feldIndex => $value)
+                {
+                    if (!array_key_exists($feldIndex, $Line))
+                        $Line[$feldIndex] = '';
+                    if ($Line[$feldIndex] === -1)
+                        $Line[$feldIndex] = '';
+                    if (is_array($Line[$feldIndex]))
+                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
+                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
+                }
+                $HTMLData .= '</tr>' . PHP_EOL;
+                $pos++;
+//                if ($pos == $max)
+//                    break;
+            }
+        }
+        $HTMLData .= $this->GetTableFooter();
+        $this->SetValueString('RadioChannellist', $HTMLData);
+    }
+
+    /**
+     * Erzeugt aus der Liste der Aufzeichnungen eine HTML-Tabelle für eine ~HTMLBox-Variable.
+     * 
+     * @access private
+     */
+    public function RefreshRecordinglist()
+    {
+        if (!$this->ReadPropertyBoolean('showRecordinglist'))
+            return;
+        $ScriptID = $this->ReadPropertyInteger('Recordinglistconfig');
+        if ($ScriptID == 0)
+            return;
+        if (!IPS_ScriptExists($ScriptID))
+            return;
+        $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
+        $Config = @unserialize($result);
+        if (($Config === false) or ( !is_array($Config)))
+            throw new Exception('Error on read Recordinglistconfig-Script');
+
+        $Max = $this->ReadPropertyInteger('showMaxRecording');
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetRecordings(array("properties" => static::$RecordingItemList, 'limits' => array('end' => $Max)));
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret))
+            return;
+        if ($ret->limits->total == 0)
+            return;
+        $Data = $KodiData->ToArray($ret->recordings);
+
+//        $Data = array_filter($Recordings, array($this, "FilterChannels"), ARRAY_FILTER_USE_BOTH);
+        $HTMLData = $this->GetTableHeader($Config);
+        $pos = 0;
+
+        $ParentID = $this->GetParent();
+        if (count($Data) > 0)
+        {
+            foreach ($Data as $line)
+            {
+                $Line = array();
+                foreach ($line as $key => $value)
+                {
+                    if (is_string($key))
+                        $Line[ucfirst($key)] = $value;
+                    else
+                        $Line[$key] = $value; //$key is not a string
+                }
+                if (array_key_exists('Thumbnail', $Config["Spalten"]))
+                {
+                    if (array_key_exists('thumb', $Line["Art"]))
+                        if ($Line['Art']['thumb'] <> "")
+                        {
+                            $CoverRAW = false;
+                            if ($ParentID !== false)
+                                $CoverRAW = $this->GetThumbnail($ParentID, $Line['Art']['thumb'], $this->ReadPropertyString("RecordingThumbSize"), 0);
+                            if ($CoverRAW === false)
+                                $Line['Thumbnail'] = "";
+                            else
+                                $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                        }
+                }
+                $Line['Runtime'] = $this->ConvertTime($Line['Runtime']);
+
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
+                foreach ($Config['Spalten'] as $feldIndex => $value)
+                {
+                    if (!array_key_exists($feldIndex, $Line))
+                        $Line[$feldIndex] = '';
+                    if ($Line[$feldIndex] === -1)
+                        $Line[$feldIndex] = '';
+                    if (is_array($Line[$feldIndex]))
+                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
+                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
+                }
+                $HTMLData .= '</tr>' . PHP_EOL;
+                $pos++;
+//                if ($pos == $max)
+//                    break;
+            }
+        }
+        $HTMLData .= $this->GetTableFooter();
+        $this->SetValueString('Recordinglist', $HTMLData);
     }
 
     /**
@@ -521,6 +788,225 @@ echo serialize($Config);
         return $Script;
     }
 
+    /**
+     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Radio Kanal-Tabelle enthält.
+     * 
+     * @access private
+     * @return string Ein PHP-Script welche als Grundlage für die User dient.
+     */
+    private function CreateRadioChannellistConfigScript()
+    {
+        $Script = '<?
+### Konfig ab Zeile 10 !!!
+
+if ($_IPS["SENDER"] <> "Kodi")
+{
+	echo "Dieses Script kann nicht direkt ausgeführt werden!";
+	return;
+}
+##########   KONFIGURATION
+#### Tabellarische Ansicht
+# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die Radio Kanäle dargestellt werden.
+
+// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
+// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
+$Config["Spalten"] = array(
+    "Thumbnail"=>"",
+    "Label" =>"Name",
+//    "Lastplayed" => "zuletzt gesehen",
+    "Now" => "es läuft",
+    "Next" => "gleich läuft"
+    
+);
+#### Mögliche Index-Felder
+/*
+        
+| Index       | Typ     | Beschreibung                        |
+| :---------: | :-----: | :---------------------------------: |
+| Thumbnail   | string  | Senderlogo                          |
+| Label       | string  | Name des Kanals                     |
+| Lastplayed  | string  | Wann zuletzt gesehen                |
+*/
+// Breite der Spalten (Reihenfolge ist egal)
+$Config["Breite"] = array(
+    "Thumbnail"=>"100em",
+    "Label"=>"150em",
+    "Now"=>"300em",
+    "Next"=>"300em",
+//    "Lastplayed"=>"300em"
+);
+// Style Informationen der Tabelle
+$Config["Style"] = array(
+    // <table>-Tag:
+    "T"    => "margin:0 auto; font-size:0.8em;",
+    // <thead>-Tag:
+    "H"    => "",
+    // <tr>-Tag im thead-Bereich:
+    "HR"   => "",
+    // <th>-Tag Feld Thumbnail:
+    "HFThumbnail"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Label:
+    "HFLabel"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Now:
+    "HFNow"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Next:
+    "HFNext"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Lastplayed:
+    "HFLastplayed"  => "color:#ffffff; width:35px; align:left;",
+    // <tbody>-Tag:
+    "B"    => "",
+    // <tr>-Tag:
+    "BRG"  => "background-color:#000000; color:#ffffff;",
+    "BRU"  => "background-color:#080808; color:#ffffff;",
+    // <td>-Tag Feld Thumbnail:
+    "DFGThumbnail" => "text-align:center;",
+    "DFUThumbnail" => "text-align:center;",
+    // <td>-Tag Feld Label:
+    "DFGLabel" => "text-align:center;",
+    "DFULabel" => "text-align:center;",
+    // <td>-Tag Feld Now:
+    "DFGNow" => "text-align:center;",
+    "DFUNow" => "text-align:center;",
+    // <td>-Tag Feld Next:
+    "DFGNext" => "text-align:center;",
+    "DFUNext" => "text-align:center;",
+    // <td>-Tag Feld Lastplayed:
+    "DFGLastplayed" => "text-align:center;",
+    "DFULastplayed" => "text-align:center;",
+    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade.
+ );
+ 
+### Konfig ENDE !!!
+echo serialize($Config);
+?>';
+        return $Script;
+    }
+
+    /**
+     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Radio Kanal-Tabelle enthält.
+     * 
+     * @access private
+     * @return string Ein PHP-Script welche als Grundlage für die User dient.
+     */
+    private function CreateRecordlistConfigScript()
+    {
+        $Script = '<?
+### Konfig ab Zeile 10 !!!
+
+if ($_IPS["SENDER"] <> "Kodi")
+{
+	echo "Dieses Script kann nicht direkt ausgeführt werden!";
+	return;
+}
+##########   KONFIGURATION
+#### Tabellarische Ansicht
+# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die Radio Kanäle dargestellt werden.
+
+// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
+// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
+$Config["Spalten"] = array(
+    "Thumbnail"=>"",
+    "Label" =>"Name",
+    "Runtime" => "Dauer",
+    "Starttime"=>"Startzeit",
+//    "Endtime"=>"Endzeit",
+//    "Plot"=>"Handlung",
+//    "Genre"=>"Genre",
+    "Channel"=>"Kanal"
+);
+#### Mögliche Index-Felder
+/*
+        
+| Index       | Typ     | Beschreibung                        |
+| :---------: | :-----: | :---------------------------------: |
+| Thumbnail   | string  | Thumbnail der Aufzeichnung          |
+| Label       | string  | Name der Aufzeichnung               |
+| Runtime     | string  | Laufzeit der Aufzeichnung           |
+| Starttime   | string  | Beginn der Aufzeichnung             |
+| Endtime     | string  | Ende der Aufzeichnung               |
+| Plot        | string  | Handlung der Aufzeichnung           |
+| Genre       | string  | Genre der Aufzeichnung              |
+| Channel     | string  | Kanal der Aufzeichnung              |
+
+*/
+// Breite der Spalten (Reihenfolge ist egal)
+$Config["Breite"] = array(
+    "Thumbnail"=>"100em",
+    "Label"=>"300em",
+    "Runtime"=>"100em",
+    "Starttime"=>"200em",
+    "Channel"=>"150em"
+);
+// Style Informationen der Tabelle
+$Config["Style"] = array(
+    // <table>-Tag:
+    "T"    => "margin:0 auto; font-size:0.8em;",
+    // <thead>-Tag:
+    "H"    => "",
+    // <tr>-Tag im thead-Bereich:
+    "HR"   => "",
+    // <th>-Tag Feld Thumbnail:
+    "HFThumbnail"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Label:
+    "HFLabel"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Runtime:
+    "HFRuntime"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Starttime:
+    "HFStarttime"  => "color:#ffffff; width:35px; align:left;",
+    // <th>-Tag Feld Channel:
+    "HFChannel"  => "color:#ffffff; width:35px; align:left;",
+    // <tbody>-Tag:
+    "B"    => "",
+    // <tr>-Tag:
+    "BRG"  => "background-color:#000000; color:#ffffff;",
+    "BRU"  => "background-color:#080808; color:#ffffff;",
+    // <td>-Tag Feld Thumbnail:
+    "DFGThumbnail" => "text-align:center;",
+    "DFUThumbnail" => "text-align:center;",
+    // <td>-Tag Feld Label:
+    "DFGLabel" => "text-align:center;",
+    "DFULabel" => "text-align:center;",
+    // <td>-Tag Feld Runtime:
+    "DFGRuntime" => "text-align:center;",
+    "DFURuntime" => "text-align:center;",
+    // <td>-Tag Feld Starttime:
+    "DFGStarttime" => "text-align:center;",
+    "DFUStarttime" => "text-align:center;",
+    // <td>-Tag Feld Channel:
+    "DFGChannel" => "text-align:center;",
+    "DFUChannel" => "text-align:center;",
+    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade.
+ );
+ 
+### Konfig ENDE !!!
+echo serialize($Config);
+?>';
+        return $Script;
+    }
+
+    /*
+      ["channel"]=>
+      string(9) "ProSieben"
+      ["endtime"]=>
+      string(19) "2015-04-15 23:04:00"
+      ["genre"]=>
+      array(2) {
+      [0]=>
+      string(6) "Andere"
+      [1]=>
+      string(9) "Unbekannt"
+      }
+      ["plot"]=>
+      string(857) "Tödliche Frequenz, Action, USA 2014Dr. Wells wird von einem Unbekannten angegriffen. Es stellt sich heraus, dass es sich um Hartley Rathaway, einen ehemaligen Mitarbeiter von S.T.A.R.- Labs, handelt, der mit Wells noch eine Rechnung offen hat. Barry kann Hartley im Kampf zwar besiegen, doch der junge Mann kann sich kurze Zeit später aus seinem provisorischen Gefängnis befreien und wichtige Daten aus dem Zentralrechner von S.T.A.R.-Labs zu stehlen ...Regie: John F. ShowalterDrehbuch: Alison Schapker, Brooke EikmeierKamera: C. Kim MilesSchnitt: Paul KarasickDarsteller:Grant Gustin (Barry Allen/The Flash)Candice Patton (Iris West)Danielle Panabaker (Caitlin Snow)Rick Cosnett (Eddie Thawne)Carlos Valdes (Cisco Ramon)Tom Cavanagh (Dr. Harrison Wells)Jesse L. Martin (Detective Joe West)Andy Mientus (Hartley Rathaway/Pied Piper)Tom Butler (Eric Larkin)"
+      ["recordingid"]=>
+      int(1363)
+      ["runtime"]=>
+      int(3720)
+      ["starttime"]=>
+      string(19) "2015-04-15 22:02:00"
+      ["title"]=>
+      string(9) "The Flash"
+     */
 ################## ActionHandler
 
     /**
@@ -558,9 +1044,18 @@ echo serialize($Config);
 //        $Path = rawurldecode($HookData["Path"]);
         $this->SendDebug($Typ . ' HOOK', $HookData["ID"], 0);
         $KodiData = new Kodi_RPC_Data('Player');
-        $KodiData->Open(array("item" => array('channelid' => (int) $HookData["ID"])));
+        switch ($Typ)
+        {
+            case "tv":
+            case "radio":
+                $KodiData->Open(array("item" => array('channelid' => (int) $HookData["ID"])));
+                break;
+            case "recording":
+                $KodiData->Open(array("item" => array('recordingid' => (int) $HookData["ID"])));                
+                break;
+        }
         $ret = $this->Send($KodiData);
-        // ret = OK...aber wie Fehler ausgeben ?!
+        echo $ret;
     }
 
     /**

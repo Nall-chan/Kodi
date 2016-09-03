@@ -426,10 +426,28 @@ class KodiSplitter extends IPSModule
      */
     public function GetImage(string $path)
     {
-        $CoverRAW = $this->DoWebserverRequest("/image/" . urlencode($path));
 
-        if ($CoverRAW === false)
-            trigger_error('Error on load image from Kodi.', E_USER_NOTICE);
+
+        $CoverRAW = $this->DoWebserverRequest("/image/" . rawurlencode($path));
+
+/*        if ($CoverRAW === false)
+        {
+            $KodiData = new Kodi_RPC_Data('Files', 'PrepareDownload', array('path' => $path));
+            $JSON = $KodiData->ToRawRPCJSONString();
+            $Result = $this->DoWebserverRequest("/jsonrpc?request=" . rawurlencode($JSON));
+            if ($Result !== false)
+            {
+                $KodiResult = new Kodi_RPC_Data();
+                $KodiResult->CreateFromJSONString($Result);
+                $ret = $KodiResult->GetResult();
+                if (is_a($ret, 'KodiRPCException'))
+                {
+                    trigger_error('Error (' . $ret->getCode() . '): ' . $ret->getMessage(), E_USER_NOTICE);
+                    return false;
+                }
+                $CoverRAW = $this->DoWebserverRequest("/".$ret->details->path);
+            }
+        }*/
 
         if ($CoverRAW === false)
             trigger_error('Error on load image from Kodi.', E_USER_NOTICE);

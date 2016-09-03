@@ -161,8 +161,8 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Verfügbarkeit      - Zustand lesen und visualisieren.  
  Suchlauf           - Starten, Zustand lesen und visualisieren.  
  Aufnahme           - Steuern, Zustand lesen und visualisieren.  
- Kanäle & Gruppen   - Lesen  
- Aufnahmen          - Lesen  
+ Kanäle & Gruppen   - Lesen und visualisieren (inkl. umschalten von Kanälen.)  
+ Aufnahmen          - Lesen und visualisieren (inkl. starten der Wiedergabe.)  
  Timer              - Lesen  
 
  ---
@@ -181,7 +181,7 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Filme      - Lesen von Daten aus der Datenbank.  
  Serien     - Lesen von Daten aus der Datenbank.  
  Musikvideo - Lesen von Daten aus der Datenbank.  
- Datenbank  - Ausführen von Scan un Clean. Status visualisieren.
+ Datenbank  - Ausführen von Scan und Clean. Status visualisieren.
 
 Das Setzen von Daten in der Datenbank ist nicht möglich!  
 
@@ -1731,19 +1731,31 @@ keine
 | Eigenschaft           | Typ     | Standardwert | Funktion                                 |
 | :-------------------: | :-----: | :----------: | :--------------------------------------: |
 | showSVGRemote         | boolean | true         | SVG-Remote anzeigen                      |
+| RemoteId              | integer | 1            | 1=vertikal, 2=horizontal                 |
 | showNavigationButtons | boolean | true         | Aktions-Variable zum navigieren anzeigen |
 | showControlButtons    | boolean | true         | Aktions-Variable zum steuern anzeigen    |
 | showInputRequested    | boolean | true         | Status-Variable wenn Eingaben nötig sind |
 
  Eigenschaften von KodiDevicePVR:  
 
-| Eigenschaft     | Typ     | Standardwert | Funktion                                                 |
-| :-------------: | :-----: | :----------: | :------------------------------------------------------: |
-| showIsAvailable | boolean | true         | Status-Variable PVR-Verfügbarkeit anzeigen               |
-| showIsRecording | boolean | true         | Status-Variable Aufzeichnung aktiv anzeigen              |
-| showDoRecording | boolean | true         | Aktions-Variable zum steuern einer Aufzeichnung anzeigen |
-| showIsScanning  | boolean | true         | Status-Variable für sktive Kanalsuche anzeigen           |
-| showDoScanning  | boolean | true         | Aktions-Variable zum starten einer Kanalsuche anzeigen   |
+| Eigenschaft            | Typ     | Standardwert | Funktion                                                 |
+| :--------------------: | :-----: | :----------: | :------------------------------------------------------: |
+| showIsAvailable        | boolean | true         | Status-Variable PVR-Verfügbarkeit anzeigen               |
+| showIsRecording        | boolean | true         | Status-Variable Aufzeichnung aktiv anzeigen              |
+| showDoRecording        | boolean | true         | Aktions-Variable zum steuern einer Aufzeichnung anzeigen |
+| showIsScanning         | boolean | true         | Status-Variable für sktive Kanalsuche anzeigen           |
+| showTVChannellist      | boolean | true         | HTML-Tabelle mit den TV Kanälen erzeugen                 |
+| showMaxTVChannels      | integer | 20           | Anzahl der darzustellenden TV Kanäle                     |
+| TVChannellistconfig    | integer | auto         | Script mit den Style für die HTML-Tabelle                |
+| TVThumbSize            | integer | 100          | Breite der Senderlogos                                   |
+| showRadioChannellist   | boolean | true         | HTML-Tabelle mit den Radio Kanälen erzeugen              |
+| showMaxRadioChannels   | integer | 20           | Anzahl der darzustellenden Radio Kanäle                  |
+| RadioChannellistconfig | integer | auto         | Script mit den Style für die HTML-Tabelle                |
+| RadioThumbSize         | integer | 100          | Breite der Senderlogos                                   |
+| showRecordinglist      | boolean | true         | HTML-Tabelle mit den Aufzeichnungen erzeugen             |
+| showMaxRecording       | integer | 20           | Anzahl der darzustellenden Aufzeichnungen                |
+| Recordinglistconfig    | integer | auto         | Script mit den Style für die HTML-Tabelle                |
+| RecordingThumbSize     | integer | 100          | Breite der Thumbnails                                    |
 
  Eigenschaften von KodiDevicePlayer:  
 
@@ -1804,7 +1816,11 @@ Eigenschaften von KodiSplitter:
 
 **Changlog:**
 
-0.1	:  Beginn  
+1.0	:  Release  
+1.1     :  Diversese Bugfixes  
+           Horizontale Remote hizugefügt  
+           PVR zeigt TV & Radio-Kanäle sowie Aufzeichnungen an und kann Diese wiedergeben.  
+           Rückkanal für HTML-Tabellen hinzugefügt.
 
 ## 11. Lizenz  
 

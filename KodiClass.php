@@ -241,9 +241,6 @@ abstract class KodiBase extends IPSModule
         $this->RegisterMessage($this->InstanceID, DM_DISCONNECT);
         // Wenn Kernel nicht bereit, dann warten... KR_READY über Splitter kommt ja gleich
 
-        if (IPS_GetKernelRunlevel() <> KR_READY)
-            return;
-        parent::ApplyChanges();
         $this->UnregisterVariable("_ReplyJSONData");
 
         if (is_array(static::$Namespace))
@@ -262,6 +259,11 @@ abstract class KodiBase extends IPSModule
             $this->SetReceiveDataFilter('.*"Namespace":"' . static::$Namespace . '".*');
             $this->SendDebug("SetFilter", '.*"Namespace":"' . static::$Namespace . '".*', 0);
         }
+
+        if (IPS_GetKernelRunlevel() <> KR_READY)
+            return;
+        parent::ApplyChanges();
+        
         if ($this->HasActiveParent())
             $this->RequestProperties(array("properties" => static::$Properties));
     }
@@ -335,11 +337,50 @@ abstract class KodiBase extends IPSModule
      */
     protected function GetTableHeader($Config)
     {
-        // Button Styles erzeugen
         $html = "";
+        // JS Rückkanal erzeugen
+        $html.='<script>
+window.xhrGet'.$this->InstanceID.'=function xhrGet'.$this->InstanceID.'(o)
+{
+    var HTTP = new XMLHttpRequest();
+    HTTP.open(\'GET\',o.url,true);
+    HTTP.send();
+    HTTP.addEventListener(\'load\', function(event)
+    {
+        if (HTTP.status >= 200 && HTTP.status < 300)
+        {
+            if (HTTP.responseText != \'OK\')
+                sendError'.$this->InstanceID.'(HTTP.responseText);
+        } else {
+            sendError'.$this->InstanceID.'(HTTP.statusText);
+        }
+    });
+};
+
+function sendError'.$this->InstanceID.'(data)
+{
+var notify = document.getElementsByClassName("ipsNotifications")[0];
+var newDiv = document.createElement("div");
+newDiv.innerHTML =\'<div style="height:auto; visibility: hidden; overflow: hidden; transition: height 500ms ease-in 0s" class="ipsNotification"><div class="spacer"></div><div class="message icon error" onclick="document.getElementsByClassName(\\\'ipsNotifications\\\')[0].removeChild(this.parentNode);"><div class="ipsIconClose"></div><div class="content"><div class="title">Fehler</div><div class="text">\' + data + \'</div></div></div></div>\';
+if (notify.childElementCount == 0)
+	var thisDiv = notify.appendChild(newDiv.firstChild);
+else
+	var thisDiv = notify.insertBefore(newDiv.firstChild,notify.childNodes[0]);
+var newheight = window.getComputedStyle(thisDiv, null)["height"];
+thisDiv.style.height = "0px";
+thisDiv.style.visibility = "visible";
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+sleep(10).then(() => {
+	thisDiv.style.height = newheight;
+})
+}
+</script>';
+        // Button Styles erzeugen
         if (isset($Config['Button']))
         {
-            $html = "<style>" . PHP_EOL;
+            $html .= "<style>" . PHP_EOL;
             foreach ($Config['Button'] as $Class => $Button)
             {
                 $html.= '.' . $Class . ' {' . $Button . '}' . PHP_EOL;
@@ -509,6 +550,9 @@ abstract class KodiBase extends IPSModule
 
             $instance = IPS_GetInstance($this->InstanceID);
             $Data = $KodiData->ToRawRPCJSONString();
+            $Host = @IPS_GetProperty($instance['ConnectionID'], "Host");
+            if ($Host === false)
+                return NULL;
 
             $URI = IPS_GetProperty($instance['ConnectionID'], "Host") . ":" . IPS_GetProperty($instance['ConnectionID'], "Webport") . "/jsonrpc";
             $UseBasisAuth = IPS_GetProperty($instance['ConnectionID'], 'BasisAuth');

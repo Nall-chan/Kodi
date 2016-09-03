@@ -4,6 +4,20 @@
                     "name": "showSVGRemote",
                     "type": "CheckBox",
                     "caption": "Show SVG-Remotecontrol"
+                },{
+                    "name": "RemoteId",
+                    "type": "Select",
+                    "caption": "Remote:",
+                    "options": [
+                        {
+                            "label": "vertical",
+                            "value": "1"
+                        },
+                        {
+                            "label": "horizontal",
+                            "value": "2"
+                        }
+                    ]
                 }, {
                     "name": "showNavigationButtons",
                     "type": "CheckBox",

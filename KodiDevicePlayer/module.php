@@ -245,10 +245,11 @@ class KodiDevicePlayer extends KodiBase
     static $Playertype = array(
         "song" => 0,
         "audio" => 0,
+        "radio" => 0,
         "video" => 1,
         "episode" => 1,
         "movie" => 1,
-        "channel"=>1,
+        "tv" => 1,
         "picture" => 2,
         "pictures" => 2
     );
@@ -521,9 +522,8 @@ class KodiDevicePlayer extends KodiBase
         if (is_null($this->PlayerId))
             $this->PlayerId = $this->ReadPropertyInteger('PlayerID');
         if (is_null($this->isActive))
-            $this->isActive = (bool)$this->GetBuffer('_isactive');
-        $this->SendDebug("isActive", ($this->isActive ? "TRUE" : "FALSE"),0);
-        
+            $this->isActive = (bool) $this->GetBuffer('_isactive');
+        $this->SendDebug("isActive", ($this->isActive ? "TRUE" : "FALSE"), 0);
     }
 
     /**
@@ -543,9 +543,9 @@ class KodiDevicePlayer extends KodiBase
         else
             $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
 
-        $this->SetBuffer('_isactive', (string)$this->isActive);
-        $this->SendDebug("getActivePlayer", ($this->isActive ? "TRUE" : "FALSE"),0);
-        
+        $this->SetBuffer('_isactive', (string) $this->isActive);
+        $this->SendDebug("getActivePlayer", ($this->isActive ? "TRUE" : "FALSE"), 0);
+
         return (bool) $this->isActive;
     }
 
@@ -558,8 +558,8 @@ class KodiDevicePlayer extends KodiBase
     private function setActivePlayer(bool $isActive)
     {
         $this->isActive = $isActive;
-        $this->SetBuffer('_isactive', (string)$this->isActive);
-        $this->SendDebug("setActive", ($this->isActive ? "TRUE" : "FALSE"),0);
+        $this->SetBuffer('_isactive', (string) $this->isActive);
+        $this->SendDebug("setActive", ($this->isActive ? "TRUE" : "FALSE"), 0);
     }
 
     /**
@@ -579,7 +579,13 @@ class KodiDevicePlayer extends KodiBase
         $KodiData->GetProperties($Param);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
+        {
+            $KodiPayload = new stdClass();
+            $KodiPayload->player = new stdClass();
+            $KodiPayload->player->playerid = $this->PlayerId;
+            $this->Decode('OnStop', $KodiPayload);
             return false;
+        }
         $this->Decode('GetProperties', $ret);
         return true;
     }
@@ -606,6 +612,7 @@ class KodiDevicePlayer extends KodiBase
         }
         else
         {
+
             if (property_exists($KodiPayload, 'type'))
             {
                 if (self::$Playertype[(string) $KodiPayload->type] <> $this->PlayerId)
@@ -615,8 +622,16 @@ class KodiDevicePlayer extends KodiBase
             {
                 if (property_exists($KodiPayload, 'item'))
                 {
-                    if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlayerId)
-                        return false;
+                    if (property_exists($KodiPayload->item, 'channeltype'))
+                    {
+                        if (self::$Playertype[(string) $KodiPayload->item->channeltype] <> $this->PlayerId)
+                            return false;
+                    }
+                    else
+                    {
+                        if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlayerId)
+                            return false;
+                    }
                 }
             }
         }
@@ -774,27 +789,54 @@ class KodiDevicePlayer extends KodiBase
                 $this->SetValueString('time', '');
                 $this->SetValueInteger('percentage', 0);
                 $this->SetValueInteger('speed', 0);
+
+                $this->SetValueString("album", '');
+                $this->SetValueInteger("track", 0);
+                $this->SetValueInteger("disc", 0);
+                $this->SetValueString("artist", '');
+                $this->SetValueString("lyrics", '');
+                $this->SetValueBoolean("partymode", false);
+                $this->SetValueInteger("year", 0);
+                $this->SetValueString("genre", '');
+
+                $this->SetValueString("showtitle", '');
+                $this->SetValueString("channel", '');
+                $this->SetValueInteger("season", 0);
+                $this->SetValueInteger("episode", 0);
+
+                $this->SetValueString("plot", '');
+                $this->SetValueInteger("audiostream", 0);
+                $this->SetValueInteger("subtitle", 0);
+
+                $this->SetValueInteger("repeat", 0);
+                $this->SetValueBoolean("shuffled", false);
+
+                $this->SetValueString("label", '');
+
+
+
                 $this->setActivePlayer(false);
-                IPS_RunScriptText('<? KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
-                IPS_RunScriptText('<? IPS_Sleep(500); KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
+                $this->SetCover("");
+                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
                 break;
             case 'OnPlay':
                 $this->setActivePlayer(true);
                 $this->SetValueInteger('Status', 2);
-                IPS_RunScriptText('<? KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
-                IPS_RunScriptText('<? KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
+                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                IPS_RunScriptText('<? @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
                 $this->SetTimerInterval('PlayerStatus', 2000);
                 break;
             case 'OnPause':
                 $this->SetTimerInterval('PlayerStatus', 0);
                 $this->SetValueInteger('Status', 3);
-                IPS_RunScriptText('<? KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
                 break;
             case 'OnSeek':
                 $this->SetValueString('time', $this->ConvertTime($KodiPayload->player->time));
                 break;
             case 'OnSpeedChanged':
-                IPS_RunScriptText('<? KODIPLAYER_RequestState(' . $this->InstanceID . ',"speed");');
+                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"speed");');
                 break;
             default:
                 $this->SendDebug($Method, $KodiPayload, 0);
@@ -898,6 +940,9 @@ class KodiDevicePlayer extends KodiBase
     public function GetItemInternal()
     {
         $this->Init();
+        if (!$this->isActive)
+            return false;
+
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetItem(array('playerid' => $this->PlayerId, 'properties' => self::$ItemList));
         $raw = $this->SendDirect($KodiData);
@@ -1028,7 +1073,7 @@ class KodiDevicePlayer extends KodiBase
                     $this->SetValueString('label', $ret->title);
                 else
                     $this->SetValueString('label', $ret->label);
-                
+
                 if (property_exists($ret, 'channel'))
                     $this->SetValueString('channel', $ret->channel);
                 else
@@ -1255,7 +1300,7 @@ class KodiDevicePlayer extends KodiBase
     {
         $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetItem(array('playerid'=> $this->PlayerId, 'properties' => self::$ItemList));
+        $KodiData->GetItem(array('playerid' => $this->PlayerId, 'properties' => self::$ItemList));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
             return false;
@@ -1963,7 +2008,7 @@ class KodiDevicePlayer extends KodiBase
 
     /**
      * Erzeugt aus einem Objekt von Audiostreams ein IPS-Variablenprofil.
-     */ 
+     */
     private function CreateAudioProfil($AudioStream)
     {
         $Assos = $this->CreateProfilArray($AudioStream);

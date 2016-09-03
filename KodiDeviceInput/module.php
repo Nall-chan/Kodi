@@ -263,6 +263,7 @@ class KodiDeviceInput extends KodiBase
     {
         parent::Create();
         $this->RegisterPropertyBoolean("showSVGRemote", true);
+        $this->RegisterPropertyInteger("RemoteId", 1);
         $this->RegisterPropertyBoolean("showNavigationButtons", true);
         $this->RegisterPropertyBoolean("showControlButtons", true);
         $this->RegisterPropertyBoolean("showInputRequested", true);
@@ -291,15 +292,19 @@ class KodiDeviceInput extends KodiBase
         {
             $sid = $this->RegisterScript("WebHookRemote", "WebHookRemote", '<? //Do not delete or modify.
 if (isset($_GET["button"]))
-    KODIINPUT_ExecuteAction(' . $this->InstanceID . ',$_GET["button"]);
+    if (KODIINPUT_ExecuteAction(' . $this->InstanceID . ',$_GET["button"]) === true) echo "OK";
 ', -8);
             IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->RegisterHook('/hook/KodiRemote' . $this->InstanceID, $sid);
-            $remoteID = $this->RegisterVariableString("Remote", "Remote", "~HTMLBox", 1);
-            include 'generateRemote.php';
-            SetValueString($remoteID, $remote);
-        } else
+            if (@$this->GetIDForIdent("Remote") == false)
+            {
+                $remoteID = $this->RegisterVariableString("Remote", "Remote", "~HTMLBox", 1);
+                include 'generateRemote'.($this->ReadPropertyInteger('RemoteId')).'.php';
+                SetValueString($remoteID, $remote);
+            }
+        }
+        else
         {
             $this->UnregisterScript("WebHookRemote");
             if (IPS_GetKernelRunlevel() == KR_READY)

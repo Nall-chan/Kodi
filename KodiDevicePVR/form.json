@@ -26,7 +26,7 @@
                     "caption": "Show HTML-Box for TV channels"
                 }, {
                     "type": "Label",
-                    "label": "Max channels to be displayed:"
+                    "label": "Max TV channels to be displayed:"
                 },
                 {
                     "name": "showMaxTVChannels",
@@ -35,7 +35,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Script for HTML-Box Desgin:"
+                    "label": "Script for TV HTML-Box Desgin:"
                 },
                 {
                     "name": "TVChannellistconfig",
@@ -44,10 +44,74 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Size (width) for favourites thumnails:"
+                    "label": "Size (width) for TV thumnails:"
                 },
                 {
                     "name": "TVThumbSize",
+                    "type": "NumberSpinner",
+                    "caption": "Thumb width"
+                },
+                {
+                    "name": "showRadioChannellist",
+                    "type": "CheckBox",
+                    "caption": "Show HTML-Box for radio channels"
+                },
+                {
+                    "type": "Label",
+                    "label": "Max radio channels to be displayed:"
+                },
+                {
+                    "name": "showMaxRadioChannels",
+                    "type": "NumberSpinner",
+                    "caption": "Channels"
+                },
+                {
+                    "type": "Label",
+                    "label": "Script for radio HTML-Box Desgin:"
+                },
+                {
+                    "name": "RadioChannellistconfig",
+                    "type": "SelectScript",
+                    "caption": "Script:"
+                },
+                {
+                    "type": "Label",
+                    "label": "Size (width) for radio thumnails:"
+                },
+                {
+                    "name": "RadioThumbSize",
+                    "type": "NumberSpinner",
+                    "caption": "Thumb width"
+                },
+                {
+                    "name": "showRecordinglist",
+                    "type": "CheckBox",
+                    "caption": "Show HTML-Box for recordings"
+                },
+                {
+                    "type": "Label",
+                    "label": "Max recordings to be displayed:"
+                },
+                {
+                    "name": "showMaxRecording",
+                    "type": "NumberSpinner",
+                    "caption": "Recordings"
+                },
+                {
+                    "type": "Label",
+                    "label": "Script for recording HTML-Box Desgin:"
+                },
+                {
+                    "name": "Recordinglistconfig",
+                    "type": "SelectScript",
+                    "caption": "Script:"
+                },
+                {
+                    "type": "Label",
+                    "label": "Size (width) for recording thumnails:"
+                },
+                {
+                    "name": "RecordingThumbSize",
                     "type": "NumberSpinner",
                     "caption": "Thumb width"
                 }
