@@ -263,7 +263,7 @@ abstract class KodiBase extends IPSModule
         if (IPS_GetKernelRunlevel() <> KR_READY)
             return;
         parent::ApplyChanges();
-        
+
         if ($this->HasActiveParent())
             $this->RequestProperties(array("properties" => static::$Properties));
     }
@@ -340,7 +340,7 @@ abstract class KodiBase extends IPSModule
         $html = "";
         // JS Rückkanal erzeugen
         $html.='<script>
-window.xhrGet'.$this->InstanceID.'=function xhrGet'.$this->InstanceID.'(o)
+window.xhrGet' . $this->InstanceID . '=function xhrGet' . $this->InstanceID . '(o)
 {
     var HTTP = new XMLHttpRequest();
     HTTP.open(\'GET\',o.url,true);
@@ -350,14 +350,14 @@ window.xhrGet'.$this->InstanceID.'=function xhrGet'.$this->InstanceID.'(o)
         if (HTTP.status >= 200 && HTTP.status < 300)
         {
             if (HTTP.responseText != \'OK\')
-                sendError'.$this->InstanceID.'(HTTP.responseText);
+                sendError' . $this->InstanceID . '(HTTP.responseText);
         } else {
-            sendError'.$this->InstanceID.'(HTTP.statusText);
+            sendError' . $this->InstanceID . '(HTTP.statusText);
         }
     });
 };
 
-function sendError'.$this->InstanceID.'(data)
+function sendError' . $this->InstanceID . '(data)
 {
 var notify = document.getElementsByClassName("ipsNotifications")[0];
 var newDiv = document.createElement("div");
@@ -520,17 +520,27 @@ sleep(10).then(() => {
      */
     protected function Send(Kodi_RPC_Data $KodiData)
     {
-        $JSONData = $KodiData->ToJSONString('{0222A902-A6FA-4E94-94D3-D54AA4666321}');
-        $anwser = $this->SendDataToParent($JSONData);
-        $this->SendDebug('Send', $JSONData, 0);
-        if ($anwser === false)
+        try
         {
-            $this->SendDebug('Receive', 'No valid answer', 0);
+            $JSONData = $KodiData->ToJSONString('{0222A902-A6FA-4E94-94D3-D54AA4666321}');
+            if (!$this->HasActiveParent())
+                throw new Exception('Intance has no active parent.', E_USER_NOTICE);
+            $anwser = $this->SendDataToParent($JSONData);
+            $this->SendDebug('Send', $JSONData, 0);
+            if ($anwser === false)
+            {
+                $this->SendDebug('Receive', 'No valid answer', 0);
+                return NULL;
+            }
+            $result = unserialize($anwser);
+            $this->SendDebug('Receive', $result, 0);
+            return $result;
+        }
+        catch (Exception $exc)
+        {
+            trigger_error($exc->getMessage(), E_USER_NOTICE);
             return NULL;
         }
-        $result = unserialize($anwser);
-        $this->SendDebug('Receive', $result, 0);
-        return $result;
     }
 
     /**
@@ -550,11 +560,14 @@ sleep(10).then(() => {
 
             $instance = IPS_GetInstance($this->InstanceID);
             $Data = $KodiData->ToRawRPCJSONString();
+            if (@IPS_GetProperty($instance['ConnectionID'], "Open") === false)
+                throw new Exception('Instance inactiv.', E_USER_NOTICE);
+
             $Host = @IPS_GetProperty($instance['ConnectionID'], "Host");
-            if ($Host === false)
+            if ($Host == "")
                 return NULL;
 
-            $URI = IPS_GetProperty($instance['ConnectionID'], "Host") . ":" . IPS_GetProperty($instance['ConnectionID'], "Webport") . "/jsonrpc";
+            $URI = $Host . ":" . IPS_GetProperty($instance['ConnectionID'], "Webport") . "/jsonrpc";
             $UseBasisAuth = IPS_GetProperty($instance['ConnectionID'], 'BasisAuth');
             $User = IPS_GetProperty($instance['ConnectionID'], 'Username');
             $Pass = IPS_GetProperty($instance['ConnectionID'], 'Password');

@@ -853,7 +853,7 @@ boolean KODIPLAYER_LoadAlbum(integer $InstanzeID, integer $AlbumId);
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
-boolean KODIPLAYLER_LoadArtist(integer $InstanzeID, integer $ArtistId);
+boolean KODIPLAYER_LoadArtist(integer $InstanzeID, integer $ArtistId);
 ```  
  Lädt alle Itemes eines Artist und startet die Wiedergabe.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
