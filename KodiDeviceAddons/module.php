@@ -167,8 +167,10 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
-            throw new Exception('Error on read Addonlistconfig-Script');
-
+        {
+            trigger_error('Error on read Addonlistconfig-Script');
+            return;
+        }
         $AllAddons = $this->GetAddons();
         $Data = array_filter($AllAddons, array($this, "FilterAddons"), ARRAY_FILTER_USE_BOTH);
 //        $Line['Execute']="";
@@ -242,7 +244,7 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
      */
     private function GetWebHookLink(string $Addonid, string $Action)
     {
-        return 'onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
+        return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
     }
 
     /**

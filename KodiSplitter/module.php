@@ -209,7 +209,7 @@ class KodiSplitter extends IPSModule
             if ($this->HasActiveParent($ParentID))
             {
                 $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
-                $ret = $this->Send($KodiData);
+                $ret = @$this->Send($KodiData);
                 if ($ret == "pong")
                 {
                     if (!$this->CheckWebserver())
@@ -465,7 +465,7 @@ class KodiSplitter extends IPSModule
     public function KeepAlive()
     {
         $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
-        $ret = $this->Send($KodiData);
+        $ret = @$this->Send($KodiData);
         if ($ret !== "pong")
         {
             trigger_error('Connection to Kodi lost.', E_USER_NOTICE);

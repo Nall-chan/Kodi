@@ -227,8 +227,6 @@ class KodiDevicePlaylist extends KodiBase
      */
     public function Destroy()
     {
-        if (IPS_GetKernelRunlevel() <> KR_READY)
-            return;
         $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
         $this->UnregisterProfile("Tracklist." . $this->InstanceID . ".Kodi");
     }
@@ -638,7 +636,10 @@ if (isset($_GET["Index"]))
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
-            throw new Exception('Error on read Playlistconfig-Script');
+        {
+            trigger_error('Error on read Playlistconfig-Script', E_USER_NOTICE);
+            return;
+        }
 
         $Data = array();
         if (!$Empty)

@@ -156,8 +156,10 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
-            throw new Exception('Error on read Favlistconfig-Script');
-
+        {
+            trigger_error('Error on read Favlistconfig-Script');
+            return;
+        }
         $AllFavs = $this->GetFavourites('all');
         $Data = array_filter($AllFavs, array($this, "FilterFav"), ARRAY_FILTER_USE_BOTH);
         $HTMLData = $this->GetTableHeader($Config);
@@ -257,7 +259,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
                 $this->SendDebug('create illegal HOOK', $Data, 0);
                 return "";
         }
-        return 'onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiFavlist' . $this->InstanceID . '?Type=' . $Data['Type'] . '&Path=' . rawurlencode($Data['Path']) . $Extra . '\' })"';
+        return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiFavlist' . $this->InstanceID . '?Type=' . $Data['Type'] . '&Path=' . rawurlencode($Data['Path']) . $Extra . '\' })"';
     }
 
     /**

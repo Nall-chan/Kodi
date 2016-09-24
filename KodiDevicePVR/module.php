@@ -326,16 +326,18 @@ if (isset($_GET["ID"]))
             IPS_SetHidden($ID, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->RefreshRecordinglist();
-            $this->RegisterTimer('RefreshRecords', 15 * 60 * 1000, 'KODIPVR_RefreshRecordinglist(' . $this->InstanceID . ');');
         }
         else
         {
             $this->UnregisterVariable("Recordinglist");
             $this->UnregisterScript("WebHookRecordinglist");
-            $this->UnregisterTimer('RefreshRecords');
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
         }
+        if ($this->ReadPropertyBoolean('showRecordinglist') or $this->ReadPropertyBoolean('showRadioChannellist') or $this->ReadPropertyBoolean('showTVChannellist'))
+            $this->RegisterTimer('RefreshLists', 15 * 60 * 1000, 'KODIPVR_RefreshAll(' . $this->InstanceID . ');');
+        else
+            $this->UnregisterTimer('RefreshLists');
     }
 
 ################## PRIVATE     
@@ -379,7 +381,10 @@ if (isset($_GET["ID"]))
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
-            throw new Exception('Error on read TV Channelistconfig-Script');
+        {
+            trigger_error('Error on read TV Channelistconfig-Script');
+            return;
+        }
 
         //$Channels = $this->GetChannels('tv');
         $Max = $this->ReadPropertyInteger('showMaxTVChannels');
@@ -459,7 +464,7 @@ if (isset($_GET["ID"]))
                 else
                     $Line['Next'] = 'No Info';
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
@@ -498,7 +503,10 @@ if (isset($_GET["ID"]))
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
-            throw new Exception('Error on read radio Channelistconfig-Script');
+        {
+            trigger_error('Error on read radio Channelistconfig-Script');
+            return;
+        }
 
         $Max = $this->ReadPropertyInteger('showMaxRadioChannels');
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -577,7 +585,7 @@ if (isset($_GET["ID"]))
                 else
                     $Line['Next'] = 'No Info';
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
@@ -604,7 +612,7 @@ if (isset($_GET["ID"]))
      * 
      * @access private
      */
-    public function RefreshRecordinglist()
+    private function RefreshRecordinglist()
     {
         if (!$this->ReadPropertyBoolean('showRecordinglist'))
             return;
@@ -616,7 +624,10 @@ if (isset($_GET["ID"]))
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
         if (($Config === false) or ( !is_array($Config)))
-            throw new Exception('Error on read Recordinglistconfig-Script');
+        {
+            trigger_error('Error on read Recordinglistconfig-Script');
+            return;
+        }
 
         $Max = $this->ReadPropertyInteger('showMaxRecording');
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -661,7 +672,7 @@ if (isset($_GET["ID"]))
                 }
                 $Line['Runtime'] = $this->ConvertTime($Line['Runtime']);
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet'.$this->InstanceID.'({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
                     if (!array_key_exists($feldIndex, $Line))
@@ -1041,7 +1052,6 @@ echo serialize($Config);
     {
         if (!isset($HookData["ID"]))
             return;
-//        $Path = rawurldecode($HookData["Path"]);
         $this->SendDebug($Typ . ' HOOK', $HookData["ID"], 0);
         $KodiData = new Kodi_RPC_Data('Player');
         switch ($Typ)
@@ -1051,7 +1061,7 @@ echo serialize($Config);
                 $KodiData->Open(array("item" => array('channelid' => (int) $HookData["ID"])));
                 break;
             case "recording":
-                $KodiData->Open(array("item" => array('recordingid' => (int) $HookData["ID"])));                
+                $KodiData->Open(array("item" => array('recordingid' => (int) $HookData["ID"])));
                 break;
         }
         $ret = $this->Send($KodiData);
@@ -1324,6 +1334,18 @@ echo serialize($Config);
         if (is_null($ret))
             return false;
         return $KodiData->ToArray($ret->timerdetails);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIPVR_RefreshAll'. Erzeugt alle HTML-Tabellen neu
+     *
+     * @access public
+     */
+    public function RefreshAll()
+    {
+        $this->RefreshTVChannellist();
+        $this->RefreshRadioChannellist();
+        $this->RefreshRecordinglist();
     }
 
     /**

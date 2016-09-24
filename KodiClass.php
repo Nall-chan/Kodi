@@ -1,4 +1,14 @@
 <?
+/* * @addtogroup kodi
+ * @{
+ *
+ * @package       Kodi
+ * @author        Michael Tröger <micha@nall-chan.net>
+ * @copyright     2016 Michael Tröger
+ * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @version       1.0
+ * @example <b>Ohne</b>
+ */
 
 if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind.
 {
@@ -145,16 +155,7 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
     define('vtArray', 8);
     define('vtObject', 9);
 }
-/* * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
- * @example <b>Ohne</b>
- */
+
 
 /**
  * Basisklasse für alle Kodi IPS-Instanzklassen.
@@ -630,7 +631,7 @@ sleep(10).then(() => {
 ################## DUMMYS / WOARKAROUNDS - protected
 
     /**
-     * Löscht eine Statusvariable, sofern vorhanden.
+     * Löscht eine Script, sofern vorhanden.
      *
      * @access private
      * @param int $Ident Ident der Variable.
