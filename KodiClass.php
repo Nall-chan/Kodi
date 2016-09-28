@@ -341,7 +341,8 @@ abstract class KodiBase extends IPSModule
         $html = "";
         // JS Rückkanal erzeugen
         $html.='<script>
-window.xhrGet' . $this->InstanceID . '=function xhrGet' . $this->InstanceID . '(o)
+//window.xhrGet' . $this->InstanceID . '=
+    function xhrGet' . $this->InstanceID . '(o)
 {
     var HTTP = new XMLHttpRequest();
     HTTP.open(\'GET\',o.url,true);

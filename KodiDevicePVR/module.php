@@ -338,6 +338,8 @@ if (isset($_GET["ID"]))
             $this->RegisterTimer('RefreshLists', 15 * 60 * 1000, 'KODIPVR_RefreshAll(' . $this->InstanceID . ');');
         else
             $this->UnregisterTimer('RefreshLists');
+        
+        $this->UnregisterTimer('RefreshRecords');
     }
 
 ################## PRIVATE     
@@ -457,14 +459,17 @@ if (isset($_GET["ID"]))
                         }
                         if (array_key_exists("starttime", $Line['Broadcastnext']))
                         {
-                            $Line['Next'] .= ' (' . $Line['Broadcastnext']['starttime'] . ')';
+                            $starttime = DateTime::createFromFormat('Y-m-d H:i:s', $Line['Broadcastnext']['starttime'], new DateTimeZone('UTC'));
+                            $starttime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+                            $Line['Next'] .= ' (' . $starttime->format("H:i") . ')';
                         }
                     }
                 }
                 else
                     $Line['Next'] = 'No Info';
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+                //$HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
@@ -578,14 +583,17 @@ if (isset($_GET["ID"]))
                         }
                         if (array_key_exists("starttime", $Line['Broadcastnext']))
                         {
-                            $Line['Next'] .= ' (' . $Line['Broadcastnext']['starttime'] . ')';
+                            $starttime = DateTime::createFromFormat('Y-m-d H:i:s', $Line['Broadcastnext']['starttime'], new DateTimeZone('UTC'));
+                            $starttime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+                            $Line['Next'] .= ' (' . $starttime->format("H:i") . ')';
                         }
                     }
                 }
                 else
                     $Line['Next'] = 'No Info';
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+//                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
@@ -672,7 +680,8 @@ if (isset($_GET["ID"]))
                 }
                 $Line['Runtime'] = $this->ConvertTime($Line['Runtime']);
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
+                //$HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
+                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
                     if (!array_key_exists($feldIndex, $Line))

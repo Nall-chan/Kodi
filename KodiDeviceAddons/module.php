@@ -244,7 +244,8 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
      */
     private function GetWebHookLink(string $Addonid, string $Action)
     {
-        return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
+        //return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
+        return 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
     }
 
     /**
@@ -438,11 +439,109 @@ $Config["Style"] = array(
 // dodisabled => Button für Addon deaktivieren
 //execute => Button für Addon ausführen
 $Config["Button"]= array(
-	"isenabled" => "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgb(0, 255, 0);",
-	"isdisabled"=> "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.3);",
-	"doenabled" => "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(0, 255, 0, 0.3);",
-	"dodisabled"=> "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 40%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgba(255, 255, 255, 0.1);",
-	"execute"=> "background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%); width: 100%; display: inline-block; margin: 2px; font-family: arial,sans-serif; font-size: 17px; line-height: 28px; background-color: rgb(0, 255, 0);"
+	"isenabled" => "
+background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -moz-linear-gradient(50% 0%, transparent 0px, rgba(0, 0, 0, 0.3) 28%, rgba(0, 0, 0, 0.3) 100%);
+background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+color: rgba(255, 255, 255, 0.3);
+color: rgb(255, 255, 255);
+background-color: rgba(255,255,255,0.1);
+background-color: rgb(0, 255, 0);
+width: 25%;
+display: inline-block;
+margin: 2px 0px 1px 3px;
+font-family: arial,sans-serif; 
+font-size: 17px;
+line-height: 28px;
+border-color: transparent;
+border-style: solid;
+border-width: 1px 0px;
+min-height: 28px;
+padding: 0px 10px;
+vertical-align: middle;",
+
+	"isdisabled"=> "
+background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-color: rgba(255, 255, 255, 0.3);
+width: 25%;
+display: inline-block;
+margin: 2px 0px 1px 3px;
+font-family: arial,sans-serif; 
+font-size: 17px;
+line-height: 28px;
+border-color: transparent;
+border-style: solid;
+border-width: 1px 0px;
+min-height: 28px;
+padding: 0px 10px;
+vertical-align: middle;",
+
+	"doenabled" => "
+background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-color: rgba(0, 255, 0, 0.3);
+width: 25%;
+display: inline-block;
+margin: 2px 0px 1px 3px;
+font-family: arial,sans-serif; 
+font-size: 17px;
+line-height: 28px;
+border-color: transparent;
+border-style: solid;
+border-width: 1px 0px;
+min-height: 28px;
+padding: 0px 10px;
+vertical-align: middle;",
+
+	"dodisabled"=> "
+background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-color: rgba(255,255,255,0.1);
+color: rgba(255, 255, 255, 0.3);
+width: 25%;
+display: inline-block;
+margin: 2px 0px 1px 3px;
+font-family: arial,sans-serif; 
+font-size: 17px;
+line-height: 28px;
+border-color: transparent;
+border-style: solid;
+border-width: 1px 0px;
+min-height: 28px;
+padding: 0px 10px;
+vertical-align: middle;",
+	"execute"=> "
+background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
+background-color: rgb(0, 255, 0);
+width: 80%;
+display: inline-block;
+margin: 2px 0px 1px 3px;
+font-family: arial,sans-serif; 
+font-size: 17px;
+line-height: 28px;
+border-color: transparent;
+border-style: solid;
+border-width: 1px 0px;
+min-height: 28px;
+padding: 0px 10px;
+vertical-align: middle;",
+
 );
 
 ### Konfig ENDE !!!
