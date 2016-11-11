@@ -172,6 +172,8 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
             return;
         }
         $AllAddons = $this->GetAddons();
+        if ($AllAddons === false)
+            $AllAddons=array();
         $Data = array_filter($AllAddons, array($this, "FilterAddons"), ARRAY_FILTER_USE_BOTH);
 //        $Line['Execute']="";
         $HTMLData = $this->GetTableHeader($Config);

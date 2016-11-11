@@ -533,7 +533,7 @@ if (isset($_GET["Index"]))
      * Schreibt eine Liste von genutzen Buffern.
      * 
      * @access private
-     * @param array $Liste Array welches die genutzen Buffer enthält.
+     * @param array $List Array welches die genutzen Buffer enthält.
      */
     private function SetBufferList(array $List)
     {
