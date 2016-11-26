@@ -1772,7 +1772,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadAlbum'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadAlbum'.
      * Lädt ein Album und startet die Wiedergabe.
      * 
      * @access public
@@ -1789,7 +1789,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadArtist'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadArtist'.
      * Lädt alle Itemes eines Artist und startet die Wiedergabe.
      * 
      * @access public
@@ -1807,7 +1807,26 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadDirectory'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadChannel'.
+     * Lädt einen PVR-Kanal und startet die Wiedergabe.
+     * 
+     * @access public
+     * @param int $ChannelId ID des Kanals.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     */
+    public function LoadChannel(int $ChannelId)
+    {
+        if (!is_int($ChannelId))
+        {
+            trigger_error('ChannelId must be integer', E_USER_NOTICE);
+
+            return false;
+        }
+        return $this->Load("channelid", $ChannelId);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadDirectory'.
      * Lädt alle Itemes eines Verzeichnisses und startet die Wiedergabe.
      * 
      * @access public
@@ -1825,7 +1844,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadDirectoryRecursive'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadDirectoryRecursive'.
      * Lädt alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, und startet die Wiedergabe.
      * 
      * @access public
@@ -1845,7 +1864,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadEpisode'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadEpisode'.
      * Lädt eine Episode und startet die Wiedergabe.
      * 
      * @access public
@@ -1864,7 +1883,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadFile'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadFile'.
      * Lädt eine Datei und startet die Wiedergabe.
      * 
      * @access public
@@ -1883,7 +1902,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadGenre'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadGenre'.
      * Lädt eine komplettes Genre und startet die Wiedergabe.
      * 
      * @access public
@@ -1901,7 +1920,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadMovie'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadMovie'.
      * Lädt ein Film und startet die Wiedergabe.
      * 
      * @access public
@@ -1920,16 +1939,14 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadMusicvideo'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadMusicvideo'.
      * Lädt ein Musicvideo und startet die Wiedergabe.
      * 
      * @access public
      * @param int $MusicvideoId ID des Musicvideos.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
      */
-    public function
-
-    LoadMusicvideo(int $MusicvideoId)
+    public function LoadMusicvideo(int $MusicvideoId)
     {
         if (!is_int($MusicvideoId))
         {
@@ -1940,7 +1957,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadPlaylist'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadPlaylist'.
      * Lädt die Playlist und startet die Wiedergabe.
      * 
      * @access public
@@ -1953,7 +1970,25 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODPLAYER_LoadSong'.
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadRecording'.
+     * Lädt eine Aufzeichnung und startet die Wiedergabe.
+     * 
+     * @access public
+     * @param int $RecordingId ID der Aufnahme.
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     */
+    public function LoadRecording(int $RecordingId)
+    {
+        if (!is_int($RecordingId))
+        {
+            trigger_error('RecordingId must be integer', E_USER_NOTICE);
+            return false;
+        }
+        return $this->Load("recordingid", $RecordingId);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIPLAYER_LoadSong'.
      * Lädt ein Songs und startet die Wiedergabe.
      * 
      * @access public
@@ -1977,8 +2012,6 @@ class KodiDevicePlayer extends KodiBase
      */
     private function CreateProfilArray($Data, $Assos = Array())
     {
-
-
         foreach ($Data as $item)
         {
             if ($item->language == "")

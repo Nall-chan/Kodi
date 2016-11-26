@@ -859,6 +859,12 @@ boolean KODIPLAYER_LoadArtist(integer $InstanzeID, integer $ArtistId);
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
+boolean KODIPLAYER_LoadChannel(integer $InstanzeID, integer $ChannelId);
+```  
+ Lädt einen PVR-Kanal für die Wiedergabe.  
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
 boolean KODIPLAYER_LoadDirectory(integer $InstanzeID, string $Directory);
 ```  
  Lädt alle Itemes eines Verzeichnisses und startet die Wiedergabe.  
@@ -901,9 +907,15 @@ boolean KODIPLAYER_LoadMusicVideo(integer $InstanzeID, integer $MusicvideoId);
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
-boolean KODPLAYER_LoadPlaylist(integer $InstanzeID);
+boolean KODIPLAYER_LoadPlaylist(integer $InstanzeID);
 ```  
  Lädt die Playlist des Players und startet die Wiedergabe.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+ ```php
+boolean KODIPLAYER_LoadRecording(integer $RecordingId);
+```  
+ Lädt eine PVR-Aufnahme startet die Wiedergabe.
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php

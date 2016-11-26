@@ -34,7 +34,7 @@ class KodiSplitter extends IPSModule
      * RPC-Namespace
      * 
      * @access private
-     *  @var string
+     * @var string
      * @value 'JSONRPC'
      */
     static $Namespace = "JSONRPC";
@@ -305,7 +305,7 @@ class KodiSplitter extends IPSModule
         $Port = $this->ReadPropertyInteger('Webport');
         $UseBasisAuth = $this->ReadPropertyBoolean('BasisAuth');
         $User = $this->ReadPropertyString('Username');
-        $Pass = $this->ReadPropertyInteger('Password');
+        $Pass = $this->ReadPropertyString('Password');
         $URL = "http://" . $Host . ":" . $Port . $URI;
         $ch = curl_init();
         $timeout = 1; // 0 wenn kein Timeout
@@ -318,6 +318,7 @@ class KodiSplitter extends IPSModule
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             curl_setopt($ch, CURLOPT_USERPWD, $User . ':' . $Pass);
         }
+
         $this->SendDebug('DoWebrequest', $URL, 0);
         $Result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
