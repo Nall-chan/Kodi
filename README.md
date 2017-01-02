@@ -464,12 +464,37 @@ array|boolean KODIAUDIOLIB_GetRecentlyPlayedSongs(integer $InstanzeID);
 array|boolean KODIFAV_GetFavourites(integer $InstanzeID, string $Type);
 ```
  Liest die Eigenschaften der Favoriten aus, welche dem im $Type übergeben Typen angehören.  
- $Type kann dabei "media", "window", "script" oder "unknown" annehmen.
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ $Type kann dabei "all", "media", "window", "script" oder "unknown" annehmen.
+ Rückgabewert ist ein assoziertes Array mit den Daten. Je nach Type, sind nicht alle Werte vorhanden.  
+ Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
  
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
+| Index                     | Typ       | Beschreibung                          |
+|:-------------------------:|:---------:|:-------------------------------------:|
+| thumbnail                 | string    | Pfad zum Cover                        |
+| title                     | string    | Titel des Favoriten                   |
+| type                      | string    | Der Typ des Favoriten                 |
+| window                    | string    | Ziel-Fenster eines Window-Favoriten   |
+| windowparameter           | string    | Parameter für das Ziel-Fenster        |
+| path                      | string    | Pfad zum Favoriten (script & media    |
 
+
+```php
+boolean KODIFAV_LoadFavouriteMedia(integer $InstanzeID, string $Path);
+```
+ Lädt einen Favoriten vom Typ Media.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+```php
+boolean KODIFAV_LoadFavouriteScript(integer $InstanzeID, string $Script);
+```
+ Lädt einen Favoriten vom Typ Script.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+
+```php
+boolean KODIFAV_LoadFavouriteWindow(integer $InstanzeID, string $Window, string $WindowParameter);
+```
+ Lädt einen Favoriten vom Typ Window.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
 ---
 
