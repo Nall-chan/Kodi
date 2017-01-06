@@ -404,7 +404,7 @@ echo serialize($Config);
             trigger_error('WindowParameter must be string', E_USER_NOTICE);
             return false;
         }
-        $ret = $this->ProcessHookdata(array("Type" => "window","Window" => $Window,"Path" => rawurlencode($WindowParameter)));
+        $ret = $this->ProcessHookdata(array("Type" => "window", "Window" => $Window, "Path" => rawurlencode($WindowParameter)));
         return ($ret == "OK" ? true : false);
     }
 
@@ -488,6 +488,8 @@ echo serialize($Config);
             $KodiData->GetFavourites(array("type" => $Type, "properties" => static::$FavouriteItemList));
 
         $ret = $this->SendDirect($KodiData);
+        if (is_null($ret))
+            return false;
         if ($ret->limits->total > 0)
             return $KodiData->ToArray($ret->favourites);
         return array();
