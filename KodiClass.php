@@ -600,19 +600,14 @@ sleep(10).then(() => {
             curl_close($ch);
 
             if ($result === false)
-            {
-                IPS_SetInstanceStatus($instance['ConnectionID'], IS_EBASE + 3);
                 throw new Exception('Kodi unreachable', E_USER_NOTICE);
-            }
             $this->SendDebug("Receive Direct", $result, 0);
 
             $ReplayKodiData = new Kodi_RPC_Data();
             $ReplayKodiData->CreateFromJSONString($result);
             $ret = $ReplayKodiData->GetResult();
             if (is_a($ret, 'KodiRPCException'))
-            {
                 throw $ret;
-            }
             $this->SendDebug("Receive Direct", $ReplayKodiData, 0);
             return $ret;
         }
@@ -941,23 +936,6 @@ sleep(10).then(() => {
         if (IPS_VariableProfileExists($Name))
             IPS_DeleteVariableProfile($Name);
     }
-
-    /**
-     * Löscht ein Timer.
-     *
-     * @access protected
-     * @param string $Name Name des Timer.
-     */
-    protected function UnregisterTimer($Name)
-    {
-        $id = @IPS_GetObjectIDByIdent($Name, $this->InstanceID);
-        if ($id > 0)
-        {
-            if (IPS_EventExists($id))
-                IPS_DeleteEvent($id);
-        }
-    }
-
 }
 
 /**

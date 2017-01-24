@@ -23,6 +23,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @todo Player.SetVideoStream ab v8
  */
 class KodiDevicePlayer extends KodiBase
 {
@@ -265,7 +266,8 @@ class KodiDevicePlayer extends KodiBase
         $this->RegisterPropertyInteger('PlayerID', static::Audio);
         $this->RegisterPropertyInteger('CoverSize', 300);
         $this->RegisterPropertyString('CoverTyp', 'thumb');
-        $this->SetCover('');
+        $this->RegisterTimer('PlayerStatus', 0, 'KODIPLAYER_RequestState($_IPS[\'TARGET\'],"PARTIAL");');
+        
     }
 
     /**
@@ -286,6 +288,7 @@ class KodiDevicePlayer extends KodiBase
         $this->UnregisterProfile("AudioStream." . $this->InstanceID . ".Kodi");
         $this->UnregisterProfile("Subtitels." . $this->InstanceID . ".Kodi");
         $this->UnregisterProfile("Speed." . $this->InstanceID . ".Kodi");
+        
     }
 
     /**
@@ -347,6 +350,7 @@ class KodiDevicePlayer extends KodiBase
      */
     public function ApplyChanges()
     {
+
         $this->GetParentData();
         $this->Init();
         $this->RegisterProfileIntegerEx("Repeat.Kodi", "", "", "", Array(
@@ -354,7 +358,6 @@ class KodiDevicePlayer extends KodiBase
             Array(1, "Titel", "", -1),
             Array(2, "Playlist", "", -1)
         ));
-
 
         $this->RegisterProfileInteger("Intensity.Kodi", "Intensity", "", " %", 0, 100, 1);
         $this->RegisterProfileIntegerEx("Status.Kodi", "Information", "", "", Array(
@@ -364,6 +367,7 @@ class KodiDevicePlayer extends KodiBase
             Array(3, "Pause", "", -1),
             Array(4, "Weiter", "", -1)
         ));
+
         switch ($this->PlayerId)
         {
             case self::Audio:
@@ -497,6 +501,8 @@ class KodiDevicePlayer extends KodiBase
         $this->RegisterVariableInteger("percentage", "Position", "Intensity.Kodi", 26);
         $this->EnableAction("percentage");
 
+        $this->SetCover('');
+
         parent::ApplyChanges();
 
 
@@ -506,7 +512,6 @@ class KodiDevicePlayer extends KodiBase
         if ($this->isActive)
             $this->GetItemInternal();
 
-        $this->RegisterTimer('PlayerStatus', 0, 'KODIPLAYER_RequestState($_IPS[\'TARGET\'],"PARTIAL");');
     }
 
 ################## PRIVATE     
@@ -852,8 +857,9 @@ class KodiDevicePlayer extends KodiBase
      */
     private function SetCover(string $file)
     {
+
         $CoverID = @IPS_GetObjectIDByIdent('CoverIMG', $this->InstanceID);
-        $Size = $this->ReadPropertyString("CoverSize");
+        $Size = $this->ReadPropertyInteger("CoverSize");
         if ($CoverID === false)
         {
             $CoverID = IPS_CreateMedia(1);

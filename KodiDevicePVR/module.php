@@ -23,6 +23,8 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @todo PVR.AddTimer ab v8
+ * @todo PVR.ToggleTimer ab v8
  */
 class KodiDevicePVR extends KodiBase
 {
@@ -197,6 +199,7 @@ class KodiDevicePVR extends KodiBase
         IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger("Recordinglistconfig", $ID);
         $this->RegisterPropertyInteger("RecordingThumbSize", 100);
+        $this->RegisterTimer('RefreshLists', 0, 'KODIPVR_RefreshAll(' . $this->InstanceID . ');');
     }
 
     /**
@@ -335,11 +338,11 @@ if (isset($_GET["ID"]))
                 $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
         }
         if ($this->ReadPropertyBoolean('showRecordinglist') or $this->ReadPropertyBoolean('showRadioChannellist') or $this->ReadPropertyBoolean('showTVChannellist'))
-            $this->RegisterTimer('RefreshLists', 15 * 60 * 1000, 'KODIPVR_RefreshAll(' . $this->InstanceID . ');');
-        else
-            $this->UnregisterTimer('RefreshLists');
+            $this->SetTimerInterval('RefreshLists', 15 * 60 * 1000);
         
-        $this->UnregisterTimer('RefreshRecords');
+        else
+            $this->SetTimerInterval('RefreshLists', 0);
+        
     }
 
 ################## PRIVATE     

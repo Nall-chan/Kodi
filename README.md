@@ -1853,11 +1853,19 @@ Eigenschaften von KodiSplitter:
 
 **Changlog:**
 
-1.0	:  Release  
-1.1     :  Diversese Bugfixes  
-           Horizontale Remote hizugefügt  
-           PVR zeigt TV & Radio-Kanäle sowie Aufzeichnungen an und kann Diese wiedergeben.  
-           Rückkanal für HTML-Tabellen hinzugefügt.
+ Version 1.0:  
+  - Release  
+
+ Version 1.1:  
+  - Diversese Bugfixes  
+  - Horizontale Remote hizugefügt  
+  - PVR zeigt TV & Radio-Kanäle sowie Aufzeichnungen an und kann Diese wiedergeben  
+  - Rückkanal für HTML-Tabellen hinzugefügt  
+
+ Version 1.2:  
+  - Fix: Timer in Create verschoben  
+  - Fix: PlayerModul hat IPS Start verhindert  
+  - Neu: Input-Modul hat ein Eingabefeld im WebFront um Zeichenfolgen an Kodi zu senden  
 
 ## 11. Lizenz  
 

@@ -57,6 +57,8 @@ class KodiSplitter extends IPSModule
         $this->RegisterPropertyString("Password", "");
         $this->RegisterPropertyBoolean("Watchdog", false);
         $this->RegisterPropertyInteger("Interval", 5);
+        $this->RegisterTimer('KeepAlive', 0, 'KODIRPC_KeepAlive($_IPS[\'TARGET\']);');
+        $this->RegisterTimer('Watchdog', 0, 'KODIRPC_Watchdog($_IPS[\'TARGET\']);');
     }
 
     /**
@@ -68,18 +70,18 @@ class KodiSplitter extends IPSModule
     {
         switch ($Message)
         {
-            case IPS_KERNELMESSAGE:
-                if ($Data[0] == KR_READY)
+            case IPS_KERNELSTARTED:
+//                if ($Data[0] == KR_READY)
+//                {
+                try
                 {
-                    try
-                    {
-                        $this->KernelReady();
-                    }
-                    catch (Exception $exc)
-                    {
-                        return;
-                    }
+                    $this->KernelReady();
                 }
+                catch (Exception $exc)
+                {
+                    return;
+                }
+//                }
                 break;
             case DM_CONNECT:
             case DM_DISCONNECT:
@@ -122,7 +124,7 @@ class KodiSplitter extends IPSModule
      */
     public function ApplyChanges()
     {
-        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+        $this->RegisterMessage(0, IPS_KERNELSTARTED);
         $this->RegisterMessage($this->InstanceID, DM_CONNECT);
         $this->RegisterMessage($this->InstanceID, DM_DISCONNECT);
         // Wenn Kernel nicht bereit, dann warten... KR_READY kommt ja gleich
@@ -196,11 +198,9 @@ class KodiSplitter extends IPSModule
         $this->UnregisterVariable("BufferIN");
         $this->UnregisterVariable("ReplyJSONData");
 
-        $this->RegisterTimer('KeepAlive', 0, 'KODIRPC_KeepAlive($_IPS[\'TARGET\']);');
-        if ($this->ReadPropertyBoolean('Watchdog'))
-            $this->RegisterTimer('Watchdog', 0, 'KODIRPC_Watchdog($_IPS[\'TARGET\']);');
-        else
-            $this->UnregisterTimer('Watchdog');
+        $this->SetTimerInterval('KeepAlive', 0);
+        $this->SetTimerInterval('Watchdog', 0);
+
 
         // Wenn wir verbunden sind,  mit Kodi, dann anmelden für Events
 
@@ -859,21 +859,6 @@ class KodiSplitter extends IPSModule
             $instance = IPS_GetInstance($parentID);
             IPS_SetName($parentID, "Kodi JSONRPC TCP-Socket");
             IPS_ConnectInstance($this->InstanceID, $parentID);
-        }
-    }
-
-    /**
-     * Löscht einen Timer.
-     * 
-     * @param string $Name Ident des Timers
-     */
-    protected function UnregisterTimer(string $Name)
-    {
-        $id = @IPS_GetObjectIDByIdent($Name, $this->InstanceID);
-        if ($id > 0)
-        {
-            if (IPS_EventExists($id))
-                IPS_DeleteEvent($id);
         }
     }
 

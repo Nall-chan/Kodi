@@ -24,6 +24,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @version       1.0
  * @example <b>Ohne</b>
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Album/Artist etc... Ergebnis als HTML-Tabelle.
+ * @todo AudioLibrary.GetProperties ab v8
  */
 class KodiDeviceAudioLibrary extends KodiBase
 {

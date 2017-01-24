@@ -24,6 +24,8 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @version       1.0
  * @example <b>Ohne</b>
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle. 
+ * @todo VideoLibrary.GetInProgressTVShows ab v8
+ * @todo VideoLibrary.GetTags ab v8
  */
 class KodiDeviceVideoLibrary extends KodiBase
 {

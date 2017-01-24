@@ -23,6 +23,7 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @todo Input.ShowPlayerProcessInfo ab v8
  */
 class KodiDeviceInput extends KodiBase
 {
@@ -267,6 +268,7 @@ class KodiDeviceInput extends KodiBase
         $this->RegisterPropertyBoolean("showNavigationButtons", true);
         $this->RegisterPropertyBoolean("showControlButtons", true);
         $this->RegisterPropertyBoolean("showInputRequested", true);
+        $this->RegisterPropertyBoolean("showTextInput", true);
     }
 
     /**
@@ -300,7 +302,7 @@ if (isset($_GET["button"]))
             if (@$this->GetIDForIdent("Remote") == false)
             {
                 $remoteID = $this->RegisterVariableString("Remote", "Remote", "~HTMLBox", 1);
-                include 'generateRemote'.($this->ReadPropertyInteger('RemoteId')).'.php';
+                include 'generateRemote' . ($this->ReadPropertyInteger('RemoteId')) . '.php';
                 SetValueString($remoteID, $remote);
             }
         }
@@ -350,6 +352,14 @@ if (isset($_GET["button"]))
             $this->RegisterVariableBoolean("inputrequested", "Eingabe erwartet", "", 4);
             if (IPS_GetKernelRunlevel() == KR_INIT)
                 $this->SetValueBoolean("inputrequested", false);
+        }
+        else
+            $this->UnregisterVariable("inputrequested");
+
+        if ($this->ReadPropertyBoolean('showTextInput'))
+        {
+            $this->RegisterVariableString("inputtext", "Eingabe senden", "", 5);
+            $this->EnableAction("inputtext");
         }
         else
             $this->UnregisterVariable("inputrequested");
@@ -445,6 +455,9 @@ if (isset($_GET["button"]))
                     default:
                         return trigger_error('Invalid Value.', E_USER_NOTICE);
                 }
+                break;
+            case "inputtext":
+                $ret = $this->SendText($Value, true);
                 break;
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
