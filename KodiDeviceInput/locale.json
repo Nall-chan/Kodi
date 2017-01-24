@@ -8,6 +8,7 @@
             "Show Action-Variable for navigate": "Aktions-Variable zum navigieren anlegen",
             "Show Action-Variable for control": "Aktions-Variable zum steuern anlegen",
             "Show Variable for needed input": "Status-Variable für 'Eingabe erwartet' anlegen",
+            "Show Action-Variable for text input": "Aktions-Variable für 'Texteingabe' anlegen",
             "up": "Hoch",
             "down": "Runter",
             "left": "Links",

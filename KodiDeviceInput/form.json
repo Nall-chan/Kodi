@@ -25,11 +25,15 @@
                 }, {
                     "name": "showControlButtons",
                     "type": "CheckBox",
-                    "caption": "Aktions-Variable zum steuern anzeigen"
+                    "caption": "Show Action-Variable for control"
                 }, {
                     "name": "showInputRequested",
                     "type": "CheckBox",
-                    "caption": "Status-Variable für 'Eingabe erwartet'"
+                    "caption": "Show Variable for needed input"
+                }, {
+                    "name": "showTextInput",
+                    "type": "CheckBox",
+                    "caption": "Show Action-Variable for text input"
                 }
             ],
     "actions":

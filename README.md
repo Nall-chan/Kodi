@@ -1867,6 +1867,10 @@ Eigenschaften von KodiSplitter:
   - Fix: PlayerModul hat IPS Start verhindert  
   - Neu: Input-Modul hat ein Eingabefeld im WebFront um Zeichenfolgen an Kodi zu senden  
 
+ Version 1.3:  
+  - Fix: Konfig-Formular für Input-Modul war nicht übersetzt  
+  - Fix: Konfig-Formular für Input-Modul fehlte eine Checkbox  
+
 ## 11. Lizenz  
 
 [CC BY-NC-SA 4.0] (https://creativecommons.org/licenses/by-nc-sa/4.0/)  
