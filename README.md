@@ -58,13 +58,13 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
   Es wird empfohlen die Einrichtung mit dem Kodi-Konfigurator durchzuführen.  
   
-  - Auf der Willkommen-Seite von IPS dem Link 'Konfiguratoren verwalten' öffnen.  ![Konfiguratoren verwalten](Doku/Konfigurator0.png)  
+  - Auf der Willkommen-Seite von IPS dem Link 'Konfiguratoren verwalten' öffnen.  ![Konfiguratoren verwalten](docs/Konfigurator0.png)  
   - Auf den Button 'Neu' klicken.  
-  - Den Eintrag 'Kodi Konfigurator' wählen und mit OK bestätigen.  ![Konfigurator wählen](Doku/Konfigurator1.png)  
+  - Den Eintrag 'Kodi Konfigurator' wählen und mit OK bestätigen.  ![Konfigurator wählen](docs/Konfigurator1.png)  
   - Die Instanz über einen weiten Klick auf OK erzeugen.  
-  - Im folgenden Dialog des Konfigurators muss jetzt erst über einen Klick auf ein Zahnrad zum Splitter gewechselt werden.  ![Zum Splitter wechseln](Doku/Konfigurator2.png)  
-  - Im Dialog des Kodi-Splitter ist die Adresse des Zielsystems einzutragen. Handelt es sich um ein System welches nicht im Dauerbetrieb läuft, sollte der Haken bei 'Erweiterte Power-On Überwachung' gesetzt werden. Der Dialog kann nach dem Klick auf Übernehmen geschlossen werden.  ![Splitter konfigurieren](Doku/Splitter.png)  
-  - Im Konfigurator durch einen Klick auf den Button 'Alle / Alle fehlenden' werden jetzt alle Instanzen für dieses Kodi-System erzeugt und im Root des logischen Baums angelegt.  ![Instanzen erzeugen](Doku/Konfigurator3.png)  
+  - Im folgenden Dialog des Konfigurators muss jetzt erst über einen Klick auf ein Zahnrad zum Splitter gewechselt werden.  ![Zum Splitter wechseln](docs/Konfigurator2.png)  
+  - Im Dialog des Kodi-Splitter ist die Adresse des Zielsystems einzutragen. Handelt es sich um ein System welches nicht im Dauerbetrieb läuft, sollte der Haken bei 'Erweiterte Power-On Überwachung' gesetzt werden. Der Dialog kann nach dem Klick auf Übernehmen geschlossen werden.  ![Splitter konfigurieren](docs/Splitter.png)  
+  - Im Konfigurator durch einen Klick auf den Button 'Alle / Alle fehlenden' werden jetzt alle Instanzen für dieses Kodi-System erzeugt und im Root des logischen Baums angelegt.  ![Instanzen erzeugen](docs/Konfigurator3.png)  
 
 ## 6. Funktionen der Instanzen
 
