@@ -244,10 +244,10 @@ class KodiDeviceGUI extends KodiBase
 
         $Data = array("title" => $Title, "message" => $Message);
 
-        if (is_string($Image))
+        if ($Image != "")
             $Data['image'] = $Image;
-        if ($Timeout <> 0)
-            $Data['timeout'] = $Timeout;
+        if ($Timeout != 0)
+            $Data['displaytime'] = $Timeout;
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ShowNotification($Data);

@@ -567,6 +567,7 @@ class KodiSplitter extends IPSModule
         $Data = $head . utf8_decode($data->Buffer);
 
         // Stream in einzelne Pakete schneiden
+        $Count = 0;
         $Data = str_replace('}{', '}' . chr(0x04) . '{', $Data, $Count);
         $JSONLine = explode(chr(0x04), $Data);
 
@@ -631,28 +632,25 @@ class KodiSplitter extends IPSModule
             $ReplyKodiData = $this->WaitForResponse($KodiData->Id);
 
             if ($ReplyKodiData === false)
-            {
-                //$this->SetStatus(IS_EBASE + 3);
                 throw new Exception('No anwser from Kodi', E_USER_NOTICE);
-            }
 
             $ret = $ReplyKodiData->GetResult();
             if (is_a($ret, 'KodiRPCException'))
-            {
                 throw $ret;
-            }
             $this->SendDebug('Receive', $ReplyKodiData, 0);
             return $ret;
         }
         catch (KodiRPCException $ex)
         {
             $this->SendDebug("Receive", $ex, 0);
-            trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
+            //trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
+            echo $ex->getMessage();
         }
         catch (Exception $ex)
         {
             $this->SendDebug("Receive", $ex->getMessage(), 0);
-            trigger_error($ex->getMessage(), $ex->getCode());
+            //trigger_error($ex->getMessage(), $ex->getCode());
+            echo $ex->getMessage();
         }
         return NULL;
     }
@@ -682,17 +680,12 @@ class KodiSplitter extends IPSModule
     {
         for ($i = 0; $i < 1000; $i++)
         {
-            if ($this->GetBuffer('ReplyJSONData') === 'a:0:{}') // wenn wenig los, gleich warten            
-                IPS_Sleep(5);
-            else
-            {
-                $ret = unserialize($this->GetBuffer('ReplyJSONData'));
-                if (!array_key_exists(intval($Id), $ret))
-                    return false;
-                if ($ret[$Id] <> "")
-                    return $this->SendQueuePop($Id);
-                IPS_Sleep(5);
-            }
+            $ret = unserialize($this->GetBuffer('ReplyJSONData'));
+            if (!array_key_exists(intval($Id), $ret))
+                return false;
+            if ($ret[$Id] <> "")
+                return $this->SendQueuePop($Id);
+            IPS_Sleep(5);
         }
         $this->SendQueueRemove($Id);
         return false;
