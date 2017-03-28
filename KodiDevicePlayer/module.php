@@ -1749,8 +1749,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueInteger("percentage", $Value);
             return true;
         }
-        trigger_error('Error on set P
-                osition.', E_USER_NOTICE);
+        trigger_error('Error on set Position.', E_USER_NOTICE);
         return false;
     }
 
