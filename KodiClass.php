@@ -323,7 +323,7 @@ abstract class KodiBase extends IPSModule
         if (is_int($Time))
         {
             if ($Time > 3600)
-                return date("H:i:s", $Time);
+                return date("H:i:s", $Time - (gettimeofday()["dsttime"] * 3600));
             else
                 return date("i:s", $Time);
         }
