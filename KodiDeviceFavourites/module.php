@@ -182,7 +182,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
                     {
                         $CoverRAW = false;
                         if ($ParentID !== false)
-                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("ThumbSize"), 0);
+                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyInteger("ThumbSize"), 0);
                         if ($CoverRAW === false)
                             $Line['Thumbnail'] = "";
                         else

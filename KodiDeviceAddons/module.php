@@ -197,7 +197,7 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
                     {
                         $CoverRAW = false;
                         if ($ParentID !== false)
-                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("ThumbSize"), 0);
+                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyInteger("ThumbSize"), 0);
                         if ($CoverRAW === false)
                             $Line['Thumbnail'] = "";
                         else
@@ -208,7 +208,7 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
                 {
                     $CoverRAW = false;
                     if ($ParentID !== false)
-                        $CoverRAW = $this->GetThumbnail($ParentID, $Line['Fanart'], $this->ReadPropertyString("ThumbSize"), 0);
+                        $CoverRAW = $this->GetThumbnail($ParentID, $Line['Fanart'], $this->ReadPropertyInteger("ThumbSize"), 0);
                     if ($CoverRAW === false)
                         $Line['Fanart'] = "";
                     else

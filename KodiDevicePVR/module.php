@@ -425,7 +425,7 @@ if (isset($_GET["ID"]))
                     {
                         $CoverRAW = false;
                         if ($ParentID !== false)
-                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("TVThumbSize"), 0);
+                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyInteger("TVThumbSize"), 0);
                         if ($CoverRAW === false)
                             $Line['Thumbnail'] = "";
                         else
@@ -549,7 +549,7 @@ if (isset($_GET["ID"]))
                     {
                         $CoverRAW = false;
                         if ($ParentID !== false)
-                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyString("RadioThumbSize"), 0);
+                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyInteger("RadioThumbSize"), 0);
                         if ($CoverRAW === false)
                             $Line['Thumbnail'] = "";
                         else
@@ -674,7 +674,7 @@ if (isset($_GET["ID"]))
                         {
                             $CoverRAW = false;
                             if ($ParentID !== false)
-                                $CoverRAW = $this->GetThumbnail($ParentID, $Line['Art']['thumb'], $this->ReadPropertyString("RecordingThumbSize"), 0);
+                                $CoverRAW = $this->GetThumbnail($ParentID, $Line['Art']['thumb'], $this->ReadPropertyInteger("RecordingThumbSize"), 0);
                             if ($CoverRAW === false)
                                 $Line['Thumbnail'] = "";
                             else
