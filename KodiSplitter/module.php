@@ -71,8 +71,6 @@ class KodiSplitter extends IPSModule
         switch ($Message)
         {
             case IPS_KERNELSTARTED:
-//                if ($Data[0] == KR_READY)
-//                {
                 try
                 {
                     $this->KernelReady();
@@ -81,7 +79,6 @@ class KodiSplitter extends IPSModule
                 {
                     return;
                 }
-//                }
                 break;
             case DM_CONNECT:
             case DM_DISCONNECT:
