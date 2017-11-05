@@ -1,6 +1,6 @@
 <?
 
-require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
  * @addtogroup kodi
  * @{
@@ -257,31 +257,24 @@ class KodiDevicePVR extends KodiBase
         else
             $this->UnregisterVariable("scan");
 
-        @parent::ApplyChanges();
-
+        $this->UnregisterScript("WebHookTVChannellist");
+        $this->UnregisterScript("WebHookRadioChannellist");
+        $this->UnregisterScript("WebHookRecordinglist");
 
         if ($this->ReadPropertyBoolean('showTVChannellist'))
         {
             $this->RegisterVariableString("TVChannellist", "TV Kanäle", "~HTMLBox", 1);
-            $sid = $this->RegisterScript("WebHookTVChannellist", "WebHookTVChannellist", '<? //Do not delete or modify.
-if (isset($_GET["ID"]))
-    KODIPVR_ProcessHookdata(' . $this->InstanceID . ',"tv",$_GET);
-', -8);
-            IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RegisterHook('/hook/KodiTVChannellist' . $this->InstanceID, $sid);
+                $this->RegisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
 
             $ID = @$this->GetIDForIdent('TVChannellistDesign');
             if ($ID == false)
                 $ID = $this->RegisterScript('TVChannellistDesign', 'TVChannellist Config', $this->CreateTVChannellistConfigScript(), -7);
             IPS_SetHidden($ID, true);
-            if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RefreshTVChannellist();
         }
         else
         {
             $this->UnregisterVariable("TVChannellist");
-            $this->UnregisterScript("WebHookTVChannellist");
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
         }
@@ -289,25 +282,17 @@ if (isset($_GET["ID"]))
         if ($this->ReadPropertyBoolean('showRadioChannellist'))
         {
             $this->RegisterVariableString("RadioChannellist", "Radio Kanäle", "~HTMLBox", 1);
-            $sid = $this->RegisterScript("WebHookRadioChannellist", "WebHookRadioChannellist", '<? //Do not delete or modify.
-if (isset($_GET["ID"]))
-    KODIPVR_ProcessHookdata(' . $this->InstanceID . ',"radio",$_GET);
-', -8);
-            IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RegisterHook('/hook/KodiRadioChannellist' . $this->InstanceID, $sid);
+                $this->RegisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
 
             $ID = @$this->GetIDForIdent('RadioChannellistDesign');
             if ($ID == false)
                 $ID = $this->RegisterScript('RadioChannellistDesign', 'RadioChannellist Config', $this->CreateRadioChannellistConfigScript(), -7);
             IPS_SetHidden($ID, true);
-            if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RefreshRadioChannellist();
         }
         else
         {
             $this->UnregisterVariable("RadioChannellist");
-            $this->UnregisterScript("WebHookRadioChannellist");
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->UnregisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
         }
@@ -315,34 +300,42 @@ if (isset($_GET["ID"]))
         if ($this->ReadPropertyBoolean('showRecordinglist'))
         {
             $this->RegisterVariableString("Recordinglist", "Aufzeichnungen", "~HTMLBox", 1);
-            $sid = $this->RegisterScript("WebHookRecordinglist", "WebHookRecordinglist", '<? //Do not delete or modify.
-if (isset($_GET["ID"]))
-    KODIPVR_ProcessHookdata(' . $this->InstanceID . ',"recording",$_GET);
-', -8);
-            IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RegisterHook('/hook/KodiRecordinglist' . $this->InstanceID, $sid);
+                $this->RegisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
 
             $ID = @$this->GetIDForIdent('RecordinglistDesign');
             if ($ID == false)
                 $ID = $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
             IPS_SetHidden($ID, true);
-            if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RefreshRecordinglist();
         }
         else
         {
             $this->UnregisterVariable("Recordinglist");
-            $this->UnregisterScript("WebHookRecordinglist");
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
         }
+
         if ($this->ReadPropertyBoolean('showRecordinglist') or $this->ReadPropertyBoolean('showRadioChannellist') or $this->ReadPropertyBoolean('showTVChannellist'))
             $this->SetTimerInterval('RefreshLists', 15 * 60 * 1000);
-        
         else
             $this->SetTimerInterval('RefreshLists', 0);
-        
+
+        parent::ApplyChanges();
+    }
+
+    /**
+     * Wird ausgeführt wenn sich der Status vom Parent ändert.
+     * @access protected
+     */
+    protected function IOChangeState($State)
+    {
+        parent::IOChangeState($State);
+        if ($State == IS_ACTIVE)
+        {
+            $this->RefreshTVChannellist();
+            $this->RefreshRadioChannellist();
+            $this->RefreshRecordinglist();
+        }
     }
 
 ################## PRIVATE     
@@ -405,8 +398,6 @@ if (isset($_GET["ID"]))
         $Data = array_filter($Channels, array($this, "FilterChannels"), ARRAY_FILTER_USE_BOTH);
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
-
-        $ParentID = $this->GetParent();
         if (count($Data) > 0)
         {
             foreach ($Data as $line)
@@ -423,9 +414,7 @@ if (isset($_GET["ID"]))
                 {
                     if ($Line['Thumbnail'] <> "")
                     {
-                        $CoverRAW = false;
-                        if ($ParentID !== false)
-                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyInteger("TVThumbSize"), 0);
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger("TVThumbSize"), 0);
                         if ($CoverRAW === false)
                             $Line['Thumbnail'] = "";
                         else
@@ -472,7 +461,7 @@ if (isset($_GET["ID"]))
                     $Line['Next'] = 'No Info';
 
                 //$HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?TYP=tv&ID=' . $Line['Channelid'] . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
@@ -530,7 +519,6 @@ if (isset($_GET["ID"]))
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
 
-        $ParentID = $this->GetParent();
         if (count($Data) > 0)
         {
             foreach ($Data as $line)
@@ -547,9 +535,7 @@ if (isset($_GET["ID"]))
                 {
                     if ($Line['Thumbnail'] <> "")
                     {
-                        $CoverRAW = false;
-                        if ($ParentID !== false)
-                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyInteger("RadioThumbSize"), 0);
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger("RadioThumbSize"), 0);
                         if ($CoverRAW === false)
                             $Line['Thumbnail'] = "";
                         else
@@ -596,7 +582,7 @@ if (isset($_GET["ID"]))
                     $Line['Next'] = 'No Info';
 
 //                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?TYP=radio&ID=' . $Line['Channelid'] . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
@@ -654,7 +640,6 @@ if (isset($_GET["ID"]))
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
 
-        $ParentID = $this->GetParent();
         if (count($Data) > 0)
         {
             foreach ($Data as $line)
@@ -672,9 +657,7 @@ if (isset($_GET["ID"]))
                     if (array_key_exists('thumb', $Line["Art"]))
                         if ($Line['Art']['thumb'] <> "")
                         {
-                            $CoverRAW = false;
-                            if ($ParentID !== false)
-                                $CoverRAW = $this->GetThumbnail($ParentID, $Line['Art']['thumb'], $this->ReadPropertyInteger("RecordingThumbSize"), 0);
+                            $CoverRAW = $this->GetThumbnail($Line['Art']['thumb'], $this->ReadPropertyInteger("RecordingThumbSize"), 0);
                             if ($CoverRAW === false)
                                 $Line['Thumbnail'] = "";
                             else
@@ -684,7 +667,7 @@ if (isset($_GET["ID"]))
                 $Line['Runtime'] = $this->ConvertTime($Line['Runtime']);
 
                 //$HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?TYP=recording&ID=' . $Line['Recordingid'] . '\' })" >';
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
                     if (!array_key_exists($feldIndex, $Line))
@@ -807,7 +790,7 @@ $Config["Style"] = array(
  
 ### Konfig ENDE !!!
 echo serialize($Config);
-?>';
+';
         return $Script;
     }
 
@@ -901,7 +884,7 @@ $Config["Style"] = array(
  
 ### Konfig ENDE !!!
 echo serialize($Config);
-?>';
+';
         return $Script;
     }
 
@@ -1003,7 +986,7 @@ $Config["Style"] = array(
  
 ### Konfig ENDE !!!
 echo serialize($Config);
-?>';
+';
         return $Script;
     }
 
@@ -1053,27 +1036,29 @@ echo serialize($Config);
     }
 
 ################## PUBLIC
-    /**
-     * IPS-Instanz-Funktion 'KODIFAV_ProcessHookdata'. Verarbeitet Daten aus dem Webhook.
-     * 
-     * @access public
-     * @param array $HookData Daten des Webhook.
-     */
 
-    public function ProcessHookdata($Typ, $HookData)
+    /**
+     * Verarbeitet Daten aus dem Webhook.
+     *
+     * @access protected
+     * @global array $_GET
+     */
+    public function ProcessHookdata()//($Typ, $HookData)
     {
-        if (!isset($HookData["ID"]))
+        if (!isset($_GET["ID"]))
             return;
-        $this->SendDebug($Typ . ' HOOK', $HookData["ID"], 0);
+        if (!isset($_GET["TYP"]))
+            return;
+        $this->SendDebug($_GET["TYP"] . ' HOOK', $_GET["ID"], 0);
         $KodiData = new Kodi_RPC_Data('Player');
-        switch ($Typ)
+        switch ($_GET["TYP"])
         {
             case "tv":
             case "radio":
-                $KodiData->Open(array("item" => array('channelid' => (int) $HookData["ID"])));
+                $KodiData->Open(array("item" => array('channelid' => (int) $_GET["ID"])));
                 break;
             case "recording":
-                $KodiData->Open(array("item" => array('recordingid' => (int) $HookData["ID"])));
+                $KodiData->Open(array("item" => array('recordingid' => (int) $_GET["ID"])));
                 break;
         }
         $ret = $this->Send($KodiData);
@@ -1375,4 +1360,3 @@ echo serialize($Config);
 }
 
 /** @} */
-?>

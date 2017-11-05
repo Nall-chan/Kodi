@@ -1,6 +1,6 @@
 <?
 
-require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 
 /*
  * @addtogroup kodi
@@ -418,4 +418,3 @@ class KodiConfigurator extends IPSModule
 }
 
 /** @} */
-?>

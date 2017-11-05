@@ -1,6 +1,6 @@
 <?
 
-require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 
 /*
  * @addtogroup kodi
@@ -105,29 +105,21 @@ class KodiDeviceAddons extends KodiBase
      */
     public function ApplyChanges()
     {
-
+        $this->UnregisterScript("WebHookAddonlist");
         if ($this->ReadPropertyBoolean('showAddonlist'))
         {
             $this->RegisterVariableString("Addonlist", "Addons", "~HTMLBox", 1);
-            $sid = $this->RegisterScript("WebHookAddonlist", "WebHookAddonlist", '<? //Do not delete or modify.
-if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
-    KODIADDONS_ProcessHookdata(' . $this->InstanceID . ',$_GET);
-', -8);
-            IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RegisterHook('/hook/KodiAddonlist' . $this->InstanceID, $sid);
+                $this->RegisterHook('/hook/KodiAddonlist' . $this->InstanceID);
 
             $ID = @$this->GetIDForIdent('AddonlistDesign');
             if ($ID == false)
                 $ID = $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
             IPS_SetHidden($ID, true);
-            if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RefreshAddonlist();
         }
         else
         {
             $this->UnregisterVariable("Addonlist");
-            $this->UnregisterScript("WebHookAddonlist");
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->UnregisterHook('/hook/KodiAddonlist' . $this->InstanceID);
         }
@@ -136,6 +128,17 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
     }
 
 ################## PRIVATE     
+    /**
+     * Wird ausgeführt wenn sich der Status vom Parent ändert.
+     * @access protected
+     */
+
+    protected function IOChangeState($State)
+    {
+        parent::IOChangeState($State);
+        if ($State == IS_ACTIVE)
+            $this->RefreshAddonlist();
+    }
 
     /**
      * Keine Funktion.
@@ -173,12 +176,11 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
         }
         $AllAddons = $this->GetAddons();
         if ($AllAddons === false)
-            $AllAddons=array();
+            $AllAddons = array();
         $Data = array_filter($AllAddons, array($this, "FilterAddons"), ARRAY_FILTER_USE_BOTH);
-//        $Line['Execute']="";
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
-        $ParentID = $this->GetParent();
+
         if (count($Data) > 0)
         {
             foreach ($Data as $line)
@@ -195,9 +197,7 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
                 {
                     if ($Line['Thumbnail'] <> "")
                     {
-                        $CoverRAW = false;
-                        if ($ParentID !== false)
-                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyInteger("ThumbSize"), 0);
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger("ThumbSize"), 0);
                         if ($CoverRAW === false)
                             $Line['Thumbnail'] = "";
                         else
@@ -206,9 +206,7 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
                 }
                 if ((array_key_exists('Fanart', $Config["Spalten"])) and ( $Line['Fanart'] <> ""))
                 {
-                    $CoverRAW = false;
-                    if ($ParentID !== false)
-                        $CoverRAW = $this->GetThumbnail($ParentID, $Line['Fanart'], $this->ReadPropertyInteger("ThumbSize"), 0);
+                    $CoverRAW = $this->GetThumbnail($Line['Fanart'], $this->ReadPropertyInteger("ThumbSize"), 0);
                     if ($CoverRAW === false)
                         $Line['Fanart'] = "";
                     else
@@ -218,7 +216,7 @@ if ((isset($_GET["Addonid"])) and (isset($_GET["Action"])))
                 $Line['Enabled'] = $Line['Enabled'] == true ? '<div class="dodisabled" ' . $this->GetWebHookLink($Line['Addonid'], "Disable") . '>Aus</div><div class="isenabled" ' . $this->GetWebHookLink($Line['Addonid'], "Enable") . '>An</div>' : '<div class="isdisabled" ' . $this->GetWebHookLink($Line['Addonid'], "Disable") . '>Aus</div><div class="doenabled" ' . $this->GetWebHookLink($Line['Addonid'], "Enable") . '>An</div>';
                 $Line['Execute'] = '<div class="execute" ' . $this->GetWebHookLink($Line['Addonid'], "Execute") . '>Ausführen</div>';
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '">';
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '">';
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
                     if (!array_key_exists($feldIndex, $Line))
@@ -548,44 +546,44 @@ vertical-align: middle;",
 
 ### Konfig ENDE !!!
 echo serialize($Config);
-?>';
+';
         return $Script;
     }
 
 ################## PUBLIC
 
     /**
-     * IPS-Instanz-Funktion 'KODIADDONS_ProcessHookdata'. Verarbeitet Daten aus dem Webhook.
-     * 
-     * @access public
-     * @param array $HookData Daten des Webhook.
+     * Verarbeitet Daten aus dem Webhook.
+     *
+     * @access protected
+     * @global array $_GET
      */
-    public function ProcessHookdata($HookData)
+    protected function ProcessHookdata()
     {
-        if (!((isset($HookData["Addonid"])) and ( isset($HookData["Action"]))))
+        if (!((isset($_GET["Addonid"])) and ( isset($_GET["Action"]))))
         {
-            $this->SendDebug('illegal HOOK', $HookData, 0);
-            trigger_error('Illegal hook', E_USER_NOTICE);
+            $this->SendDebug('illegal HOOK', $_GET, 0);
+            echo 'Illegal hook';
             return;
         }
 
-        switch ($HookData['Action'])
+        switch ($_GET['Action'])
         {
             case 'Execute':
-                if ($this->ExecuteAddon($HookData["Addonid"]) === true)
+                if ($this->ExecuteAddon($_GET["Addonid"]) === true)
                     echo 'OK';
                 break;
             case 'Enable':
-                if ($this->EnableAddon($HookData["Addonid"], true) === true)
+                if ($this->EnableAddon($_GET["Addonid"], true) === true)
                     echo 'OK';
                 break;
             case 'Disable':
-                if ($this->EnableAddon($HookData["Addonid"], false) === true)
+                if ($this->EnableAddon($_GET["Addonid"], false) === true)
                     echo 'OK';
                 break;
             default:
-                $this->SendDebug('illegal HOOK', $HookData, 0);
-                trigger_error('Illegal hook', E_USER_NOTICE);
+                $this->SendDebug('illegal HOOK', $_GET, 0);
+                echo 'Illegal hook';
                 break;
         }
     }
@@ -795,4 +793,3 @@ echo serialize($Config);
 }
 
 /** @} */
-?>

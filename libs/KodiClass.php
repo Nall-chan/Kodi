@@ -1,4 +1,5 @@
 <?
+
 /* * @addtogroup kodi
  * @{
  *
@@ -48,7 +49,7 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
     define('OM_CHANGEPOSITION', IPS_OBJECTMESSAGE + 8);    //Position was Changed
     define('OM_CHANGEREADONLY', IPS_OBJECTMESSAGE + 9);    //ReadOnly was Changed
     define('OM_CHANGEHIDDEN', IPS_OBJECTMESSAGE + 10);     //Hidden was Changed
-    define('OM_CHANGEICON', IPS_OBJECTMESSAGE + 11);       //Icon was Changed
+    define('OM_CHANGEICsON', IPS_OBJECTMESSAGE + 11);       //Icon was Changed
     define('OM_CHILDADDED', IPS_OBJECTMESSAGE + 12);       //Child for Object was added
     define('OM_CHILDREMOVED', IPS_OBJECTMESSAGE + 13);     //Child for Object was removed
     define('OM_CHANGEIDENT', IPS_OBJECTMESSAGE + 14);      //Ident was Changed
@@ -156,6 +157,431 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
     define('vtObject', 9);
 }
 
+/**
+ * Trait welcher Objekt-Eigenschaften in den Instance-Buffer schreiben und lesen kann.
+ */
+trait BufferHelper
+{
+
+    /**
+     * Wert einer Eigenschaft aus den InstanceBuffer lesen.
+     * 
+     * @access public
+     * @param string $name Propertyname
+     * @return mixed Value of Name
+     */
+    public function __get($name)
+    {
+        if (strpos($name, 'Multi_') === 0)
+        {
+            $Lines = "";
+            foreach ($this->{"BufferListe_" . $name} as $BufferIndex)
+            {
+                $Lines .= $this->{'Part_' . $name . $BufferIndex};
+            }
+            return unserialize($Lines);
+        }
+        return unserialize($this->GetBuffer($name));
+    }
+
+    /**
+     * Wert einer Eigenschaft in den InstanceBuffer schreiben.
+     * 
+     * @access public
+     * @param string $name Propertyname
+     * @param mixed Value of Name
+     */
+    public function __set($name, $value)
+    {
+        $Data = serialize($value);
+        if (strpos($name, 'Multi_') === 0)
+        {
+            $OldBuffers = $this->{"BufferListe_" . $name};
+            if ($OldBuffers == false)
+                $OldBuffers = array();
+            $Lines = str_split($Data, 8000);
+            foreach ($Lines as $BufferIndex => $BufferLine)
+            {
+                $this->{'Part_' . $name . $BufferIndex} = $BufferLine;
+            }
+            $NewBuffers = array_keys($Lines);
+            $this->{"BufferListe_" . $name} = $NewBuffers;
+            $DelBuffers = array_diff_key($OldBuffers, $NewBuffers);
+            foreach ($DelBuffers as $DelBuffer)
+            {
+                $this->{'Part_' . $name . $DelBuffer} = "";
+            }
+            return;
+        }
+        $this->SetBuffer($name, $Data);
+    }
+
+}
+
+/**
+ * Trait mit Hilfsfunktionen für Variablenprofile.
+ */
+trait VariableProfile
+{
+
+    /**
+     * Erstell und konfiguriert ein VariablenProfil für den Typ integer mit Assoziationen
+     *
+     * @access protected
+     * @param string $Name Name des Profils.
+     * @param string $Icon Name des Icon.
+     * @param string $Prefix Prefix für die Darstellung.
+     * @param string $Suffix Suffix für die Darstellung.
+     * @param array $Associations Assoziationen der Werte als Array.
+     */
+    protected function RegisterProfileIntegerEx($Name, $Icon, $Prefix, $Suffix, $Associations)
+    {
+        if (sizeof($Associations) === 0)
+        {
+            $MinValue = 0;
+            $MaxValue = 0;
+        }
+        else
+        {
+            $MinValue = $Associations[0][0];
+            $MaxValue = $Associations[sizeof($Associations) - 1][0];
+        }
+        $this->RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, 0);
+        $old = IPS_GetVariableProfile($Name)["Associations"];
+        $OldValues = array_column($old, 'Value');
+        foreach ($Associations as $Association)
+        {
+            IPS_SetVariableProfileAssociation($Name, $Association[0], $Association[1], $Association[2], $Association[3]);
+            $OldKey = array_search($Association[0], $OldValues);
+            if (!($OldKey === false ))
+                unset($OldValues[$OldKey]);
+        }
+        foreach ($OldValues as $OldKey => $OldValue)
+        {
+            IPS_SetVariableProfileAssociation($Name, $OldValue, '', '', 0);
+        }
+    }
+
+    /**
+     * Erstell und konfiguriert ein VariablenProfil für den Typ integer
+     *
+     * @access protected
+     * @param string $Name Name des Profils.
+     * @param string $Icon Name des Icon.
+     * @param string $Prefix Prefix für die Darstellung.
+     * @param string $Suffix Suffix für die Darstellung.
+     * @param int $MinValue Minimaler Wert.
+     * @param int $MaxValue Maximaler wert.
+     * @param int $StepSize Schrittweite
+     */
+    protected function RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, $StepSize)
+    {
+
+        if (!IPS_VariableProfileExists($Name))
+        {
+            IPS_CreateVariableProfile($Name, 1);
+        }
+        else
+        {
+            $profile = IPS_GetVariableProfile($Name);
+            if ($profile['ProfileType'] != 1)
+                throw new Exception("Variable profile type does not match for profile " . $Name, E_USER_NOTICE);
+        }
+
+        IPS_SetVariableProfileIcon($Name, $Icon);
+        IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
+        IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
+    }
+
+    /**
+     * Löscht ein Variablenprofile, sofern es nicht außerhalb dieser Instanz noch verwendet wird.
+     * @param string $Name Name des zu löschenden Profils.
+     */
+    protected function UnregisterProfil(string $Name)
+    {
+        if (!IPS_VariableProfileExists($Name))
+            return;
+        foreach (IPS_GetVariableList() as $VarID)
+        {
+            if (IPS_GetParent($VarID) == $this->InstanceID)
+                continue;
+            if (IPS_GetVariable($VarID)['VariableCustomProfile'] == $Name)
+                return;
+            if (IPS_GetVariable($VarID)['VariableProfile'] == $Name)
+                return;
+        }
+        IPS_DeleteVariableProfile($Name);
+    }
+
+}
+
+/**
+ * Ein Trait um Webhooks zu erzeugen und zu löschen.
+ */
+trait Webhook
+{
+
+    /**
+     * Erstellt einen WebHook, wenn nicht schon vorhanden.
+     *
+     * @access protected
+     * @param string $WebHook URI des WebHook.
+     */
+    protected function RegisterHook($WebHook)
+    {
+        $ids = IPS_GetInstanceListByModuleID("{015A6EB8-D6E5-4B93-B496-0D3F77AE9FE1}");
+        if (sizeof($ids) > 0)
+        {
+            $hooks = json_decode(IPS_GetProperty($ids[0], "Hooks"), true);
+            $found = false;
+            foreach ($hooks as $index => $hook)
+            {
+                if ($hook['Hook'] == $WebHook)
+                {
+                    if ($hook['TargetID'] == $this->InstanceID)
+                        return;
+                    $hooks[$index]['TargetID'] = $this->InstanceID;
+                    $found = true;
+                }
+            }
+            if (!$found)
+            {
+                $hooks[] = Array("Hook" => $WebHook, "TargetID" => $this->InstanceID);
+            }
+            IPS_SetProperty($ids[0], "Hooks", json_encode($hooks));
+            IPS_ApplyChanges($ids[0]);
+        }
+    }
+
+    /**
+     * Löscht einen WebHook, wenn vorhanden.
+     *
+     * @access protected
+     * @param string $WebHook URI des WebHook.
+     */
+    protected function UnregisterHook($WebHook)
+    {
+        $ids = IPS_GetInstanceListByModuleID("{015A6EB8-D6E5-4B93-B496-0D3F77AE9FE1}");
+        if (sizeof($ids) > 0)
+        {
+            $hooks = json_decode(IPS_GetProperty($ids[0], "Hooks"), true);
+            $found = false;
+            foreach ($hooks as $index => $hook)
+            {
+                if ($hook['Hook'] == $WebHook)
+                {
+                    $found = $index;
+                    break;
+                }
+            }
+
+            if ($found !== false)
+            {
+                array_splice($hooks, $index, 1);
+                IPS_SetProperty($ids[0], "Hooks", json_encode($hooks));
+                IPS_ApplyChanges($ids[0]);
+            }
+        }
+    }
+
+    /**
+     * Löscht ein nicht mehr benötigtes Script.
+     * @access protected
+     * @param string $Ident Der Ident des Scriptes.
+     */
+    protected function UnregisterScript($Ident)
+    {
+        $sid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
+        if ($sid === false)
+            return;
+        if (!IPS_ScriptExists($sid))
+            return; //bail out
+        IPS_DeleteScript($sid, true);
+    }
+
+}
+
+/**
+ * DebugHelper ergänzt SendDebug um die Möglichkeit Array und Objekte auszugeben.
+ * 
+ */
+trait DebugHelper
+{
+
+    /**
+     * Formatiert eine DebugAusgabe und gibt sie an IPS weiter.
+     *
+     * @access protected
+     * @param string $Message Nachrichten-Feld.
+     * @param string|array|Kodi_RPC_Data $Data Daten-Feld.
+     * @param int $Format Ausgabe in Klartext(0) oder Hex(1)
+     */
+    protected function SendDebug($Message, $Data, $Format)
+    {
+        if (is_a($Data, 'Kodi_RPC_Data'))
+        {
+            parent::SendDebug($Message . " Method", $Data->Namespace . '.' . $Data->Method, 0);
+            switch ($Data->Typ)
+            {
+                case Kodi_RPC_Data::$EventTyp:
+                    $this->SendDebug($Message . " Event", $Data->GetEvent(), 0);
+                    break;
+                case Kodi_RPC_Data::$ResultTyp:
+                    $this->SendDebug($Message . " Result", $Data->GetResult(), 0);
+                    break;
+                default:
+                    $this->SendDebug($Message . " Params", $Data->Params, 0);
+                    break;
+            }
+        }
+        elseif (is_a($Data, 'KodiRPCException'))
+        {
+            $this->SendDebug($Message, $Data->getMessage(), 0);
+        }
+        elseif (is_array($Data))
+        {
+
+            if (count($Data) > 25)
+            {
+                $this->SendDebug($Message, array_slice($Data, 0, 20), 0);
+                $this->SendDebug($Message . ':CUT', '-------------CUT-----------------', 0);
+                $this->SendDebug($Message, array_slice($Data, -5, null, true), 0);
+            }
+            else
+            {
+                foreach ($Data as $Key => $DebugData)
+                {
+                    $this->SendDebug($Message . ":" . $Key, $DebugData, 0);
+                }
+            }
+        }
+        else if (is_object($Data))
+        {
+            foreach ($Data as $Key => $DebugData)
+            {
+                $this->SendDebug($Message . "." . $Key, $DebugData, 0);
+            }
+        }
+        else if (is_bool($Data))
+        {
+            parent::SendDebug($Message, ($Data ? 'TRUE' : 'FALSE'), 0);
+        }
+        else
+        {
+            parent::SendDebug($Message, $Data, $Format);
+        }
+    }
+
+}
+
+/**
+ * Trait mit Hilfsfunktionen für den Datenaustausch.
+ * @property integer $ParentID
+ */
+trait InstanceStatus
+{
+
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    protected function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+        switch ($Message)
+        {
+            case DM_CONNECT:
+                $this->RegisterParent();
+                if ($this->HasActiveParent())
+                    $this->IOChangeState(IS_ACTIVE);
+                else
+                    $this->IOChangeState(IS_INACTIVE);
+                break;
+            case DM_DISCONNECT:
+                $this->RegisterParent();
+                $this->IOChangeState(IS_INACTIVE);
+                break;
+            case IM_CHANGESTATUS:
+                if ($SenderID == $this->ParentID)
+                    $this->IOChangeState($Data[0]);
+                break;
+        }
+    }
+
+    /**
+     * Ermittelt den Parent und verwaltet die Einträge des Parent im MessageSink
+     * Ermöglicht es das Statusänderungen des Parent empfangen werden können.
+     * 
+     * @access protected
+     * @return int ID des Parent.
+     */
+    protected function RegisterParent()
+    {
+        $OldParentId = $this->ParentID;
+        $ParentId = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if ($ParentId <> $OldParentId)
+        {
+            if ($OldParentId > 0)
+                $this->UnregisterMessage($OldParentId, IM_CHANGESTATUS);
+            if ($ParentId > 0)
+                $this->RegisterMessage($ParentId, IM_CHANGESTATUS);
+            else
+                $ParentId = 0;
+            $this->ParentID = $ParentId;
+        }
+        return $ParentId;
+    }
+
+    /**
+     * Prüft den Parent auf vorhandensein und Status.
+     * 
+     * @access protected
+     * @return bool True wenn Parent vorhanden und in Status 102, sonst false.
+     */
+    protected function HasActiveParent()
+    {
+        $instance = IPS_GetInstance($this->InstanceID);
+        if ($instance['ConnectionID'] > 0)
+        {
+            $parent = IPS_GetInstance($instance['ConnectionID']);
+            if ($parent['InstanceStatus'] == 102)
+                return true;
+        }
+        return false;
+    }
+
+}
+
+trait Semaphore
+{
+
+    /**
+     * Versucht eine Semaphore zu setzen und wiederholt dies bei Misserfolg bis zu 100 mal.
+     * @param string $ident Ein String der den Lock bezeichnet.
+     * @return boolean TRUE bei Erfolg, FALSE bei Misserfolg.
+     */
+    private function lock(string $ident)
+    {
+        for ($i = 0; $i < 100; $i++)
+        {
+            if (IPS_SemaphoreEnter(__CLASS__ . (string) $this->InstanceID . (string) $ident, 1))
+                return true;
+            else
+                IPS_Sleep(mt_rand(1, 5));
+        }
+        return false;
+    }
+
+    /**
+     * Löscht einen 'Lock'.
+     * @param string $ident Ident der Semaphore
+     */
+    private function unlock(string $ident)
+    {
+        IPS_SemaphoreLeave(__CLASS__ . (string) $this->InstanceID . (string) $ident);
+    }
+
+}
 
 /**
  * Basisklasse für alle Kodi IPS-Instanzklassen.
@@ -168,9 +594,19 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @property int $ParentID
  */
 abstract class KodiBase extends IPSModule
 {
+
+    use VariableProfile,
+        Webhook,
+        DebugHelper,
+        BufferHelper,
+        InstanceStatus
+    {
+        InstanceStatus::MessageSink as IOMessageSink;
+    }
 
     /**
      * RPC-Namespace
@@ -188,11 +624,6 @@ abstract class KodiBase extends IPSModule
      */
     static $Properties;
 
-    public function __construct($InstanceID)
-    {
-        parent::__construct($InstanceID);
-    }
-
     /**
      * Interne Funktion des SDK.
      *
@@ -202,33 +633,7 @@ abstract class KodiBase extends IPSModule
     {
         parent::Create();
         $this->ConnectParent("{D2F106B5-4473-4C19-A48F-812E8BAA316C}");
-    }
-
-    /**
-     * Interne Funktion des SDK.
-     *
-     * @access public
-     */
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
-    {
-        switch ($Message)
-        {
-
-            case DM_CONNECT:
-            case DM_DISCONNECT:
-                $this->ForceRefresh();
-                break;
-        }
-    }
-
-    /**
-     * Wird durch das Verbinden/Trennen eines Parent ausgelöst.
-     * 
-     * @access public
-     */
-    protected function ForceRefresh()
-    {
-        $this->ApplyChanges();
+        $this->ParentID = 0;
     }
 
     /**
@@ -238,9 +643,10 @@ abstract class KodiBase extends IPSModule
      */
     public function ApplyChanges()
     {
+        $this->RegisterMessage(0, IPS_KERNELSTARTED);
         $this->RegisterMessage($this->InstanceID, DM_CONNECT);
         $this->RegisterMessage($this->InstanceID, DM_DISCONNECT);
-        // Wenn Kernel nicht bereit, dann warten... KR_READY über Splitter kommt ja gleich
+        $this->ParentID = 0;
 
         $this->UnregisterVariable("_ReplyJSONData");
 
@@ -260,12 +666,54 @@ abstract class KodiBase extends IPSModule
             $this->SetReceiveDataFilter('.*"Namespace":"' . static::$Namespace . '".*');
             $this->SendDebug("SetFilter", '.*"Namespace":"' . static::$Namespace . '".*', 0);
         }
+        // Wenn Kernel nicht bereit, dann warten... KR_READY über Splitter kommt ja gleich
+        parent::ApplyChanges();
 
         if (IPS_GetKernelRunlevel() <> KR_READY)
             return;
-        parent::ApplyChanges();
 
+        $this->SetStatus(IS_ACTIVE);
+        // Wenn Parent aktiv, dann Anmeldung an der Hardware bzw. Datenabgleich starten
+        $this->RegisterParent();
         if ($this->HasActiveParent())
+            $this->IOChangeState(IS_ACTIVE);
+    }
+
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+        $this->IOMessageSink($TimeStamp, $SenderID, $Message, $Data);
+
+        switch ($Message)
+        {
+            case IPS_KERNELSTARTED:
+                $this->KernelReady();
+                break;
+        }
+    }
+
+    /**
+     * Wird ausgeführt wenn der Kernel hochgefahren wurde.
+     */
+    protected function KernelReady()
+    {
+        $this->RegisterParent();
+        if ($this->HasActiveParent())
+            $this->IOChangeState(IS_ACTIVE);
+    }
+
+    /**
+     * Wird ausgeführt wenn sich der Status vom Parent ändert.
+     * @access protected
+     */
+    protected function IOChangeState($State)
+    {
+        $this->SendDebug('ParentChangeState', $State, 0);
+        if ($State == IS_ACTIVE)
             $this->RequestProperties(array("properties" => static::$Properties));
     }
 
@@ -340,7 +788,7 @@ abstract class KodiBase extends IPSModule
     {
         $html = "";
         // JS Rückkanal erzeugen
-        $html.='<script>
+        $html .= '<script>
 //window.xhrGet' . $this->InstanceID . '=
     function xhrGet' . $this->InstanceID . '(o)
 {
@@ -385,9 +833,9 @@ sleep(10).then(() => {
             $html .= "<style>" . PHP_EOL;
             foreach ($Config['Button'] as $Class => $Button)
             {
-                $html.= '.' . $Class . ' {' . $Button . '}' . PHP_EOL;
+                $html .= '.' . $Class . ' {' . $Button . '}' . PHP_EOL;
             }
-            $html .="</style>" . PHP_EOL;
+            $html .= "</style>" . PHP_EOL;
         }
         // Kopf der Tabelle erzeugen
         $html .= '<table style="' . $Config['Style']['T'] . '">' . PHP_EOL;
@@ -426,14 +874,16 @@ sleep(10).then(() => {
      * Holt das über $file übergebene Thumbnail vom Kodi-Webinterface, skaliert und konvertiert dieses.
      * 
      * @access private
-     * @param int $ParentID ID des Splitters.
      * @param string $file Path zum Thumbnail im Kodi-Webserver
      */
-    protected function GetThumbnail(int $ParentID, string $file, $SizeWidth = 0, $SizeHeight = 0)
+    protected function GetThumbnail(string $file, $SizeWidth = 0, $SizeHeight = 0)
     {
+        if ($this->ParentID == 0)
+            return false;
         if ($file == "")
-            $ThumbRAW = FALSE;
-        $ThumbRAW = @KODIRPC_GetImage($ParentID, $file);
+            return false;
+//            $ThumbRAW = FALSE;
+        $ThumbRAW = @KODIRPC_GetImage($this->ParentID, $file);
 
         if ($ThumbRAW !== false)
         {
@@ -560,19 +1010,20 @@ sleep(10).then(() => {
             if (!$this->HasActiveParent())
                 throw new Exception('Intance has no active parent.', E_USER_NOTICE);
 
-            $instance = IPS_GetInstance($this->InstanceID);
+            $SplitterInstance = IPS_GetInstance($this->ParentID);
+
             $Data = $KodiData->ToRawRPCJSONString();
-            if (@IPS_GetProperty($instance['ConnectionID'], "Open") === false)
+            if (@IPS_GetProperty($SplitterInstance['ConnectionID'], "Open") === false)
                 throw new Exception('Instance inactiv.', E_USER_NOTICE);
 
-            $Host = @IPS_GetProperty($instance['ConnectionID'], "Host");
+            $Host = @IPS_GetProperty($SplitterInstance['ConnectionID'], "Host");
             if ($Host == "")
                 return NULL;
 
-            $URI = $Host . ":" . IPS_GetProperty($instance['ConnectionID'], "Webport") . "/jsonrpc";
-            $UseBasisAuth = IPS_GetProperty($instance['ConnectionID'], 'BasisAuth');
-            $User = IPS_GetProperty($instance['ConnectionID'], 'Username');
-            $Pass = IPS_GetProperty($instance['ConnectionID'], 'Password');
+            $URI = $Host . ":" . IPS_GetProperty($this->ParentID, "Webport") . "/jsonrpc";
+            $UseBasisAuth = IPS_GetProperty($this->ParentID, 'BasisAuth');
+            $User = IPS_GetProperty($this->ParentID, 'Username');
+            $Pass = IPS_GetProperty($this->ParentID, 'Password');
 
             $header[] = "Accept: application/json";
             $header[] = "Cache-Control: max-age=0";
@@ -614,7 +1065,7 @@ sleep(10).then(() => {
         catch (KodiRPCException $ex)
         {
             $this->SendDebug("Receive Direct", $ex, 0);
-            trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
+            trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage() . ' in ' . get_called_class(), E_USER_NOTICE);
         }
         catch (Exception $ex)
         {
@@ -622,167 +1073,6 @@ sleep(10).then(() => {
             trigger_error($ex->getMessage(), $ex->getCode());
         }
         return NULL;
-    }
-
-################## DUMMYS / WOARKAROUNDS - protected
-
-    /**
-     * Löscht eine Script, sofern vorhanden.
-     *
-     * @access private
-     * @param int $Ident Ident der Variable.
-     */
-    protected function UnregisterScript($Ident)
-    {
-        $sid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
-        if ($sid === false)
-            return;
-        if (!IPS_ScriptExists($sid))
-            return; //bail out
-        IPS_DeleteScript($sid, true);
-    }
-
-    /**
-     * Erstellt einen WebHook, wenn nicht schon vorhanden.
-     *
-     * @access private
-     * @param string $WebHook URI des WebHook.
-     * @param int $TargetID Ziel-Script des WebHook.
-     */
-    protected function RegisterHook($WebHook, $TargetID)
-    {
-        $ids = IPS_GetInstanceListByModuleID("{015A6EB8-D6E5-4B93-B496-0D3F77AE9FE1}");
-        if (sizeof($ids) > 0)
-        {
-            $hooks = json_decode(IPS_GetProperty($ids[0], "Hooks"), true);
-            $found = false;
-            foreach ($hooks as $index => $hook)
-            {
-                if ($hook['Hook'] == $WebHook)
-                {
-                    if ($hook['TargetID'] == $TargetID)
-                        return;
-                    $hooks[$index]['TargetID'] = $TargetID;
-                    $found = true;
-                }
-            }
-            if (!$found)
-            {
-                $hooks[] = Array("Hook" => $WebHook, "TargetID" => $TargetID);
-            }
-            IPS_SetProperty($ids[0], "Hooks", json_encode($hooks));
-            IPS_ApplyChanges($ids[0]);
-        }
-    }
-
-    /**
-     * Löscht einen WebHook, wenn vorhanden.
-     *
-     * @access private
-     * @param string $WebHook URI des WebHook.
-     */
-    protected function UnregisterHook($WebHook)
-    {
-        $ids = IPS_GetInstanceListByModuleID("{015A6EB8-D6E5-4B93-B496-0D3F77AE9FE1}");
-        if (sizeof($ids) > 0)
-        {
-            $hooks = json_decode(IPS_GetProperty($ids[0], "Hooks"), true);
-            $found = false;
-            foreach ($hooks as $index => $hook)
-            {
-                if ($hook['Hook'] == $WebHook)
-                {
-                    $found = $index;
-                    break;
-                }
-            }
-
-            if ($found !== false)
-            {
-                array_splice($hooks, $index, 1);
-                IPS_SetProperty($ids[0], "Hooks", json_encode($hooks));
-                IPS_ApplyChanges($ids[0]);
-            }
-        }
-    }
-
-    /**
-     * Formatiert eine DebugAusgabe und gibt sie an IPS weiter.
-     *
-     * @access protected
-     * @param string $Message Nachrichten-Feld.
-     * @param string|array|Kodi_RPC_Data $Data Daten-Feld.
-     * @param int $Format Ausgabe in Klartext(0) oder Hex(1)
-     */
-    protected function SendDebug($Message, $Data, $Format)
-    {
-        if (is_a($Data, 'Kodi_RPC_Data'))
-        {
-            parent::SendDebug($Message . " Method", $Data->Namespace . '.' . $Data->Method, 0);
-            switch ($Data->Typ)
-            {
-                case Kodi_RPC_Data::$EventTyp:
-                    $this->SendDebug($Message . " Event", $Data->GetEvent(), 0);
-                    break;
-                case Kodi_RPC_Data::$ResultTyp:
-                    $this->SendDebug($Message . " Result", $Data->GetResult(), 0);
-                    break;
-                default:
-                    $this->SendDebug($Message . " Params", $Data->Params, 0);
-                    break;
-            }
-        }
-        elseif (is_a($Data, 'KodiRPCException'))
-        {
-            $this->SendDebug($Message, $Data->getMessage(), 0);
-        }
-        elseif (is_array($Data))
-        {
-            foreach ($Data as $Key => $DebugData)
-            {
-                $this->SendDebug($Message . ":" . $Key, $DebugData, 0);
-            }
-        }
-        else if (is_object($Data))
-        {
-            foreach ($Data as $Key => $DebugData)
-            {
-                $this->SendDebug($Message . "." . $Key, $DebugData, 0);
-            }
-        }
-        else
-        {
-            parent::SendDebug($Message, $Data, $Format);
-        }
-    }
-
-    /**
-     * Prüft den Parent auf vorhandensein und Status.
-     * 
-     * @return bool True wenn Parent vorhanden und in Status 102, sonst false.
-     */
-    protected function HasActiveParent()
-    {
-        $instance = IPS_GetInstance($this->InstanceID);
-        if ($instance['ConnectionID'] > 0)
-        {
-            $parent = IPS_GetInstance($instance['ConnectionID']);
-            if ($parent['InstanceStatus'] == 102)
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Liefert den Parent der Instanz.
-     * 
-
-     * @return int|bool InstanzID des Parent, false wenn kein Parent vorhanden.
-     */
-    protected function GetParent()
-    {
-        $instance = IPS_GetInstance($this->InstanceID);
-        return ($instance['ConnectionID'] > 0) ? $instance['ConnectionID'] : false;
     }
 
     /**
@@ -863,79 +1153,6 @@ sleep(10).then(() => {
         return false;
     }
 
-    /**
-     * Erstell und konfiguriert ein VariablenProfil für den Typ integer
-     *
-     * @access protected
-     * @param string $Name Name des Profils.
-     * @param string $Icon Name des Icon.
-     * @param string $Prefix Prefix für die Darstellung.
-     * @param string $Suffix Suffix für die Darstellung.
-     * @param int $MinValue Minimaler Wert.
-     * @param int $MaxValue Maximaler wert.
-     * @param int $StepSize Schrittweite
-     */
-    protected function RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, $StepSize)
-    {
-
-        if (!IPS_VariableProfileExists($Name))
-        {
-            IPS_CreateVariableProfile($Name, 1);
-        }
-        else
-        {
-            $profile = IPS_GetVariableProfile($Name);
-            if ($profile['ProfileType'] != 1)
-                throw new Exception("Variable profile type does not match for profile " . $Name, E_USER_WARNING);
-        }
-
-        IPS_SetVariableProfileIcon($Name, $Icon);
-        IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
-        IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
-    }
-
-    /**
-     * Erstell und konfiguriert ein VariablenProfil für den Typ integer mit Assoziationen
-     *
-     * @access protected
-     * @param string $Name Name des Profils.
-     * @param string $Icon Name des Icon.
-     * @param string $Prefix Prefix für die Darstellung.
-     * @param string $Suffix Suffix für die Darstellung.
-     * @param array $Associations Assoziationen der Werte als Array.
-     */
-    protected function RegisterProfileIntegerEx($Name, $Icon, $Prefix, $Suffix, $Associations)
-    {
-        if (sizeof($Associations) === 0)
-        {
-            $MinValue = 0;
-            $MaxValue = 0;
-        }
-        else
-        {
-            $MinValue = $Associations[0][0];
-            $MaxValue = $Associations[sizeof($Associations) - 1][0];
-        }
-
-        $this->RegisterProfileInteger($Name, $Icon, $Prefix, $Suffix, $MinValue, $MaxValue, 0);
-
-        foreach ($Associations as $Association)
-        {
-            IPS_SetVariableProfileAssociation($Name, $Association[0], $Association[1], $Association[2], $Association[3]);
-        }
-    }
-
-    /**
-     * Löscht ein VariablenProfil.
-     *
-     * @access protected
-     * @param string $Name Name des Profils.
-     */
-    protected function UnregisterProfile($Name)
-    {
-        if (IPS_VariableProfileExists($Name))
-            IPS_DeleteVariableProfile($Name);
-    }
 }
 
 /**
@@ -1457,4 +1674,3 @@ class Kodi_RPC_Data extends stdClass
 }
 
 /** @} */
-?>

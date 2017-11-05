@@ -366,4 +366,3 @@ $remote =  '<svg id="svgrc' . $this->InstanceID . '" version="1.2" baseProfile="
     
   </script>';
 return $remote;
-?>

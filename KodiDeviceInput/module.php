@@ -1,6 +1,6 @@
 <?
 
-require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
  * @addtogroup kodi
  * @{
@@ -290,15 +290,12 @@ class KodiDeviceInput extends KodiBase
      */
     public function ApplyChanges()
     {
+        $this->UnregisterScript("WebHookRemote");
+
         if ($this->ReadPropertyBoolean('showSVGRemote'))
         {
-            $sid = $this->RegisterScript("WebHookRemote", "WebHookRemote", '<? //Do not delete or modify.
-if (isset($_GET["button"]))
-    if (KODIINPUT_ExecuteAction(' . $this->InstanceID . ',$_GET["button"]) === true) echo "OK";
-', -8);
-            IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RegisterHook('/hook/KodiRemote' . $this->InstanceID, $sid);
+                $this->RegisterHook('/hook/KodiRemote' . $this->InstanceID);
             if (@$this->GetIDForIdent("Remote") == false)
             {
                 $remoteID = $this->RegisterVariableString("Remote", "Remote", "~HTMLBox", 1);
@@ -308,7 +305,6 @@ if (isset($_GET["button"]))
         }
         else
         {
-            $this->UnregisterScript("WebHookRemote");
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
             $this->UnregisterVariable("Remote");
@@ -369,6 +365,19 @@ if (isset($_GET["button"]))
     }
 
 ################## PRIVATE    
+
+    /**
+     * Verarbeitet Daten aus dem Webhook.
+     *
+     * @access protected
+     * @global array $_GET
+     */
+    protected function ProcessHookdata()
+    {
+        if (isset($_GET["button"]))
+            if ($this->ExecuteAction($_GET["button"]) === true)
+                echo "OK";
+    }
 
     /**
      * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
@@ -698,4 +707,3 @@ if (isset($_GET["button"]))
 }
 
 /** @} */
-?>

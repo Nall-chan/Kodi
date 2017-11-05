@@ -1,6 +1,6 @@
 <?
 
-require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
  * @addtogroup kodi
  * @{
@@ -94,34 +94,38 @@ class KodiDeviceFavourites extends KodiBase
      */
     public function ApplyChanges()
     {
+        $this->UnregisterScript("WebHookFavlist");
 
         if ($this->ReadPropertyBoolean('showFavlist'))
         {
             $this->RegisterVariableString("Favlist", "Favourites", "~HTMLBox", 1);
-            $sid = $this->RegisterScript("WebHookFavlist", "WebHookFavlist", '<? //Do not delete or modify.
-if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
-    echo KODIFAV_ProcessHookdata(' . $this->InstanceID . ',$_GET);
-', -8);
-            IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RegisterHook('/hook/KodiFavlist' . $this->InstanceID, $sid);
+                $this->RegisterHook('/hook/KodiFavlist' . $this->InstanceID);
 
             $ID = @$this->GetIDForIdent('FavlistDesign');
             if ($ID == false)
                 $ID = $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
             IPS_SetHidden($ID, true);
-            if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RefreshFavouriteslist();
         }
         else
         {
             $this->UnregisterVariable("Favlist");
-            $this->UnregisterScript("WebHookFavlist");
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->UnregisterHook('/hook/KodiFavlist' . $this->InstanceID);
         }
 
         parent::ApplyChanges();
+    }
+
+    /**
+     * Wird ausgeführt wenn sich der Status vom Parent ändert.
+     * @access protected
+     */
+    protected function IOChangeState($State)
+    {
+        parent::IOChangeState($State);
+        if ($State == IS_ACTIVE)
+            $this->RefreshFavouriteslist();
     }
 
 ################## PRIVATE     
@@ -163,7 +167,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
         $Data = array_filter($AllFavs, array($this, "FilterFav"), ARRAY_FILTER_USE_BOTH);
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
-        $ParentID = $this->GetParent();
+
         if (count($Data) > 0)
         {
             foreach ($Data as $line)
@@ -180,9 +184,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
                 {
                     if ($Line['Thumbnail'] <> "")
                     {
-                        $CoverRAW = false;
-                        if ($ParentID !== false)
-                            $CoverRAW = $this->GetThumbnail($ParentID, $Line['Thumbnail'], $this->ReadPropertyInteger("ThumbSize"), 0);
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger("ThumbSize"), 0);
                         if ($CoverRAW === false)
                             $Line['Thumbnail'] = "";
                         else
@@ -195,7 +197,7 @@ if ((isset($_GET["Type"])) and (isset($_GET["Path"])))
                     else
                         $Line['Path'] = "";
 
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '"
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '"
                         ' . $this->GetWebHookLink($Line) . '>';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value)
@@ -345,7 +347,7 @@ $Config["Style"] = array(
  
 ### Konfig ENDE !!!
 echo serialize($Config);
-?>';
+';
         return $Script;
     }
 
@@ -364,7 +366,9 @@ echo serialize($Config);
             trigger_error('Path must be string', E_USER_NOTICE);
             return false;
         }
-        $ret = $this->ProcessHookdata(array("Type" => "media", "Path" => rawurlencode($Path)));
+        $KodiData = new Kodi_RPC_Data('Player');
+        $KodiData->Open(array("item" => array('file' => utf8_encode(rawurlencode($Path)))));
+        $ret = $this->Send($KodiData);
         return ($ret == "OK" ? true : false);
     }
 
@@ -381,7 +385,9 @@ echo serialize($Config);
             trigger_error('Script must be string', E_USER_NOTICE);
             return false;
         }
-        $ret = $this->ProcessHookdata(array("Type" => "script", "Path" => rawurlencode($Script)));
+        $KodiData = new Kodi_RPC_Data('Addons');
+        $KodiData->ExecuteAddon(array("addonid" => rawurlencode($Script)));
+        $ret = $this->SendDirect($KodiData);
         return ($ret == "OK" ? true : false);
     }
 
@@ -404,28 +410,29 @@ echo serialize($Config);
             trigger_error('WindowParameter must be string', E_USER_NOTICE);
             return false;
         }
-        $ret = $this->ProcessHookdata(array("Type" => "window", "Window" => $Window, "Path" => rawurlencode($WindowParameter)));
+        $KodiData = new Kodi_RPC_Data('GUI');
+        $KodiData->ActivateWindow(array('window' => $Window, 'parameters' => array(rawurlencode($WindowParameter))));
+        $ret = $this->Send($KodiData);
         return ($ret == "OK" ? true : false);
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIFAV_ProcessHookdata'. Verarbeitet Daten aus dem Webhook.
-     * 
-     * @access public
-     * @param array $HookData Daten des Webhook.
-     * @return string OK bei Erfolg, sonst leer.
+     * Verarbeitet Daten aus dem Webhook.
+     *
+     * @access protected
+     * @global array $_GET
      */
-    public function ProcessHookdata($HookData)
+    protected function ProcessHookdata()
     {
-        if (!((isset($HookData["Type"])) and ( isset($HookData["Path"]))))
+        if (!((isset($_GET["Type"])) and ( isset($_GET["Path"]))))
         {
-            $this->SendDebug('illegal HOOK', $HookData, 0);
-            trigger_error('Illegal hook', E_USER_NOTICE);
+            $this->SendDebug('illegal HOOK', $_GET, 0);
+            echo 'Illegal hook';
             return;
         }
 
-        $Path = rawurldecode($HookData["Path"]);
-        switch ($HookData['Type'])
+        $Path = rawurldecode($_GET["Path"]);
+        switch ($_GET['Type'])
         {
             case "media":
                 $this->SendDebug('media HOOK', $Path, 0);
@@ -433,28 +440,27 @@ echo serialize($Config);
                 $KodiData->Open(array("item" => array('file' => utf8_encode($Path))));
                 $ret = $this->Send($KodiData);
                 $this->SendDebug('media HOOK', $ret, 0);
-                return $ret;
+                echo $ret;
             case "window":
                 $this->SendDebug('window HOOK', $Path, 0);
                 $KodiData = new Kodi_RPC_Data('GUI');
                 $KodiData->ActivateWindow(array('window' => $HookData['Window'], 'parameters' => array($Path)));
                 $ret = $this->Send($KodiData);
                 $this->SendDebug('window HOOK', $ret, 0);
-                return $ret;
+                echo $ret;
             case "script":
                 $this->SendDebug('script HOOK', $Path, 0);
                 $KodiData = new Kodi_RPC_Data('Addons');
                 $KodiData->ExecuteAddon(array("addonid" => $Path));
                 $ret = $this->SendDirect($KodiData);
                 $this->SendDebug('script HOOK', $ret, 0);
-                return $ret;
+                echo $ret;
             case "unknown":
                 $this->SendDebug('unknown HOOK', $ret, 0);
-                return "";
+                echo 'unknown HOOK';
             default:
                 $this->SendDebug('illegal HOOK', $HookData, 0);
-                trigger_error('Illegal hook', E_USER_NOTICE);
-                return "";
+                echo 'Illegal hook';
         }
     }
 
@@ -498,4 +504,3 @@ echo serialize($Config);
 }
 
 /** @} */
-?>

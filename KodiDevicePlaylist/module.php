@@ -1,6 +1,6 @@
 <?
 
-require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
  * @addtogroup kodi
  * @{
@@ -23,6 +23,9 @@ require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
+ * @property int $LastAddonItem
+ * @property array $Multi_Playlist
+ * @property int $PlaylistId
  */
 class KodiDevicePlaylist extends KodiBase
 {
@@ -196,14 +199,6 @@ class KodiDevicePlaylist extends KodiBase
     );
 
     /**
-     * Eigene PlaylistId
-     * 
-     * @access private
-     *  @var int Kodi-Playlist-ID dieser Instanz 
-     */
-    private $PlaylistId = null;
-
-    /**
      * Interne Funktion des SDK.
      *
      * @access public
@@ -218,6 +213,7 @@ class KodiDevicePlaylist extends KodiBase
             $ID = $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
         IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger("Playlistconfig", $ID);
+        $this->PlaylistId = 0;
     }
 
     /**
@@ -238,17 +234,13 @@ class KodiDevicePlaylist extends KodiBase
      */
     public function ApplyChanges()
     {
-
+        $this->UnregisterScript("WebHookPlaylist");
+        $this->PlaylistId = $this->ReadPropertyInteger('PlaylistID');
         if ($this->ReadPropertyBoolean('showPlaylist'))
         {
             $this->RegisterVariableString("Playlist", "Playlist", "~HTMLBox", 2);
-            $sid = $this->RegisterScript("WebHookPlaylist", "WebHookPlaylist", '<? //Do not delete or modify.
-if (isset($_GET["Index"]))
-    if (IPS_RequestAction(' . $this->InstanceID . ',"position",$_GET["Index"]) === true) echo "OK";
-', -8);
-            IPS_SetHidden($sid, true);
             if (IPS_GetKernelRunlevel() == KR_READY)
-                $this->RegisterHook('/hook/KodiPlaylist' . $this->InstanceID, $sid);
+                $this->RegisterHook('/hook/KodiPlaylist' . $this->InstanceID);
 
             $ID = @$this->GetIDForIdent('PlaylistDesign');
             if ($ID == false)
@@ -258,7 +250,6 @@ if (isset($_GET["Index"]))
         else
         {
             $this->UnregisterVariable("Playlist");
-            $this->UnregisterScript("WebHookPlaylist");
             if (IPS_GetKernelRunlevel() == KR_READY)
                 $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
         }
@@ -267,23 +258,27 @@ if (isset($_GET["Index"]))
 
         $this->RegisterVariableInteger("position", "Playlist Position", "Tracklist." . $this->InstanceID . ".Kodi", 1);
         $this->EnableAction("position");
-        $this->ClearBufferList();
-        $this->Init();
+        $this->Multi_Playlist = 0;
+        $this->LastAddonItem = 0;
+
+
         parent::ApplyChanges();
     }
 
-################## PRIVATE     
+
+################## PRIVATE    
 
     /**
-     * Setzt die Eigenschaften PlaylistId der Instanz
-     * damit andere Funktionen Diese nutzen können
-     * 
-     * @access private
+     * Verarbeitet Daten aus dem Webhook.
+     *
+     * @access protected
+     * @global array $_GET
      */
-    private function Init()
+    protected function ProcessHookdata()
     {
-        if (is_null($this->PlaylistId))
-            $this->PlaylistId = $this->ReadPropertyInteger('PlaylistID');
+        if (isset($_GET["Index"]))
+            if ($this->RequestAction("position", $_GET["Index"]) === true)
+                echo "OK";
     }
 
     /**
@@ -295,7 +290,6 @@ if (isset($_GET["Index"]))
      */
     protected function Decode($Method, $KodiPayload)
     {
-        $this->Init();
         //prüfen ob Player oder Playlist
         //Player nur bei neuer Position
         if (property_exists($KodiPayload, 'playlistid'))
@@ -358,8 +352,8 @@ if (isset($_GET["Index"]))
                                 $this->RefreshPlaylist();
                             break;
                         case "shuffled":
-                            $this->ClearBufferList();
-                            $this->SetBuffer('LastAddonItem', 0);
+                            $this->Multi_Playlist = 0;
+                            $this->LastAddonItem = 0;
                             $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall,));
                             $ret = $this->SendDirect($KodiData);
                             if (is_null($ret))
@@ -380,9 +374,9 @@ if (isset($_GET["Index"]))
                                         $item['title'] = array_pop($parts);
                                     }
                                 }
-                                $this->AddItemToBufferList($Index, $item);
+                                $this->AddItemToPlayList($Index, $item);
                             }
-                            $this->SetBuffer('LastAddonItem', $Index);
+                            $this->LastAddonItem = $Index;
                             $this->RefreshPlaylist(); //Liste neu bauen
                             break;
                     }
@@ -396,8 +390,8 @@ if (isset($_GET["Index"]))
                 $ret = $this->SendDirect($KodiData);
                 if (!is_null($ret))
                     $this->Decode('GetProperties', $ret);
-                $LastAddonItem = (int) $this->GetBuffer('LastAddonItem');
-                if ($LastAddonItem > 0)
+
+                if ($this->LastAddonItem > 0)
                     break;
 
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall,));
@@ -420,13 +414,13 @@ if (isset($_GET["Index"]))
                             $item['title'] = array_pop($parts);
                         }
                     }
-                    $this->AddItemToBufferList($Index, $item);
+                    $this->AddItemToPlayList($Index, $item);
                 }
-                $this->SetBuffer('LastAddonItem', $Index);
+                $this->LastAddonItem = $Index;
                 $this->RefreshPlaylist(); //Liste neu bauen
                 break;
             case 'OnAdd':
-                $LastAddonItem = (int) $this->GetBuffer('LastAddonItem');
+                $LastAddonItem = $this->LastAddonItem;
                 if (($LastAddonItem > 0 ) and ( $LastAddonItem >= $KodiPayload->position))
                     break;
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => array('start' => $LastAddonItem)));
@@ -450,10 +444,10 @@ if (isset($_GET["Index"]))
                             $item['title'] = array_pop($parts);
                         }
                     }
-                    $this->SendDebug("AddBuffer", $item, 0);
-                    $this->AddItemToBufferList($Index + $LastAddonItem, $item);
+                    $this->SendDebug("AddItemToPlaylist", $item, 0);
+                    $this->AddItemToPlayList($Index + $LastAddonItem, $item);
                 }
-                $this->SetBuffer('LastAddonItem', $Index + $LastAddonItem);
+                $this->LastAddonItem = $Index + $LastAddonItem;
 //                if ($ret->limits->total == $KodiPayload->position + 1)
 //                {
                 $this->SendDebug('REFRESH_HTML', 'REFRESH_HTML', 0);
@@ -462,14 +456,17 @@ if (isset($_GET["Index"]))
                 break;
             case 'OnRemove':
                 // function welche ein Item aus dem Buff entfernt
-                $this->SendDebug("RemoveItemFromBuffer", $KodiPayload, 0);
-                $this->RemoveItemFromBufferList($KodiPayload->position);
+                $this->SendDebug("RemoveItemFromPlayList", $KodiPayload, 0);
+                $Liste = $this->Multi_Playlist;
+                unset($Liste[$KodiPayload->position]);
+                $this->Multi_Playlist = $Liste;
                 $this->RefreshPlaylist(); //Liste neu bauen
                 break;
             case 'OnClear':
-                $this->SendDebug("ClearBuffer", $KodiPayload, 0);
+                $this->SendDebug("ClearPlayList", $KodiPayload, 0);
                 $this->SetValueInteger("position", 0);
-                $this->ClearBufferList();
+                $this->Multi_Playlist = 0;
+                $this->LastAddonItem = 0;
                 $this->RefreshPlaylist(true);
                 break;
             default:
@@ -479,142 +476,20 @@ if (isset($_GET["Index"]))
     }
 
     /**
-     * Liefert ein Array über alle aktiven Buffer.
-     * 
-     * @access private
-     * @return array Array welches die Buffer enthält
-     */
-    private function GetBufferList()
-    {
-        $Buffers = unserialize($this->GetBuffer('Bufferlist'));
-        if ($Buffers == false)
-            return array();
-        return $Buffers;
-    }
-
-    /**
-     * Liefert alle Items aus den Buffern.
-     * 
-     * @access private
-     * @param array $Bufferlist Enthält die Liste der Buffer
-     * @return array Array mit allen Items aus den Buffern
-     */
-    private function GetItemsFromBufferList(array $Bufferlist)
-    {
-        $Line = "";
-        foreach ($Bufferlist as $Buffer)
-        {
-            $Line .= $this->GetBuffer('Playlist' . $Buffer);
-        }
-        $Liste = unserialize($Line);
-        if ($Liste == false)
-            return array();
-        return $Liste;
-    }
-
-    /**
-     * Füllt Buffer mit den Daten der Items
-     * 
-     * @access private
-     * @param array $Items Items welche in die Buffer geschrieben werden sollen.
-     * @return array Array welche die befüllten Buffer enthält.
-     */
-    private function SetItemsToBufferList(array $Items)
-    {
-        $Lines = str_split(serialize($Items), 8000);
-        foreach ($Lines as $BufferIndex => $BufferLine)
-        {
-            $this->SetBuffer('Playlist' . $BufferIndex, $BufferLine);
-        }
-        return array_keys($Lines);
-    }
-
-    /**
-     * Schreibt eine Liste von genutzen Buffern.
-     * 
-     * @access private
-     * @param array $List Array welches die genutzen Buffer enthält.
-     */
-    private function SetBufferList(array $List)
-    {
-        $this->SetBuffer('Bufferlist', serialize($List));
-    }
-
-    /**
-     * Fügt ein Item ein oder löscht ein Item aus den Buffern.
-     * 
-     * @access private
-     * @param int $Index Der Index des Item.
-     * @param array $item Das Item zu einfügen in den Buffern. Ein leeres Array löscht einen Index aus den Buffern.
-     */
-    private function AddOrRemoveItemToBufferList(int $Index, array $item)
-    {
-        $OldBuffers = $this->GetBufferList();
-        $this->SendDebug('Bufferlist old', count($OldBuffers), 0);
-
-        $Liste = $this->GetItemsFromBufferList($OldBuffers);
-        if (count($item) == 0)
-            unset($Liste[$Index]);
-        else
-            $Liste[$Index] = $item;
-
-        $NewBuffers = $this->SetItemsToBufferList($Liste);
-        $this->SetBufferList($NewBuffers);
-        $this->SendDebug('Bufferlist new', count($NewBuffers), 0);
-
-        $DelBuffers = array_diff_key($OldBuffers, $NewBuffers);
-        $this->SendDebug('Bufferlist del', count($DelBuffers), 0);
-        foreach ($DelBuffers as $DelBuffer)
-        {
-            $this->SetBuffer('Playlist' . $DelBuffer, "");
-            $this->SendDebug('Bufferlist' . $DelBuffer, 'DELETE', 0);
-        }
-    }
-
-    /**
-     * Fügt ein Item in die Buffer ein.
+     * Fügt ein Item in die PlayList ein.
      * 
      * @access private
      * @param int $Index Der Index des Items.
      * @param array $item Das einzufügende Item.
      */
-    private function AddItemToBufferList(int $Index, array $item)
+    private function AddItemToPlayList(int $Index, array $item)
     {
-        $this->AddOrRemoveItemToBufferList($Index, $item);
-    }
-
-    /**
-     * Löscht ein Item aus den Buffern.
-     * 
-     * @access private
-     * @param int $Index Der Index des zu löschenden Items 
-     */ private function RemoveItemFromBufferList(int $Index)
-    {
-        $this->AddOrRemoveItemToBufferList($Index, array());
-    }
-
-    /**
-     * Leert alle Buffer.
-     * 
-     * @access private
-     */
-    private function ClearBufferList()
-    {
-        $OldBuffers = unserialize($this->GetBuffer('Bufferlist'));
-        if ($OldBuffers === false)
-        {
-            $this->SendDebug('Bufferlist old', 'EMPTY', 0);
-        }
+        $Liste = $this->Multi_Playlist;
+        if (count($item) == 0)
+            unset($Liste[$Index]);
         else
-        {
-            $this->SendDebug('Bufferlist old', count($OldBuffers), 0);
-            foreach ($OldBuffers as $OldBuffer)
-            {
-                $this->SetBuffer('Playlist' . $OldBuffer, "");
-            }
-            $this->SetBuffer("Bufferlist", "");
-        }
-        $this->SetBuffer('LastAddonItem', 0);
+            $Liste[$Index] = $item;
+        $this->Multi_Playlist = $Liste;
     }
 
     /**
@@ -643,12 +518,7 @@ if (isset($_GET["Index"]))
 
         $Data = array();
         if (!$Empty)
-        {
-            $OldBuffers = $this->GetBufferList();
-            $this->SendDebug('Bufferlist read', count($OldBuffers), 0);
-
-            $Data = $this->GetItemsFromBufferList($OldBuffers);
-        }
+            $Data = $this->Multi_Playlist;
         $Name = "Tracklist." . $this->InstanceID . ".Kodi";
         if (!IPS_VariableProfileExists($Name))
         {
@@ -698,7 +568,7 @@ if (isset($_GET["Index"]))
                 $Line['Play'] = ($Line['Position'] == $CurrentTrack ? '<div class="iconMediumSpinner ipsIconArrowRight" style="width: 100%; background-position: center center;"></div>' : '');
 
 //                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
-                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
                 foreach ($Config['Spalten'] as $feldIndex => $value)
                 {
                     if (!array_key_exists($feldIndex, $Line))
@@ -899,7 +769,7 @@ $Config["Style"] = array(
  );
 ### Konfig ENDE !!!
 echo serialize($Config);
-?>';
+';
         return $Script;
     }
 
@@ -917,7 +787,6 @@ echo serialize($Config);
         switch ($Ident)
         {
             case "position":
-                $this->Init();
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
                 $KodiData->GoTo(array('playerid' => $this->PlaylistId, "to" => (int) $Value - 1));
                 $ret = $this->SendDirect($KodiData);
@@ -942,7 +811,7 @@ echo serialize($Config);
      */
     public function Get()
     {
-        $this->Init();
+
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
@@ -962,7 +831,6 @@ echo serialize($Config);
      */
     public function GetItem(int $Index)
     {
-        $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => array('start' => $Index, 'end' => $Index + 1)));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
@@ -983,8 +851,6 @@ echo serialize($Config);
      */
     private function Add(string $ItemTyp, string $ItemValue, $Ext = array())
     {
-
-        $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
         $KodiData->Add(array_merge(array('playlistid' => $this->PlaylistId, "item" => array($ItemTyp => $ItemValue)), $Ext));
         $ret = $this->SendDirect($KodiData);
@@ -1185,8 +1051,6 @@ echo serialize($Config);
      */
     public function Clear()
     {
-
-        $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
         $KodiData->Clear(array('playlistid' => $this->PlaylistId));
         $ret = $this->SendDirect($KodiData);
@@ -1215,7 +1079,6 @@ echo serialize($Config);
             trigger_error('Position must be integer', E_USER_NOTICE);
             return false;
         }
-        $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Insert', array_merge(array('playlistid' => $this->PlaylistId, 'position' => $Position, 'item' => array($ItemTyp => $ItemValue)), $Ext));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
@@ -1442,7 +1305,6 @@ echo serialize($Config);
             trigger_error('Position must be integer', E_USER_NOTICE);
             return false;
         }
-        $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Remove', array('playlistid' => $this->PlaylistId, 'position' => $Position));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
@@ -1473,7 +1335,6 @@ echo serialize($Config);
             trigger_error('Position2 must be integer', E_USER_NOTICE);
             return false;
         }
-        $this->Init();
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Swap', array('playlistid' => $this->PlaylistId, 'position1' => $Position1, 'position2' => $Position2));
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret))
@@ -1487,4 +1348,3 @@ echo serialize($Config);
 }
 
 /** @} */
-?>

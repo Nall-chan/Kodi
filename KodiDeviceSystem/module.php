@@ -1,6 +1,6 @@
 <?
 
-require_once(__DIR__ . "/../KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
  * @addtogroup kodi
  * @{
@@ -70,6 +70,10 @@ class KodiDeviceSystem extends KodiBase
      */
     public function ApplyChanges()
     {
+        $this->RegisterProfileIntegerEx("Action.Kodi", "", "", "", Array(
+            Array(0, "Ausführen", "", -1)
+        ));
+
         switch ($this->ReadPropertyInteger('PreSelectScript'))
         {
             case 0:
@@ -142,7 +146,7 @@ if ($_IPS["SENDER"] <> "Kodi.System")
 	return;
 }
    echo IPS_RunScriptWaitEx ($FBScript,array("SENDER"=>"RequestAction","IDENT"=>$mac,"VALUE"=>true));
-?>';
+';
         return $Script;
     }
 
@@ -193,7 +197,7 @@ function wake($ip, $mac)
   echo "ERROR";
   return false;
 }  
-?>';
+';
         return $Script;
     }
 
@@ -444,4 +448,3 @@ function wake($ip, $mac)
 }
 
 /** @} */
-?>

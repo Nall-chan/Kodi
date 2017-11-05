@@ -7,9 +7,8 @@
                     "caption": "Open"
                 },
                 {
-                    "name": "Host",
-                    "type": "ValidationTextBox",
-                    "caption": "Host"
+                    "type": "Label",
+                    "label": "Enter Address of Kodi in the parent Client-Socket."
                 },
                 {
                     "name": "Port",
@@ -46,7 +45,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Advanced power watchdog"
+                    "label": "Advanced power watchdog with ping request"
                 },
                 {
                     "name": "Watchdog",
