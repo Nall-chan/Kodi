@@ -297,7 +297,7 @@ trait VariableProfile
      * Löscht ein Variablenprofile, sofern es nicht außerhalb dieser Instanz noch verwendet wird.
      * @param string $Name Name des zu löschenden Profils.
      */
-    protected function UnregisterProfil(string $Name)
+    protected function UnregisterProfile(string $Name)
     {
         if (!IPS_VariableProfileExists($Name))
             return;
