@@ -677,6 +677,8 @@ abstract class KodiBase extends IPSModule
         $this->RegisterParent();
         if ($this->HasActiveParent())
             $this->IOChangeState(IS_ACTIVE);
+        else
+            $this->IOChangeState(IS_INACTIVE);
     }
 
     /**

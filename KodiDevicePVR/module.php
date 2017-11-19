@@ -329,12 +329,15 @@ class KodiDevicePVR extends KodiBase
      */
     protected function IOChangeState($State)
     {
+        $this->SetTimerInterval('RefreshLists', 0);
         parent::IOChangeState($State);
         if ($State == IS_ACTIVE)
         {
             $this->RefreshTVChannellist();
             $this->RefreshRadioChannellist();
             $this->RefreshRecordinglist();
+            if ($this->ReadPropertyBoolean('showRecordinglist') or $this->ReadPropertyBoolean('showRadioChannellist') or $this->ReadPropertyBoolean('showTVChannellist'))
+                $this->SetTimerInterval('RefreshLists', 15 * 60 * 1000);
         }
     }
 
