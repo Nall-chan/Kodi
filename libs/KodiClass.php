@@ -5,13 +5,13 @@
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       1.4
  * @example <b>Ohne</b>
  */
 
-if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind.
+if (!defined("IPS_BASE")) //Nur wenn Konstanten noch nicht bekannt sind.
 {
 // --- BASE MESSAGE
     define('IPS_BASE', 10000);                             //Base Message
@@ -49,7 +49,7 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
     define('OM_CHANGEPOSITION', IPS_OBJECTMESSAGE + 8);    //Position was Changed
     define('OM_CHANGEREADONLY', IPS_OBJECTMESSAGE + 9);    //ReadOnly was Changed
     define('OM_CHANGEHIDDEN', IPS_OBJECTMESSAGE + 10);     //Hidden was Changed
-    define('OM_CHANGEICsON', IPS_OBJECTMESSAGE + 11);       //Icon was Changed
+    define('OM_CHANGEICON', IPS_OBJECTMESSAGE + 11);       //Icon was Changed
     define('OM_CHILDADDED', IPS_OBJECTMESSAGE + 12);       //Child for Object was added
     define('OM_CHILDREMOVED', IPS_OBJECTMESSAGE + 13);     //Child for Object was removed
     define('OM_CHANGEIDENT', IPS_OBJECTMESSAGE + 14);      //Ident was Changed
@@ -107,9 +107,9 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
     define('LM_DELETE', IPS_LINKMESSAGE + 2);             //On Link Delete
     define('LM_CHANGETARGET', IPS_LINKMESSAGE + 3);       //On Link TargetID change
 // --- DATA HANDLER
-    define('IPS_DATAMESSAGE', IPS_BASE + 1100);             //Data Handler Message
-    define('DM_CONNECT', IPS_DATAMESSAGE + 1);             //On Instance Connect
-    define('DM_DISCONNECT', IPS_DATAMESSAGE + 2);          //On Instance Disconnect
+    define('IPS_FLOWMESSAGE', IPS_BASE + 1100);             //Data Handler Message
+    define('FM_CONNECT', IPS_FLOWMESSAGE + 1);             //On Instance Connect
+    define('FM_DISCONNECT', IPS_FLOWMESSAGE + 2);          //On Instance Disconnect
 // --- SCRIPT ENGINE
     define('IPS_ENGINEMESSAGE', IPS_BASE + 1200);           //Script Engine Message
     define('SE_UPDATE', IPS_ENGINEMESSAGE + 1);             //On Library Refresh
@@ -133,6 +133,9 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
     define('TM_SETINTERVAL', IPS_TIMERMESSAGE + 3);
     define('TM_UPDATE', IPS_TIMERMESSAGE + 4);
     define('TM_RUNNING', IPS_TIMERMESSAGE + 5);
+}
+if (!defined("IS_ACTIVE")) //Nur wenn Konstanten noch nicht bekannt sind.
+{
 // --- STATUS CODES
     define('IS_SBASE', 100);
     define('IS_CREATING', IS_SBASE + 1); //module is being created
@@ -142,19 +145,14 @@ if (@constant('IPS_BASE') == null) //Nur wenn Konstanten noch nicht bekannt sind
 // --- ERROR CODES
     define('IS_EBASE', 200);          //default errorcode
     define('IS_NOTCREATED', IS_EBASE + 1); //instance could not be created
-// --- Search Handling
-    define('FOUND_UNKNOWN', 0);     //Undefined value
-    define('FOUND_NEW', 1);         //Device is new and not configured yet
-    define('FOUND_OLD', 2);         //Device is already configues (InstanceID should be set)
-    define('FOUND_CURRENT', 3);     //Device is already configues (InstanceID is from the current/searching Instance)
-    define('FOUND_UNSUPPORTED', 4); //Device is not supported by Module
+}
 
+if (!defined("vtBoolean")) //Nur wenn Konstanten noch nicht bekannt sind.
+{
     define('vtBoolean', 0);
     define('vtInteger', 1);
     define('vtFloat', 2);
     define('vtString', 3);
-    define('vtArray', 8);
-    define('vtObject', 9);
 }
 
 /**
@@ -490,14 +488,14 @@ trait InstanceStatus
     {
         switch ($Message)
         {
-            case DM_CONNECT:
+            case FM_CONNECT:
                 $this->RegisterParent();
                 if ($this->HasActiveParent())
                     $this->IOChangeState(IS_ACTIVE);
                 else
                     $this->IOChangeState(IS_INACTIVE);
                 break;
-            case DM_DISCONNECT:
+            case FM_DISCONNECT:
                 $this->RegisterParent();
                 $this->IOChangeState(IS_INACTIVE);
                 break;
@@ -644,8 +642,8 @@ abstract class KodiBase extends IPSModule
     public function ApplyChanges()
     {
         $this->RegisterMessage(0, IPS_KERNELSTARTED);
-        $this->RegisterMessage($this->InstanceID, DM_CONNECT);
-        $this->RegisterMessage($this->InstanceID, DM_DISCONNECT);
+        $this->RegisterMessage($this->InstanceID, FM_CONNECT);
+        $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
         $this->ParentID = 0;
 
         $this->UnregisterVariable("_ReplyJSONData");

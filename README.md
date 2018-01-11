@@ -16,7 +16,8 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 8. [Parameter / Modul-Infos](#8-parameter--modul-infos) 
 9. [Tips & Tricks](#9-tips--tricks) 
 10. [Anhang](#10-anhang)
-11. [Lizenz] (#11-lizenz)
+11. [Spenden] (#11-spenden)
+12. [Lizenz] (#12-lizenz)
 
 ## 1. Funktionsumfang
 
@@ -1871,6 +1872,16 @@ Eigenschaften von KodiSplitter:
   - Fix: Konfig-Formular für Input-Modul war nicht übersetzt  
   - Fix: Konfig-Formular für Input-Modul fehlte eine Checkbox  
 
-## 11. Lizenz  
+ Version 1.4:  
+  - Fix: Für IPS 5.0  
+
+## 11. Spenden  
+  
+  Die Library ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  
+
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G2SLW2MEMQZH2" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>
+
+
+## 12. Lizenz  
 
 [CC BY-NC-SA 4.0] (https://creativecommons.org/licenses/by-nc-sa/4.0/)  
