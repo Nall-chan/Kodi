@@ -1,3 +1,8 @@
+[![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![Version](https://img.shields.io/badge/Modul%20Version-1.4-blue.svg)]()
+[![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![Version](https://img.shields.io/badge/Symcon%20Version-4.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-4-3-%28Stable%29-Changelog)
+
 # IPSKodi
 
 Implementierung der Kodi JSON-RPC API in IP-Symcon.
@@ -11,13 +16,26 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 3. [Installation](#3-installation)
 4. [Vorbereitungen](#4-vorbereitungen)
 5. [Einrichten der Instanzen in IPS](#5-einrichten-der--instanzen-in-ips)
-6. [Funktionen der Instanzen] (#6-funktionen-der-instanzen)
+6. [Funktionen der Instanzen](#6-funktionen-der-instanzen)
 7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz) 
+    1. [Kodi Addons](#1-kodi-addons)
+    2. [Kodi Anwendung](#2-kodi-anwendung)
+    3. [Kodi Audio Datenbank](#3-kodi-audio-datenbank)
+    4. [Kodi Favoriten](#4-kodi-favoriten)
+    5. [Kodi Files](#5-kodi-files)
+    6. [Kodi GUI](#6-kodi-gui)
+    7. [Kodi Input](#7-kodi-input)
+    8. [Kodi Player](#8-kodi-player)
+    9. [Kodi Playlist](#9-kodi-playlist)
+    10. [Kodi PVR](#10-kodi-pvr)
+    11. [Kodi System](#11-kodi-system)
+    12. [Kodi Video Datenbank](#12-kodi-video-datenbank)
+    13. [Kodi Splitter](#13-kodi-splitter)
 8. [Parameter / Modul-Infos](#8-parameter--modul-infos) 
 9. [Tips & Tricks](#9-tips--tricks) 
 10. [Anhang](#10-anhang)
-11. [Spenden] (#11-spenden)
-12. [Lizenz] (#12-lizenz)
+11. [Spenden](#11-spenden)
+12. [Lizenz](#12-lizenz)
 
 ## 1. Funktionsumfang
 
@@ -32,9 +50,8 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
 ## 2. Voraussetzungen
 
- - IPS ab Version 4.1
+ - IPS ab Version 4.3
  - Installiertes System mit der Software Kodi 
-
 
 ## 3. Installation
 
@@ -193,7 +210,7 @@ Das Setzen von Daten in der Datenbank ist nicht möglich!
 
 ## 7. PHP-Befehlsreferenz
 
- **Kodi Addons (KodiDeviceAddons):**  
+### 1. Kodi Addons
 
 ```php
 boolean KODIADDONS_ExecuteAddon(integer $InstanzeID, string $AddonId);
@@ -260,7 +277,8 @@ boolean KODIADDONS_SetAddonEnabled(integer $InstanzeID, boolean $Value);
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
 
 
- **Kodi Anwendung (KodiDeviceApplication):**  
+### 2. Kodi Anwendung
+
 ```php
 boolean KODIAPP_SetMute(integer $InstanzeID, boolean $Value);
 ```
@@ -286,9 +304,8 @@ boolean KODIAPP_RequestState(integer $InstanzeID, string $Ident);
  Es ist der Ident der Statusvariable zu übergeben ("volume","muted","name","version")  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
----
+### 3. Kodi Audio Datenbank
 
- **Kodi Audio Datenbank (KodiDeviceAudioLibrary):**
 ```php
 boolean KODIAUDIOLIB_Scan(integer $InstanzeID);
 ```
@@ -457,9 +474,7 @@ array|boolean KODIAUDIOLIB_GetRecentlyPlayedSongs(integer $InstanzeID);
  Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
  Es gilt die Tabelle von KODIAUDIOLIB_GetSongDetails.  
 
----
-
-**Kodi Favoriten (KodiDeviceFavourites):**  
+### 4. Kodi Favoriten
 
 ```php
 array|boolean KODIFAV_GetFavourites(integer $InstanzeID, string $Type);
@@ -497,9 +512,7 @@ boolean KODIFAV_LoadFavouriteWindow(integer $InstanzeID, string $Window, string 
  Lädt einen Favoriten vom Typ Window.
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
----
-
- **Kodi Files (KodiDeviceFiles):**  
+### 5. Kodi Files
 
  ```php
 array|boolean KODIFILES_GetSources(integer $InstanzeID, string $Media);
@@ -626,9 +639,8 @@ array|boolean KODIFILES_GetDirectoryDetails(integer $InstanzeID, string $Directo
     "programs"=Programme  
  Rückgabewert ist ein Array mit den Eigenschaften oder FALSE bei einem Fehler.  
  Es gilt die Tabelle von KODIFILES_GetFileDetails.  
----
- 
- **Kodi GUI (KodiDeviceGUI):**  
+
+### 6. Kodi GUI
 
 ```php
 boolean KODIGUI_SetFullscreen(integer $InstanzeID, boolean $Value);
@@ -659,9 +671,8 @@ boolean KODIGUI_RequestState(integer $InstanzeID, string $Ident);
     "fullscreen"  
     
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
- ---
 
- **Kodi Input (KodiDeviceInput):**  
+### 7. Kodi Input
  
 ```php
 boolean KODIINPUT_Up(integer $InstanzeID);
@@ -768,9 +779,7 @@ boolean KODIINPUT_SendText(integer $InstanzeID, string $Text, boolean $Done);
  Mit $Done = true kann die Eingabe beendet werden.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
----
-
- **Kodi Playerstatus (KodiDevicePlayer):**  
+### 8. Kodi Player
 
  ```php
 boolean KODIPLAYER_GetItem(integer $InstanzeID);
@@ -1015,9 +1024,7 @@ boolean KODIPLAYER_Stop(integer $InstanzeID);
  Stoppt die Wiedergabe des aktuellen Items.
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
----
-
- **Kodi Playlist (KodiDevicePlaylist):**  
+### 9. Kodi Playlist
 
 Hinweis: Ein mischen von verschiednen Medien (Audio, Video, Bilder) ist nicht möglich.  
 
@@ -1196,9 +1203,7 @@ boolean KODIPLAYLIST_Swap(integer $InstanzeID, integer $Position1, integer $Posi
  Tauscht zwei Einträge innerhalb der Playlist.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
- ---
-
- **Kodi PVR (KodiDevicePVR):**  
+### 10. Kodi PVR
 
 ```php
 boolean KODIPVR_Scan();
@@ -1361,9 +1366,7 @@ array|boolean KODIPVR_GetTimerDetails(integer $InstanzeID, integer $TimerId);
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
  Es gilt die Tabelle von KODIPVR_GetTimers. 
 
----
-
- **Kodi System (KodiDeviceSystem):**  
+### 11. Kodi System
 
  ```php
 boolean KODISYS_Power(integer $InstanzeID, boolean $Value);
@@ -1420,9 +1423,7 @@ boolean KODISYS_RequestState(integer $InstanzeID, string $Ident);
  $Ident kann "canshutdown", "canhibernate", "cansuspend" oder "canreboot" sein.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
----
-
- **Kodi VideoLibrary (KodiDeviceVideoLibrary):**  
+### 12. Kodi Video Datenbank
 
 ```php
 boolean KODIVIDEOLIB_Scan(integer $InstanzeID);
@@ -1690,9 +1691,7 @@ boolean KODIVIDEOLIB_Export(integer $InstanzeID, string $Path, boolean $Overwrit
  Exportiert die Audio Datenbank.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
----  
-
-**Kodi Splitter (KodiSplitter):**  
+### 13. Kodi Splitter
 
 TODO  
 
