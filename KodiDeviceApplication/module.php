@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 
@@ -30,20 +30,20 @@ class KodiDeviceApplication extends KodiBase
 
     /**
      * RPC-Namespace
-     * 
+     *
      * @access private
      *  @var string
      * @value 'Application'
      */
-    static $Namespace = 'Application';
+    public static $Namespace = 'Application';
 
     /**
      * Alle Properties des RPC-Namespace
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $Properties = array(
+    public static $Properties = array(
         "volume",
         "muted",
         "name",
@@ -65,32 +65,33 @@ class KodiDeviceApplication extends KodiBase
 
     /**
      * Interne Funktion des SDK.
-     * 
+     *
      * @access public
      */
     public function ApplyChanges()
     {
-        $this->RegisterProfileIntegerEx("Action.Kodi", "", "", "", Array(
-            Array(0, "Ausführen", "", -1)
+        $this->RegisterProfileIntegerEx("Action.Kodi", "", "", "", array(
+            array(0, "Ausführen", "", -1)
         ));
 
-        if ($this->ReadPropertyBoolean('showName'))
+        if ($this->ReadPropertyBoolean('showName')) {
             $this->RegisterVariableString("name", "Name", "", 0);
-        else
+        } else {
             $this->UnregisterVariable("name");
+        }
 
-        if ($this->ReadPropertyBoolean('showVersion'))
+        if ($this->ReadPropertyBoolean('showVersion')) {
             $this->RegisterVariableString("version", "Version", "", 1);
-        else
+        } else {
             $this->UnregisterVariable("version");
+        }
 
-        if ($this->ReadPropertyBoolean('showExit'))
-        {
+        if ($this->ReadPropertyBoolean('showExit')) {
             $this->RegisterVariableInteger("quit", "Kodi beenden", "Action.Kodi", 2);
             $this->EnableAction("quit");
-        }
-        else
+        } else {
             $this->UnregisterVariable("quit");
+        }
 
         $this->RegisterVariableBoolean("mute", "Mute", "~Switch", 3);
         $this->EnableAction("mute");
@@ -101,7 +102,7 @@ class KodiDeviceApplication extends KodiBase
         parent::ApplyChanges();
     }
 
-################## PRIVATE     
+    ################## PRIVATE
 
     /**
      * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
@@ -111,10 +112,8 @@ class KodiDeviceApplication extends KodiBase
      */
     protected function Decode($Method, $KodiPayload)
     {
-        foreach ($KodiPayload as $param => $value)
-        {
-            switch ($param)
-            {
+        foreach ($KodiPayload as $param => $value) {
+            switch ($param) {
                 case "mute":
                 case "muted":
                     $this->SetValueBoolean("mute", $value);
@@ -132,19 +131,18 @@ class KodiDeviceApplication extends KodiBase
         }
     }
 
-################## ActionHandler
+    ################## ActionHandler
 
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     * 
+     *
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
-        switch ($Ident)
-        {
+        switch ($Ident) {
             case "mute":
                 return $this->SetMute($Value);
             case "volume":
@@ -156,7 +154,7 @@ class KodiDeviceApplication extends KodiBase
         }
     }
 
-################## PUBLIC
+    ################## PUBLIC
 
     /**
      * IPS-Instanz-Funktion 'KODIAPP_SetMute'. De-/Aktiviert die Stummschaltung
@@ -167,19 +165,20 @@ class KodiDeviceApplication extends KodiBase
      */
     public function SetMute(bool $Value)
     {
-        if (!is_bool($Value))
-        {
+        if (!is_bool($Value)) {
             trigger_error('Value must be boolean', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetMute(array("mute" => $Value));
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         $this->SetValueBoolean("mute", $ret);
-        if ($ret === $Value)
+        if ($ret === $Value) {
             return true;
+        }
         trigger_error('Error on set mute.', E_USER_NOTICE);
         return false;
     }
@@ -193,19 +192,20 @@ class KodiDeviceApplication extends KodiBase
      */
     public function SetVolume(int $Value)
     {
-        if (!is_int($Value))
-        {
+        if (!is_int($Value)) {
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetVolume(array("volume" => $Value));
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         $this->SetValueInteger("volume", $ret);
-        if ($ret === $Value)
+        if ($ret === $Value) {
             return true;
+        }
         trigger_error('Error on set volume.', E_USER_NOTICE);
         return false;
     }
@@ -221,10 +221,12 @@ class KodiDeviceApplication extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace); //, 'Quit');
         $KodiData->Quit(null);
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === 'OK')
+        }
+        if ($ret === 'OK') {
             return true;
+        }
         trigger_error('Error on quit Kodi.', E_USER_NOTICE);
         return false;
     }
@@ -240,7 +242,6 @@ class KodiDeviceApplication extends KodiBase
     {
         return parent::RequestState($Ident);
     }
-
 }
 
 /** @} */

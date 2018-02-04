@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
@@ -23,7 +23,7 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       1.0
  * @example <b>Ohne</b>
- * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle. 
+ * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle.
  * @todo VideoLibrary.GetInProgressTVShows ab v8
  * @todo VideoLibrary.GetTags ab v8
  */
@@ -32,29 +32,29 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * RPC-Namespace
-     * 
+     *
      * @access private
      *  @var string
      * @value 'VideoLibrary'
      */
-    static $Namespace = 'VideoLibrary';
+    public static $Namespace = 'VideoLibrary';
 
     /**
      * Alle Properties des RPC-Namespace
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $Properties = array(
+    public static $Properties = array(
     );
 
     /**
      * Alle Eigenschaften von Episoden.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $EpisodeItemList = array(
+    public static $EpisodeItemList = array(
         "title",
         "plot",
         "votes",
@@ -84,11 +84,11 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * Ein Teil der Eigenschaften von Episoden.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $EpisodeItemListSmall = array(
+    public static $EpisodeItemListSmall = array(
         "title",
         "playcount",
         "season",
@@ -103,11 +103,11 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * Alle Eigenschaften von Filmen.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $MovieItemList = array(
+    public static $MovieItemList = array(
         "title",
         "genre",
         "year",
@@ -144,11 +144,11 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * Alle Eigenschaften von Filmsets.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $SetItemList = array(
+    public static $SetItemList = array(
         "title",
         "playcount",
         "fanart",
@@ -158,11 +158,11 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * Alle Eigenschaften von Seasons.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $SeasonItemList = array(
+    public static $SeasonItemList = array(
         "season",
         "showtitle",
         "playcount",
@@ -176,11 +176,11 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * Alle Eigenschaften von Musikvideos.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $MusicVideoItemList = array(
+    public static $MusicVideoItemList = array(
         "title",
         "playcount",
         "runtime",
@@ -205,11 +205,11 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * Alle Eigenschaften von TV-Serien.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $TvShowItemList = array(
+    public static $TvShowItemList = array(
         "title",
         "genre",
         "year",
@@ -239,11 +239,11 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * Alle Eigenschaften von Genres.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $GenreItemList = array(
+    public static $GenreItemList = array(
         "thumbnail",
         "title"
     );
@@ -264,50 +264,49 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     /**
      * Interne Funktion des SDK.
-     * 
+     *
      * @access public
      */
     public function ApplyChanges()
     {
-        $this->RegisterProfileIntegerEx("Action.Kodi", "", "", "", Array(
-            Array(0, "Ausführen", "", -1)
+        $this->RegisterProfileIntegerEx("Action.Kodi", "", "", "", array(
+            array(0, "Ausführen", "", -1)
         ));
 
-        if ($this->ReadPropertyBoolean('showDoScan'))
-        {
+        if ($this->ReadPropertyBoolean('showDoScan')) {
             $this->RegisterVariableInteger("doscan", "Suche nach neuen / veränderten Inhalten", "Action.Kodi", 1);
             $this->EnableAction("doscan");
-        }
-        else
+        } else {
             $this->UnregisterVariable("doscan");
+        }
 
-        if ($this->ReadPropertyBoolean('showScan'))
+        if ($this->ReadPropertyBoolean('showScan')) {
             $this->RegisterVariableBoolean("scan", "Datenbanksuche läuft", "~Switch", 2);
-        else
+        } else {
             $this->UnregisterVariable("scan");
+        }
 
-        if ($this->ReadPropertyBoolean('showDoClean'))
-        {
+        if ($this->ReadPropertyBoolean('showDoClean')) {
             $this->RegisterVariableInteger("doclean", "Bereinigen der Datenbank", "Action.Kodi", 3);
             $this->EnableAction("doclean");
-        }
-        else
+        } else {
             $this->UnregisterVariable("doclean");
+        }
 
-        if ($this->ReadPropertyBoolean('showClean'))
+        if ($this->ReadPropertyBoolean('showClean')) {
             $this->RegisterVariableBoolean("clean", "Bereinigung der Datenbank läuft", "~Switch", 4);
-        else
+        } else {
             $this->UnregisterVariable("clean");
+        }
 
         parent::ApplyChanges();
     }
 
-################## PRIVATE     
+    ################## PRIVATE
 
     protected function Decode($Method, $KodiPayload)
     {
-        switch ($Method)
-        {
+        switch ($Method) {
             case "OnScanStarted":
                 $this->SetValueBoolean("scan", true);
                 break;
@@ -323,19 +322,18 @@ class KodiDeviceVideoLibrary extends KodiBase
         }
     }
 
-################## ActionHandler
+    ################## ActionHandler
 
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     * 
+     *
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
-        switch ($Ident)
-        {
+        switch ($Ident) {
             case "doclean":
                 return $this->Clean();
             case "doscan":
@@ -345,7 +343,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         }
     }
 
-################## PUBLIC
+    ################## PUBLIC
 
     /**
      * IPS-Instanz-Funktion 'KODIVIDOLIB_Clean'. Startet das bereinigen der Datenbank
@@ -358,10 +356,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Clean();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === "OK")
+        }
+        if ($ret === "OK") {
             return true;
+        }
         trigger_error('Error start cleaning', E_USER_NOTICE);
         return false;
     }
@@ -377,26 +377,24 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function Export(string $Path, bool $Overwrite, bool $includeImages)
     {
-        if (!is_string($Path) or ( strlen($Path) < 2))
-        {
+        if (!is_string($Path) or (strlen($Path) < 2)) {
             trigger_error('Path is invalid', E_USER_NOTICE);
             return false;
         }
-        if (!is_bool($Overwrite))
-        {
+        if (!is_bool($Overwrite)) {
             trigger_error('Overwrite must be boolean', E_USER_NOTICE);
             return false;
         }
-        if (!is_bool($includeImages))
-        {
+        if (!is_bool($includeImages)) {
             trigger_error('includeImages must be boolean', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Export(array("options" => array("path" => $Path, "overwrite" => $Overwrite, "images" => $includeImages)));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === "OK";
     }
 
@@ -409,8 +407,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetEpisodeDetails(int $EpisodeId)
     {
-        if (!is_int($EpisodeId))
-        {
+        if (!is_int($EpisodeId)) {
             trigger_error('EpisodeId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -418,8 +415,9 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetEpisodeDetails(array("episodeid" => $EpisodeId, "properties" => static::$EpisodeItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $KodiData->ToArray($ret->episodedetails);
     }
 
@@ -434,10 +432,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetEpisodes(array("properties" => static::$EpisodeItemListSmall));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->episodes);
+        }
         return array();
     }
 
@@ -452,8 +452,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     public function GetGenres(string $Type)
     {
         $Type = strtolower($Type);
-        if (!in_array($Type, array("movie", "musicvideo", "tvshow")))
-        {
+        if (!in_array($Type, array("movie", "musicvideo", "tvshow"))) {
             trigger_error('Media must be "movie", "tvshow", or "musicvideo".', E_USER_NOTICE);
             return false;
         }
@@ -461,10 +460,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetGenres(array("properties" => static::$GenreItemList, "type" => $Type));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->genres);
+        }
         return array();
     }
 
@@ -477,8 +478,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetMovieDetails(int $MovieId)
     {
-        if (!is_int($MovieId))
-        {
+        if (!is_int($MovieId)) {
             trigger_error('MovieId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -486,8 +486,9 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetEpisodeDetails(array("movieid" => $MovieId, "properties" => static::$MovieItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $KodiData->ToArray($ret->moviedetails);
     }
 
@@ -502,10 +503,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovies(array("properties" => static::$MovieItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->movies);
+        }
         return array();
     }
 
@@ -518,8 +521,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetMovieSetDetails(int $SetId)
     {
-        if (!is_int($SetId))
-        {
+        if (!is_int($SetId)) {
             trigger_error('SetId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -527,8 +529,9 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovieSetDetails(array("setid" => $SetId, "properties" => static::SetItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $KodiData->ToArray($ret->setdetails);
     }
 
@@ -543,10 +546,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovieSets(array("properties" => static::$SetItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->sets);
+        }
         return array();
     }
 
@@ -559,8 +564,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetMusicVideoDetails(int $MusicVideoId)
     {
-        if (!is_int($MusicVideoId))
-        {
+        if (!is_int($MusicVideoId)) {
             trigger_error('MusicVideoId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -568,8 +572,9 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMusicVideoDetails(array("musicvideoid" => $MusicVideoId, "properties" => static::$MusicVideoItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $KodiData->ToArray($ret->musicvideodetails);
     }
 
@@ -584,10 +589,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMusicVideos(array("properties" => static::$MusicVideoItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->musicvideos);
+        }
         return array();
     }
 
@@ -602,10 +609,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyAddedEpisodes(array("properties" => static::$EpisodeItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->episodes);
+        }
         return array();
     }
 
@@ -620,10 +629,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyAddedMovies(array("properties" => static::$MovieItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->movies);
+        }
         return array();
     }
 
@@ -638,10 +649,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyAddedMusicVideos(array("properties" => static::$MusicVideoItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->musicvideos);
+        }
         return array();
     }
 
@@ -654,8 +667,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetSeasons(int $TvShowId)
     {
-        if (!is_int($TvShowId))
-        {
+        if (!is_int($TvShowId)) {
             trigger_error('TvShowId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -663,8 +675,9 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSeasons(array("tvshowid" => $TvShowId, "properties" => static::$SeasonItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $KodiData->ToArray($ret->seasons);
     }
 
@@ -677,8 +690,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetTVShowDetails(int $TvShowId)
     {
-        if (!is_int($TvShowId))
-        {
+        if (!is_int($TvShowId)) {
             trigger_error('TvShowId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -686,8 +698,9 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetTVShowDetails(array("tvshowid" => $TvShowId, "properties" => static::$TvShowItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $KodiData->ToArray($ret->tvshowdetails);
     }
 
@@ -702,10 +715,12 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetTVShows(array("properties" => static::$TvShowItemList));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->tvshows);
+        }
         return array();
     }
 
@@ -720,14 +735,15 @@ class KodiDeviceVideoLibrary extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Scan();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === "OK")
+        }
+        if ($ret === "OK") {
             return true;
+        }
         trigger_error('Error start scanning', E_USER_NOTICE);
         return false;
     }
-
 }
 
 /** @} */

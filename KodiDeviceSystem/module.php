@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
@@ -29,20 +29,20 @@ class KodiDeviceSystem extends KodiBase
 
     /**
      * RPC-Namespace
-     * 
+     *
      * @access private
      * @var string
      * @value 'Application'
      */
-    static $Namespace = 'System';
+    public static $Namespace = 'System';
 
     /**
      * Alle Properties des RPC-Namespace
-     * 
+     *
      * @access private
-     * @var array 
+     * @var array
      */
-    static $Properties = array(
+    public static $Properties = array(
         "canshutdown",
         "canhibernate",
         "cansuspend",
@@ -65,17 +65,16 @@ class KodiDeviceSystem extends KodiBase
 
     /**
      * Interne Funktion des SDK.
-     * 
+     *
      * @access public
      */
     public function ApplyChanges()
     {
-        $this->RegisterProfileIntegerEx("Action.Kodi", "", "", "", Array(
-            Array(0, "Ausführen", "", -1)
+        $this->RegisterProfileIntegerEx("Action.Kodi", "", "", "", array(
+            array(0, "Ausführen", "", -1)
         ));
 
-        switch ($this->ReadPropertyInteger('PreSelectScript'))
-        {
+        switch ($this->ReadPropertyInteger('PreSelectScript')) {
             case 0:
                 $ID = 0;
                 break;
@@ -86,8 +85,7 @@ class KodiDeviceSystem extends KodiBase
                 $ID = $this->RegisterScript('WOLScript', 'Power ON', $this->CreateFBPScript(), -1);
                 break;
         }
-        if ($ID > 0)
-        {
+        if ($ID > 0) {
             IPS_SetHidden($ID, true);
             IPS_SetProperty($this->InstanceID, 'PowerScript', $ID);
             IPS_SetProperty($this->InstanceID, 'PreSelectScript', 0);
@@ -110,11 +108,11 @@ class KodiDeviceSystem extends KodiBase
         parent::ApplyChanges();
     }
 
-################## PRIVATE     
+    ################## PRIVATE
 
     /**
      * Liest den String auf der Instanz-Eigenschaft MACAddress und konvertiert sie in ein bereinigtes Format.
-     * 
+     *
      * @access private
      * @result string Die bereinigte Adresse.
      */
@@ -123,14 +121,15 @@ class KodiDeviceSystem extends KodiBase
         $Address = $this->ReadPropertyString('MACAddress');
         $Address = str_replace('-', '', $Address);
         $Address = str_replace(':', '', $Address);
-        if (strlen($Address) == 12)
+        if (strlen($Address) == 12) {
             return '"' . strtoupper($Address) . '"';
+        }
         return '"00AABB112233" /* Platzhalter für richtige Adresse */';
     }
 
     /**
      * Liefert einen PHP-Code als Vorlage für das Einschalten von Kodi per WOL der FritzBox. Unter Verwendung des FritzBox-Project.
-     * 
+     *
      * @access private
      * @result string PHP-Code
      */
@@ -152,7 +151,7 @@ if ($_IPS["SENDER"] <> "Kodi.System")
 
     /**
      * Liefert einen PHP-Code als Vorlage für das Einschalten von Kodi per WOL aus PHP herraus.
-     * 
+     *
      * @access private
      * @result string PHP-Code
      */
@@ -210,12 +209,9 @@ function wake($ip, $mac)
      */
     protected function Decode($Method, $KodiPayload)
     {
-
-        switch ($Method)
-        {
+        switch ($Method) {
             case 'GetProperties':
-                foreach ($KodiPayload as $param => $value)
-                {
+                foreach ($KodiPayload as $param => $value) {
                     IPS_SetHidden($this->GetIDForIdent(substr($param, 3)), !$value);
                 }
                 break;
@@ -236,19 +232,18 @@ function wake($ip, $mac)
         }
     }
 
-################## ActionHandler
+    ################## ActionHandler
 
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     * 
+     *
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
-        switch ($Ident)
-        {
+        switch ($Ident) {
             case "Power":
                 return $this->Power($Value);
             case "shutdown":
@@ -263,7 +258,7 @@ function wake($ip, $mac)
         }
     }
 
-################## PUBLIC
+    ################## PUBLIC
 
     /**
      * IPS-Instanz-Funktion 'KODISYS_Power'. Schaltet Kodi ein oder aus. Einschalten erfolgt per hinterlegten PHP-Script in der Instanz. Der Modus für das Ausschalten ist ebenfalls in der Instanz zu konfigurieren.
@@ -274,20 +269,15 @@ function wake($ip, $mac)
      */
     public function Power(bool $Value)
     {
-        if (!is_bool($Value))
-        {
+        if (!is_bool($Value)) {
             trigger_error('Value must be boolean', E_USER_NOTICE);
             return false;
         }
 
-        if ($Value)
-        {
+        if ($Value) {
             return $this->WakeUp();
-        }
-        else
-        {
-            switch ($this->ReadPropertyInteger('PowerOff'))
-            {
+        } else {
+            switch ($this->ReadPropertyInteger('PowerOff')) {
                 case 0:
                     return $this->Shutdown();
                 case 1:
@@ -309,20 +299,19 @@ function wake($ip, $mac)
     public function WakeUp()
     {
         $ScriptID = $this->ReadPropertyInteger('PowerScript');
-        if ($ScriptID > 0)
-        {
-            if (!IPS_ScriptExists($ScriptID))
+        if ($ScriptID > 0) {
+            if (!IPS_ScriptExists($ScriptID)) {
                 return false;
+            }
 
-            if (IPS_RunScriptWaitEx($ScriptID, array("SENDER" => "Kodi.System")) == "")
-            {
+            if (IPS_RunScriptWaitEx($ScriptID, array("SENDER" => "Kodi.System")) == "") {
                 $this->SetValueBoolean('Power', true);
                 return true;
             }
             trigger_error('Error on execute PowerOn-Script.', E_USER_NOTICE);
-        }
-        else
+        } else {
             trigger_error('Invalid PowerScript for power on.', E_USER_NOTICE);
+        }
         return false;
     }
 
@@ -337,10 +326,10 @@ function wake($ip, $mac)
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Shutdown();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === 'OK')
-        {
+        }
+        if ($ret === 'OK') {
             $this->SetValueBoolean('Power', false);
             return true;
         }
@@ -359,10 +348,10 @@ function wake($ip, $mac)
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Hibernate();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === 'OK')
-        {
+        }
+        if ($ret === 'OK') {
             $this->SetValueBoolean('Power', false);
             return true;
         }
@@ -381,10 +370,10 @@ function wake($ip, $mac)
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Suspend();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === 'OK')
-        {
+        }
+        if ($ret === 'OK') {
             $this->SetValueBoolean('Power', false);
             return true;
         }
@@ -403,10 +392,10 @@ function wake($ip, $mac)
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Reboot();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === 'OK')
-        {
+        }
+        if ($ret === 'OK') {
             $this->SetValueBoolean('Power', false);
             return true;
         }
@@ -425,10 +414,12 @@ function wake($ip, $mac)
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->EjectOpticalDrive();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === 'OK')
+        }
+        if ($ret === 'OK') {
             return true;
+        }
         trigger_error('Error on eject optical drive', E_USER_NOTICE);
         return false;
     }
@@ -444,7 +435,6 @@ function wake($ip, $mac)
     {
         return parent::RequestState($Ident);
     }
-
 }
 
 /** @} */

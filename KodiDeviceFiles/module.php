@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 
@@ -31,29 +31,29 @@ class KodiDeviceFiles extends KodiBase
 
     /**
      * RPC-Namespace
-     * 
+     *
      * @access private
      *  @var string
      * @value 'Files'
      */
-    static $Namespace = 'Files';
+    public static $Namespace = 'Files';
 
     /**
      * Alle Properties des RPC-Namespace
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $Properties = array(
+    public static $Properties = array(
     );
 
     /**
      * Alle Properties eines Item
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $ItemListFull = array(
+    public static $ItemListFull = array(
         "title",
         "artist",
         "albumartist",
@@ -125,11 +125,11 @@ class KodiDeviceFiles extends KodiBase
 
     /**
      * Kleiner Teil der Properties eines Item
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $ItemListSmall = array(
+    public static $ItemListSmall = array(
         "title",
         "artist",
         "albumartist",
@@ -149,11 +149,11 @@ class KodiDeviceFiles extends KodiBase
         "albumlabel",
     );
 
-################## PRIVATE     
+    ################## PRIVATE
 
     /**
      * Keine Funktion.
-     * 
+     *
      * @access protected
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
@@ -163,11 +163,11 @@ class KodiDeviceFiles extends KodiBase
         return;
     }
 
-################## PUBLIC
+    ################## PUBLIC
 
     /**
      * IPS-Instanz-Funktion 'KODIFILES_GetSources'. Liefert alle bekannten Quellen nach Typ.
-     * 
+     *
      * @access public
      * @param string $Media Der Typ der zu suchenden Quellen.
      *   enum["video"=Video, "music"=Musik, "pictures"=Bilder, "files"=Dateien, "programs"=Programme]
@@ -175,15 +175,13 @@ class KodiDeviceFiles extends KodiBase
      */
     public function GetSources(string $Media)
     {
-        if (!is_string($Media))
-        {
+        if (!is_string($Media)) {
             trigger_error('Media must be string', E_USER_NOTICE);
             return false;
         }
 
         $Media = strtolower($Media);
-        if (!in_array($Media, array("video", "music", "pictures", "files", "programs")))
-        {
+        if (!in_array($Media, array("video", "music", "pictures", "files", "programs"))) {
             trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
             return false;
         }
@@ -191,16 +189,18 @@ class KodiDeviceFiles extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSources(array("media" => $Media));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->sources);
+        }
         return array();
     }
 
     /**
      * IPS-Instanz-Funktion 'KODIFILES_GetFileDetails'. Liefert alle Details einer Datei.
-     * 
+     *
      * @access public
      * @param string $File Dateipfad und Name der gesuchten Datei.
      * @param string $Media Der Typ der Datei gibt die zu suchenden Eigenschaften an.
@@ -209,20 +209,17 @@ class KodiDeviceFiles extends KodiBase
      */
     public function GetFileDetails(string $File, string $Media)
     {
-        if (!is_string($File))
-        {
+        if (!is_string($File)) {
             trigger_error('File must be string', E_USER_NOTICE);
             return false;
         }
-        if (!is_string($Media))
-        {
+        if (!is_string($Media)) {
             trigger_error('Media must be string', E_USER_NOTICE);
             return false;
         }
 
         $Media = strtolower($Media);
-        if (!in_array($Media, array("video", "music", "pictures", "files", "programs")))
-        {
+        if (!in_array($Media, array("video", "music", "pictures", "files", "programs"))) {
             trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
             return false;
         }
@@ -230,39 +227,41 @@ class KodiDeviceFiles extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetFileDetails(array("file" => $File, "media" => $Media, "properties" => static::$ItemListFull));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $KodiData->ToArray($ret->filedetails);
     }
 
     /**
      * IPS-Instanz-Funktion 'KODIFILES_GetDirectory'. Liefert Informationen zu einem Verzeichnis.
-     * 
+     *
      * @access public
      * @param string $Directory Verzeichnis welches durchsucht werden soll.
      * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
     public function GetDirectory(string $Directory)
     {
-        if (!is_string($Directory))
-        {
+        if (!is_string($Directory)) {
             trigger_error('Directory must be string', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace); // 'GetDirectory', array("directory" => $Directory));
         $KodiData->GetDirectory(array("directory" => $Directory));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
 
-        if ($ret->limits->total > 0)
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->files);
+        }
         return array();
     }
 
     /**
      * IPS-Instanz-Funktion 'KODIFILES_GetDirectoryDetails'. Liefert alle Details eines Verzeichnisses.
-     * 
+     *
      * @access public
      * @param string $Directory Verzeichnis welches durchsucht werden soll.
      * @param string $Media Der Typ der Datei gibt die zu liefernden Eigenschaften an.
@@ -271,20 +270,17 @@ class KodiDeviceFiles extends KodiBase
      */
     public function GetDirectoryDetails(string $Directory, string $Media)
     {
-        if (!is_string($Directory))
-        {
+        if (!is_string($Directory)) {
             trigger_error('Directory must be string', E_USER_NOTICE);
             return false;
         }
-        if (!is_string($Media))
-        {
+        if (!is_string($Media)) {
             trigger_error('Media must be string', E_USER_NOTICE);
             return false;
         }
 
         $Media = strtolower($Media);
-        if (!in_array($Media, array("video", "music", "pictures", "files", "programs")))
-        {
+        if (!in_array($Media, array("video", "music", "pictures", "files", "programs"))) {
             trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
             return false;
         }
@@ -292,14 +288,15 @@ class KodiDeviceFiles extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace); //, 'GetDirectory', array("directory" => $Directory, "media" => $Media, "properties" => static::$ItemListSmall));
         $KodiData->GetDirectory(array("directory" => $Directory, "media" => $Media, "properties" => static::$ItemListSmall));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
 
-        if ($ret->limits->total > 0)
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->files);
+        }
         return array();
     }
-
 }
 
 /** @} */

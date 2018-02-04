@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
@@ -32,7 +32,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * PlaylistID für Audio
-     * 
+     *
      * @access private
      * @static int
      * @value 0
@@ -41,7 +41,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * PlaylistID für Video
-     * 
+     *
      * @access private
      * @static int
      * @value 1
@@ -50,7 +50,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * PlaylistID für Bilder
-     * 
+     *
      * @access private
      * @static int
      * @value 2
@@ -59,28 +59,28 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * RPC-Namespace
-     * 
+     *
      * @access private
      *  @var string
      * @value 'Application'
      */
-    static $Namespace = array('Playlist', 'Player');
+    public static $Namespace = array('Playlist', 'Player');
 
     /**
      * Alle Properties des RPC-Namespace
-     * 
+     *
      * @access private
-     * @var array 
+     * @var array
      */
-    static $Properties = array();
+    public static $Properties = array();
 
     /**
      * Zuordnung der von Kodi gemeldeten Medientypen zu den PlaylistIDs
-     * 
+     *
      * @access private
      *  @var array Key ist der Medientyp, Value die PlaylistID
      */
-    static $Playertype = array(
+    public static $Playertype = array(
         "song" => 0,
         "audio" => 0,
         "radio" => 0,
@@ -94,11 +94,11 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * Alle Properties eines Item
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $ItemList = array(
+    public static $ItemList = array(
         "title",
         "artist",
         "albumartist",
@@ -174,11 +174,11 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * Kleiner Teil der Properties eines Item
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $ItemListSmall = array(
+    public static $ItemListSmall = array(
         "title",
         "artist",
         "albumartist",
@@ -209,8 +209,9 @@ class KodiDevicePlaylist extends KodiBase
         $this->RegisterPropertyInteger('PlaylistID', 0);
         $this->RegisterPropertyBoolean('showPlaylist', true);
         $ID = @$this->GetIDForIdent('PlaylistDesign');
-        if ($ID == false)
+        if ($ID == false) {
             $ID = $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
+        }
         IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger("Playlistconfig", $ID);
         $this->PlaylistId = 0;
@@ -218,7 +219,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * Interne Funktion des SDK.
-     * 
+     *
      * @access public
      */
     public function Destroy()
@@ -229,29 +230,29 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * Interne Funktion des SDK.
-     * 
+     *
      * @access public
      */
     public function ApplyChanges()
     {
         $this->UnregisterScript("WebHookPlaylist");
         $this->PlaylistId = $this->ReadPropertyInteger('PlaylistID');
-        if ($this->ReadPropertyBoolean('showPlaylist'))
-        {
+        if ($this->ReadPropertyBoolean('showPlaylist')) {
             $this->RegisterVariableString("Playlist", "Playlist", "~HTMLBox", 2);
-            if (IPS_GetKernelRunlevel() == KR_READY)
+            if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiPlaylist' . $this->InstanceID);
+            }
 
             $ID = @$this->GetIDForIdent('PlaylistDesign');
-            if ($ID == false)
+            if ($ID == false) {
                 $ID = $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
+            }
             IPS_SetHidden($ID, true);
-        }
-        else
-        {
+        } else {
             $this->UnregisterVariable("Playlist");
-            if (IPS_GetKernelRunlevel() == KR_READY)
+            if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
+            }
         }
 
         $this->RegisterProfileInteger("Tracklist." . $this->InstanceID . ".Kodi", "", "", "", 1, 1, 1);
@@ -266,7 +267,7 @@ class KodiDevicePlaylist extends KodiBase
     }
 
 
-################## PRIVATE    
+    ################## PRIVATE
 
     /**
      * Verarbeitet Daten aus dem Webhook.
@@ -276,14 +277,16 @@ class KodiDevicePlaylist extends KodiBase
      */
     protected function ProcessHookdata()
     {
-        if (isset($_GET["Index"]))
-            if ($this->RequestAction("position", $_GET["Index"]) === true)
+        if (isset($_GET["Index"])) {
+            if ($this->RequestAction("position", $_GET["Index"]) === true) {
                 echo "OK";
+            }
+        }
     }
 
     /**
      * Dekodiert die empfangenen Daten und führt die Statusvariablen nach.
-     * 
+     *
      * @access protected
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
@@ -292,36 +295,29 @@ class KodiDevicePlaylist extends KodiBase
     {
         //prüfen ob Player oder Playlist
         //Player nur bei neuer Position
-        if (property_exists($KodiPayload, 'playlistid'))
-        {
-            if ($KodiPayload->playlistid <> $this->PlaylistId)
+        if (property_exists($KodiPayload, 'playlistid')) {
+            if ($KodiPayload->playlistid <> $this->PlaylistId) {
                 return;
-        }
-        else if (property_exists($KodiPayload, 'player'))
-        {
-            if ($KodiPayload->player->playerid <> $this->PlaylistId)
-                return;
-        }
-        else
-        {
-            if (property_exists($KodiPayload, 'type'))
-            {
-                if (self::$Playertype[(string) $KodiPayload->type] <> $this->PlayerId)
-                    return false;
             }
-            else
-            {
-                if (property_exists($KodiPayload, 'item'))
-                {
-                    if (property_exists($KodiPayload->item, 'channeltype'))
-                    {
-                        if (self::$Playertype[(string) $KodiPayload->item->channeltype] <> $this->PlaylistId)
+        } elseif (property_exists($KodiPayload, 'player')) {
+            if ($KodiPayload->player->playerid <> $this->PlaylistId) {
+                return;
+            }
+        } else {
+            if (property_exists($KodiPayload, 'type')) {
+                if (self::$Playertype[(string) $KodiPayload->type] <> $this->PlayerId) {
+                    return false;
+                }
+            } else {
+                if (property_exists($KodiPayload, 'item')) {
+                    if (property_exists($KodiPayload->item, 'channeltype')) {
+                        if (self::$Playertype[(string) $KodiPayload->item->channeltype] <> $this->PlaylistId) {
                             return false;
-                    }
-                    else
-                    {
-                        if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlaylistId)
+                        }
+                    } else {
+                        if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlaylistId) {
                             return false;
+                        }
                     }
                 }
             }
@@ -336,40 +332,38 @@ class KodiDevicePlaylist extends KodiBase
 
         $this->SendDebug($Method, $KodiPayload, 0);
 
-        if (property_exists($KodiPayload, 'property'))
+        if (property_exists($KodiPayload, 'property')) {
             $KodiPayload = $KodiPayload->property;
+        }
 
-        switch ($Method)
-        {
+        switch ($Method) {
             case 'GetProperties':
             case 'OnPropertyChanged':
-                foreach ($KodiPayload as $param => $value)
-                {
-                    switch ($param)
-                    {
+                foreach ($KodiPayload as $param => $value) {
+                    switch ($param) {
                         case "position":
-                            if ($this->SetValueInteger($param, (int) $value + 1))// and ( $KodiPayload->playlistid <> -1))
+                            if ($this->SetValueInteger($param, (int) $value + 1)) {// and ( $KodiPayload->playlistid <> -1))
                                 $this->RefreshPlaylist();
+                            }
                             break;
                         case "shuffled":
                             $this->Multi_Playlist = 0;
                             $this->LastAddonItem = 0;
                             $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall,));
                             $ret = $this->SendDirect($KodiData);
-                            if (is_null($ret))
+                            if (is_null($ret)) {
                                 break;
-                            if ($ret->limits->total > 0)
+                            }
+                            if ($ret->limits->total > 0) {
                                 $items = $KodiData->ToArray($ret->items);
-                            else
+                            } else {
                                 break;
-                            foreach ($items as $Index => $item)
-                            {
-                                if ($item['title'] == "")
-                                {
-                                    if ($item['label'] <> "")
+                            }
+                            foreach ($items as $Index => $item) {
+                                if ($item['title'] == "") {
+                                    if ($item['label'] <> "") {
                                         $item['title'] = $item['label'];
-                                    else
-                                    {
+                                    } else {
                                         $parts = explode('/', $item['file']);
                                         $item['title'] = array_pop($parts);
                                     }
@@ -388,28 +382,29 @@ class KodiDevicePlaylist extends KodiBase
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
                 $KodiData->GetProperties(array('playerid' => $this->PlaylistId, 'properties' => array("playlistid", "position")));
                 $ret = $this->SendDirect($KodiData);
-                if (!is_null($ret))
+                if (!is_null($ret)) {
                     $this->Decode('GetProperties', $ret);
+                }
 
-                if ($this->LastAddonItem > 0)
+                if ($this->LastAddonItem > 0) {
                     break;
+                }
 
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall,));
                 $ret = $this->SendDirect($KodiData);
-                if (is_null($ret))
+                if (is_null($ret)) {
                     break;
-                if ($ret->limits->total > 0)
+                }
+                if ($ret->limits->total > 0) {
                     $items = $KodiData->ToArray($ret->items);
-                else
+                } else {
                     break;
-                foreach ($items as $Index => $item)
-                {
-                    if ($item['title'] == "")
-                    {
-                        if ($item['label'] <> "")
+                }
+                foreach ($items as $Index => $item) {
+                    if ($item['title'] == "") {
+                        if ($item['label'] <> "") {
                             $item['title'] = $item['label'];
-                        else
-                        {
+                        } else {
                             $parts = explode('/', $item['file']);
                             $item['title'] = array_pop($parts);
                         }
@@ -421,25 +416,24 @@ class KodiDevicePlaylist extends KodiBase
                 break;
             case 'OnAdd':
                 $LastAddonItem = $this->LastAddonItem;
-                if (($LastAddonItem > 0 ) and ( $LastAddonItem >= $KodiPayload->position))
+                if (($LastAddonItem > 0) and ($LastAddonItem >= $KodiPayload->position)) {
                     break;
+                }
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => array('start' => $LastAddonItem)));
                 $ret = $this->SendDirect($KodiData);
-                if (is_null($ret))
+                if (is_null($ret)) {
                     break;
-                if ($ret->limits->total > 0)
+                }
+                if ($ret->limits->total > 0) {
                     $items = $KodiData->ToArray($ret->items);
-                else
+                } else {
                     break;
-                foreach ($items as $Index => $item)
-                {
-
-                    if ($item['title'] == "")
-                    {
-                        if ($item['label'] <> "")
+                }
+                foreach ($items as $Index => $item) {
+                    if ($item['title'] == "") {
+                        if ($item['label'] <> "") {
                             $item['title'] = $item['label'];
-                        else
-                        {
+                        } else {
                             $parts = explode('/', $item['file']);
                             $item['title'] = array_pop($parts);
                         }
@@ -477,7 +471,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * Fügt ein Item in die PlayList ein.
-     * 
+     *
      * @access private
      * @param int $Index Der Index des Items.
      * @param array $item Das einzufügende Item.
@@ -485,83 +479,83 @@ class KodiDevicePlaylist extends KodiBase
     private function AddItemToPlayList(int $Index, array $item)
     {
         $Liste = $this->Multi_Playlist;
-        if (count($item) == 0)
+        if (count($item) == 0) {
             unset($Liste[$Index]);
-        else
+        } else {
             $Liste[$Index] = $item;
+        }
         $this->Multi_Playlist = $Liste;
     }
 
     /**
      * Erzeugt aus der Playlist eine HTML-Tabelle für eine ~HTMLBox-Variable.
-     * 
+     *
      * @access private
      * @param bool $Empty Bei TRUE wird eine leere Tabelle erzeugt.
      */
     private function RefreshPlaylist($Empty = false)
     {
-        if (!$this->ReadPropertyBoolean('showPlaylist'))
+        if (!$this->ReadPropertyBoolean('showPlaylist')) {
             return;
+        }
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
-        if ($ScriptID == 0)
+        if ($ScriptID == 0) {
             return;
-        if (!IPS_ScriptExists($ScriptID))
+        }
+        if (!IPS_ScriptExists($ScriptID)) {
             return;
+        }
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = unserialize($result);
-        if (($Config === false) or ( !is_array($Config)))
-        {
+        if (($Config === false) or (!is_array($Config))) {
             trigger_error('Error on read Playlistconfig-Script', E_USER_NOTICE);
             return;
         }
 
         $Data = array();
-        if (!$Empty)
+        if (!$Empty) {
             $Data = $this->Multi_Playlist;
+        }
         $Name = "Tracklist." . $this->InstanceID . ".Kodi";
-        if (!IPS_VariableProfileExists($Name))
-        {
+        if (!IPS_VariableProfileExists($Name)) {
             IPS_CreateVariableProfile($Name, 1);
             IPS_SetVariableProfileValues($Name, 1, count($Data), 1);
-        }
-        else
-        {
-            if (IPS_GetVariableProfile($Name)['MaxValue'] <> count($Data))
+        } else {
+            if (IPS_GetVariableProfile($Name)['MaxValue'] <> count($Data)) {
                 IPS_SetVariableProfileValues($Name, 1, count($Data), 1);
+            }
         }
 
-        if ($Data === false)
+        if ($Data === false) {
             return;
+        }
 
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
         $CurrentTrack = GetValueInteger($this->GetIDForIdent('position'));
-        if (count($Data) > 0)
-        {
-            foreach ($Data as $Position => $line)
-            {
+        if (count($Data) > 0) {
+            foreach ($Data as $Position => $line) {
                 $Line = array();
-                foreach ($line as $key => $value)
-                {
-                    if (is_string($key))
+                foreach ($line as $key => $value) {
+                    if (is_string($key)) {
                         $Line[ucfirst($key)] = $value;
-                    else
-                        $Line[$key] = $value; //$key is not a string
+                    } else {
+                        $Line[$key] = $value;
+                    } //$key is not a string
                 }
                 $Line['Position'] = $Position + 1;
                 $Line['Type'] = ucfirst($Line['Type']);
 
-                if (array_key_exists('Runtime', $Line))
-                {
-                    if ($Line['Runtime'] > 3600)
+                if (array_key_exists('Runtime', $Line)) {
+                    if ($Line['Runtime'] > 3600) {
                         $Line['Runtime'] = @date("H:i:s", $Line['Runtime'] - 3600);
-                    elseif ($Line['Runtime'] > 0)
+                    } elseif ($Line['Runtime'] > 0) {
                         $Line['Runtime'] = @date("i:s", $Line['Runtime']);
-                    else
+                    } else {
                         $Line['Runtime'] = '---';
-                } else
-                {
+                    }
+                } else {
                     $Line['Runtime'] = '---';
                 }
 
@@ -569,16 +563,19 @@ class KodiDevicePlaylist extends KodiBase
 
 //                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
                 $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
-                foreach ($Config['Spalten'] as $feldIndex => $value)
-                {
-                    if (!array_key_exists($feldIndex, $Line))
+                foreach ($Config['Spalten'] as $feldIndex => $value) {
+                    if (!array_key_exists($feldIndex, $Line)) {
                         $Line[$feldIndex] = '';
-                    if ($Line[$feldIndex] === -1)
+                    }
+                    if ($Line[$feldIndex] === -1) {
                         $Line[$feldIndex] = '';
-                    if ($Line[$feldIndex] === 0)
+                    }
+                    if ($Line[$feldIndex] === 0) {
                         $Line[$feldIndex] = '';
-                    if (is_array($Line[$feldIndex]))
+                    }
+                    if (is_array($Line[$feldIndex])) {
                         $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
+                    }
                     $HTMLData .= '<td style="' . $Config['Style']['DF' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G')) . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
                 }
                 $HTMLData .= '</tr>' . PHP_EOL;
@@ -591,7 +588,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Playlist-Tabelle enthält.
-     * 
+     *
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
      */
@@ -773,58 +770,60 @@ echo serialize($Config);
         return $Script;
     }
 
-################## ActionHandler
+    ################## ActionHandler
 
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     * 
+     *
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
-        switch ($Ident)
-        {
+        switch ($Ident) {
             case "position":
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
                 $KodiData->GoTo(array('playerid' => $this->PlaylistId, "to" => (int) $Value - 1));
                 $ret = $this->SendDirect($KodiData);
-                if (is_null($ret))
+                if (is_null($ret)) {
                     return false;
-                if ($ret === "OK")
+                }
+                if ($ret === "OK") {
                     return true;
+                }
                 return trigger_error('Error on GoTo Track.', E_USER_NOTICE);
             default:
                 return trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
     }
 
-################## PUBLIC
+    ################## PUBLIC
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_Get'.
      * Gibt alle Einträge der Playlist als Array zurück.
-     * 
+     *
      * @access public
      * @return array Das Array mit den Eigenschaften des Item, im Fehlerfall ein leeren Array.
      */
     public function Get()
     {
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->items);
+        }
         return array();
     }
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_GetItem'.
      * Gibt ein Eintrag der Playlist zurück.
-     * 
+     *
      * @access public
      * @param int $Index Index des Items welche gelesen werden soll.
      * @return array Das Array mit den Eigenschaften des Item, im Fehlerfall ein leeren Array.
@@ -833,16 +832,18 @@ echo serialize($Config);
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => array('start' => $Index, 'end' => $Index + 1)));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->items);
+        }
         return array();
     }
 
     /**
      * Fügt der Playlist ein Item hinzu.
-     * 
+     *
      * @access private
      * @param string $ItemTyp Der Typ des Item.
      * @param string $ItemValue Der Wert des Item.
@@ -854,10 +855,12 @@ echo serialize($Config);
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
         $KodiData->Add(array_merge(array('playlistid' => $this->PlaylistId, "item" => array($ItemTyp => $ItemValue)), $Ext));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === "OK")
+        }
+        if ($ret === "OK") {
             return true;
+        }
         trigger_error('Error on add ' . $ItemTyp . '.', E_USER_NOTICE);
         return false;
     }
@@ -865,15 +868,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddAlbum'.
      * Fügt der Playlist ein Album hinzu.
-     * 
+     *
      * @access public
      * @param int $AlbumId ID des Album.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function AddAlbum(int $AlbumId)
     {
-        if (!is_int($AlbumId))
-        {
+        if (!is_int($AlbumId)) {
             trigger_error('AlbumId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -883,15 +885,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddArtist'.
      * Fügt der Playlist alle Itemes eines Artist hinzu.
-     * 
+     *
      * @access public
      * @param int $ArtistId ID des Artist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function AddArtist(int $ArtistId)
     {
-        if (!is_int($ArtistId))
-        {
+        if (!is_int($ArtistId)) {
             trigger_error('ArtistId must be int', E_USER_NOTICE);
             return false;
         }
@@ -901,15 +902,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddDirectory'.
      * Fügt der Playlist alle Itemes eines Verzeichnisses hinzu.
-     * 
+     *
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function AddDirectory(string $Directory)
     {
-        if (!is_string($Directory))
-        {
+        if (!is_string($Directory)) {
             trigger_error('Directory must be string', E_USER_NOTICE);
             return false;
         }
@@ -919,15 +919,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddDirectoryRecursive'.
      * Fügt der Playlist alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, hinzu.
-     * 
+     *
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function AddDirectoryRecursive(string $Directory)
     {
-        if (!is_string($Directory))
-        {
+        if (!is_string($Directory)) {
             trigger_error('Directory must be string', E_USER_NOTICE);
             return false;
         }
@@ -937,15 +936,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddEpisode'.
      * Fügt der Playlist eine Episode hinzu.
-     * 
+     *
      * @access public
      * @param int $EpisodeId ID der Episode.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function AddEpisode(int $EpisodeId)
     {
-        if (!is_int($EpisodeId))
-        {
+        if (!is_int($EpisodeId)) {
             trigger_error('EpisodeId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -955,15 +953,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddFile'.
      * Fügt der Playlist eine Datei hinzu.
-     * 
+     *
      * @access public
      * @param string $File Pfad zu einer Datei.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function AddFile(string $File)
     {
-        if (!is_string($File))
-        {
+        if (!is_string($File)) {
             trigger_error('File must be string', E_USER_NOTICE);
             return false;
         }
@@ -973,15 +970,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddGenre'.
      * Fügt der Playlist eine komplettes Genre hinzu.
-     * 
+     *
      * @access public
      * @param int $GenreId ID des Genres.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE. 
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function AddGenre(int $GenreId)
     {
-        if (!is_int($GenreId))
-        {
+        if (!is_int($GenreId)) {
             trigger_error('GenreId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -991,15 +987,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddMovie'.
      * Fügt der Playlist ein Film hinzu.
-     * 
+     *
      * @access public
      * @param int $MovieId ID des Filmes.
      * @return bool True bei Erfolg. Sonst false.
      */
     public function AddMovie(int $MovieId)
     {
-        if (!is_int($MovieId))
-        {
+        if (!is_int($MovieId)) {
             trigger_error('MovieId must be int', E_USER_NOTICE);
             return false;
         }
@@ -1009,15 +1004,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddMusicVideo'.
      * Fügt der Playlist ein Musicvideo hinzu.
-     * 
+     *
      * @access public
      * @param int $MusicvideoId ID des Musicvideos.
      * @return bool True bei Erfolg. Sonst false.
      */
     public function AddMusicVideo(int $MusicvideoId)
     {
-        if (!is_int($MusicvideoId))
-        {
+        if (!is_int($MusicvideoId)) {
             trigger_error('MusicvideoId must be int', E_USER_NOTICE);
             return false;
         }
@@ -1027,15 +1021,14 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddSong'.
      * Fügt der Playlist ein Song hinzu.
-     * 
+     *
      * @access public
      * @param int $SongId ID des Songs.
      * @return bool True bei Erfolg. Sonst false.
      */
     public function AddSong(int $SongId)
     {
-        if (!is_int($SongId))
-        {
+        if (!is_int($SongId)) {
             trigger_error('SongId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -1045,7 +1038,7 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_Clear'.
      * Leert die Playlist
-     * 
+     *
      * @access public
      * @return bool True bei Erfolg. Sonst false.
      */
@@ -1054,17 +1047,19 @@ echo serialize($Config);
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
         $KodiData->Clear(array('playlistid' => $this->PlaylistId));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === "OK")
+        }
+        if ($ret === "OK") {
             return true;
+        }
         trigger_error('Error on clear playlist.', E_USER_NOTICE);
         return false;
     }
 
     /**
      * Fügt der Playlist ein Item, an einer bestimmten Position, hinzu.
-     * 
+     *
      * @access private
      * @param int $Position Position des Item in der Playlist.
      * @param string $ItemTyp Der Typ des Item.
@@ -1074,17 +1069,18 @@ echo serialize($Config);
      */
     private function Insert(int $Position, string $ItemTyp, string $ItemValue, $Ext = array())
     {
-        if (!is_int($Position))
-        {
+        if (!is_int($Position)) {
             trigger_error('Position must be integer', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Insert', array_merge(array('playlistid' => $this->PlaylistId, 'position' => $Position, 'item' => array($ItemTyp => $ItemValue)), $Ext));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === "OK")
+        }
+        if ($ret === "OK") {
             return true;
+        }
         trigger_error('Error on insert ' . $ItemTyp . '.', E_USER_NOTICE);
         return false;
     }
@@ -1093,16 +1089,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertAlbum'.
      * Fügt in der Playlist ein Album ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param int $AlbumId ID des Album.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertAlbum(int $AlbumId, int $Position)
     {
-        if (!is_int($AlbumId))
-        {
+        if (!is_int($AlbumId)) {
             trigger_error('AlbumId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -1113,16 +1108,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertArtist'.
      * Fügt in der Playlist alle Items eines Artist ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param int $ArtistId ID des Artist.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertArtist(int $ArtistId, int $Position)
     {
-        if (!is_int($ArtistId))
-        {
+        if (!is_int($ArtistId)) {
             trigger_error('ArtistId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -1133,16 +1127,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertDirectory'.
      * Fügt in der Playlist alle Itemes eines Verzeichnisses ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertDirectory(string $Directory, int $Position)
     {
-        if (!is_string($Directory))
-        {
+        if (!is_string($Directory)) {
             trigger_error('Directory must be string', E_USER_NOTICE);
             return false;
         }
@@ -1153,16 +1146,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertDirectoryRecursive'.
      * Fügt in der Playlist alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertDirectoryRecursive(string $Directory, int $Position)
     {
-        if (!is_string($Directory))
-        {
+        if (!is_string($Directory)) {
             trigger_error('Directory must be string', E_USER_NOTICE);
             return false;
         }
@@ -1173,16 +1165,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertEpisode'.
      * Fügt in der Playlist eine Episode ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param int $EpisodeId ID der Episode.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertEpisode(int $EpisodeId, int $Position)
     {
-        if (!is_int($EpisodeId))
-        {
+        if (!is_int($EpisodeId)) {
             trigger_error('EpisodeId must be int', E_USER_NOTICE);
             return false;
         }
@@ -1193,16 +1184,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertFile'.
      * Fügt in der Playlist eine Datei ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param string $File Pfad zu einer Datei.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertFile(string $File, int $Position)
     {
-        if (!is_string($File))
-        {
+        if (!is_string($File)) {
             trigger_error('File must be string', E_USER_NOTICE);
             return false;
         }
@@ -1213,16 +1203,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertGenre'.
      * Fügt in der Playlist eine komplettes Genre ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param int $GenreId ID des Genres welches hinzugefügt werden soll.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertGenre(int $GenreId, int $Position)
     {
-        if (!is_int($GenreId))
-        {
+        if (!is_int($GenreId)) {
             trigger_error('GenreId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -1233,16 +1222,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertMovie'.
      * Fügt in der Playlist ein Filme ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param int $MovieId ID des Filmes.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertMovie(int $MovieId, int $Position)
     {
-        if (!is_int($MovieId))
-        {
+        if (!is_int($MovieId)) {
             trigger_error('MovieId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -1253,16 +1241,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertMusicVideo'.
      * Fügt in der Playlist ein Musicvideo ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param int $MusicvideoId ID des Musicvideos.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertMusicVideo(int $MusicvideoId, int $Position)
     {
-        if (!is_int($MusicvideoId))
-        {
+        if (!is_int($MusicvideoId)) {
             trigger_error('MusicvideoId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -1273,16 +1260,15 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertSong'.
      * Fügt in der Playlist ein Lied ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
-     * 
+     *
      * @access public
      * @param int $SongId ID des Songs.
      * @param int $Position Startposition des Album in der Playlist.
-     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.  
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function InsertSong(int $SongId, int $Position)
     {
-        if (!is_int($SongId))
-        {
+        if (!is_int($SongId)) {
             trigger_error('SongId must be integer', E_USER_NOTICE);
             return false;
         }
@@ -1293,24 +1279,25 @@ echo serialize($Config);
      * IPS-Instanz-Funktion 'KODIPLAYLIST_Remove'.
      * Entfernt einen Eintrag aus der Playlist.
      * Alle anderen Einträge werden automatisch nach vorne verschoben.
-     * 
+     *
      * @access public
      * @param int $Position Eintrag welcher entfernt wird.
      * @return bool True bei Erfolg. Sonst false.
      */
     public function Remove(int $Position)
     {
-        if (!is_int($Position))
-        {
+        if (!is_int($Position)) {
             trigger_error('Position must be integer', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Remove', array('playlistid' => $this->PlaylistId, 'position' => $Position));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === "OK")
+        }
+        if ($ret === "OK") {
             return true;
+        }
         trigger_error('Error on remove item.', E_USER_NOTICE);
         return false;
     }
@@ -1318,33 +1305,32 @@ echo serialize($Config);
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_Swap'.
      * Tauscht zwei Einträge innerhalb der Playlist.
-     * 
+     *
      * @access public
      * @param int $Position1 | $Position2 Positionen der Einträge welche untereinander getsucht werden.
      * @return bool True bei Erfolg. Sonst false.
      */
     public function Swap(int $Position1, int $Position2)
     {
-        if (!is_int($Position1))
-        {
+        if (!is_int($Position1)) {
             trigger_error('Position1 must be integer', E_USER_NOTICE);
             return false;
         }
-        if (!is_int($Position2))
-        {
+        if (!is_int($Position2)) {
             trigger_error('Position2 must be integer', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Swap', array('playlistid' => $this->PlaylistId, 'position1' => $Position1, 'position2' => $Position2));
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret === "OK")
+        }
+        if ($ret === "OK") {
             return true;
+        }
         trigger_error('Error on swap items.', E_USER_NOTICE);
         return false;
     }
-
 }
 
 /** @} */
