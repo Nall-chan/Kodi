@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
@@ -29,29 +29,29 @@ class KodiDeviceFavourites extends KodiBase
 
     /**
      * RPC-Namespace
-     * 
+     *
      * @access private
      *  @var string
      * @value 'Favourites'
      */
-    static $Namespace = 'Favourites';
+    public static $Namespace = 'Favourites';
 
     /**
      * Alle Properties des RPC-Namespace
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $Properties = array(
+    public static $Properties = array(
     );
 
     /**
      * Alle Eigenschaften eines Favoriten.
-     * 
+     *
      * @access private
-     *  @var array 
+     *  @var array
      */
-    static $FavouriteItemList = array(
+    public static $FavouriteItemList = array(
         "window",
         "windowparameter",
         "thumbnail",
@@ -68,8 +68,9 @@ class KodiDeviceFavourites extends KodiBase
         parent::Create();
         $this->RegisterPropertyBoolean('showFavlist', true);
         $ID = @$this->GetIDForIdent('FavlistDesign');
-        if ($ID == false)
+        if ($ID == false) {
             $ID = $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
+        }
         IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger("Favlistconfig", $ID);
         $this->RegisterPropertyInteger("ThumbSize", 100);
@@ -77,41 +78,42 @@ class KodiDeviceFavourites extends KodiBase
 
     /**
      * Interne Funktion des SDK.
-     * 
+     *
      * @access public
      */
     public function Destroy()
     {
-        if (IPS_GetKernelRunlevel() <> KR_READY)
+        if (IPS_GetKernelRunlevel() <> KR_READY) {
             return;
+        }
         $this->UnregisterHook('/hook/KodiFavlist' . $this->InstanceID);
     }
 
     /**
      * Interne Funktion des SDK.
-     * 
+     *
      * @access public
      */
     public function ApplyChanges()
     {
         $this->UnregisterScript("WebHookFavlist");
 
-        if ($this->ReadPropertyBoolean('showFavlist'))
-        {
+        if ($this->ReadPropertyBoolean('showFavlist')) {
             $this->RegisterVariableString("Favlist", "Favourites", "~HTMLBox", 1);
-            if (IPS_GetKernelRunlevel() == KR_READY)
+            if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiFavlist' . $this->InstanceID);
+            }
 
             $ID = @$this->GetIDForIdent('FavlistDesign');
-            if ($ID == false)
+            if ($ID == false) {
                 $ID = $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
+            }
             IPS_SetHidden($ID, true);
-        }
-        else
-        {
+        } else {
             $this->UnregisterVariable("Favlist");
-            if (IPS_GetKernelRunlevel() == KR_READY)
+            if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->UnregisterHook('/hook/KodiFavlist' . $this->InstanceID);
+            }
         }
 
         parent::ApplyChanges();
@@ -124,11 +126,12 @@ class KodiDeviceFavourites extends KodiBase
     protected function IOChangeState($State)
     {
         parent::IOChangeState($State);
-        if ($State == IS_ACTIVE)
+        if ($State == IS_ACTIVE) {
             $this->RefreshFavouriteslist();
+        }
     }
 
-################## PRIVATE     
+    ################## PRIVATE
 
     /**
      * Dekodiert die empfangenen Events.
@@ -143,23 +146,25 @@ class KodiDeviceFavourites extends KodiBase
 
     /**
      * Erzeugt aus der Liste der Favoriten eine HTML-Tabelle für eine ~HTMLBox-Variable.
-     * 
+     *
      * @access private
      */
     private function RefreshFavouriteslist()
     {
-        if (!$this->ReadPropertyBoolean('showFavlist'))
+        if (!$this->ReadPropertyBoolean('showFavlist')) {
             return;
+        }
         $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
-        if ($ScriptID == 0)
+        if ($ScriptID == 0) {
             return;
-        if (!IPS_ScriptExists($ScriptID))
+        }
+        if (!IPS_ScriptExists($ScriptID)) {
             return;
+        }
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or ( !is_array($Config)))
-        {
+        if (($Config === false) or (!is_array($Config))) {
             trigger_error('Error on read Favlistconfig-Script');
             return;
         }
@@ -168,46 +173,47 @@ class KodiDeviceFavourites extends KodiBase
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
 
-        if (count($Data) > 0)
-        {
-            foreach ($Data as $line)
-            {
+        if (count($Data) > 0) {
+            foreach ($Data as $line) {
                 $Line = array();
-                foreach ($line as $key => $value)
-                {
-                    if (is_string($key))
+                foreach ($line as $key => $value) {
+                    if (is_string($key)) {
                         $Line[ucfirst($key)] = $value;
-                    else
-                        $Line[$key] = $value; //$key is not a string
+                    } else {
+                        $Line[$key] = $value;
+                    } //$key is not a string
                 }
-                if (array_key_exists('Thumbnail', $Config["Spalten"]))
-                {
-                    if ($Line['Thumbnail'] <> "")
-                    {
+                if (array_key_exists('Thumbnail', $Config["Spalten"])) {
+                    if ($Line['Thumbnail'] <> "") {
                         $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger("ThumbSize"), 0);
-                        if ($CoverRAW === false)
+                        if ($CoverRAW === false) {
                             $Line['Thumbnail'] = "";
-                        else
+                        } else {
                             $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                        }
                     }
                 }
-                if (!array_key_exists('Path', $Line))
-                    if (array_key_exists('Windowparameter', $Line))
+                if (!array_key_exists('Path', $Line)) {
+                    if (array_key_exists('Windowparameter', $Line)) {
                         $Line['Path'] = $Line['Windowparameter'];
-                    else
+                    } else {
                         $Line['Path'] = "";
+                    }
+                }
 
                 $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '"
                         ' . $this->GetWebHookLink($Line) . '>';
 
-                foreach ($Config['Spalten'] as $feldIndex => $value)
-                {
-                    if (!array_key_exists($feldIndex, $Line))
+                foreach ($Config['Spalten'] as $feldIndex => $value) {
+                    if (!array_key_exists($feldIndex, $Line)) {
                         $Line[$feldIndex] = '';
-                    if ($Line[$feldIndex] === -1)
+                    }
+                    if ($Line[$feldIndex] === -1) {
                         $Line[$feldIndex] = '';
-                    if (is_array($Line[$feldIndex]))
+                    }
+                    if (is_array($Line[$feldIndex])) {
                         $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
+                    }
                     $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
                 }
                 $HTMLData .= '</tr>' . PHP_EOL;
@@ -220,29 +226,28 @@ class KodiDeviceFavourites extends KodiBase
 
     /**
      * Filter die aktuell nicht unterstützten Favoriten aus.
-     * 
+     *
      * @param array $Fav Array mit allen Favoriten.
      * @return boolean True für behalten, False für verwerfen.
      */
     protected function FilterFav($Fav)
     {
-
-        if (($Fav["type"] == "window") or ( $Fav["type"] == "media") or ( $Fav["type"] == "script"))
+        if (($Fav["type"] == "window") or ($Fav["type"] == "media") or ($Fav["type"] == "script")) {
             return true;
+        }
         return false;
     }
 
     /**
      * Liefert JS-Code für einen Webhook-Request.
-     * 
+     *
      * @param array $Data Daten des Favoriten.
      * @return string JS-Code
      */
     private function GetWebHookLink(array $Data)
     {
         $Extra = "";
-        switch ($Data['Type'])
-        {
+        switch ($Data['Type']) {
             case "media":
                 $this->SendDebug('create media HOOK', $Data, 0);
                 break;
@@ -266,7 +271,7 @@ class KodiDeviceFavourites extends KodiBase
 
     /**
      * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Favoriten-Tabelle enthält.
-     * 
+     *
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
      */
@@ -351,18 +356,17 @@ echo serialize($Config);
         return $Script;
     }
 
-################## PUBLIC
+    ################## PUBLIC
 
     /**
      * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteMedia'. Lädt einen Media Favoriten.
-     * 
+     *
      * @access public
      * @param string $Path Der Path des Favoriten.
      */
     public function LoadFavouriteMedia(string $Path)
     {
-        if (!is_string($Path))
-        {
+        if (!is_string($Path)) {
             trigger_error('Path must be string', E_USER_NOTICE);
             return false;
         }
@@ -374,14 +378,13 @@ echo serialize($Config);
 
     /**
      * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteScript'. Lädt einen Media Favoriten.
-     * 
+     *
      * @access public
      * @param string $Script Das Script des Favoriten.
      */
     public function LoadFavouriteScript(string $Script)
     {
-        if (!is_string($Script))
-        {
+        if (!is_string($Script)) {
             trigger_error('Script must be string', E_USER_NOTICE);
             return false;
         }
@@ -393,20 +396,18 @@ echo serialize($Config);
 
     /**
      * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteWindow'. Lädt einen Window Favoriten.
-     * 
+     *
      * @access public
      * @param string $Window Das Ziel-Fenster des Favoriten.
-     * @param string $WindowParameter Die Parameter für das Ziel-Fenster des Favoriten. 
+     * @param string $WindowParameter Die Parameter für das Ziel-Fenster des Favoriten.
      */
     public function LoadFavouriteWindow(string $Window, string $WindowParameter)
     {
-        if (!is_string($Window))
-        {
+        if (!is_string($Window)) {
             trigger_error('Window must be string', E_USER_NOTICE);
             return false;
         }
-        if (!is_string($WindowParameter))
-        {
+        if (!is_string($WindowParameter)) {
             trigger_error('WindowParameter must be string', E_USER_NOTICE);
             return false;
         }
@@ -424,16 +425,14 @@ echo serialize($Config);
      */
     protected function ProcessHookdata()
     {
-        if (!((isset($_GET["Type"])) and ( isset($_GET["Path"]))))
-        {
+        if (!((isset($_GET["Type"])) and (isset($_GET["Path"])))) {
             $this->SendDebug('illegal HOOK', $_GET, 0);
             echo 'Illegal hook';
             return;
         }
 
         $Path = rawurldecode($_GET["Path"]);
-        switch ($_GET['Type'])
-        {
+        switch ($_GET['Type']) {
             case "media":
                 $this->SendDebug('media HOOK', $Path, 0);
                 $KodiData = new Kodi_RPC_Data('Player');
@@ -474,33 +473,33 @@ echo serialize($Config);
      */
     public function GetFavourites(string $Type)
     {
-        if (!is_string($Type))
-        {
+        if (!is_string($Type)) {
             trigger_error('Type must be string', E_USER_NOTICE);
             return false;
         }
 
         $Type = strtolower($Type);
-        if (!in_array($Type, array("all", "media", "window", "script", "unknown")))
-        {
+        if (!in_array($Type, array("all", "media", "window", "script", "unknown"))) {
             trigger_error('Type must be "all", "media", "window", "script" or "unknown".', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
 
-        if ($Type == "all")
+        if ($Type == "all") {
             $KodiData->GetFavourites(array("properties" => static::$FavouriteItemList));
-        else
+        } else {
             $KodiData->GetFavourites(array("type" => $Type, "properties" => static::$FavouriteItemList));
+        }
 
         $ret = $this->SendDirect($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
-        if ($ret->limits->total > 0)
+        }
+        if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->favourites);
+        }
         return array();
     }
-
 }
 
 /** @} */

@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 /*
@@ -30,28 +30,28 @@ class KodiDeviceInput extends KodiBase
 
     /**
      * RPC-Namespace
-     * 
+     *
      * @access private
      * @var string
      * @value 'Application'
      */
-    static $Namespace = 'Input';
+    public static $Namespace = 'Input';
 
     /**
      * Alle Properties des RPC-Namespace
-     * 
+     *
      * @access private
-     * @var array 
+     * @var array
      */
-    static $Properties = array();
+    public static $Properties = array();
 
     /**
      * Alle Aktionen der RPC-Methode ExecuteAction
-     * 
+     *
      * @access private
-     * @var array 
+     * @var array
      */
-    static $ExecuteAction = array("left",
+    public static $ExecuteAction = array("left",
         "right",
         "up",
         "down",
@@ -278,93 +278,89 @@ class KodiDeviceInput extends KodiBase
      */
     public function Destroy()
     {
-        if (IPS_GetKernelRunlevel() <> KR_READY)
+        if (IPS_GetKernelRunlevel() <> KR_READY) {
             return;
+        }
         $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
     }
 
     /**
      * Interne Funktion des SDK.
-     * 
+     *
      * @access public
      */
     public function ApplyChanges()
     {
         $this->UnregisterScript("WebHookRemote");
 
-        if ($this->ReadPropertyBoolean('showSVGRemote'))
-        {
-            if (IPS_GetKernelRunlevel() == KR_READY)
+        if ($this->ReadPropertyBoolean('showSVGRemote')) {
+            if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiRemote' . $this->InstanceID);
-            if (@$this->GetIDForIdent("Remote") == false)
-            {
+            }
+            if (@$this->GetIDForIdent("Remote") == false) {
                 $remoteID = $this->RegisterVariableString("Remote", "Remote", "~HTMLBox", 1);
                 include 'generateRemote' . ($this->ReadPropertyInteger('RemoteId')) . '.php';
                 SetValueString($remoteID, $remote);
             }
-        }
-        else
-        {
-            if (IPS_GetKernelRunlevel() == KR_READY)
+        } else {
+            if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
+            }
             $this->UnregisterVariable("Remote");
         }
 
-        if ($this->ReadPropertyBoolean('showNavigationButtons'))
-        {
-            $this->RegisterProfileIntegerEx("Navigation.Kodi", "", "", "", Array(
-                Array(1, "<", "", -1),
-                Array(2, ">", "", -1),
-                Array(3, "^", "", -1),
-                Array(4, "v", "", -1),
-                Array(5, "OK", "", -1),
-                Array(6, "Zurück", "", -1),
-                Array(7, "Home", "", -1)
+        if ($this->ReadPropertyBoolean('showNavigationButtons')) {
+            $this->RegisterProfileIntegerEx("Navigation.Kodi", "", "", "", array(
+                array(1, "<", "", -1),
+                array(2, ">", "", -1),
+                array(3, "^", "", -1),
+                array(4, "v", "", -1),
+                array(5, "OK", "", -1),
+                array(6, "Zurück", "", -1),
+                array(7, "Home", "", -1)
             ));
             $this->RegisterVariableInteger("navremote", "Navigation", "Navigation.Kodi", 2);
             $this->EnableAction("navremote");
-        }
-        else
+        } else {
             $this->UnregisterVariable("navremote");
+        }
 
-        if ($this->ReadPropertyBoolean('showControlButtons'))
-        {
-            $this->RegisterProfileIntegerEx("Control.Kodi", "", "", "", Array(
-                Array(1, "<<", "", -1),
-                Array(2, "Menü", "", -1),
-                Array(3, "Play", "", -1),
-                Array(4, "Pause", "", -1),
-                Array(5, "Stop", "", -1),
-                Array(6, ">>", "", -1)
+        if ($this->ReadPropertyBoolean('showControlButtons')) {
+            $this->RegisterProfileIntegerEx("Control.Kodi", "", "", "", array(
+                array(1, "<<", "", -1),
+                array(2, "Menü", "", -1),
+                array(3, "Play", "", -1),
+                array(4, "Pause", "", -1),
+                array(5, "Stop", "", -1),
+                array(6, ">>", "", -1)
             ));
             $this->RegisterVariableInteger("ctrlremote", "Steuerung", "Control.Kodi", 3);
             $this->EnableAction("ctrlremote");
-        }
-        else
+        } else {
             $this->UnregisterVariable("ctrlremote");
-
-        if ($this->ReadPropertyBoolean('showInputRequested'))
-        {
-            $this->RegisterVariableBoolean("inputrequested", "Eingabe erwartet", "", 4);
-            if (IPS_GetKernelRunlevel() == KR_INIT)
-                $this->SetValueBoolean("inputrequested", false);
         }
-        else
-            $this->UnregisterVariable("inputrequested");
 
-        if ($this->ReadPropertyBoolean('showTextInput'))
-        {
+        if ($this->ReadPropertyBoolean('showInputRequested')) {
+            $this->RegisterVariableBoolean("inputrequested", "Eingabe erwartet", "", 4);
+            if (IPS_GetKernelRunlevel() == KR_INIT) {
+                $this->SetValueBoolean("inputrequested", false);
+            }
+        } else {
+            $this->UnregisterVariable("inputrequested");
+        }
+
+        if ($this->ReadPropertyBoolean('showTextInput')) {
             $this->RegisterVariableString("inputtext", "Eingabe senden", "", 5);
             $this->EnableAction("inputtext");
-        }
-        else
+        } else {
             $this->UnregisterVariable("inputrequested");
+        }
 
 
         parent::ApplyChanges();
     }
 
-################## PRIVATE    
+    ################## PRIVATE
 
     /**
      * Verarbeitet Daten aus dem Webhook.
@@ -374,22 +370,23 @@ class KodiDeviceInput extends KodiBase
      */
     protected function ProcessHookdata()
     {
-        if (isset($_GET["button"]))
-            if ($this->ExecuteAction($_GET["button"]) === true)
+        if (isset($_GET["button"])) {
+            if ($this->ExecuteAction($_GET["button"]) === true) {
                 echo "OK";
+            }
+        }
     }
 
     /**
      * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
-     * 
+     *
      * @access protected
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
     protected function Decode($Method, $KodiPayload)
     {
-        switch ($Method)
-        {
+        switch ($Method) {
             case "OnInputRequested":
                 $this->SetValueBoolean("inputrequested", true);
                 break;
@@ -399,22 +396,20 @@ class KodiDeviceInput extends KodiBase
         }
     }
 
-################## ActionHandler
+    ################## ActionHandler
 
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     * 
+     *
      * @access public
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
     public function RequestAction($Ident, $Value)
     {
-        switch ($Ident)
-        {
+        switch ($Ident) {
             case "navremote":
-                switch ($Value)
-                {
+                switch ($Value) {
                     case 1:
                         $ret = $this->Left();
                         break;
@@ -441,8 +436,7 @@ class KodiDeviceInput extends KodiBase
                 }
                 break;
             case "ctrlremote":
-                switch ($Value)
-                {
+                switch ($Value) {
                     case 1:
                         $ret = $this->ExecuteAction("rewind");
                         break;
@@ -472,11 +466,12 @@ class KodiDeviceInput extends KodiBase
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
                 return;
         }
-        if (!$ret)
+        if (!$ret) {
             trigger_error('Error on execute action.', E_USER_NOTICE);
+        }
     }
 
-################## PUBLIC
+    ################## PUBLIC
 
     /**
      * IPS-Instanz-Funktion 'KODIINPUT_Up'. Tastendruck 'Hoch' ausführen.
@@ -489,8 +484,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Up();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -505,8 +501,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Down();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -521,8 +518,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Left();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -537,8 +535,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Right();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -553,8 +552,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Back();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -569,8 +569,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ContextMenu();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -585,8 +586,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Home();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -601,8 +603,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Info();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -617,8 +620,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Select();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -633,8 +637,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ShowOSD();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -649,8 +654,9 @@ class KodiDeviceInput extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ShowCodec();
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -663,21 +669,20 @@ class KodiDeviceInput extends KodiBase
      */
     public function ExecuteAction(string $Action)
     {
-        if (!is_string($Action))
-        {
+        if (!is_string($Action)) {
             trigger_error('Action must be string', E_USER_NOTICE);
             return false;
         }
-        if (!in_array($Action, self::$ExecuteAction))
-        {
+        if (!in_array($Action, self::$ExecuteAction)) {
             trigger_error('Unknown action.', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ExecuteAction(array("action" => $Action));
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
 
@@ -691,19 +696,18 @@ class KodiDeviceInput extends KodiBase
      */
     public function SendText(string $Text, bool $Done)
     {
-        if (!is_string($Text))
-        {
+        if (!is_string($Text)) {
             trigger_error('Text must be string', E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SendText(array("text" => $Text, "done" => $Done));
         $ret = $this->Send($KodiData);
-        if (is_null($ret))
+        if (is_null($ret)) {
             return false;
+        }
         return $ret === 'OK';
     }
-
 }
 
 /** @} */
