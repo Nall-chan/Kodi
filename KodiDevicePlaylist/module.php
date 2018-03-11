@@ -224,7 +224,6 @@ class KodiDevicePlaylist extends KodiBase
     public function Destroy()
     {
         if (!IPS_InstanceExists($this->InstanceID)) {
-
             $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
             $this->UnregisterProfile("Tracklist." . $this->InstanceID . ".Kodi");
         }
@@ -417,7 +416,7 @@ class KodiDevicePlaylist extends KodiBase
                 break;
             case 'OnAdd':
                 $LastAddonItem = $this->LastAddonItem;
-                if (($LastAddonItem > 0) and ( $LastAddonItem >= $KodiPayload->position)) {
+                if (($LastAddonItem > 0) and ($LastAddonItem >= $KodiPayload->position)) {
                     break;
                 }
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => array('start' => $LastAddonItem)));
@@ -509,7 +508,7 @@ class KodiDevicePlaylist extends KodiBase
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = unserialize($result);
-        if (($Config === false) or ( !is_array($Config))) {
+        if (($Config === false) or (!is_array($Config))) {
             trigger_error('Error on read Playlistconfig-Script', E_USER_NOTICE);
             return;
         }
@@ -1330,7 +1329,6 @@ echo serialize($Config);
         trigger_error('Error on swap items.', E_USER_NOTICE);
         return false;
     }
-
 }
 
 /** @} */
