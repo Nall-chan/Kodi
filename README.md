@@ -1875,6 +1875,10 @@ Eigenschaften von KodiSplitter:
  Version 1.4:  
   - Fix: Für IPS 5.0  
 
+ Version 1.5:  
+  - Fix: Fehler im Timer der PVR Instanz wenn KODI nicht erreichbar war 
+  - Fix: Fehler in Playlist bei IPS 5.0  
+
 ## 11. Spenden  
   
   Die Library ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  

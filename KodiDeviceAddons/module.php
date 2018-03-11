@@ -27,7 +27,6 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiDeviceAddons extends KodiBase
 {
-
     /**
      * RPC-Namespace
      *
@@ -95,9 +94,13 @@ class KodiDeviceAddons extends KodiBase
     public function Destroy()
     {
         if (IPS_GetKernelRunlevel() <> KR_READY) {
-            return;
+            return parent::Destroy();
         }
-        $this->UnregisterHook('/hook/KodiAddonlist' . $this->InstanceID);
+        if (!IPS_InstanceExists($this->InstanceID)) {
+            $this->UnregisterHook('/hook/KodiAddonlist' . $this->InstanceID);
+        }
+
+        parent::Destroy();
     }
 
     /**
@@ -134,7 +137,6 @@ class KodiDeviceAddons extends KodiBase
      * Wird ausgeführt wenn sich der Status vom Parent ändert.
      * @access protected
      */
-
     protected function IOChangeState($State)
     {
         parent::IOChangeState($State);
@@ -175,7 +177,7 @@ class KodiDeviceAddons extends KodiBase
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or (!is_array($Config))) {
+        if (($Config === false) or ( !is_array($Config))) {
             trigger_error('Error on read Addonlistconfig-Script');
             return;
         }
@@ -207,7 +209,7 @@ class KodiDeviceAddons extends KodiBase
                         }
                     }
                 }
-                if ((array_key_exists('Fanart', $Config["Spalten"])) and ($Line['Fanart'] <> "")) {
+                if ((array_key_exists('Fanart', $Config["Spalten"])) and ( $Line['Fanart'] <> "")) {
                     $CoverRAW = $this->GetThumbnail($Line['Fanart'], $this->ReadPropertyInteger("ThumbSize"), 0);
                     if ($CoverRAW === false) {
                         $Line['Fanart'] = "";
@@ -261,7 +263,7 @@ class KodiDeviceAddons extends KodiBase
      */
     protected function FilterAddons($Addon)
     {
-        if (($Addon["type"] == "xbmc.python.pluginsource") or ($Addon["type"] == "xbmc.python.script")) {
+        if (($Addon["type"] == "xbmc.python.pluginsource") or ( $Addon["type"] == "xbmc.python.script")) {
             return true;
         }
         return false;
@@ -556,7 +558,6 @@ echo serialize($Config);
     }
 
     ################## PUBLIC
-
     /**
      * Verarbeitet Daten aus dem Webhook.
      *
@@ -565,7 +566,7 @@ echo serialize($Config);
      */
     protected function ProcessHookdata()
     {
-        if (!((isset($_GET["Addonid"])) and (isset($_GET["Action"])))) {
+        if (!((isset($_GET["Addonid"])) and ( isset($_GET["Action"])))) {
             $this->SendDebug('illegal HOOK', $_GET, 0);
             echo 'Illegal hook';
             return;
@@ -793,6 +794,7 @@ echo serialize($Config);
         }
         return ($ret == "OK");
     }
+
 }
 
 /** @} */

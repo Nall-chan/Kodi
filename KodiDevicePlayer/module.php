@@ -29,7 +29,6 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiDevicePlayer extends KodiBase
 {
-
     /**
      * PlayerID für Audio
      *
@@ -230,14 +229,14 @@ class KodiDevicePlayer extends KodiBase
      *  @var array Key ist der Medientyp, Value die PlayerID
      */
     public static $Playertype = array(
-        "song" => 0,
-        "audio" => 0,
-        "radio" => 0,
-        "video" => 1,
-        "episode" => 1,
-        "movie" => 1,
-        "tv" => 1,
-        "picture" => 2,
+        "song"     => 0,
+        "audio"    => 0,
+        "radio"    => 0,
+        "video"    => 1,
+        "episode"  => 1,
+        "movie"    => 1,
+        "tv"       => 1,
+        "picture"  => 2,
         "pictures" => 2
     );
 
@@ -264,19 +263,21 @@ class KodiDevicePlayer extends KodiBase
      */
     public function Destroy()
     {
-        parent::Destroy();
-        if (IPS_GetKernelRunlevel() <> KR_READY) {
-            return;
-        }
-        $CoverID = @IPS_GetObjectIDByIdent('CoverIMG', $this->InstanceID);
-        if ($CoverID > 0) {
-            @IPS_DeleteMedia($CoverID, true);
-        }
 
-        //Profile löschen
-        $this->UnregisterProfile("AudioStream." . $this->InstanceID . ".Kodi");
-        $this->UnregisterProfile("Subtitels." . $this->InstanceID . ".Kodi");
-        $this->UnregisterProfile("Speed." . $this->InstanceID . ".Kodi");
+        if (IPS_GetKernelRunlevel() <> KR_READY) {
+            return parent::Destroy();
+        }
+        if (!IPS_InstanceExists($this->InstanceID)) {
+            $CoverID = @IPS_GetObjectIDByIdent('CoverIMG', $this->InstanceID);
+            if ($CoverID > 0) {
+                @IPS_DeleteMedia($CoverID, true);
+            }
+            //Profile löschen
+            $this->UnregisterProfile("AudioStream." . $this->InstanceID . ".Kodi");
+            $this->UnregisterProfile("Subtitels." . $this->InstanceID . ".Kodi");
+            $this->UnregisterProfile("Speed." . $this->InstanceID . ".Kodi");
+        }
+        parent::Destroy();
     }
 
     /**
@@ -471,7 +472,6 @@ class KodiDevicePlayer extends KodiBase
     }
 
     ################## PRIVATE
-
     /**
      * Fragt Kodi an ob der Playertyp der Instanz gerade aktiv ist.
      *
@@ -483,7 +483,7 @@ class KodiDevicePlayer extends KodiBase
         $KodiData->GetActivePlayers();
         $ret = @$this->SendDirect($KodiData);
 
-        if (is_null($ret) or (count($ret) == 0)) {
+        if (is_null($ret) or ( count($ret) == 0)) {
             $this->isActive = false;
         } else {
             $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
@@ -813,7 +813,6 @@ class KodiDevicePlayer extends KodiBase
     }
 
     ################## ActionHandler
-
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
@@ -859,7 +858,6 @@ class KodiDevicePlayer extends KodiBase
     }
 
     ################## PUBLIC
-
     /**
      * IPS-Instanz-Funktion 'KODIPLAYER_GetItemInternal'.
      * Holt sich die Daten des aktuellen wiedergegebenen Items, und bildet die Eigenschaften in IPS-Variablen ab.
@@ -1466,7 +1464,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ($Value > 2)) {
+        if (($Value < 0) or ( $Value > 2)) {
             trigger_error('Value must be between 0 and 2', E_USER_NOTICE);
             return false;
         }
@@ -1576,7 +1574,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ($Value > 100)) {
+        if (($Value < 0) or ( $Value > 100)) {
             trigger_error('Value must be between 0 and 100', E_USER_NOTICE);
             return false;
         }
@@ -1879,6 +1877,7 @@ class KodiDevicePlayer extends KodiBase
         $Assos = $this->CreateProfilArray($AudioStream);
         $this->RegisterProfileIntegerEx("AudioStream." . $this->InstanceID . ".Kodi", "", "", "", $Assos);
     }
+
 }
 
 /** @} */

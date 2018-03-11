@@ -27,7 +27,6 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiDeviceInput extends KodiBase
 {
-
     /**
      * RPC-Namespace
      *
@@ -279,9 +278,13 @@ class KodiDeviceInput extends KodiBase
     public function Destroy()
     {
         if (IPS_GetKernelRunlevel() <> KR_READY) {
-            return;
+            return parent::Destroy();
         }
-        $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
+        if (!IPS_InstanceExists($this->InstanceID)) {
+            $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
+        }
+
+        parent::Destroy();
     }
 
     /**
@@ -361,7 +364,6 @@ class KodiDeviceInput extends KodiBase
     }
 
     ################## PRIVATE
-
     /**
      * Verarbeitet Daten aus dem Webhook.
      *
@@ -397,7 +399,6 @@ class KodiDeviceInput extends KodiBase
     }
 
     ################## ActionHandler
-
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
@@ -472,7 +473,6 @@ class KodiDeviceInput extends KodiBase
     }
 
     ################## PUBLIC
-
     /**
      * IPS-Instanz-Funktion 'KODIINPUT_Up'. Tastendruck 'Hoch' ausführen.
      *
@@ -708,6 +708,7 @@ class KodiDeviceInput extends KodiBase
         }
         return $ret === 'OK';
     }
+
 }
 
 /** @} */

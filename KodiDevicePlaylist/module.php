@@ -7,9 +7,9 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       1.5
  * @example <b>Ohne</b>
  */
 
@@ -19,9 +19,9 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       1.5
  * @example <b>Ohne</b>
  * @property int $LastAddonItem
  * @property array $Multi_Playlist
@@ -29,7 +29,6 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiDevicePlaylist extends KodiBase
 {
-
     /**
      * PlaylistID für Audio
      *
@@ -81,14 +80,14 @@ class KodiDevicePlaylist extends KodiBase
      *  @var array Key ist der Medientyp, Value die PlaylistID
      */
     public static $Playertype = array(
-        "song" => 0,
-        "audio" => 0,
-        "radio" => 0,
-        "video" => 1,
-        "episode" => 1,
-        "movie" => 1,
-        "tv" => 1,
-        "picture" => 2,
+        "song"     => 0,
+        "audio"    => 0,
+        "radio"    => 0,
+        "video"    => 1,
+        "episode"  => 1,
+        "movie"    => 1,
+        "tv"       => 1,
+        "picture"  => 2,
         "pictures" => 2
     );
 
@@ -224,8 +223,12 @@ class KodiDevicePlaylist extends KodiBase
      */
     public function Destroy()
     {
-        $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
-        $this->UnregisterProfile("Tracklist." . $this->InstanceID . ".Kodi");
+        if (!IPS_InstanceExists($this->InstanceID)) {
+
+            $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
+            $this->UnregisterProfile("Tracklist." . $this->InstanceID . ".Kodi");
+        }
+        parent::Destroy();
     }
 
     /**
@@ -259,16 +262,14 @@ class KodiDevicePlaylist extends KodiBase
 
         $this->RegisterVariableInteger("position", "Playlist Position", "Tracklist." . $this->InstanceID . ".Kodi", 1);
         $this->EnableAction("position");
-        $this->Multi_Playlist = 0;
+        $this->Multi_Playlist = array();
         $this->LastAddonItem = 0;
 
 
         parent::ApplyChanges();
     }
 
-
     ################## PRIVATE
-
     /**
      * Verarbeitet Daten aus dem Webhook.
      *
@@ -347,7 +348,7 @@ class KodiDevicePlaylist extends KodiBase
                             }
                             break;
                         case "shuffled":
-                            $this->Multi_Playlist = 0;
+                            $this->Multi_Playlist = array();
                             $this->LastAddonItem = 0;
                             $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall,));
                             $ret = $this->SendDirect($KodiData);
@@ -416,7 +417,7 @@ class KodiDevicePlaylist extends KodiBase
                 break;
             case 'OnAdd':
                 $LastAddonItem = $this->LastAddonItem;
-                if (($LastAddonItem > 0) and ($LastAddonItem >= $KodiPayload->position)) {
+                if (($LastAddonItem > 0) and ( $LastAddonItem >= $KodiPayload->position)) {
                     break;
                 }
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', array('playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => array('start' => $LastAddonItem)));
@@ -459,7 +460,7 @@ class KodiDevicePlaylist extends KodiBase
             case 'OnClear':
                 $this->SendDebug("ClearPlayList", $KodiPayload, 0);
                 $this->SetValueInteger("position", 0);
-                $this->Multi_Playlist = 0;
+                $this->Multi_Playlist = array();
                 $this->LastAddonItem = 0;
                 $this->RefreshPlaylist(true);
                 break;
@@ -508,7 +509,7 @@ class KodiDevicePlaylist extends KodiBase
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = unserialize($result);
-        if (($Config === false) or (!is_array($Config))) {
+        if (($Config === false) or ( !is_array($Config))) {
             trigger_error('Error on read Playlistconfig-Script', E_USER_NOTICE);
             return;
         }
@@ -771,7 +772,6 @@ echo serialize($Config);
     }
 
     ################## ActionHandler
-
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
@@ -799,7 +799,6 @@ echo serialize($Config);
     }
 
     ################## PUBLIC
-
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_Get'.
      * Gibt alle Einträge der Playlist als Array zurück.
@@ -1331,6 +1330,7 @@ echo serialize($Config);
         trigger_error('Error on swap items.', E_USER_NOTICE);
         return false;
     }
+
 }
 
 /** @} */

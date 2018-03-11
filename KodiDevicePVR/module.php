@@ -7,9 +7,9 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       1.5
  * @example <b>Ohne</b>
  */
 
@@ -19,16 +19,15 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       1.5
  * @example <b>Ohne</b>
  * @todo PVR.AddTimer ab v8
  * @todo PVR.ToggleTimer ab v8
  */
 class KodiDevicePVR extends KodiBase
 {
-
     /**
      * RPC-Namespace
      *
@@ -213,11 +212,15 @@ class KodiDevicePVR extends KodiBase
     public function Destroy()
     {
         if (IPS_GetKernelRunlevel() <> KR_READY) {
-            return;
+            return parent::Destroy();
         }
-        $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
-        $this->UnregisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
-        $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
+        if (!IPS_InstanceExists($this->InstanceID)) {
+            $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
+            $this->UnregisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
+            $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
+        }
+
+        parent::Destroy();
     }
 
     /**
@@ -321,7 +324,11 @@ class KodiDevicePVR extends KodiBase
         }
 
         if ($this->ReadPropertyBoolean('showRecordinglist') or $this->ReadPropertyBoolean('showRadioChannellist') or $this->ReadPropertyBoolean('showTVChannellist')) {
-            $this->SetTimerInterval('RefreshLists', 15 * 60 * 1000);
+            if ($this->HasActiveParent()) {
+                $this->SetTimerInterval('RefreshLists', 15 * 60 * 1000);
+            } else {
+                $this->SetTimerInterval('RefreshLists', 0);
+            }
         } else {
             $this->SetTimerInterval('RefreshLists', 0);
         }
@@ -348,7 +355,6 @@ class KodiDevicePVR extends KodiBase
     }
 
     ################## PRIVATE
-
     /**
      * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
      *
@@ -388,7 +394,7 @@ class KodiDevicePVR extends KodiBase
         }
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or (!is_array($Config))) {
+        if (($Config === false) or ( !is_array($Config))) {
             trigger_error('Error on read TV Channelistconfig-Script');
             return;
         }
@@ -506,7 +512,7 @@ class KodiDevicePVR extends KodiBase
         }
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or (!is_array($Config))) {
+        if (($Config === false) or ( !is_array($Config))) {
             trigger_error('Error on read radio Channelistconfig-Script');
             return;
         }
@@ -624,7 +630,7 @@ class KodiDevicePVR extends KodiBase
         }
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or (!is_array($Config))) {
+        if (($Config === false) or ( !is_array($Config))) {
             trigger_error('Error on read Recordinglistconfig-Script');
             return;
         }
@@ -1018,7 +1024,6 @@ echo serialize($Config);
       string(9) "The Flash"
      */
     ################## ActionHandler
-
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
@@ -1039,7 +1044,6 @@ echo serialize($Config);
     }
 
     ################## PUBLIC
-
     /**
      * Verarbeitet Daten aus dem Webhook.
      *
@@ -1372,6 +1376,7 @@ echo serialize($Config);
     {
         return parent::RequestState($Ident);
     }
+
 }
 
 /** @} */

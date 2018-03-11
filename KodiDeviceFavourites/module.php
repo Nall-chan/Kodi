@@ -26,7 +26,6 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiDeviceFavourites extends KodiBase
 {
-
     /**
      * RPC-Namespace
      *
@@ -84,9 +83,12 @@ class KodiDeviceFavourites extends KodiBase
     public function Destroy()
     {
         if (IPS_GetKernelRunlevel() <> KR_READY) {
-            return;
+            return parent::Destroy();
         }
-        $this->UnregisterHook('/hook/KodiFavlist' . $this->InstanceID);
+        if (!IPS_InstanceExists($this->InstanceID)) {
+            $this->UnregisterHook('/hook/KodiFavlist' . $this->InstanceID);
+        }
+        parent::Destroy();
     }
 
     /**
@@ -132,7 +134,6 @@ class KodiDeviceFavourites extends KodiBase
     }
 
     ################## PRIVATE
-
     /**
      * Dekodiert die empfangenen Events.
      *
@@ -164,7 +165,7 @@ class KodiDeviceFavourites extends KodiBase
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or (!is_array($Config))) {
+        if (($Config === false) or ( !is_array($Config))) {
             trigger_error('Error on read Favlistconfig-Script');
             return;
         }
@@ -232,7 +233,7 @@ class KodiDeviceFavourites extends KodiBase
      */
     protected function FilterFav($Fav)
     {
-        if (($Fav["type"] == "window") or ($Fav["type"] == "media") or ($Fav["type"] == "script")) {
+        if (($Fav["type"] == "window") or ( $Fav["type"] == "media") or ( $Fav["type"] == "script")) {
             return true;
         }
         return false;
@@ -357,7 +358,6 @@ echo serialize($Config);
     }
 
     ################## PUBLIC
-
     /**
      * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteMedia'. Lädt einen Media Favoriten.
      *
@@ -425,7 +425,7 @@ echo serialize($Config);
      */
     protected function ProcessHookdata()
     {
-        if (!((isset($_GET["Type"])) and (isset($_GET["Path"])))) {
+        if (!((isset($_GET["Type"])) and ( isset($_GET["Path"])))) {
             $this->SendDebug('illegal HOOK', $_GET, 0);
             echo 'Illegal hook';
             return;
@@ -500,6 +500,7 @@ echo serialize($Config);
         }
         return array();
     }
+
 }
 
 /** @} */
