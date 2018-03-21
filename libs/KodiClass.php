@@ -235,7 +235,6 @@ trait BufferHelper
         }
         $this->SetBuffer($name, $Data);
     }
-
 }
 
 /**
@@ -327,7 +326,6 @@ trait VariableProfile
         }
         IPS_DeleteVariableProfile($Name);
     }
-
 }
 
 /**
@@ -407,7 +405,6 @@ trait Webhook
         } //bail out
         IPS_DeleteScript($sid, true);
     }
-
 }
 
 /**
@@ -461,7 +458,6 @@ trait DebugHelper
             parent::SendDebug($Message, $Data, $Format);
         }
     }
-
 }
 
 /**
@@ -550,7 +546,6 @@ trait InstanceStatus
         }
         return false;
     }
-
 }
 
 trait Semaphore
@@ -580,7 +575,6 @@ trait Semaphore
     {
         IPS_SemaphoreLeave(__CLASS__ . (string) $this->InstanceID . (string) $ident);
     }
-
 }
 
 /**
@@ -598,7 +592,6 @@ trait Semaphore
  */
 abstract class KodiBase extends IPSModule
 {
-
     use VariableProfile,
         Webhook,
         DebugHelper,
@@ -1103,11 +1096,11 @@ sleep(10).then(() => {
             return false;
         }
         if (GetValueInteger($id) <> $value) {
-            if (!(($Ident[0] == "_") or ( $Ident == "speed") or ( $Ident == "repeat") or ( IPS_GetVariable($id)["VariableAction"] <> 0))) {
-                if (($value <= 0) and ( !IPS_GetObject($id)["ObjectIsHidden"])) {
+            if (!(($Ident[0] == "_") or ($Ident == "speed") or ($Ident == "repeat") or (IPS_GetVariable($id)["VariableAction"] <> 0))) {
+                if (($value <= 0) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, true);
                 }
-                if (($value > 0) and ( IPS_GetObject($id)["ObjectIsHidden"])) {
+                if (($value > 0) and (IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -1134,10 +1127,10 @@ sleep(10).then(() => {
         }
         if (GetValueString($id) <> $value) {
             if ($Ident[0] <> "_") {
-                if ((($value == "") or ( $value == "unknown")) and ( !IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value == "") or ($value == "unknown")) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, true);
                 }
-                if ((($value <> "") and ( $value <> "unknown")) and ( IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value <> "") and ($value <> "unknown")) and (IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -1146,7 +1139,6 @@ sleep(10).then(() => {
         }
         return false;
     }
-
 }
 
 /**
@@ -1165,7 +1157,6 @@ class KodiRPCException extends Exception
     {
         parent::__construct($message, $code, $previous);
     }
-
 }
 
 /**
@@ -1673,7 +1664,6 @@ class Kodi_RPC_Data extends stdClass
         }
         return $item;
     }
-
 }
 
 /** @} */
