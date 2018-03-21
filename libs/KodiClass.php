@@ -187,7 +187,6 @@ if (!defined("vtBoolean")) { //Nur wenn Konstanten noch nicht bekannt sind.
  */
 trait BufferHelper
 {
-
     /**
      * Wert einer Eigenschaft aus den InstanceBuffer lesen.
      *
@@ -236,6 +235,7 @@ trait BufferHelper
         }
         $this->SetBuffer($name, $Data);
     }
+
 }
 
 /**
@@ -243,7 +243,6 @@ trait BufferHelper
  */
 trait VariableProfile
 {
-
     /**
      * Erstell und konfiguriert ein VariablenProfil für den Typ integer mit Assoziationen
      *
@@ -328,6 +327,7 @@ trait VariableProfile
         }
         IPS_DeleteVariableProfile($Name);
     }
+
 }
 
 /**
@@ -335,7 +335,6 @@ trait VariableProfile
  */
 trait Webhook
 {
-
     /**
      * Erstellt einen WebHook, wenn nicht schon vorhanden.
      *
@@ -408,6 +407,7 @@ trait Webhook
         } //bail out
         IPS_DeleteScript($sid, true);
     }
+
 }
 
 /**
@@ -416,7 +416,6 @@ trait Webhook
  */
 trait DebugHelper
 {
-
     /**
      * Formatiert eine DebugAusgabe und gibt sie an IPS weiter.
      *
@@ -462,6 +461,7 @@ trait DebugHelper
             parent::SendDebug($Message, $Data, $Format);
         }
     }
+
 }
 
 /**
@@ -470,7 +470,6 @@ trait DebugHelper
  */
 trait InstanceStatus
 {
-
     /**
      * Interne Funktion des SDK.
      *
@@ -480,6 +479,7 @@ trait InstanceStatus
     {
         switch ($Message) {
             case FM_CONNECT:
+            case IM_CHANGESETTINGS:
                 $this->RegisterParent();
                 if ($this->HasActiveParent()) {
                     $this->IOChangeState(IS_ACTIVE);
@@ -512,9 +512,11 @@ trait InstanceStatus
         $ParentId = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
         if ($ParentId <> $OldParentId) {
             if ($OldParentId > 0) {
+                $this->UnregisterMessage($OldParentId, IM_CHANGESETTINGS);
                 $this->UnregisterMessage($OldParentId, IM_CHANGESTATUS);
             }
             if ($ParentId > 0) {
+                $this->RegisterMessage($ParentId, IM_CHANGESETTINGS);
                 $this->RegisterMessage($ParentId, IM_CHANGESTATUS);
             } else {
                 $ParentId = 0;
@@ -535,17 +537,24 @@ trait InstanceStatus
         $instance = IPS_GetInstance($this->InstanceID);
         if ($instance['ConnectionID'] > 0) {
             $parent = IPS_GetInstance($instance['ConnectionID']);
+            if ($parent['ModuleInfo']['ModuleType'] == 2) {
+                if ($parent['ConnectionID'] > 0) {
+                    $parent = IPS_GetInstance($parent['ConnectionID']);
+                } else {
+                    return false;
+                }
+            }
             if ($parent['InstanceStatus'] == 102) {
                 return true;
             }
         }
         return false;
     }
+
 }
 
 trait Semaphore
 {
-
     /**
      * Versucht eine Semaphore zu setzen und wiederholt dies bei Misserfolg bis zu 100 mal.
      * @param string $ident Ein String der den Lock bezeichnet.
@@ -571,6 +580,7 @@ trait Semaphore
     {
         IPS_SemaphoreLeave(__CLASS__ . (string) $this->InstanceID . (string) $ident);
     }
+
 }
 
 /**
@@ -588,15 +598,14 @@ trait Semaphore
  */
 abstract class KodiBase extends IPSModule
 {
+
     use VariableProfile,
         Webhook,
         DebugHelper,
         BufferHelper,
-        InstanceStatus
-    {
+        InstanceStatus {
         InstanceStatus::MessageSink as IOMessageSink;
     }
-
     /**
      * RPC-Namespace
      *
@@ -708,7 +717,6 @@ abstract class KodiBase extends IPSModule
     }
 
     ################## PRIVATE
-
     /**
      * Werte der Eigenschaften anfragen.
      *
@@ -740,7 +748,6 @@ abstract class KodiBase extends IPSModule
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
     abstract protected function Decode($Method, $KodiPayload);
-
     /**
      * Erzeugt ein lesbares Zeitformat.
      *
@@ -870,7 +877,7 @@ sleep(10).then(() => {
         if ($file == "") {
             return false;
         }
-//            $ThumbRAW = FALSE;
+
         $ThumbRAW = @KODIRPC_GetImage($this->ParentID, $file);
 
         if ($ThumbRAW !== false) {
@@ -907,7 +914,6 @@ sleep(10).then(() => {
     }
 
     ################## PUBLIC
-
     /**
      * IPS-Instanz-Funktion '*_RequestState'. Frage eine oder mehrere Properties eines Namespace ab.
      *
@@ -931,7 +937,6 @@ sleep(10).then(() => {
     }
 
     ################## Datapoints
-
     /**
      * Interne SDK-Funktion. Empfängt Datenpakete vom KodiSplitter.
      *
@@ -967,7 +972,7 @@ sleep(10).then(() => {
         try {
             $JSONData = $KodiData->ToJSONString('{0222A902-A6FA-4E94-94D3-D54AA4666321}');
             if (!$this->HasActiveParent()) {
-                throw new Exception('Intance has no active parent.', E_USER_NOTICE);
+                throw new Exception('Instance has no active parent.', E_USER_NOTICE);
             }
             $anwser = $this->SendDataToParent($JSONData);
             $this->SendDebug('Send', $JSONData, 0);
@@ -995,7 +1000,7 @@ sleep(10).then(() => {
     {
         try {
             if (!$this->HasActiveParent()) {
-                throw new Exception('Intance has no active parent.', E_USER_NOTICE);
+                throw new Exception('Instance has no active parent.', E_USER_NOTICE);
             }
 
             $SplitterInstance = IPS_GetInstance($this->ParentID);
@@ -1098,11 +1103,11 @@ sleep(10).then(() => {
             return false;
         }
         if (GetValueInteger($id) <> $value) {
-            if (!(($Ident[0] == "_") or ($Ident == "speed") or ($Ident == "repeat") or (IPS_GetVariable($id)["VariableAction"] <> 0))) {
-                if (($value <= 0) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
+            if (!(($Ident[0] == "_") or ( $Ident == "speed") or ( $Ident == "repeat") or ( IPS_GetVariable($id)["VariableAction"] <> 0))) {
+                if (($value <= 0) and ( !IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, true);
                 }
-                if (($value > 0) and (IPS_GetObject($id)["ObjectIsHidden"])) {
+                if (($value > 0) and ( IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -1129,10 +1134,10 @@ sleep(10).then(() => {
         }
         if (GetValueString($id) <> $value) {
             if ($Ident[0] <> "_") {
-                if ((($value == "") or ($value == "unknown")) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value == "") or ( $value == "unknown")) and ( !IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, true);
                 }
-                if ((($value <> "") and ($value <> "unknown")) and (IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value <> "") and ( $value <> "unknown")) and ( IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -1141,6 +1146,7 @@ sleep(10).then(() => {
         }
         return false;
     }
+
 }
 
 /**
@@ -1159,6 +1165,7 @@ class KodiRPCException extends Exception
     {
         parent::__construct($message, $code, $previous);
     }
+
 }
 
 /**
@@ -1666,6 +1673,7 @@ class Kodi_RPC_Data extends stdClass
         }
         return $item;
     }
+
 }
 
 /** @} */

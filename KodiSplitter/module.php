@@ -178,12 +178,6 @@ class KodiSplitter extends IPSModule
                 case IS_ACTIVE:
                     $this->SetWatchdogTimer(false);
                     $this->SetTimerInterval("KeepAlive", 180 * 1000);
-//                    $InstanceIDs = IPS_GetInstanceList();
-//                    foreach ($InstanceIDs as $IID)
-//                    {
-//                        if (IPS_GetInstance($IID)['ConnectionID'] == $this->InstanceID)
-//                            @IPS_ApplyChanges($IID);
-//                    }
                     $this->SendPowerEvent(true);
                     break;
                 case IS_EBASE + 3: //ERROR RCP-Server
@@ -598,7 +592,7 @@ class KodiSplitter extends IPSModule
             }
 
             if (!$this->HasActiveParent()) {
-                throw new Exception('Intance has no active parent.', E_USER_NOTICE);
+                throw new Exception('Instance has no active parent.', E_USER_NOTICE);
             }
             $this->SendDebug('Send', $KodiData, 0);
             $this->SendQueuePush($KodiData->Id);

@@ -787,7 +787,6 @@ class KodiDevicePlayer extends KodiBase
     private function SetCover(string $file)
     {
         $CoverID = @IPS_GetObjectIDByIdent('CoverIMG', $this->InstanceID);
-        $Size = $this->ReadPropertyInteger("CoverSize");
         if ($CoverID === false) {
             $CoverID = IPS_CreateMedia(1);
             IPS_SetParent($CoverID, $this->InstanceID);
@@ -797,11 +796,13 @@ class KodiDevicePlayer extends KodiBase
             IPS_SetMediaCached($CoverID, true);
             $filename = "media" . DIRECTORY_SEPARATOR . "Cover_" . $this->InstanceID . ".png";
             IPS_SetMediaFile($CoverID, $filename, false);
+            $this->SendDebug('Create Media', $filename, 0);
         }
 
         if ($file == "") {
             $CoverRAW = false;
         } else {
+            $Size = $this->ReadPropertyInteger("CoverSize");
             $CoverRAW = $this->GetThumbnail($file, 0, $Size);
         }
 
