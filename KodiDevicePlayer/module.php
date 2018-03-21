@@ -263,7 +263,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function Destroy()
     {
-
         if (IPS_GetKernelRunlevel() <> KR_READY) {
             return parent::Destroy();
         }
@@ -483,7 +482,7 @@ class KodiDevicePlayer extends KodiBase
         $KodiData->GetActivePlayers();
         $ret = @$this->SendDirect($KodiData);
 
-        if (is_null($ret) or ( count($ret) == 0)) {
+        if (is_null($ret) or (count($ret) == 0)) {
             $this->isActive = false;
         } else {
             $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
@@ -1465,7 +1464,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ( $Value > 2)) {
+        if (($Value < 0) or ($Value > 2)) {
             trigger_error('Value must be between 0 and 2', E_USER_NOTICE);
             return false;
         }
@@ -1575,7 +1574,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ( $Value > 100)) {
+        if (($Value < 0) or ($Value > 100)) {
             trigger_error('Value must be between 0 and 100', E_USER_NOTICE);
             return false;
         }
@@ -1878,7 +1877,6 @@ class KodiDevicePlayer extends KodiBase
         $Assos = $this->CreateProfilArray($AudioStream);
         $this->RegisterProfileIntegerEx("AudioStream." . $this->InstanceID . ".Kodi", "", "", "", $Assos);
     }
-
 }
 
 /** @} */

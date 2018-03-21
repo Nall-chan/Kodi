@@ -394,7 +394,7 @@ class KodiDevicePVR extends KodiBase
         }
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or ( !is_array($Config))) {
+        if (($Config === false) or (!is_array($Config))) {
             trigger_error('Error on read TV Channelistconfig-Script');
             return;
         }
@@ -512,7 +512,7 @@ class KodiDevicePVR extends KodiBase
         }
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or ( !is_array($Config))) {
+        if (($Config === false) or (!is_array($Config))) {
             trigger_error('Error on read radio Channelistconfig-Script');
             return;
         }
@@ -630,7 +630,7 @@ class KodiDevicePVR extends KodiBase
         }
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or ( !is_array($Config))) {
+        if (($Config === false) or (!is_array($Config))) {
             trigger_error('Error on read Recordinglistconfig-Script');
             return;
         }
@@ -1376,7 +1376,6 @@ echo serialize($Config);
     {
         return parent::RequestState($Ident);
     }
-
 }
 
 /** @} */
