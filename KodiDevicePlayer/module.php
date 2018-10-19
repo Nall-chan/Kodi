@@ -1608,7 +1608,7 @@ class KodiDevicePlayer extends KodiBase
      * @param array $Ext Array welches mit übergeben werden soll (optional).
      * @return bool True bei Erfolg. Sonst false.
      */
-    private function Load(string $ItemTyp, string $ItemValue, $Ext = array())
+    private function Load(string $ItemTyp, $ItemValue, $Ext = array())
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Open(array_merge(array("item" => array($ItemTyp => $ItemValue)), $Ext));
