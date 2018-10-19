@@ -9,9 +9,9 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  * @package       Kodi
  * @file          module.php
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       1.6
  *
  */
 
@@ -22,9 +22,9 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       1.6
  * @property array $ReplyJSONData
  * @property string $BufferIN
  * @property string $Host
@@ -32,15 +32,14 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiSplitter extends IPSModule
 {
+
     use BufferHelper,
         InstanceStatus,
         DebugHelper,
-        Semaphore
-    {
+        Semaphore {
         InstanceStatus::MessageSink as IOMessageSink;
         InstanceStatus::RegisterParent as IORegisterParent;
     }
-
     /**
      * RPC-Namespace
      *
@@ -173,22 +172,29 @@ class KodiSplitter extends IPSModule
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
     {
         $this->IOMessageSink($TimeStamp, $SenderID, $Message, $Data);
-        if (($Message == IM_CHANGESTATUS) and ($SenderID == $this->InstanceID)) {
-            switch ($Data[0]) {
-                case IS_ACTIVE:
-                    $this->SetWatchdogTimer(false);
-                    $this->SetTimerInterval("KeepAlive", 180 * 1000);
-                    $this->SendPowerEvent(true);
-                    break;
-                case IS_EBASE + 3: //ERROR RCP-Server
-                case IS_EBASE + 4: //ERROR WebServer
-                case IS_EBASE + 2: //misconfig
-                case IS_INACTIVE:
-                    $this->SetWatchdogTimer(true);
-                    $this->SetTimerInterval("KeepAlive", 0);
-                    $this->SendPowerEvent(false);
-                    break;
-            }
+        switch ($Message) {
+            case IPS_KERNELSTARTED:
+                $this->KernelReady();
+                break;
+            case IM_CHANGESTATUS:
+                if ($SenderID == $this->InstanceID) {
+                    switch ($Data[0]) {
+                        case IS_ACTIVE:
+                            $this->SetWatchdogTimer(false);
+                            $this->SetTimerInterval("KeepAlive", 180 * 1000);
+                            $this->SendPowerEvent(true);
+                            break;
+                        case IS_EBASE + 3: //ERROR RCP-Server
+                        case IS_EBASE + 4: //ERROR WebServer
+                        case IS_EBASE + 2: //misconfig
+                        case IS_INACTIVE:
+                            $this->SetWatchdogTimer(true);
+                            $this->SetTimerInterval("KeepAlive", 0);
+                            $this->SendPowerEvent(false);
+                            break;
+                    }
+                }
+                break;
         }
     }
 
@@ -240,7 +246,6 @@ class KodiSplitter extends IPSModule
     }
 
     ################## PRIVATE
-
     private function CheckPort()
     {
         $Socket = @stream_socket_client("tcp://" . $this->Host . ":" . $this->ReadPropertyInteger('Port'), $errno, $errstr, 1);
@@ -326,13 +331,13 @@ class KodiSplitter extends IPSModule
         $this->SendDebug('DoWebrequest', $URL, 0);
         $Result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
         if ($http_code >= 400) {
             $this->SendDebug('Webrequest Error', $http_code, 0);
             $Result = false;
         } else {
             $this->SendDebug('Webrequest Result:' . $http_code, substr($Result, 0, 100), 0);
         }
-        curl_close($ch);
         return $Result;
     }
 
@@ -391,7 +396,6 @@ class KodiSplitter extends IPSModule
 //        if ($Method == 'OnQuit')
 //            $this->IOChangeState(IS_INACTIVE);
 //    }
-
     /**
      * Interne Funktion des SDK.
      *
@@ -405,7 +409,6 @@ class KodiSplitter extends IPSModule
     }
 
     ################## PUBLIC
-
     /**
      * IPS-Instanz-Funktion 'KODIRPC_GetImage'. Holt ein Bild vom Kodi-Webfront.
      *
@@ -478,7 +481,6 @@ class KodiSplitter extends IPSModule
     }
 
     ################## DATAPOINTS DEVICE
-
     /**
      * Interne Funktion des SDK. Nimmt Daten von Childs entgegen und sendet Diese weiter.
      *
@@ -524,7 +526,6 @@ class KodiSplitter extends IPSModule
     }
 
     ################## DATAPOINTS PARENT
-
     /**
      * Empfängt Daten vom Parent.
      *
@@ -659,7 +660,6 @@ class KodiSplitter extends IPSModule
     }
 
     ################## SENDQUEUE
-
     /**
      * Fügt eine Anfrage in die SendQueue ein.
      *
@@ -728,6 +728,7 @@ class KodiSplitter extends IPSModule
         $this->ReplyJSONData = $data;
         $this->unlock('ReplyJSONData');
     }
+
 }
 
 /** @} */

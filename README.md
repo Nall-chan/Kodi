@@ -1879,6 +1879,9 @@ Eigenschaften von KodiSplitter:
   - Fix: Fehler im Timer der PVR Instanz wenn KODI nicht erreichbar war 
   - Fix: Fehler in Playlist bei IPS 5.0  
 
+ Version 1.6:
+  - Fix: Splitter war bei IPS Neustart im falschen Zustand (verbunden), auch wenn Kodi nicht erreichbar war.  
+
 ## 11. Spenden  
   
   Die Library ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  
