@@ -26,7 +26,7 @@
                     "caption": "Show HTML-Box for TV channels"
                 }, {
                     "type": "Label",
-                    "label": "Max TV channels to be displayed:"
+                    "caption": "Max TV channels to be displayed:"
                 },
                 {
                     "name": "showMaxTVChannels",
@@ -35,7 +35,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Script for TV HTML-Box Desgin:"
+                    "caption": "Script for TV HTML-Box Desgin:"
                 },
                 {
                     "name": "TVChannellistconfig",
@@ -44,7 +44,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Size (width) for TV thumnails:"
+                    "caption": "Size (width) for TV thumnails:"
                 },
                 {
                     "name": "TVThumbSize",
@@ -58,7 +58,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Max radio channels to be displayed:"
+                    "caption": "Max radio channels to be displayed:"
                 },
                 {
                     "name": "showMaxRadioChannels",
@@ -67,7 +67,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Script for radio HTML-Box Desgin:"
+                    "caption": "Script for radio HTML-Box Desgin:"
                 },
                 {
                     "name": "RadioChannellistconfig",
@@ -76,7 +76,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Size (width) for radio thumnails:"
+                    "caption": "Size (width) for radio thumnails:"
                 },
                 {
                     "name": "RadioThumbSize",
@@ -90,7 +90,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Max recordings to be displayed:"
+                    "caption": "Max recordings to be displayed:"
                 },
                 {
                     "name": "showMaxRecording",
@@ -99,7 +99,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Script for recording HTML-Box Desgin:"
+                    "caption": "Script for recording HTML-Box Desgin:"
                 },
                 {
                     "name": "Recordinglistconfig",
@@ -108,7 +108,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Size (width) for recording thumnails:"
+                    "caption": "Size (width) for recording thumnails:"
                 },
                 {
                     "name": "RecordingThumbSize",
@@ -120,22 +120,22 @@
             [
                 {
                     "type": "Button",
-                    "label": "Record start",
+                    "caption": "Record start",
                     "onClick": "KODIPVR_Record($id,true,'current');"
                 },
                 {
                     "type": "Button",
-                    "label": "Record stop",
+                    "caption": "Record stop",
                     "onClick": "KODIPVR_Record($id,false,'current');"
                 },
                 {
                     "type": "Button",
-                    "label": "Search channels",
+                    "caption": "Search channels",
                     "onClick": "KODIPVR_Scan($id);"
                 },
                 {
                     "type": "Button",
-                    "label": "Request all states",
+                    "caption": "Request all states",
                     "onClick": "KODIPVR_RequestState($id,'ALL');"
                 }
             ]

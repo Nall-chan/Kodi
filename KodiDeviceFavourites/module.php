@@ -1,17 +1,20 @@
 <?php
 
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+declare(strict_types = 1);
+
 /*
  * @addtogroup kodi
  * @{
  *
  * @package       Kodi
+ * @file          module.php
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2016 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
- * @example <b>Ohne</b>
+ * @version       2.0
+ *
  */
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 
 /**
  * KodiDeviceFavourites Klasse für den Namespace Favourites der KODI-API.
@@ -165,7 +168,7 @@ class KodiDeviceFavourites extends KodiBase
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or (!is_array($Config))) {
+        if (($Config === false) or ( !is_array($Config))) {
             trigger_error('Error on read Favlistconfig-Script');
             return;
         }
@@ -233,7 +236,7 @@ class KodiDeviceFavourites extends KodiBase
      */
     protected function FilterFav($Fav)
     {
-        if (($Fav["type"] == "window") or ($Fav["type"] == "media") or ($Fav["type"] == "script")) {
+        if (($Fav["type"] == "window") or ( $Fav["type"] == "media") or ( $Fav["type"] == "script")) {
             return true;
         }
         return false;
@@ -425,7 +428,7 @@ echo serialize($Config);
      */
     protected function ProcessHookdata()
     {
-        if (!((isset($_GET["Type"])) and (isset($_GET["Path"])))) {
+        if (!((isset($_GET["Type"])) and ( isset($_GET["Path"])))) {
             $this->SendDebug('illegal HOOK', $_GET, 0);
             echo 'Illegal hook';
             return;
@@ -440,13 +443,15 @@ echo serialize($Config);
                 $ret = $this->Send($KodiData);
                 $this->SendDebug('media HOOK', $ret, 0);
                 echo $ret;
+                break;
             case "window":
                 $this->SendDebug('window HOOK', $Path, 0);
                 $KodiData = new Kodi_RPC_Data('GUI');
-                $KodiData->ActivateWindow(array('window' => $HookData['Window'], 'parameters' => array($Path)));
+                $KodiData->ActivateWindow(array('window' => $_GET['Window'], 'parameters' => array($Path)));
                 $ret = $this->Send($KodiData);
                 $this->SendDebug('window HOOK', $ret, 0);
                 echo $ret;
+                break;
             case "script":
                 $this->SendDebug('script HOOK', $Path, 0);
                 $KodiData = new Kodi_RPC_Data('Addons');
@@ -454,12 +459,15 @@ echo serialize($Config);
                 $ret = $this->SendDirect($KodiData);
                 $this->SendDebug('script HOOK', $ret, 0);
                 echo $ret;
+                break;
             case "unknown":
-                $this->SendDebug('unknown HOOK', $ret, 0);
+                $this->SendDebug('unknown HOOK', $_GET, 0);
                 echo 'unknown HOOK';
+                break;
             default:
-                $this->SendDebug('illegal HOOK', $HookData, 0);
+                $this->SendDebug('illegal HOOK', $_GET, 0);
                 echo 'Illegal hook';
+                break;
         }
     }
 
@@ -500,6 +508,7 @@ echo serialize($Config);
         }
         return array();
     }
+
 }
 
 /** @} */

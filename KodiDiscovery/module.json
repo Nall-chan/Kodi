@@ -1,0 +1,11 @@
+{
+    "id": "{D297668E-5D80-4A77-9F37-A33AA35F4F4B}",
+    "name": "Kodi Discovery",
+    "type": 5,
+    "vendor": "Kodi",
+    "aliases": ["Kodi Discovery"],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "KODI"
+}

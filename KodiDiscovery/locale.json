@@ -1,0 +1,12 @@
+{
+    "translations": {
+        "de": {
+            "IP Address": "IP Adresse",
+            "Devicename": "Ger\u00e4tename",
+            "Version": "Version",
+            "Name": "Name",
+            "Non-standard TCP RPC-Port or active user authentication must be set up manually in the 'KodiSplitter'.": "Nicht standard TCP RPC-Port oder aktive Benutzer Authentifizierung muss manuell im Kodi-Splitter eingerichtet werden.",
+            "Background discovery of Kodi devices": "Hintergrundsuche nach Kodi Ger\u00e4ten"
+        }
+    }
+}

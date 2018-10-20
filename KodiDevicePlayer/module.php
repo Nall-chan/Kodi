@@ -1,17 +1,20 @@
 <?php
 
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+declare(strict_types = 1);
+
 /*
  * @addtogroup kodi
  * @{
  *
  * @package       Kodi
+ * @file          module.php
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2016 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
- * @example <b>Ohne</b>
+ * @version       2.0
+ *
  */
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
 
 /**
  * KodiDevicePlayer Klasse für den Namespace Player der KODI-API.
@@ -482,7 +485,7 @@ class KodiDevicePlayer extends KodiBase
         $KodiData->GetActivePlayers();
         $ret = @$this->SendDirect($KodiData);
 
-        if (is_null($ret) or (count($ret) == 0)) {
+        if (is_null($ret) or ( count($ret) == 0)) {
             $this->isActive = false;
         } else {
             $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
@@ -754,6 +757,7 @@ class KodiDevicePlayer extends KodiBase
                 IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
                 break;
             case 'OnPlay':
+            case 'OnResume':
                 $this->setActivePlayer(true);
                 $this->SetValueInteger('Status', 2);
                 IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
@@ -1282,6 +1286,7 @@ class KodiDevicePlayer extends KodiBase
                 trigger_error('Error on send play.', E_USER_NOTICE);
                 return false;
             }
+            return;
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -1464,7 +1469,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ($Value > 2)) {
+        if (($Value < 0) or ( $Value > 2)) {
             trigger_error('Value must be between 0 and 2', E_USER_NOTICE);
             return false;
         }
@@ -1574,7 +1579,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ($Value > 100)) {
+        if (($Value < 0) or ( $Value > 100)) {
             trigger_error('Value must be between 0 and 100', E_USER_NOTICE);
             return false;
         }
@@ -1877,6 +1882,7 @@ class KodiDevicePlayer extends KodiBase
         $Assos = $this->CreateProfilArray($AudioStream);
         $this->RegisterProfileIntegerEx("AudioStream." . $this->InstanceID . ".Kodi", "", "", "", $Assos);
     }
+
 }
 
 /** @} */

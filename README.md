@@ -1,7 +1,7 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.4-blue.svg)]()
+[![Version](https://img.shields.io/badge/Modul%20Version-2.0-blue.svg)]()
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![Version](https://img.shields.io/badge/Symcon%20Version-4.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-4-3-%28Stable%29-Changelog)
+[![Version](https://img.shields.io/badge/Symcon%20Version-5.0%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-0-%28Stable%29-Changelog)
 [![StyleCI](https://styleci.io/repos/53613578/shield?style=flat)](https://styleci.io/repos/53613578)  
 
 # IPSKodi
@@ -51,12 +51,12 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
 ## 2. Voraussetzungen
 
- - IPS ab Version 4.3
+ - IPS ab Version 5.0
  - Installiertes System mit der Software Kodi 
 
 ## 3. Installation
 
-**IPS 4.1:**  
+**IPS 5.0:**  
    Bei privater Nutzung: Über das Modul-Control folgende URL hinzufügen.  
    `git://github.com/Nall-chan/IPSKodi.git`  
 
@@ -66,24 +66,28 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
  In den Kodi-Systemen folgende Einstellungen vornehmen:
 
- - In Settings/Services/Remote Control
-    - Allow programs on other systems to control Kodi.
- - In Settings/Services/Webserver
-    - Allow control of Kodi via HTTP
-    - Username und Password nach eigenen Ermessen.
+ - In Einstellungen/Dienste/Steuerung/Webserver  
+    - Steuerung über HTTP erlauben.  
+    - Username und Password nach eigenen Ermessen.  
+ - In Einstellungen/Dienste/Steuerung/Anwendungskontrolle  
+    - Fernsteuerung durch Anwendungen anderer Rechner erlauben.  
+ - In Einstellungen/Dienste/UpnP/DLNA
+    - UPnP-Support aktivieren.  
 
 
 ## 5. Einrichten der Instanzen in IPS
 
-  Es wird empfohlen die Einrichtung mit dem Kodi-Konfigurator durchzuführen.  
+  Es wird empfohlen die Einrichtung mit der Instanz Kodi-Discovery durchzuführen.  
   
-  - Auf der Willkommen-Seite von IPS dem Link 'Konfiguratoren verwalten' öffnen.  ![Konfiguratoren verwalten](docs/Konfigurator0.png)  
-  - Auf den Button 'Neu' klicken.  
-  - Den Eintrag 'Kodi Konfigurator' wählen und mit OK bestätigen.  ![Konfigurator wählen](docs/Konfigurator1.png)  
-  - Die Instanz über einen weiten Klick auf OK erzeugen.  
-  - Im folgenden Dialog des Konfigurators muss jetzt erst über einen Klick auf ein Zahnrad zum Splitter gewechselt werden.  ![Zum Splitter wechseln](docs/Konfigurator2.png)  
-  - Im Dialog des Kodi-Splitter ist die Adresse des Zielsystems einzutragen. Handelt es sich um ein System welches nicht im Dauerbetrieb läuft, sollte der Haken bei 'Erweiterte Power-On Überwachung' gesetzt werden. Der Dialog kann nach dem Klick auf Übernehmen geschlossen werden.  ![Splitter konfigurieren](docs/Splitter.png)  
-  - Im Konfigurator durch einen Klick auf den Button 'Alle / Alle fehlenden' werden jetzt alle Instanzen für dieses Kodi-System erzeugt und im Root des logischen Baums angelegt.  ![Instanzen erzeugen](docs/Konfigurator3.png)  
+  - Im Objektbaum die Kategorie 'Discovery Instanzen' öffnen.  
+  - Auf die Instanz 'Kodi Discovery' doppelt klicken. ![Discovery öffnen](docs/Discovery1.png)  
+  - Im folgenden Dialog sollten alle im lokalen Netzwerk verfügbaren Kodi-Systeme aufgelistet werden.  ![Discovery](docs/Discovery.png)  
+  - Im Dialog das gewünschte System auswählen und den Button 'Erstellen' betätigen.
+  - Anschließend ändert sich der Button zu 'Konfigurieren' und muss erneutr betätigt werden.  
+  - Im sich öffnenden Konfigurator alle gewünschten Funktionen wie zuvor erzeugen.  ![Instanzen erzeugen](docs/Konfigurator.png)  
+  - Über den Button 'Gateway konfigurieren' kann die optionale HTTP-Authentifizierung sowie ein abweichender JSON-RPC Port konfiguriert werden.  
+  - In den jeweiligen Instanzen sind dann noch weitere Einstellungen nach eigenen Vorlieben einzustellen.  
+
 
 ## 6. Funktionen der Instanzen
 
@@ -93,7 +97,9 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
  RPC-Namensraum : Addons
  
  Addons                 - de/aktivieren, lesen, visualisieren und ausführen.  
- 
+  ![Addon](docs/Addon.png)  
+  ![Addon WebFront](docs/Addon_WF.png)  
+
 ---
 
  **Kodi Anwendung (KodiDeviceApplication):**  
@@ -104,7 +110,8 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
  Software beenden       - Nur ausführen.  
  Namen der Software     - Lesen und visualisieren.  
  Version der Software   - Lesen und visualisieren.  
-
+  ![Application](docs/Application.png)  
+  ![Application WebFront](docs/Application_WF.png)  
 ---
 
  **Kodi Audio Datenbank (KodiDeviceAudioLibrary):**
@@ -113,16 +120,19 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
  Künstler   - Lesen von Daten aus der Datenbank.  
  Alben      - Lesen von Daten aus der Datenbank.  
  Songs      - Lesen von Daten aus der Datenbank.  
- Datenbank  - Ausführen von Scan un Clean. Status visualisieren.
+ Datenbank  - Ausführen von Scan un Clean. Status visualisieren.  
 
 Das Setzen von Daten in der Datenbank ist nicht möglich!  
-
+  ![AudioLibrary](docs/AudioLib.png)  
+  ![AudioLibrary WebFront](docs/AudioLib_WF.png)  
 ---  
 **Kodi Favoriten (KodiDeviceFavourites):**  
  RPC-Namensraum : Favourites  
 
- Favoriten   - Lesen, visualisieren und ausführen.
+ Favoriten   - Lesen, visualisieren und ausführen.  
 
+  ![Favourites](docs/Favourites.png)  
+  ![Favourites WebFront](docs/Favourites_WF.png)  
 ---
 
  **Kodi Files (KodiDeviceFiles):**
@@ -146,7 +156,8 @@ Das Setzen von Daten in der Datenbank ist nicht möglich!
 
 Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:  
 [Kodi Website - Window IDs] (http://kodi.wiki/view/Window_IDs)  
-
+  ![GUI](docs/GUI.png)  
+  ![GUI WebFront](docs/GUI_WF.png)  
 ---
 
  **Kodi Input (KodiDeviceInput):**  
@@ -155,6 +166,8 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Tastendruck    - Senden  
  Text           - Senden  
 
+  ![Input](docs/Input.png)  
+  ![Input WebFront](docs/Input_WF.png)  
 ---
 
  **Kodi Playerstatus (KodiDevicePlayer):**  
@@ -162,6 +175,13 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Hinweis: Jeder 'Player' (Audio,Video,Bilder) benötigt eine eigene Instanz.  
  Player              - Setzen, lesen und visualisieren des Status.  
  Aktuelle Wiedergabe - Setzen, lesen und visualisieren.  
+
+  ![Audio Player](docs/AudioPlayer.png)  
+  ![Picture Player](docs/PicturePlayer.png)  
+  ![Video Player](docs/VideoPlayer.png)  
+  ![Audio Player WebFront](docs/AudioPlayer_WF.png)  
+  ![Picture Player WebFront](docs/PicturePlayer_WF.png)    
+  ![Video Player WebFront](docs/VideoPlayer_WF.png)  
 
 ---
 
@@ -171,7 +191,13 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
 
  Playlist           - Beschreiben, lesen und visualisieren.  
  Player             - Direktes anspringen eines Eintrages.
- 
+
+  ![Audio Playlist](docs/AudioPlaylist.png)  
+  ![Picture Playlist](docs/PicturePlaylist.png)  
+  ![Video Playlist](docs/VideoPlaylist.png)  
+  ![Audio Playlist WebFront](docs/AudioPlaylist_WF.png)  
+  ![Picture Playlist WebFront](docs/PicturePlaylist_WF.png)    
+  ![Video Playlist WebFront](docs/VideoPlaylist_WF.png)  
 ---
 
  **Kodi PVR (KodiDevicePVR):**  
@@ -183,7 +209,8 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Kanäle & Gruppen   - Lesen und visualisieren (inkl. umschalten von Kanälen.)  
  Aufnahmen          - Lesen und visualisieren (inkl. starten der Wiedergabe.)  
  Timer              - Lesen  
-
+  ![PVR](docs/PVR.png)  
+  ![PVR WebFront](docs/PVR_WF.png)  
  ---
 
  **Kodi System (KodiDeviceSystem):**  
@@ -191,7 +218,8 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
 
  Systemzustand  - Starten, Beenden, Status visualisieren.  
  Optisches LW   - Auswerfen  
-
+  ![System](docs/System.png)  
+  ![System WebFront](docs/System_WF.png) 
 ---
 
  **Kodi VideoLibrary (KodiDeviceVideoLibrary):**  
@@ -203,12 +231,14 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Datenbank  - Ausführen von Scan und Clean. Status visualisieren.
 
 Das Setzen von Daten in der Datenbank ist nicht möglich!  
-
+  ![VideoLibrary](docs/VideoLib.png)  
+  ![VideoLibrary WebFront](docs/VideoLib_WF.png)  
 ---
 
  **Kodi Splitter (KodiSplitter):**  
  RPC-Namensraum : JSONRPC  
-
+  ![Splitter](docs/Splitter.png)  
+   
 ## 7. PHP-Befehlsreferenz
 
 ### 1. Kodi Addons
@@ -1882,6 +1912,14 @@ Eigenschaften von KodiSplitter:
  Version 1.6:
   - Fix: Splitter war bei IPS Neustart im falschen Zustand (verbunden), auch wenn Kodi nicht erreichbar war.  
 
+ Version 2.0:
+  - Fix: Fehler beim starten eines Favoriten über das WebFront.  
+  - Fix: Player Instanz hat Variablen nicht aktualisiert, wenn der Player von Stop/Pause mit Resume fortgesetzt wurde.  
+  - Fix: Fehlende Übersetzungen ergänzt.  
+  - Fix: Fehlende Screenshots ergänzt.  
+  - Neu: Kodi Discovery im lokalen Netzwerk.  
+  - Neu: Kodi Konfigurator nutzt Listen.  
+  
 ## 11. Spenden  
   
   Die Library ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  

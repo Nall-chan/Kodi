@@ -22,11 +22,11 @@
             [
                 {
                     "type": "Button",
-                    "label": "Scan",
+                    "caption": "Scan",
                     "onClick": "KODIAUDIOLIB_Scan($id);"
                 },{
                     "type": "Button",
-                    "label": "Clean",
+                    "caption": "Clean",
                     "onClick": "KODIAUDIOLIB_Clean($id);"
                 }
             ]

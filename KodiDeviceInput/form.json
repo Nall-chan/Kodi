@@ -10,11 +10,11 @@
                     "caption": "Remote:",
                     "options": [
                         {
-                            "label": "vertical",
+                            "caption": "vertical",
                             "value": "1"
                         },
                         {
-                            "label": "horizontal",
+                            "caption": "horizontal",
                             "value": "2"
                         }
                     ]
@@ -40,31 +40,31 @@
             [
                 {
                     "type": "Button",
-                    "label": "up",
+                    "caption": "up",
                     "onClick": "KODIINPUT_Up($id);"
                 }, {
                     "type": "Button",
-                    "label": "down",
+                    "caption": "down",
                     "onClick": "KODIINPUT_Down($id);"
                 }, {
                     "type": "Button",
-                    "label": "left",
+                    "caption": "left",
                     "onClick": "KODIINPUT_Left($id);"
                 }, {
                     "type": "Button",
-                    "label": "right",
+                    "caption": "right",
                     "onClick": "KODIINPUT_Right($id);"
                 }, {
                     "type": "Button",
-                    "label": "select",
+                    "caption": "select",
                     "onClick": "KODIINPUT_Select($id);"
                 }, {
                     "type": "Button",
-                    "label": "back",
+                    "caption": "back",
                     "onClick": "KODIINPUT_Back($id);"
                 }, {
                     "type": "Button",
-                    "label": "Contextmenu",
+                    "caption": "Contextmenu",
                     "onClick": "KODIINPUT_ContextMenu($id);"
                 }
             ]

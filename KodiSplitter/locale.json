@@ -2,7 +2,7 @@
     "translations": {
         "de": {
             "Open": "Öffnen",
-            "Host": "Adresse",
+            "Enter Address of Kodi in the parent Client-Socket.": "Adresse von Kodi im übergeordneten Client-Socket einstellen.",
             "JSON-RPC TCP-Port": "JSON-RPC TCP-Port",
             "Kodi-Webserver is needed for image download.": "Kodi-Webserver wird für Bilder download benötigt.",
             "Webserver-Port": "Webserver-Port",
@@ -10,7 +10,7 @@
             "Active": "Aktiv",
             "Username": "Benutzername",
             "Password": "Passwort",
-            "Advanced power watchdog": "Erweiterte Power-On Überwachung",
+            "Advanced power watchdog with ping request": "Erweiterte Power-On Überwachung mit Ping Anfragen",
             "Enabled": "Aktiv",
             "seconds": "Sekunden",
             "Kodi found.": "Kodi erreichbar.",

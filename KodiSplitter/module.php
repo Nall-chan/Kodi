@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+declare(strict_types = 1);
 
 /*
  * @addtogroup kodi
@@ -9,11 +9,17 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  * @package       Kodi
  * @file          module.php
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2018 Michael Tröger
+ * @copyright     2016 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.6
+ * @version       2.0
  *
  */
+require_once __DIR__ . '/../libs/BufferHelper.php';  // diverse Klassen
+require_once __DIR__ . '/../libs/ConstHelper.php';  // diverse Klassen
+require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
+require_once __DIR__ . '/../libs/ParentIOHelper.php';  // diverse Klassen
+require_once __DIR__ . '/../libs/SemaphoreHelper.php';  // diverse Klassen
+require_once(__DIR__ . "/../libs/KodiRPCClass.php");  // diverse Klassen
 
 /**
  * KodiSplitter Klasse für die Kommunikation mit der Kodi-RPC-Api.
@@ -32,6 +38,7 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiSplitter extends IPSModule
 {
+
     use BufferHelper,
         InstanceStatus,
         DebugHelper,
@@ -559,7 +566,7 @@ class KodiSplitter extends IPSModule
             $KodiData->CreateFromJSONString($JSON);
             if ($KodiData->Typ == Kodi_RPC_Data::$ResultTyp) { // Reply
                 try {
-                    $this->SendQueueUpdate($KodiData->Id, $KodiData);
+                    $this->SendQueueUpdate((int)$KodiData->Id, $KodiData);
                 } catch (Exception $exc) {
                     $buffer = $this->BufferIN;
                     $this->BufferIN = $JSON . $buffer;
@@ -595,9 +602,9 @@ class KodiSplitter extends IPSModule
                 throw new Exception('Instance has no active parent.', E_USER_NOTICE);
             }
             $this->SendDebug('Send', $KodiData, 0);
-            $this->SendQueuePush($KodiData->Id);
+            $this->SendQueuePush((int)$KodiData->Id);
             $this->SendDataToParent($KodiData);
-            $ReplyKodiData = $this->WaitForResponse($KodiData->Id);
+            $ReplyKodiData = $this->WaitForResponse((int)$KodiData->Id);
 
             if ($ReplyKodiData === false) {
                 throw new Exception('No anwser from Kodi', E_USER_NOTICE);
@@ -642,11 +649,11 @@ class KodiSplitter extends IPSModule
      * @param int $Id Die RPC-ID auf die gewartet wird.
      * @result mixed Enthält ein Kodi_RPC_Data-Objekt mit der Antwort, oder false bei einem Timeout.
      */
-    private function WaitForResponse($Id)
+    private function WaitForResponse(int $Id)
     {
         for ($i = 0; $i < 1000; $i++) {
             $ret = $this->ReplyJSONData;
-            if (!array_key_exists(intval($Id), $ret)) {
+            if (!array_key_exists($Id, $ret)) {
                 return false;
             }
             if ($ret[$Id] <> "") {
@@ -727,6 +734,7 @@ class KodiSplitter extends IPSModule
         $this->ReplyJSONData = $data;
         $this->unlock('ReplyJSONData');
     }
+
 }
 
 /** @} */

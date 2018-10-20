@@ -18,11 +18,11 @@
             [
                 {
                     "type": "Button",
-                    "label": "Mute on",
+                    "caption": "Mute on",
                     "onClick": "KODIAPP_SetMute($id, true);"
                 }, {
                     "type": "Button",
-                    "label": "Mute off",
+                    "caption": "Mute off",
                     "onClick": "KODIAPP_SetMute($id, false);"
                 }, {
                     "name": "Slider",
@@ -34,7 +34,7 @@
                 },
                 {
                     "type": "Button",
-                    "label": "Request all states",
+                    "caption": "Request all states",
                     "onClick": "KODIAPP_RequestState($id,'ALL');"
                 }
             ]

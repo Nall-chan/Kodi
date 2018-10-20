@@ -8,7 +8,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Enter Address of Kodi in the parent Client-Socket."
+                    "caption": "Enter Address of Kodi in the parent Client-Socket."
                 },
                 {
                     "name": "Port",
@@ -17,7 +17,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Kodi-Webserver is needed for image download."
+                    "caption": "Kodi-Webserver is needed for image download."
                 },
                 
                 {
@@ -26,7 +26,7 @@
                     "caption": "Webserver-Port"
                 },                {
                     "type": "Label",
-                    "label": "Optional HTTP Basic-Authentication:"
+                    "caption": "Optional HTTP Basic-Authentication:"
                 },
 {
                     "name": "BasisAuth",
@@ -45,7 +45,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Advanced power watchdog with ping request"
+                    "caption": "Advanced power watchdog with ping request"
                 },
                 {
                     "name": "Watchdog",

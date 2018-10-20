@@ -1,17 +1,21 @@
 <?php
 
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+declare(strict_types = 1);
+
 /*
  * @addtogroup kodi
  * @{
  *
  * @package       Kodi
+ * @file          module.php
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2018 Michael Tröger
+ * @copyright     2016 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.5
- * @example <b>Ohne</b>
+ * @version       2.0
+ *
  */
+require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+
 
 /**
  * KodiDevicePlaylist Klasse für den Namespace Playlist der KODI-API.

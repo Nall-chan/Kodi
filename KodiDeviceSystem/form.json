@@ -11,22 +11,22 @@
                     "caption": "Power-Off method:",
                     "options": [
                         {
-                            "label": "Shutdown",
+                            "caption": "Shutdown",
                             "value": 0
                         },
                         {
-                            "label": "Hibernate",
+                            "caption": "Hibernate",
                             "value": 1
                         },
                         {
-                            "label": "Suspend",
+                            "caption": "Suspend",
                             "value": 2
                         }
                     ]
                 },
                 {
                     "type": "Label",
-                    "label": "Model for Power-On script"
+                    "caption": "Model for Power-On script"
                 },
                 {
                     "name": "PreSelectScript",
@@ -34,15 +34,15 @@
                     "caption": "Model:",
                     "options": [
                         {
-                            "label": "no change",
+                            "caption": "no change",
                             "value": 0
                         },
                         {
-                            "label": "WOL with PHP",
+                            "caption": "WOL with PHP",
                             "value": 1
                         },
                         {
-                            "label": "WOL with Fritz-Box Project",
+                            "caption": "WOL with Fritz-Box Project",
                             "value": 2
                         }
                     ]
@@ -57,40 +57,40 @@
     "actions":
             [{
                     "type": "Button",
-                    "label": "Power ON",
+                    "caption": "Power ON",
                     "onClick": "KODISYS_Power($id,true);"
                 }, {
                     "type": "Button",
-                    "label": "Power OFF",
+                    "caption": "Power OFF",
                     "onClick": "KODISYS_Power($id,true);"
                 }, {
                     "type": "Button",
-                    "label": "WakeUp",
+                    "caption": "WakeUp",
                     "onClick": "KODISYS_WakeUp($id);"
                 }, {
                     "type": "Button",
-                    "label": "Shutdown",
+                    "caption": "Shutdown",
                     "onClick": "KODISYS_Shutdown($id);"
                 }, {
                     "type": "Button",
-                    "label": "Hibernate",
+                    "caption": "Hibernate",
                     "onClick": "KODISYS_Hibernate($id);"
                 }, {
                     "type": "Button",
-                    "label": "Suspend",
+                    "caption": "Suspend",
                     "onClick": "KODISYS_Suspend($id);"
                 }, {
                     "type": "Button",
-                    "label": "Reboot",
+                    "caption": "Reboot",
                     "onClick": "KODISYS_Reboot($id);"
                 }, {
                     "type": "Button",
-                    "label": "Eject Optical",
+                    "caption": "Eject Optical",
                     "onClick": "KODISYS_EjectOpticalDrive($id);"
                 },
                 {
                     "type": "Button",
-                    "label": "Request all states",
+                    "caption": "Request all states",
                     "onClick": "KODISYS_RequestState($id,'ALL');"
                 }
             ]

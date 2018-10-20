@@ -26,15 +26,15 @@
             [
                 {
                     "type": "Button",
-                    "label": "Fullscreen on",
+                    "caption": "Fullscreen on",
                     "onClick": "KODIGUI_SetFullscreen($id,true);"
                 }, {
                     "type": "Button",
-                    "label": "Fullscreen off",
+                    "caption": "Fullscreen off",
                     "onClick": "KODIGUI_SetFullscreen($id,false);"
                 }, {
                     "type": "Button",
-                    "label": "Request all states",
+                    "caption": "Request all states",
                     "onClick": "KODIGUI_RequestState($id,'ALL');"
                 }
             ]

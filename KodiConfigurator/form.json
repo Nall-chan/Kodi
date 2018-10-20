@@ -1,2 +1,20 @@
 {
-    }
+    "actions": [
+        {
+            "type": "Configurator",
+            "name": "Configurator",
+            "add": false,
+            "delete": true,
+            "columns": [{
+                    "caption": "Type",
+                    "name": "type",
+                    "width": "160px"
+                }, {
+                    "caption": "Name",
+                    "name": "name",
+                    "width": "auto"
+                }
+            ],
+            "values": []
+        }]
+}

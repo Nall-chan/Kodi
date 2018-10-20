@@ -7,7 +7,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Script for HTML-Box Desgin:"
+                    "caption": "Script for HTML-Box Desgin:"
                 },
                 {
                     "name": "Addonlistconfig",
@@ -16,7 +16,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Size (width) for addon thumnails:"
+                    "caption": "Size (width) for addon thumnails:"
                 },
                 {
                     "name": "ThumbSize",

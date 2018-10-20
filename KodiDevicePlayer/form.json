@@ -2,7 +2,7 @@
     "elements":
             [{
                     "type": "Label",
-                    "label": "Change off Player affected Status-Variables!"
+                    "caption": "Change off Player affected Status-Variables!"
                 },
                 {
                     "name": "PlayerID",
@@ -10,15 +10,15 @@
                     "caption": "Player:",
                     "options": [
                         {
-                            "label": "Audio",
+                            "caption": "Audio",
                             "value": 0
                         },
                         {
-                            "label": "Video",
+                            "caption": "Video",
                             "value": 1
                         },
                         {
-                            "label": "Pictures",
+                            "caption": "Pictures",
                             "value": 2
                         }
                     ]
@@ -34,19 +34,19 @@
                     "caption": "Cover:",
                     "options": [
                         {
-                            "label": "thumbnail (all)",
+                            "caption": "thumbnail (all)",
                             "value": "thumb"
                         },
                         {
-                            "label": "artist for thumbnail (audio)",
+                            "caption": "artist for thumbnail (audio)",
                             "value": "artist"
                         },
                         {
-                            "label": "poster for banner (video)",
+                            "caption": "poster for banner (video)",
                             "value": "poster"
                         },
                         {
-                            "label": "banner for poster (video)",
+                            "caption": "banner for poster (video)",
                             "value": "banner"
                         }
                     ]
@@ -56,7 +56,7 @@
             [
                 {
                     "type": "Button",
-                    "label": "Request all states",
+                    "caption": "Request all states",
                     "onClick": "KODIPLAYER_RequestState($id,'ALL');"
                 }
             ]

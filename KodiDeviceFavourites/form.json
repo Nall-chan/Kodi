@@ -7,7 +7,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Script for HTML-Box Desgin:"
+                    "caption": "Script for HTML-Box Desgin:"
                 },
                 {
                     "name": "Favlistconfig",
@@ -16,7 +16,7 @@
                 },
                 {
                     "type": "Label",
-                    "label": "Size (width) for favourites thumnails:"
+                    "caption": "Size (width) for favourites thumnails:"
                 },
                 {
                     "name": "ThumbSize",
