@@ -168,7 +168,7 @@ class KodiDeviceFavourites extends KodiBase
 
         $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
         $Config = @unserialize($result);
-        if (($Config === false) or ( !is_array($Config))) {
+        if (($Config === false) or (!is_array($Config))) {
             trigger_error('Error on read Favlistconfig-Script');
             return;
         }
@@ -236,7 +236,7 @@ class KodiDeviceFavourites extends KodiBase
      */
     protected function FilterFav($Fav)
     {
-        if (($Fav["type"] == "window") or ( $Fav["type"] == "media") or ( $Fav["type"] == "script")) {
+        if (($Fav["type"] == "window") or ($Fav["type"] == "media") or ($Fav["type"] == "script")) {
             return true;
         }
         return false;
@@ -428,7 +428,7 @@ echo serialize($Config);
      */
     protected function ProcessHookdata()
     {
-        if (!((isset($_GET["Type"])) and ( isset($_GET["Path"])))) {
+        if (!((isset($_GET["Type"])) and (isset($_GET["Path"])))) {
             $this->SendDebug('illegal HOOK', $_GET, 0);
             echo 'Illegal hook';
             return;
@@ -508,7 +508,6 @@ echo serialize($Config);
         }
         return array();
     }
-
 }
 
 /** @} */

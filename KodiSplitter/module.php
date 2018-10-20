@@ -38,7 +38,6 @@ require_once(__DIR__ . "/../libs/KodiRPCClass.php");  // diverse Klassen
  */
 class KodiSplitter extends IPSModule
 {
-
     use BufferHelper,
         InstanceStatus,
         DebugHelper,
@@ -734,7 +733,6 @@ class KodiSplitter extends IPSModule
         $this->ReplyJSONData = $data;
         $this->unlock('ReplyJSONData');
     }
-
 }
 
 /** @} */

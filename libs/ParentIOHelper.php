@@ -51,7 +51,7 @@ trait InstanceStatus
     /**
      * Ermittelt den Parent und verwaltet die Einträge des Parent im MessageSink
      * Ermöglicht es das Statusänderungen des Parent empfangen werden können.
-     * 
+     *
      * @access protected
      * @return int ID des Parent.
      */
@@ -77,7 +77,7 @@ trait InstanceStatus
 
     /**
      * Prüft den Parent auf vorhandensein und Status.
-     * 
+     *
      * @access protected
      * @return bool True wenn Parent vorhanden und in Status 102, sonst false.
      */
@@ -99,5 +99,4 @@ trait InstanceStatus
         }
         return false;
     }
-
 }

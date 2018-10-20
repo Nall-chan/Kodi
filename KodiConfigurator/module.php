@@ -245,7 +245,6 @@ class KodiConfigurator extends IPSModule
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
     }
-
 }
 
 /** @} */
