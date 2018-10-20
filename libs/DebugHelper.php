@@ -15,7 +15,7 @@ declare(strict_types = 1);
 
 /**
  * DebugHelper ergänzt SendDebug um die Möglichkeit Array und Objekte auszugeben.
- * 
+ *
  */
 trait DebugHelper
 {
@@ -68,5 +68,4 @@ trait DebugHelper
             }
         }
     }
-
 }
