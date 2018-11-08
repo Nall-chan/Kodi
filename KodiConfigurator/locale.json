@@ -18,7 +18,9 @@
             "Audio Playlist": "Audio Playlist",
             "Video Playlist": "Video Playlist",
             "Picture Playlist": "Bilder Playlist",
-            "Not connected to Splitter.": "Nicht mit einem Splitter verbunden."
+            "Not connected to Splitter.": "Nicht mit einem Splitter verbunden.",
+            "Location": "Lokation",
+            "Instance has no active parent.": "Instanz hat keinen aktiven Parent."
         }
     }
 }

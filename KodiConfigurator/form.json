@@ -12,6 +12,10 @@
                 }, {
                     "caption": "Name",
                     "name": "name",
+                    "width": "300px"
+                }, {
+                    "caption": "Location",
+                    "name": "location",
                     "width": "auto"
                 }
             ],

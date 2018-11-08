@@ -13,6 +13,7 @@
             "Advanced power watchdog with ping request": "Erweiterte Power-On Überwachung mit Ping Anfragen",
             "Enabled": "Aktiv",
             "seconds": "Sekunden",
+            "Interval": "Intervall",
             "Kodi found.": "Kodi erreichbar.",
             "Interface closed.": "Interface geschlossen.",
             "Host or port is empty.": "Adresse und Port darf nicht leer sein.",

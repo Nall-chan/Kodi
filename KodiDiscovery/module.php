@@ -10,7 +10,7 @@ declare(strict_types = 1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.0
+ * @version       2.01
  *
  */
 require_once __DIR__ . '/../libs/BufferHelper.php';  // diverse Klassen
@@ -23,13 +23,14 @@ require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
  * @copyright     2018 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  *
- * @version       2.0
+ * @version       2.01
  *
  * @example <b>Ohne</b>
  * @property array $Devices
  */
 class KodiDiscovery extends ipsmodule
 {
+
     use DebugHelper,
         BufferHelper;
     /**
@@ -49,12 +50,11 @@ class KodiDiscovery extends ipsmodule
     {
         $this->RegisterMessage(0, IPS_KERNELSTARTED);
         parent::ApplyChanges();
-
+        $this->SetTimerInterval('Discovery', 300000);
         if (IPS_GetKernelRunlevel() != KR_READY) {
             return;
         }
         $this->Devices = $this->DiscoverDevices();
-        $this->SetTimerInterval('Discovery', 300000);
     }
 
     /**
@@ -109,7 +109,7 @@ class KodiDiscovery extends ipsmodule
                 'IPAddress'  => $IPAddress,
                 'devicename' => $Device['devicename'],
                 'name'       => $Device['devicename'],
-                'version'      => $Device['version'],
+                'version'    => $Device['version'],
                 'instanceID' => 0
             ];
             if ($InstanceID !== false) {
@@ -146,7 +146,7 @@ class KodiDiscovery extends ipsmodule
         foreach ($IPSDevices as $InstanceID => $IPAddress) {
             $Values[] = [
                 'IPAddress'  => $IPAddress,
-                'version'      => '',
+                'version'    => '',
                 'devicename' => '',
                 'name'       => IPS_GetLocation($InstanceID),
                 'instanceID' => $InstanceID
@@ -240,10 +240,16 @@ class KodiDiscovery extends ipsmodule
             if ((string) $Xml->device->modelName = !'Kodi') {
                 continue;
             }
+            $presentationURL = explode(':', (string) $Xml->device->presentationURL);
+            if (count($presentationURL) < 3) {
+                $WebPort = 80;
+            } else {
+                $WebPort = (int) $presentationURL[2];
+            }
             $Kodi[$IPAddress] = [
                 'devicename' => (string) $Xml->device->friendlyName,
-                'version'      => explode(' ', (string) $Xml->device->modelNumber)[0],
-                'WebPort'    => (int) explode(':', (string) $Xml->device->presentationURL)[2],
+                'version'    => explode(' ', (string) $Xml->device->modelNumber)[0],
+                'WebPort'    => $WebPort,
                 'RPCPort'    => 9090
             ];
         }
@@ -257,6 +263,7 @@ class KodiDiscovery extends ipsmodule
         $this->Devices = $this->DiscoverDevices();
         // Alt neu vergleich fehlt, sowie die Events an IPS senden wenn neues Gerät im Netz gefunden wurde.
     }
+
 }
 
 if (count(IPS_GetInstanceListByModuleID("{D297668E-5D80-4A77-9F37-A33AA35F4F4B}")) == 0) {

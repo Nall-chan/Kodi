@@ -1920,6 +1920,9 @@ Eigenschaften von KodiSplitter:
   - Neu: Kodi Discovery im lokalen Netzwerk.  
   - Neu: Kodi Konfigurator nutzt Listen.  
   
+Version 2.01:
+  - Fix: HTTP-Port 80 wurde von der Discovery-Instanz nicht erkannt.  
+
 ## 11. Spenden  
   
   Die Library ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  

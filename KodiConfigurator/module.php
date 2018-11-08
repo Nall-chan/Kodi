@@ -42,7 +42,7 @@ class KodiConfigurator extends IPSModule
         "Files"         => "{54827867-BB3B-4ACC-A453-7A8D4DC78130}",
         "GUI"           => "{E15F2C11-0B28-4CFB-AEE6-463BD313A964}",
         "Input"         => "{9F3BE8BB-4610-49F4-A41A-40E14F641F43}",
-        "TV/Radio"           => "{9D73D46E-7B80-4814-A7B2-31768DC6AB7E}",
+        "TV/Radio"      => "{9D73D46E-7B80-4814-A7B2-31768DC6AB7E}",
         "System"        => "{03E18A60-02FD-45E8-8A2C-1F8E247C92D0}",
         "Video Library" => "{07943DF4-FAB9-454F-AA9E-702A5F9C9D57}"
     );
@@ -54,8 +54,8 @@ class KodiConfigurator extends IPSModule
      *  @var array Key ist der Name, Index "GUID" ist die GUID und Index "Typ" ist der Medientyp.
      */
     public static $PlayerTypes = array(
-        "Audio Player"    => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", 'PlayerID' => 0),
-        "Video Player"    => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", 'PlayerID' => 1),
+        "Audio Player"   => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", 'PlayerID' => 0),
+        "Video Player"   => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", 'PlayerID' => 1),
         "Picture Player" => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", 'PlayerID' => 2),
     );
 
@@ -180,11 +180,29 @@ class KodiConfigurator extends IPSModule
      */
     public function GetConfigurationForm()
     {
+
+
         $SplitterID = @$this->GetSplitter();
 
         if ($SplitterID === false) {
             return '{"actions":[{"type": "Label","caption": "Not connected to Splitter."}]}';
         }
+        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        if (IPS_GetInstance($SplitterID)['InstanceStatus'] != IS_ACTIVE) {
+            $Form['actions'][] = [
+                "type"  => "PopupAlert",
+                "popup" => [
+                    "items" => [[
+                    "type"    => "Label",
+                    "caption" => "Instance has no active parent."
+                        ]]
+                ]
+            ];
+            $this->SendDebug('FORM', json_encode($Form), 0);
+            $this->SendDebug('FORM', json_last_error_msg(), 0);
+            return json_encode($Form);
+        }
+
         foreach (static::$PlayerTypes as $Name => $ModuleData) {
             $Value = [
                 'type'   => $this->Translate($Name),
@@ -196,8 +214,10 @@ class KodiConfigurator extends IPSModule
             $InstanzID = $this->SearchPlayerInstance($SplitterID, $ModuleData['GUID'], $ModuleData['PlayerID']);
             if ($InstanzID == false) {
                 $Value['name'] = 'Kodi ' . $this->Translate($Name);
+                $Value['location'] = '';
             } else {
-                $Value['name'] = IPS_GetLocation($InstanzID);
+                $Value['name'] = IPS_GetName($InstanzID);
+                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
                 $Value['instanceID'] = $InstanzID;
             }
             $Values[] = $Value;
@@ -214,8 +234,10 @@ class KodiConfigurator extends IPSModule
             $InstanzID = $this->SearchPlaylistInstance($SplitterID, $ModuleData['GUID'], $ModuleData['PlaylistID']);
             if ($InstanzID == false) {
                 $Value['name'] = 'Kodi ' . $this->Translate($Name);
+                $Value['location'] = '';
             } else {
-                $Value['name'] = IPS_GetLocation($InstanzID);
+                $Value['name'] = IPS_GetName($InstanzID);
+                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
                 $Value['instanceID'] = $InstanzID;
             }
             $Values[] = $Value;
@@ -232,19 +254,21 @@ class KodiConfigurator extends IPSModule
             $InstanzID = $this->SearchInstance($SplitterID, $ModuleID);
             if ($InstanzID == false) {
                 $Value['name'] = 'Kodi ' . $this->Translate($Name);
+                $Value['location'] = '';
             } else {
-                $Value['name'] = IPS_GetLocation($InstanzID);
+                $Value['name'] = IPS_GetName($InstanzID);
+                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
                 $Value['instanceID'] = $InstanzID;
             }
             $Values[] = $Value;
         }
 
-        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         $Form['actions'][0]['values'] = $Values;
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
     }
+
 }
 
 /** @} */

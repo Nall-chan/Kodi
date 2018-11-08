@@ -3,11 +3,10 @@
     "author": "Michael Tr\u00f6ger",
     "name": "Kodi Library",
     "url": "https://github.com/Nall-chan/IPSKodi/",
-    "version": "1.3",
-    "build": 125,
-    "date": 1485256481,
-    "title": "Steuern, abfragen visaliesieren von Kodi in IPS.",
-    "description": "Ermöglicht das Steuern und das empfangen von Statusänderungen, von der Mediacenter-Software Kodi über das Netzwerk. Direkte Bedienung im WebFront möglich. Abbilden fast der gesamten Kodi-API in vollen Funktionsumfangs in PHP-Befehlen für eigene Scripte in IPS. ",
-    "tags": ["Kodi", "HTPC", "Mediacenter", "Medien"],
-    "req_ips_version": "4.1"
+    "compatibility": {
+        "version": "5.0"
+    },
+    "version": "2.01",
+    "build": 101,
+    "date": 1541607648
 }
