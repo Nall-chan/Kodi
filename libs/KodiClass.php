@@ -33,7 +33,6 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  */
 abstract class KodiBase extends IPSModule
 {
-
     use VariableProfileHelper,
         WebhookHelper,
         DebugHelper,
@@ -536,11 +535,11 @@ sleep(10).then(() => {
             return false;
         }
         if (GetValueInteger($id) <> $value) {
-            if (!(($Ident[0] == "_") or ( $Ident == "speed") or ( $Ident == "repeat") or ( IPS_GetVariable($id)["VariableAction"] <> 0))) {
-                if (($value <= 0) and ( !IPS_GetObject($id)["ObjectIsHidden"])) {
+            if (!(($Ident[0] == "_") or ($Ident == "speed") or ($Ident == "repeat") or (IPS_GetVariable($id)["VariableAction"] <> 0))) {
+                if (($value <= 0) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, true);
                 }
-                if (($value > 0) and ( IPS_GetObject($id)["ObjectIsHidden"])) {
+                if (($value > 0) and (IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -567,10 +566,10 @@ sleep(10).then(() => {
         }
         if (GetValueString($id) <> $value) {
             if ($Ident[0] <> "_") {
-                if ((($value == "") or ( $value == "unknown")) and ( !IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value == "") or ($value == "unknown")) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, true);
                 }
-                if ((($value <> "") and ( $value <> "unknown")) and ( IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value <> "") and ($value <> "unknown")) and (IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -596,7 +595,6 @@ sleep(10).then(() => {
         } //bail out
         IPS_DeleteScript($sid, true);
     }
-
 }
 
 /** @} */

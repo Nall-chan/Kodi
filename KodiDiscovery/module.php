@@ -30,7 +30,6 @@ require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
  */
 class KodiDiscovery extends ipsmodule
 {
-
     use DebugHelper,
         BufferHelper;
     /**
@@ -263,7 +262,6 @@ class KodiDiscovery extends ipsmodule
         $this->Devices = $this->DiscoverDevices();
         // Alt neu vergleich fehlt, sowie die Events an IPS senden wenn neues Gerät im Netz gefunden wurde.
     }
-
 }
 
 if (count(IPS_GetInstanceListByModuleID("{D297668E-5D80-4A77-9F37-A33AA35F4F4B}")) == 0) {

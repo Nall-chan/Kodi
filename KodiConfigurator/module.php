@@ -180,8 +180,6 @@ class KodiConfigurator extends IPSModule
      */
     public function GetConfigurationForm()
     {
-
-
         $SplitterID = @$this->GetSplitter();
 
         if ($SplitterID === false) {
@@ -268,7 +266,6 @@ class KodiConfigurator extends IPSModule
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
     }
-
 }
 
 /** @} */
