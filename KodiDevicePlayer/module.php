@@ -485,7 +485,7 @@ class KodiDevicePlayer extends KodiBase
         $KodiData->GetActivePlayers();
         $ret = @$this->SendDirect($KodiData);
 
-        if (is_null($ret) or (count($ret) == 0)) {
+        if (is_null($ret) or ( count($ret) == 0)) {
             $this->isActive = false;
         } else {
             $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
@@ -602,7 +602,7 @@ class KodiDevicePlayer extends KodiBase
                             if ($this->PlayerId <> self::Video) {
                                 break;
                             }
-                            if (is_object($value)) {
+                            /*if (is_object($value)) {
                                 if (property_exists($value, 'index')) {
                                     $this->SetValueInteger('subtitle', (int) $value->index);
                                 } else {
@@ -610,7 +610,7 @@ class KodiDevicePlayer extends KodiBase
                                 }
                             } else {
                                 $this->SetValueInteger('subtitle', -1);
-                            }
+                            }*/
                             break;
                         case "audiostreams":
                             if ($this->PlayerId <> self::Video) {
@@ -1469,7 +1469,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ($Value > 2)) {
+        if (($Value < 0) or ( $Value > 2)) {
             trigger_error('Value must be between 0 and 2', E_USER_NOTICE);
             return false;
         }
@@ -1579,7 +1579,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ($Value > 100)) {
+        if (($Value < 0) or ( $Value > 100)) {
             trigger_error('Value must be between 0 and 100', E_USER_NOTICE);
             return false;
         }
@@ -1868,9 +1868,7 @@ class KodiDevicePlayer extends KodiBase
     private function CreateSubtitleProfil($Subtitles)
     {
         $Assos[0] = array(-1, "Aus", "", -1);
-        $Assos = $this->
-                CreateProfilArray($Subtitles, $Assos);
-
+        $Assos = $this->CreateProfilArray($Subtitles, $Assos);
         $this->RegisterProfileIntegerEx("Subtitels." . $this->InstanceID . ".Kodi", "", "", "", $Assos);
     }
 
@@ -1882,6 +1880,7 @@ class KodiDevicePlayer extends KodiBase
         $Assos = $this->CreateProfilArray($AudioStream);
         $this->RegisterProfileIntegerEx("AudioStream." . $this->InstanceID . ".Kodi", "", "", "", $Assos);
     }
+
 }
 
 /** @} */

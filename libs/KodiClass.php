@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types = 1);
 /** @addtogroup kodi
  * @{
@@ -33,6 +34,7 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  */
 abstract class KodiBase extends IPSModule
 {
+
     use VariableProfileHelper,
         WebhookHelper,
         DebugHelper,
@@ -184,14 +186,14 @@ abstract class KodiBase extends IPSModule
      * Erzeugt ein lesbares Zeitformat.
      *
      * @access protected
-     * @param object|int $name Description $name Description object| $Time Die zu formatierende Zeit als Kodi-Objekt oder als Sekunden.
+     * @param object|int $Time Die zu formatierende Zeit als Kodi-Objekt oder als Sekunden.
      * @return string Gibt die formatierte Zeit zurück.
      */
     protected function ConvertTime($Time)
     {
         if (is_object($Time)) {
-            $Time->minutes = str_pad($Time->minutes, 2, "00", STR_PAD_LEFT);
-            $Time->seconds = str_pad($Time->seconds, 2, "00", STR_PAD_LEFT);
+            $Time->minutes = str_pad((string) $Time->minutes, 2, "00", STR_PAD_LEFT);
+            $Time->seconds = str_pad((string) $Time->seconds, 2, "00", STR_PAD_LEFT);
             if ($Time->hours > 0) {
                 return $Time->hours . ":" . $Time->minutes . ":" . $Time->seconds;
             }
@@ -535,11 +537,11 @@ sleep(10).then(() => {
             return false;
         }
         if (GetValueInteger($id) <> $value) {
-            if (!(($Ident[0] == "_") or ($Ident == "speed") or ($Ident == "repeat") or (IPS_GetVariable($id)["VariableAction"] <> 0))) {
-                if (($value <= 0) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
+            if (!(($Ident[0] == "_") or ( $Ident == "speed") or ( $Ident == "repeat") or ( IPS_GetVariable($id)["VariableAction"] <> 0))) {
+                if (($value <= 0) and ( !IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, true);
                 }
-                if (($value > 0) and (IPS_GetObject($id)["ObjectIsHidden"])) {
+                if (($value > 0) and ( IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -566,10 +568,10 @@ sleep(10).then(() => {
         }
         if (GetValueString($id) <> $value) {
             if ($Ident[0] <> "_") {
-                if ((($value == "") or ($value == "unknown")) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value == "") or ( $value == "unknown")) and ( !IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, true);
                 }
-                if ((($value <> "") and ($value <> "unknown")) and (IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value <> "") and ( $value <> "unknown")) and ( IPS_GetObject($id)["ObjectIsHidden"])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -595,6 +597,7 @@ sleep(10).then(() => {
         } //bail out
         IPS_DeleteScript($sid, true);
     }
+
 }
 
 /** @} */
