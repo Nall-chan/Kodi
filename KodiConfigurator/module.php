@@ -103,7 +103,6 @@ class KodiConfigurator extends IPSModule
     {
         $SplitterID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
         if ($SplitterID == 0) {
-            trigger_error('Not connected to Splitter.' . PHP_EOL, E_USER_WARNING);
             return false;
         }
         return $SplitterID;
@@ -180,10 +179,18 @@ class KodiConfigurator extends IPSModule
      */
     public function GetConfigurationForm()
     {
-        $SplitterID = @$this->GetSplitter();
+        $SplitterID = $this->GetSplitter();
 
         if ($SplitterID === false) {
-            return '{"actions":[{"type": "Label","caption": "Not connected to Splitter."}]}';
+            $Form['actions'][] = [
+                "type"  => "PopupAlert",
+                "popup" => [
+                    "items" => [[
+                    "type"    => "Label",
+                    "caption" => "Not connected to Splitter."
+                        ]]
+                ]
+            ];
         }
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         if (IPS_GetInstance($SplitterID)['InstanceStatus'] != IS_ACTIVE) {
@@ -196,9 +203,6 @@ class KodiConfigurator extends IPSModule
                         ]]
                 ]
             ];
-            $this->SendDebug('FORM', json_encode($Form), 0);
-            $this->SendDebug('FORM', json_last_error_msg(), 0);
-            return json_encode($Form);
         }
 
         foreach (static::$PlayerTypes as $Name => $ModuleData) {
@@ -266,6 +270,7 @@ class KodiConfigurator extends IPSModule
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
     }
+
 }
 
 /** @} */

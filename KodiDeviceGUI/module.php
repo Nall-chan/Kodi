@@ -170,7 +170,6 @@ class KodiDeviceGUI extends KodiBase
         switch ($Ident) {
             case "fullscreen":
                 return $this->SetFullscreen($Value);
-                break;
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
                 break;
