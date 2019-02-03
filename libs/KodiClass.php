@@ -332,7 +332,7 @@ sleep(10).then(() => {
                 }
                 $factor = ($factorh < $factorw ? $factorw : $factorh);
                 if ($factor <> 1) {
-                    $image = imagescale($image, $width / $factor, $height / $factor);
+                    $image = imagescale($image, (int)($width / $factor), (int)($height / $factor));
                 }
                 imagealphablending($image, false);
                 imagesavealpha($image, true);
