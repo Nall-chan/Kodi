@@ -264,10 +264,4 @@ class KodiDiscovery extends ipsmodule
     }
 }
 
-if (count(IPS_GetInstanceListByModuleID("{D297668E-5D80-4A77-9F37-A33AA35F4F4B}")) == 0) {
-    $id = IPS_CreateInstance("{D297668E-5D80-4A77-9F37-A33AA35F4F4B}");
-    IPS_SetName($id, "Kodi Discovery");
-}
-
-
 /* @} */
