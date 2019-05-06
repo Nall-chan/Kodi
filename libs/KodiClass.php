@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /** @addtogroup kodi
  * @{
  *
@@ -11,13 +11,14 @@ declare(strict_types = 1);
  * @version       2.0
  * @example <b>Ohne</b>
  */
-require_once __DIR__ . '/../libs/BufferHelper.php';  // diverse Klassen
-require_once __DIR__ . '/../libs/ConstHelper.php';  // diverse Klassen
-require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
-require_once __DIR__ . '/../libs/ParentIOHelper.php';  // diverse Klassen
-require_once __DIR__ . '/../libs/WebhookHelper.php';
-require_once __DIR__ . '/../libs/VariableProfileHelper.php';
-require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
+eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
+eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/ParentIOHelper.php') . '}');
+/* eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/VariableHelper.php') . '}'); */
+eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/VariableProfileHelper.php') . '}');
+eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/WebhookHelper.php') . '}');
+
+require_once __DIR__ . '/DebugHelper.php';  // diverse Klassen
+require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
 
 /**
  * Basisklasse für alle Kodi IPS-Instanzklassen.
@@ -34,12 +35,15 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  */
 abstract class KodiBase extends IPSModule
 {
-    use VariableProfileHelper,
-        WebhookHelper,
-        DebugHelper,
-        BufferHelper,
-        InstanceStatus {
-        InstanceStatus::MessageSink as IOMessageSink;
+
+    use \KodiBase\VariableProfileHelper,
+        \KodiBase\WebhookHelper,
+        \KodiBase\DebugHelper,
+        \KodiBase\BufferHelper,
+        \KodiBase\InstanceStatus {
+        \KodiBase\InstanceStatus::MessageSink as IOMessageSink;
+        \KodiBase\InstanceStatus::RegisterParent as IORegisterParent;
+        \KodiBase\InstanceStatus::RequestAction as IORequestAction;
     }
     /**
      * RPC-Namespace
@@ -47,7 +51,7 @@ abstract class KodiBase extends IPSModule
      * @access private
      * @var string
      */
-    public static $Namespace;
+    protected static $Namespace;
 
     /**
      * Alle Properties des RPC-Namespace
@@ -55,7 +59,7 @@ abstract class KodiBase extends IPSModule
      * @access private
      * @var array
      */
-    public static $Properties;
+    protected static $Properties;
 
     /**
      * Interne Funktion des SDK.
@@ -65,7 +69,7 @@ abstract class KodiBase extends IPSModule
     public function Create()
     {
         parent::Create();
-        $this->ConnectParent("{D2F106B5-4473-4C19-A48F-812E8BAA316C}");
+        $this->ConnectParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
         $this->ParentID = 0;
     }
 
@@ -81,19 +85,19 @@ abstract class KodiBase extends IPSModule
         $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
         $this->ParentID = 0;
 
-        $this->UnregisterVariable("_ReplyJSONData");
+        $this->UnregisterVariable('_ReplyJSONData');
 
         if (is_array(static::$Namespace)) {
-            $Lines = array();
+            $Lines = [];
             foreach (static::$Namespace as $Trigger) {
                 $Lines[] = '.*"Namespace":"' . $Trigger . '".*';
             }
             $Line = implode('|', $Lines);
-            $this->SetReceiveDataFilter("(" . $Line . ")");
+            $this->SetReceiveDataFilter('(' . $Line . ')');
         } else {
             $this->SetReceiveDataFilter('.*"Namespace":"' . static::$Namespace . '".*');
         }
-        // Wenn Kernel nicht bereit, dann warten... KR_READY über Splitter kommt ja gleich
+
         parent::ApplyChanges();
 
         if (IPS_GetKernelRunlevel() <> KR_READY) {
@@ -131,10 +135,20 @@ abstract class KodiBase extends IPSModule
      */
     protected function KernelReady()
     {
-        $this->RegisterParent();
-        if ($this->HasActiveParent()) {
-            $this->IOChangeState(IS_ACTIVE);
+        $this->ApplyChanges();
+    }
+
+    protected function RegisterParent()
+    {
+        $SplitterId = $this->IORegisterParent();
+        if ($SplitterId > 0) {
+            $IOId = @IPS_GetInstance($SplitterId)['ConnectionID'];
+            if ($IOId > 0) {
+                $this->SetSummary(IPS_GetProperty($IOId, 'Host'));
+                return;
+            }
         }
+        $this->SetSummary(('none'));
     }
 
     /**
@@ -145,8 +159,16 @@ abstract class KodiBase extends IPSModule
     {
         $this->SendDebug('ParentChangeState', $State, 0);
         if ($State == IS_ACTIVE) {
-            $this->RequestProperties(array("properties" => static::$Properties));
+            $this->RequestProperties(['properties' => static::$Properties]);
         }
+    }
+
+    public function RequestAction($Ident, $Value)
+    {
+        if ($this->IORequestAction($Ident, $Value)) {
+            return true;
+        }
+        return false;
     }
 
     ################## PRIVATE
@@ -159,10 +181,10 @@ abstract class KodiBase extends IPSModule
      */
     protected function RequestProperties(array $Params)
     {
-        if (count($Params["properties"]) == 0) {
+        if (count($Params['properties']) == 0) {
             return true;
         }
-        $this->SendDebug('RequestProperties', implode(',', $Params["properties"]), 0);
+        $this->SendDebug('RequestProperties', implode(',', $Params['properties']), 0);
         $KodiData = new Kodi_RPC_Data(static::$Namespace, 'GetProperties', $Params);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
@@ -191,18 +213,18 @@ abstract class KodiBase extends IPSModule
     protected function ConvertTime($Time)
     {
         if (is_object($Time)) {
-            $Time->minutes = str_pad((string) $Time->minutes, 2, "00", STR_PAD_LEFT);
-            $Time->seconds = str_pad((string) $Time->seconds, 2, "00", STR_PAD_LEFT);
+            $Time->minutes = str_pad((string) $Time->minutes, 2, '00', STR_PAD_LEFT);
+            $Time->seconds = str_pad((string) $Time->seconds, 2, '00', STR_PAD_LEFT);
             if ($Time->hours > 0) {
-                return $Time->hours . ":" . $Time->minutes . ":" . $Time->seconds;
+                return $Time->hours . ':' . $Time->minutes . ':' . $Time->seconds;
             }
-            return $Time->minutes . ":" . $Time->seconds;
+            return $Time->minutes . ':' . $Time->seconds;
         }
         if (is_int($Time)) {
             if ($Time > 3600) {
-                return date("H:i:s", $Time - (gettimeofday()["dsttime"] * 3600));
+                return date('H:i:s', $Time - (gettimeofday()['dsttime'] * 3600));
             } else {
-                return date("i:s", $Time);
+                return date('i:s', $Time);
             }
         }
     }
@@ -216,7 +238,7 @@ abstract class KodiBase extends IPSModule
      */
     protected function GetTableHeader($Config)
     {
-        $html = "";
+        $html = '';
         // JS Rückkanal erzeugen
         $html .= '<script>
 //window.xhrGet' . $this->InstanceID . '=
@@ -259,11 +281,11 @@ sleep(10).then(() => {
 </script>';
         // Button Styles erzeugen
         if (isset($Config['Button'])) {
-            $html .= "<style>" . PHP_EOL;
+            $html .= '<style>' . PHP_EOL;
             foreach ($Config['Button'] as $Class => $Button) {
                 $html .= '.' . $Class . ' {' . $Button . '}' . PHP_EOL;
             }
-            $html .= "</style>" . PHP_EOL;
+            $html .= '</style>' . PHP_EOL;
         }
         // Kopf der Tabelle erzeugen
         $html .= '<table style="' . $Config['Style']['T'] . '">' . PHP_EOL;
@@ -307,7 +329,7 @@ sleep(10).then(() => {
         if ($this->ParentID == 0) {
             return false;
         }
-        if ($file == "") {
+        if ($file == '') {
             return false;
         }
 
@@ -332,7 +354,7 @@ sleep(10).then(() => {
                 }
                 $factor = ($factorh < $factorw ? $factorw : $factorh);
                 if ($factor <> 1) {
-                    $image = imagescale($image, (int)($width / $factor), (int)($height / $factor));
+                    $image = imagescale($image, (int) ($width / $factor), (int) ($height / $factor));
                 }
                 imagealphablending($image, false);
                 imagesavealpha($image, true);
@@ -357,16 +379,16 @@ sleep(10).then(() => {
     public function RequestState(string $Ident)
     {
         if ($Ident == 'ALL') {
-            return $this->RequestProperties(array("properties" => static::$Properties));
+            return $this->RequestProperties(['properties' => static::$Properties]);
         }
         if ($Ident == 'PARTIAL') {
-            return $this->RequestProperties(array("properties" => static::$PartialProperties));
+            return $this->RequestProperties(['properties' => static::$PartialProperties]);
         }
         if (!in_array($Ident, static::$Properties)) {
             trigger_error('Property not found.');
             return false;
         }
-        return $this->RequestProperties(array("properties" => array($Ident)));
+        return $this->RequestProperties(['properties' => [$Ident]]);
     }
 
     ################## Datapoints
@@ -439,25 +461,25 @@ sleep(10).then(() => {
             $SplitterInstance = IPS_GetInstance($this->ParentID);
 
             $Data = $KodiData->ToRawRPCJSONString();
-            if (@IPS_GetProperty($SplitterInstance['ConnectionID'], "Open") === false) {
+            if (@IPS_GetProperty($SplitterInstance['ConnectionID'], 'Open') === false) {
                 throw new Exception('Instance inactiv.', E_USER_NOTICE);
             }
 
-            $Host = @IPS_GetProperty($SplitterInstance['ConnectionID'], "Host");
-            if ($Host == "") {
+            $Host = @IPS_GetProperty($SplitterInstance['ConnectionID'], 'Host');
+            if ($Host == '') {
                 return null;
             }
 
-            $URI = $Host . ":" . IPS_GetProperty($this->ParentID, "Webport") . "/jsonrpc";
+            $URI = $Host . ':' . IPS_GetProperty($this->ParentID, 'Webport') . '/jsonrpc';
             $UseBasisAuth = IPS_GetProperty($this->ParentID, 'BasisAuth');
             $User = IPS_GetProperty($this->ParentID, 'Username');
             $Pass = IPS_GetProperty($this->ParentID, 'Password');
 
-            $header[] = "Accept: application/json";
-            $header[] = "Cache-Control: max-age=0";
-            $header[] = "Connection: close";
-            $header[] = "Accept-Charset: UTF-8";
-            $header[] = "Content-type: application/json;charset=\"UTF-8\"";
+            $header[] = 'Accept: application/json';
+            $header[] = 'Cache-Control: max-age=0';
+            $header[] = 'Connection: close';
+            $header[] = 'Accept-Charset: UTF-8';
+            $header[] = 'Content-type: application/json;charset="UTF-8"';
             $ch = curl_init('http://' . $URI);
             curl_setopt($ch, CURLOPT_HEADER, false);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
@@ -473,14 +495,14 @@ sleep(10).then(() => {
                 curl_setopt($ch, CURLOPT_USERPWD, $User . ':' . $Pass);
             }
 
-            $this->SendDebug("Send Direct", $Data, 0);
+            $this->SendDebug('Send Direct', $Data, 0);
             $result = curl_exec($ch);
             curl_close($ch);
 
             if ($result === false) {
                 throw new Exception('Kodi unreachable', E_USER_NOTICE);
             }
-            $this->SendDebug("Receive Direct", $result, 0);
+            $this->SendDebug('Receive Direct', $result, 0);
 
             $ReplayKodiData = new Kodi_RPC_Data();
             $ReplayKodiData->CreateFromJSONString($result);
@@ -488,13 +510,13 @@ sleep(10).then(() => {
             if (is_a($ret, 'KodiRPCException')) {
                 throw $ret;
             }
-            $this->SendDebug("Receive Direct", $ReplayKodiData, 0);
+            $this->SendDebug('Receive Direct', $ReplayKodiData, 0);
             return $ret;
         } catch (KodiRPCException $ex) {
-            $this->SendDebug("Receive Direct", $ex, 0);
+            $this->SendDebug('Receive Direct', $ex, 0);
             trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage() . ' in ' . get_called_class(), E_USER_NOTICE);
         } catch (Exception $ex) {
-            $this->SendDebug("Receive Direct", $ex->getMessage(), 0);
+            $this->SendDebug('Receive Direct', $ex->getMessage(), 0);
             trigger_error($ex->getMessage(), $ex->getCode());
         }
         return null;
@@ -536,11 +558,11 @@ sleep(10).then(() => {
             return false;
         }
         if (GetValueInteger($id) <> $value) {
-            if (!(($Ident[0] == "_") or ($Ident == "speed") or ($Ident == "repeat") or (IPS_GetVariable($id)["VariableAction"] <> 0))) {
-                if (($value <= 0) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
+            if (!(($Ident[0] == '_') or ( $Ident == 'speed') or ( $Ident == 'repeat') or ( IPS_GetVariable($id)['VariableAction'] <> 0))) {
+                if (($value <= 0) and ( !IPS_GetObject($id)['ObjectIsHidden'])) {
                     IPS_SetHidden($id, true);
                 }
-                if (($value > 0) and (IPS_GetObject($id)["ObjectIsHidden"])) {
+                if (($value > 0) and ( IPS_GetObject($id)['ObjectIsHidden'])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -566,11 +588,11 @@ sleep(10).then(() => {
             return false;
         }
         if (GetValueString($id) <> $value) {
-            if ($Ident[0] <> "_") {
-                if ((($value == "") or ($value == "unknown")) and (!IPS_GetObject($id)["ObjectIsHidden"])) {
+            if ($Ident[0] <> '_') {
+                if ((($value == '') or ( $value == 'unknown')) and ( !IPS_GetObject($id)['ObjectIsHidden'])) {
                     IPS_SetHidden($id, true);
                 }
-                if ((($value <> "") and ($value <> "unknown")) and (IPS_GetObject($id)["ObjectIsHidden"])) {
+                if ((($value <> '') and ( $value <> 'unknown')) and ( IPS_GetObject($id)['ObjectIsHidden'])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -596,6 +618,7 @@ sleep(10).then(() => {
         } //bail out
         IPS_DeleteScript($sid, true);
     }
+
 }
 
 /** @} */

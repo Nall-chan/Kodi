@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * @addtogroup kodi
@@ -14,7 +14,7 @@ declare(strict_types = 1);
  * @version       2.0
  *
  */
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
 
 /**
  * KodiDeviceGUI Klasse für den Namespace GUI der KODI-API.
@@ -29,7 +29,6 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiDeviceGUI extends KodiBase
 {
-
     /**
      * RPC-Namespace
      *
@@ -37,7 +36,7 @@ class KodiDeviceGUI extends KodiBase
      *  @var string
      * @value 'Application'
      */
-    public static $Namespace = 'GUI';
+    protected static $Namespace = 'GUI';
 
     /**
      * Alle Properties des RPC-Namespace
@@ -45,13 +44,13 @@ class KodiDeviceGUI extends KodiBase
      * @access private
      *  @var array
      */
-    public static $Properties = array(
-        "currentwindow",
-        "currentcontrol",
-        "skin",
-        "fullscreen",
-        "stereoscopicmode"
-    );
+    protected static $Properties = [
+        'currentwindow',
+        'currentcontrol',
+        'skin',
+        'fullscreen',
+        'stereoscopicmode'
+    ];
 
     /**
      * Interne Funktion des SDK.
@@ -61,11 +60,11 @@ class KodiDeviceGUI extends KodiBase
     public function Create()
     {
         parent::Create();
-        $this->RegisterPropertyBoolean("showCurrentWindow", true);
-        $this->RegisterPropertyBoolean("showCurrentControl", true);
-        $this->RegisterPropertyBoolean("showSkin", true);
-        $this->RegisterPropertyBoolean("showFullscreen", true);
-        $this->RegisterPropertyBoolean("showScreensaver", true);
+        $this->RegisterPropertyBoolean('showCurrentWindow', true);
+        $this->RegisterPropertyBoolean('showCurrentControl', true);
+        $this->RegisterPropertyBoolean('showSkin', true);
+        $this->RegisterPropertyBoolean('showFullscreen', true);
+        $this->RegisterPropertyBoolean('showScreensaver', true);
     }
 
     /**
@@ -76,47 +75,46 @@ class KodiDeviceGUI extends KodiBase
     public function ApplyChanges()
     {
         if ($this->ReadPropertyBoolean('showCurrentWindow')) {
-            $this->RegisterVariableString("currentwindow", "Aktuelles Fenster", "", 0);
-            $this->RegisterVariableInteger("_currentwindowid", "Aktuelles Fenster (id)", "", 0);
+            $this->RegisterVariableString('currentwindow', 'Aktuelles Fenster', '', 0);
+            $this->RegisterVariableInteger('_currentwindowid', 'Aktuelles Fenster (id)', '', 0);
             IPS_SetHidden($this->GetIDForIdent('_currentwindowid'), true);
         } else {
-            $this->UnregisterVariable("currentwindow");
-            $this->UnregisterVariable("_currentwindowid");
+            $this->UnregisterVariable('currentwindow');
+            $this->UnregisterVariable('_currentwindowid');
         }
 
         if ($this->ReadPropertyBoolean('showCurrentControl')) {
-            $this->RegisterVariableString("currentcontrol", "Aktuelles Control", "", 1);
+            $this->RegisterVariableString('currentcontrol', 'Aktuelles Control', '', 1);
         } else {
-            $this->UnregisterVariable("currentcontrol");
+            $this->UnregisterVariable('currentcontrol');
         }
 
         if ($this->ReadPropertyBoolean('showSkin')) {
-            $this->RegisterVariableString("skin", "Aktuelles Skin", "", 2);
-            $this->RegisterVariableString("_skinid", "Aktuelles Skin (id)", "", 2);
+            $this->RegisterVariableString('skin', 'Aktuelles Skin', '', 2);
+            $this->RegisterVariableString('_skinid', 'Aktuelles Skin (id)', '', 2);
             IPS_SetHidden($this->GetIDForIdent('_skinid'), true);
         } else {
-            $this->UnregisterVariable("skin");
-            $this->UnregisterVariable("_skinid");
+            $this->UnregisterVariable('skin');
+            $this->UnregisterVariable('_skinid');
         }
 
         if ($this->ReadPropertyBoolean('showFullscreen')) {
-            $this->RegisterVariableBoolean("fullscreen", "Vollbild", "~Switch", 3);
-            $this->EnableAction("fullscreen");
+            $this->RegisterVariableBoolean('fullscreen', 'Vollbild', '~Switch', 3);
+            $this->EnableAction('fullscreen');
         } else {
-            $this->UnregisterVariable("fullscreen");
+            $this->UnregisterVariable('fullscreen');
         }
 
         if ($this->ReadPropertyBoolean('showScreensaver')) {
-            $this->RegisterVariableBoolean("screensaver", "Bildschirmschoner", "~Switch", 4);
+            $this->RegisterVariableBoolean('screensaver', 'Bildschirmschoner', '~Switch', 4);
         } else {
-            $this->UnregisterVariable("screensaver");
+            $this->UnregisterVariable('screensaver');
         }
 
         parent::ApplyChanges();
     }
 
     ################## PRIVATE
-
     /**
      * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
      *
@@ -130,34 +128,33 @@ class KodiDeviceGUI extends KodiBase
             case 'GetProperties':
                 foreach ($KodiPayload as $param => $value) {
                     switch ($param) {
-                        case "currentcontrol":
-                            $this->SetValueString("currentcontrol", $value->label);
+                        case 'currentcontrol':
+                            $this->SetValueString('currentcontrol', $value->label);
                             break;
-                        case "currentwindow":
-                            $this->SetValueString("currentwindow", $value->label);
-                            $this->SetValueInteger("_currentwindowid", $value->id);
+                        case 'currentwindow':
+                            $this->SetValueString('currentwindow', $value->label);
+                            $this->SetValueInteger('_currentwindowid', $value->id);
                             break;
-                        case "fullscreen":
-                            $this->SetValueBoolean("fullscreen", $value);
+                        case 'fullscreen':
+                            $this->SetValueBoolean('fullscreen', $value);
                             break;
-                        case "skin":
-                            $this->SetValueString("skin", $value->name);
-                            $this->SetValueString("_skinid", $value->id);
+                        case 'skin':
+                            $this->SetValueString('skin', $value->name);
+                            $this->SetValueString('_skinid', $value->id);
                             break;
                     }
                 }
                 break;
             case 'OnScreensaverDeactivated':
-                $this->SetValueBoolean("screensaver", false);
+                $this->SetValueBoolean('screensaver', false);
                 break;
             case 'OnScreensaverActivated':
-                $this->SetValueBoolean("screensaver", true);
+                $this->SetValueBoolean('screensaver', true);
                 break;
         }
     }
 
     ################## ActionHandler
-
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
@@ -167,8 +164,11 @@ class KodiDeviceGUI extends KodiBase
      */
     public function RequestAction($Ident, $Value)
     {
+        if (parent::RequestAction($Ident, $Value)) {
+            return true;
+        }
         switch ($Ident) {
-            case "fullscreen":
+            case 'fullscreen':
                 return $this->SetFullscreen($Value);
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
@@ -177,7 +177,6 @@ class KodiDeviceGUI extends KodiBase
     }
 
     ################## PUBLIC
-
     /**
      * IPS-Instanz-Funktion 'KODIGUI_SetFullscreen'.
      * De-/Aktiviert den Vollbildmodus.
@@ -193,12 +192,12 @@ class KodiDeviceGUI extends KodiBase
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->SetFullscreen(array("fullscreen" => $Value));
+        $KodiData->SetFullscreen(['fullscreen' => $Value]);
         $ret = $this->Send($KodiData);
         if (is_null($ret)) {
             return false;
         }
-        $this->SetValueBoolean("fullscreen", $ret);
+        $this->SetValueBoolean('fullscreen', $ret);
         if ($ret === $Value) {
             return true;
         }
@@ -232,9 +231,9 @@ class KodiDeviceGUI extends KodiBase
             return false;
         }
 
-        $Data = array("title" => $Title, "message" => $Message);
+        $Data = ['title' => $Title, 'message' => $Message];
 
-        if ($Image != "") {
+        if ($Image != '') {
             $Data['image'] = $Image;
         }
         if ($Timeout != 0) {
@@ -265,7 +264,7 @@ class KodiDeviceGUI extends KodiBase
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ActivateWindow(array('window' => $Window));
+        $KodiData->ActivateWindow(['window' => $Window]);
         $ret = $this->Send($KodiData);
         if (is_null($ret)) {
             return false;
@@ -284,6 +283,7 @@ class KodiDeviceGUI extends KodiBase
     {
         return parent::RequestState($Ident);
     }
+
 }
 
 /** @} */

@@ -14,7 +14,7 @@ declare(strict_types = 1);
  * @version       2.0
  *
  */
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
 
 /**
  * KodiDeviceAddons Klasse für den Namespace Addons der KODI-API.
@@ -36,7 +36,7 @@ class KodiDeviceAddons extends KodiBase
      *  @var string
      * @value 'Addons'
      */
-    public static $Namespace = 'Addons';
+    protected static $Namespace = 'Addons';
 
     /**
      * Alle Properties des RPC-Namespace
@@ -44,8 +44,7 @@ class KodiDeviceAddons extends KodiBase
      * @access private
      *  @var array
      */
-    public static $Properties = array(
-    );
+    protected static $Properties = [];
 
     /**
      * Alle Properties eines Item
@@ -53,22 +52,22 @@ class KodiDeviceAddons extends KodiBase
      * @access private
      *  @var array
      */
-    public static $AddOnItemList = array(
-        "name",
-        "version",
-        "summary",
-        "description",
-        "path",
-        "author",
-        "thumbnail",
-        "disclaimer",
-        "fanart",
-        "dependencies",
-        "broken",
-        "extrainfo",
-        "rating",
-        "enabled"
-    );
+    protected static $AddOnItemList = [
+        'name',
+        'version',
+        'summary',
+        'description',
+        'path',
+        'author',
+        'thumbnail',
+        'disclaimer',
+        'fanart',
+        'dependencies',
+        'broken',
+        'extrainfo',
+        'rating',
+        'enabled'
+       ];
 
     /**
      * Interne Funktion des SDK.
@@ -84,8 +83,8 @@ class KodiDeviceAddons extends KodiBase
             $ID = $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
         }
         IPS_SetHidden($ID, true);
-        $this->RegisterPropertyInteger("Addonlistconfig", $ID);
-        $this->RegisterPropertyInteger("ThumbSize", 100);
+        $this->RegisterPropertyInteger('Addonlistconfig', $ID);
+        $this->RegisterPropertyInteger('ThumbSize', 100);
     }
 
     /**
@@ -112,9 +111,9 @@ class KodiDeviceAddons extends KodiBase
      */
     public function ApplyChanges()
     {
-        $this->UnregisterScript("WebHookAddonlist");
+        $this->UnregisterScript('WebHookAddonlist');
         if ($this->ReadPropertyBoolean('showAddonlist')) {
-            $this->RegisterVariableString("Addonlist", "Addons", "~HTMLBox", 1);
+            $this->RegisterVariableString('Addonlist', 'Addons', '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiAddonlist' . $this->InstanceID);
             }
@@ -125,7 +124,7 @@ class KodiDeviceAddons extends KodiBase
             }
             IPS_SetHidden($ID, true);
         } else {
-            $this->UnregisterVariable("Addonlist");
+            $this->UnregisterVariable('Addonlist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->UnregisterHook('/hook/KodiAddonlist' . $this->InstanceID);
             }
@@ -177,7 +176,7 @@ class KodiDeviceAddons extends KodiBase
             return;
         }
 
-        $result = IPS_RunScriptWaitEx($ScriptID, array('SENDER' => 'Kodi'));
+        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
         if (($Config === false) or (!is_array($Config))) {
             trigger_error('Error on read Addonlistconfig-Script');
@@ -185,15 +184,15 @@ class KodiDeviceAddons extends KodiBase
         }
         $AllAddons = $this->GetAddons();
         if ($AllAddons === false) {
-            $AllAddons = array();
+            $AllAddons = [];
         }
-        $Data = array_filter($AllAddons, array($this, "FilterAddons"), ARRAY_FILTER_USE_BOTH);
+        $Data = array_filter($AllAddons, [$this, 'FilterAddons'], ARRAY_FILTER_USE_BOTH);
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
 
         if (count($Data) > 0) {
             foreach ($Data as $line) {
-                $Line = array();
+                $Line = [];
                 foreach ($line as $key => $value) {
                     if (is_string($key)) {
                         $Line[ucfirst($key)] = $value;
@@ -201,20 +200,20 @@ class KodiDeviceAddons extends KodiBase
                         $Line[$key] = $value;
                     } //$key is not a string
                 }
-                if (array_key_exists('Thumbnail', $Config["Spalten"])) {
-                    if ($Line['Thumbnail'] <> "") {
-                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger("ThumbSize"), 0);
+                if (array_key_exists('Thumbnail', $Config['Spalten'])) {
+                    if ($Line['Thumbnail'] <> '') {
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger('ThumbSize'), 0);
                         if ($CoverRAW === false) {
-                            $Line['Thumbnail'] = "";
+                            $Line['Thumbnail'] = '';
                         } else {
                             $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
                         }
                     }
                 }
-                if ((array_key_exists('Fanart', $Config["Spalten"])) and ($Line['Fanart'] <> "")) {
-                    $CoverRAW = $this->GetThumbnail($Line['Fanart'], $this->ReadPropertyInteger("ThumbSize"), 0);
+                if ((array_key_exists('Fanart', $Config['Spalten'])) and ($Line['Fanart'] <> '')) {
+                    $CoverRAW = $this->GetThumbnail($Line['Fanart'], $this->ReadPropertyInteger('ThumbSize'), 0);
                     if ($CoverRAW === false) {
-                        $Line['Fanart'] = "";
+                        $Line['Fanart'] = '';
                     } else {
                         $Line['Fanart'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
                     }
@@ -265,7 +264,7 @@ class KodiDeviceAddons extends KodiBase
      */
     protected function FilterAddons($Addon)
     {
-        if (($Addon["type"] == "xbmc.python.pluginsource") or ($Addon["type"] == "xbmc.python.script")) {
+        if (($Addon['type'] == 'xbmc.python.pluginsource') or ($Addon['type'] == 'xbmc.python.script')) {
             return true;
         }
         return false;
@@ -568,7 +567,7 @@ echo serialize($Config);
      */
     protected function ProcessHookdata()
     {
-        if (!((isset($_GET["Addonid"])) and (isset($_GET["Action"])))) {
+        if (!((isset($_GET['Addonid'])) and (isset($_GET['Action'])))) {
             $this->SendDebug('illegal HOOK', $_GET, 0);
             echo 'Illegal hook';
             return;
@@ -576,17 +575,17 @@ echo serialize($Config);
 
         switch ($_GET['Action']) {
             case 'Execute':
-                if ($this->ExecuteAddon($_GET["Addonid"]) === true) {
+                if ($this->ExecuteAddon($_GET['Addonid']) === true) {
                     echo 'OK';
                 }
                 break;
             case 'Enable':
-                if ($this->EnableAddon($_GET["Addonid"], true) === true) {
+                if ($this->EnableAddon($_GET['Addonid'], true) === true) {
                     echo 'OK';
                 }
                 break;
             case 'Disable':
-                if ($this->EnableAddon($_GET["Addonid"], false) === true) {
+                if ($this->EnableAddon($_GET['Addonid'], false) === true) {
                     echo 'OK';
                 }
                 break;
@@ -616,13 +615,13 @@ echo serialize($Config);
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->SetAddonEnabled(array("addonid" => $AddonId, "enabled" => $Value));
+        $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
         $this->RefreshAddonlist();
-        return ($ret == "OK");
+        return ($ret === 'OK');
     }
 
     /**
@@ -640,12 +639,12 @@ echo serialize($Config);
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAddon(array("addonid" => $AddonId));
+        $KodiData->ExecuteAddon(['addonid' => $AddonId]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
-        return ($ret == "OK");
+        return ($ret === 'OK');
     }
 
     /**
@@ -663,12 +662,12 @@ echo serialize($Config);
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAddon(array("addonid" => $AddonId, "wait" => true));
+        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'wait' => true]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
-        return ($ret == "OK");
+        return ($ret === 'OK');
     }
 
     /**
@@ -691,12 +690,12 @@ echo serialize($Config);
         }
         $param = json_decode($Params, true);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAddon(array("addonid" => $AddonId, "params" => $param));
+        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'params' => $param]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
-        return ($ret == "OK");
+        return ($ret === 'OK');
     }
 
     /**
@@ -719,12 +718,12 @@ echo serialize($Config);
         }
         $param = json_decode($Params, true);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAddon(array("addonid" => $AddonId, "params" => $param, "wait" => true));
+        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'params' => $param, 'wait' => true]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
-        return ($ret == "OK");
+        return ($ret === 'OK');
     }
 
     /**
@@ -741,7 +740,7 @@ echo serialize($Config);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetAddonDetails(array("addonid" => $AddonId, "properties" => static::$AddOnItemList));
+        $KodiData->GetAddonDetails(['addonid' => $AddonId, 'properties' => static::$AddOnItemList]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -758,7 +757,7 @@ echo serialize($Config);
     public function GetAddons()
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetAddons(array("properties" => static::$AddOnItemList));
+        $KodiData->GetAddons(['properties' => static::$AddOnItemList]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -767,7 +766,7 @@ echo serialize($Config);
         if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->addons);
         }
-        return array();
+        return [];
     }
 
     /**
@@ -789,12 +788,12 @@ echo serialize($Config);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->SetAddonEnabled(array("addonid" => $AddonId, "enabled" => $Value));
+        $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
         $ret = $this->Send($KodiData);
         if (is_null($ret)) {
             return false;
         }
-        return ($ret == "OK");
+        return ($ret === 'OK');
     }
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * @addtogroup kodi
@@ -14,7 +14,7 @@ declare(strict_types = 1);
  * @version       2.0
  *
  */
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
 
 /**
  * KodiDeviceInput Klasse für den Namespace Input der KODI-API.
@@ -37,7 +37,7 @@ class KodiDeviceInput extends KodiBase
      * @var string
      * @value 'Application'
      */
-    public static $Namespace = 'Input';
+    protected static $Namespace = 'Input';
 
     /**
      * Alle Properties des RPC-Namespace
@@ -45,7 +45,7 @@ class KodiDeviceInput extends KodiBase
      * @access private
      * @var array
      */
-    public static $Properties = array();
+    protected static $Properties = [];
 
     /**
      * Alle Aktionen der RPC-Methode ExecuteAction
@@ -53,209 +53,210 @@ class KodiDeviceInput extends KodiBase
      * @access private
      * @var array
      */
-    public static $ExecuteAction = array("left",
-        "right",
-        "up",
-        "down",
-        "pageup",
-        "pagedown",
-        "select",
-        "highlight",
-        "parentdir",
-        "parentfolder",
-        "back",
-        "previousmenu",
-        "info",
-        "pause",
-        "stop",
-        "skipnext",
-        "skipprevious",
-        "fullscreen",
-        "aspectratio",
-        "stepforward",
-        "stepback",
-        "bigstepforward",
-        "bigstepback",
-        "chapterorbigstepforward",
-        "chapterorbigstepback",
-        "osd",
-        "showsubtitles",
-        "nextsubtitle",
-        "cyclesubtitle",
-        "codecinfo",
-        "nextpicture",
-        "previouspicture",
-        "zoomout",
-        "zoomin",
-        "playlist",
-        "queue",
-        "zoomnormal",
-        "zoomlevel1",
-        "zoomlevel2",
-        "zoomlevel3",
-        "zoomlevel4",
-        "zoomlevel5",
-        "zoomlevel6",
-        "zoomlevel7",
-        "zoomlevel8",
-        "zoomlevel9",
-        "nextcalibration",
-        "resetcalibration",
-        "analogmove",
-        "analogmovex",
-        "analogmovey",
-        "rotate",
-        "rotateccw",
-        "close",
-        "subtitledelayminus",
-        "subtitledelay",
-        "subtitledelayplus",
-        "audiodelayminus",
-        "audiodelay",
-        "audiodelayplus",
-        "subtitleshiftup",
-        "subtitleshiftdown",
-        "subtitlealign",
-        "audionextlanguage",
-        "verticalshiftup",
-        "verticalshiftdown",
-        "nextresolution",
-        "audiotoggledigital",
-        "number0",
-        "number1",
-        "number2",
-        "number3",
-        "number4",
-        "number5",
-        "number6",
-        "number7",
-        "number8",
-        "number9",
-        "osdleft",
-        "osdright",
-        "osdup",
-        "osddown",
-        "osdselect",
-        "osdvalueplus",
-        "osdvalueminus",
-        "smallstepback",
-        "fastforward",
-        "rewind",
-        "play",
-        "playpause",
-        "switchplayer",
-        "delete",
-        "copy",
-        "move",
-        "mplayerosd",
-        "hidesubmenu",
-        "screenshot",
-        "rename",
-        "togglewatched",
-        "scanitem",
-        "reloadkeymaps",
-        "volumeup",
-        "volumedown",
-        "mute",
-        "backspace",
-        "scrollup",
-        "scrolldown",
-        "analogfastforward",
-        "analogrewind",
-        "moveitemup",
-        "moveitemdown",
-        "contextmenu",
-        "shift",
-        "symbols",
-        "cursorleft",
-        "cursorright",
-        "showtime",
-        "analogseekforward",
-        "analogseekback",
-        "showpreset",
-        "nextpreset",
-        "previouspreset",
-        "lockpreset",
-        "randompreset",
-        "increasevisrating",
-        "decreasevisrating",
-        "showvideomenu",
-        "enter",
-        "increaserating",
-        "decreaserating",
-        "togglefullscreen",
-        "nextscene",
-        "previousscene",
-        "nextletter",
-        "prevletter",
-        "jumpsms2",
-        "jumpsms3",
-        "jumpsms4",
-        "jumpsms5",
-        "jumpsms6",
-        "jumpsms7",
-        "jumpsms8",
-        "jumpsms9",
-        "filter",
-        "filterclear",
-        "filtersms2",
-        "filtersms3",
-        "filtersms4",
-        "filtersms5",
-        "filtersms6",
-        "filtersms7",
-        "filtersms8",
-        "filtersms9",
-        "firstpage",
-        "lastpage",
-        "guiprofile",
-        "red",
-        "green",
-        "yellow",
-        "blue",
-        "increasepar",
-        "decreasepar",
-        "volampup",
-        "volampdown",
-        "volumeamplification",
-        "createbookmark",
-        "createepisodebookmark",
-        "settingsreset",
-        "settingslevelchange",
-        "stereomode",
-        "nextstereomode",
-        "previousstereomode",
-        "togglestereomode",
-        "stereomodetomono",
-        "channelup",
-        "channeldown",
-        "previouschannelgroup",
-        "nextchannelgroup",
-        "playpvr",
-        "playpvrtv",
-        "playpvrradio",
-        "record",
-        "leftclick",
-        "rightclick",
-        "middleclick",
-        "doubleclick",
-        "longclick",
-        "wheelup",
-        "wheeldown",
-        "mousedrag",
-        "mousemove",
-        "tap",
-        "longpress",
-        "pangesture",
-        "zoomgesture",
-        "rotategesture",
-        "swipeleft",
-        "swiperight",
-        "swipeup",
-        "swipedown",
-        "error",
-        "noop"
-    );
+    protected static $ExecuteAction = [
+        'left',
+        'right',
+        'up',
+        'down',
+        'pageup',
+        'pagedown',
+        'select',
+        'highlight',
+        'parentdir',
+        'parentfolder',
+        'back',
+        'previousmenu',
+        'info',
+        'pause',
+        'stop',
+        'skipnext',
+        'skipprevious',
+        'fullscreen',
+        'aspectratio',
+        'stepforward',
+        'stepback',
+        'bigstepforward',
+        'bigstepback',
+        'chapterorbigstepforward',
+        'chapterorbigstepback',
+        'osd',
+        'showsubtitles',
+        'nextsubtitle',
+        'cyclesubtitle',
+        'codecinfo',
+        'nextpicture',
+        'previouspicture',
+        'zoomout',
+        'zoomin',
+        'playlist',
+        'queue',
+        'zoomnormal',
+        'zoomlevel1',
+        'zoomlevel2',
+        'zoomlevel3',
+        'zoomlevel4',
+        'zoomlevel5',
+        'zoomlevel6',
+        'zoomlevel7',
+        'zoomlevel8',
+        'zoomlevel9',
+        'nextcalibration',
+        'resetcalibration',
+        'analogmove',
+        'analogmovex',
+        'analogmovey',
+        'rotate',
+        'rotateccw',
+        'close',
+        'subtitledelayminus',
+        'subtitledelay',
+        'subtitledelayplus',
+        'audiodelayminus',
+        'audiodelay',
+        'audiodelayplus',
+        'subtitleshiftup',
+        'subtitleshiftdown',
+        'subtitlealign',
+        'audionextlanguage',
+        'verticalshiftup',
+        'verticalshiftdown',
+        'nextresolution',
+        'audiotoggledigital',
+        'number0',
+        'number1',
+        'number2',
+        'number3',
+        'number4',
+        'number5',
+        'number6',
+        'number7',
+        'number8',
+        'number9',
+        'osdleft',
+        'osdright',
+        'osdup',
+        'osddown',
+        'osdselect',
+        'osdvalueplus',
+        'osdvalueminus',
+        'smallstepback',
+        'fastforward',
+        'rewind',
+        'play',
+        'playpause',
+        'switchplayer',
+        'delete',
+        'copy',
+        'move',
+        'mplayerosd',
+        'hidesubmenu',
+        'screenshot',
+        'rename',
+        'togglewatched',
+        'scanitem',
+        'reloadkeymaps',
+        'volumeup',
+        'volumedown',
+        'mute',
+        'backspace',
+        'scrollup',
+        'scrolldown',
+        'analogfastforward',
+        'analogrewind',
+        'moveitemup',
+        'moveitemdown',
+        'contextmenu',
+        'shift',
+        'symbols',
+        'cursorleft',
+        'cursorright',
+        'showtime',
+        'analogseekforward',
+        'analogseekback',
+        'showpreset',
+        'nextpreset',
+        'previouspreset',
+        'lockpreset',
+        'randompreset',
+        'increasevisrating',
+        'decreasevisrating',
+        'showvideomenu',
+        'enter',
+        'increaserating',
+        'decreaserating',
+        'togglefullscreen',
+        'nextscene',
+        'previousscene',
+        'nextletter',
+        'prevletter',
+        'jumpsms2',
+        'jumpsms3',
+        'jumpsms4',
+        'jumpsms5',
+        'jumpsms6',
+        'jumpsms7',
+        'jumpsms8',
+        'jumpsms9',
+        'filter',
+        'filterclear',
+        'filtersms2',
+        'filtersms3',
+        'filtersms4',
+        'filtersms5',
+        'filtersms6',
+        'filtersms7',
+        'filtersms8',
+        'filtersms9',
+        'firstpage',
+        'lastpage',
+        'guiprofile',
+        'red',
+        'green',
+        'yellow',
+        'blue',
+        'increasepar',
+        'decreasepar',
+        'volampup',
+        'volampdown',
+        'volumeamplification',
+        'createbookmark',
+        'createepisodebookmark',
+        'settingsreset',
+        'settingslevelchange',
+        'stereomode',
+        'nextstereomode',
+        'previousstereomode',
+        'togglestereomode',
+        'stereomodetomono',
+        'channelup',
+        'channeldown',
+        'previouschannelgroup',
+        'nextchannelgroup',
+        'playpvr',
+        'playpvrtv',
+        'playpvrradio',
+        'record',
+        'leftclick',
+        'rightclick',
+        'middleclick',
+        'doubleclick',
+        'longclick',
+        'wheelup',
+        'wheeldown',
+        'mousedrag',
+        'mousemove',
+        'tap',
+        'longpress',
+        'pangesture',
+        'zoomgesture',
+        'rotategesture',
+        'swipeleft',
+        'swiperight',
+        'swipeup',
+        'swipedown',
+        'error',
+        'noop'
+    ];
 
     /**
      * Interne Funktion des SDK.
@@ -265,12 +266,12 @@ class KodiDeviceInput extends KodiBase
     public function Create()
     {
         parent::Create();
-        $this->RegisterPropertyBoolean("showSVGRemote", true);
-        $this->RegisterPropertyInteger("RemoteId", 1);
-        $this->RegisterPropertyBoolean("showNavigationButtons", true);
-        $this->RegisterPropertyBoolean("showControlButtons", true);
-        $this->RegisterPropertyBoolean("showInputRequested", true);
-        $this->RegisterPropertyBoolean("showTextInput", true);
+        $this->RegisterPropertyBoolean('showSVGRemote', true);
+        $this->RegisterPropertyInteger('RemoteId', 1);
+        $this->RegisterPropertyBoolean('showNavigationButtons', true);
+        $this->RegisterPropertyBoolean('showControlButtons', true);
+        $this->RegisterPropertyBoolean('showInputRequested', true);
+        $this->RegisterPropertyBoolean('showTextInput', true);
     }
 
     /**
@@ -297,14 +298,15 @@ class KodiDeviceInput extends KodiBase
      */
     public function ApplyChanges()
     {
-        $this->UnregisterScript("WebHookRemote");
+        $this->UnregisterScript('WebHookRemote');
 
         if ($this->ReadPropertyBoolean('showSVGRemote')) {
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiRemote' . $this->InstanceID);
             }
-            if (@$this->GetIDForIdent("Remote") == false) {
-                $remoteID = $this->RegisterVariableString("Remote", "Remote", "~HTMLBox", 1);
+            if (@$this->GetIDForIdent('Remote') == false) {
+                $remoteID = $this->RegisterVariableString('Remote', 'Remote', '~HTMLBox', 1);
+                /* @var $remote string */
                 include 'generateRemote' . ($this->ReadPropertyInteger('RemoteId')) . '.php';
                 SetValueString($remoteID, $remote);
             }
@@ -312,54 +314,54 @@ class KodiDeviceInput extends KodiBase
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->UnregisterHook('/hook/KodiRemote' . $this->InstanceID);
             }
-            $this->UnregisterVariable("Remote");
+            $this->UnregisterVariable('Remote');
         }
 
         if ($this->ReadPropertyBoolean('showNavigationButtons')) {
-            $this->RegisterProfileIntegerEx("Navigation.Kodi", "", "", "", array(
-                array(1, "<", "", -1),
-                array(2, ">", "", -1),
-                array(3, "^", "", -1),
-                array(4, "v", "", -1),
-                array(5, "OK", "", -1),
-                array(6, "Zurück", "", -1),
-                array(7, "Home", "", -1)
-            ));
-            $this->RegisterVariableInteger("navremote", "Navigation", "Navigation.Kodi", 2);
-            $this->EnableAction("navremote");
+            $this->RegisterProfileIntegerEx('Navigation.Kodi', '', '', '', [
+                [1, '<', '', -1],
+                [2, '>', '', -1],
+                [3, '^', '', -1],
+                [4, 'v', '', -1],
+                [5, 'OK', '', -1],
+                [6, 'Zurück', '', -1],
+                [7, 'Home', '', -1]
+            ]);
+            $this->RegisterVariableInteger('navremote', 'Navigation', 'Navigation.Kodi', 2);
+            $this->EnableAction('navremote');
         } else {
-            $this->UnregisterVariable("navremote");
+            $this->UnregisterVariable('navremote');
         }
 
         if ($this->ReadPropertyBoolean('showControlButtons')) {
-            $this->RegisterProfileIntegerEx("Control.Kodi", "", "", "", array(
-                array(1, "<<", "", -1),
-                array(2, "Menü", "", -1),
-                array(3, "Play", "", -1),
-                array(4, "Pause", "", -1),
-                array(5, "Stop", "", -1),
-                array(6, ">>", "", -1)
-            ));
-            $this->RegisterVariableInteger("ctrlremote", "Steuerung", "Control.Kodi", 3);
-            $this->EnableAction("ctrlremote");
+            $this->RegisterProfileIntegerEx('Control.Kodi', '', '', '', [
+                [1, '<<', '', -1],
+                [2, 'Menü', '', -1],
+                [3, 'Play', '', -1],
+                [4, 'Pause', '', -1],
+                [5, 'Stop', '', -1],
+                [6, '>>', '', -1]
+            ]);
+            $this->RegisterVariableInteger('ctrlremote', 'Steuerung', 'Control.Kodi', 3);
+            $this->EnableAction('ctrlremote');
         } else {
-            $this->UnregisterVariable("ctrlremote");
+            $this->UnregisterVariable('ctrlremote');
         }
 
         if ($this->ReadPropertyBoolean('showInputRequested')) {
-            $this->RegisterVariableBoolean("inputrequested", "Eingabe erwartet", "", 4);
+            $this->RegisterVariableBoolean('inputrequested', 'Eingabe erwartet', '', 4);
             if (IPS_GetKernelRunlevel() == KR_INIT) {
-                $this->SetValueBoolean("inputrequested", false);
+                $this->SetValueBoolean('inputrequested', false);
             }
         } else {
-            $this->UnregisterVariable("inputrequested");
+            $this->UnregisterVariable('inputrequested');
         }
 
         if ($this->ReadPropertyBoolean('showTextInput')) {
-            $this->RegisterVariableString("inputtext", "Eingabe senden", "", 5);
-            $this->EnableAction("inputtext");
+            $this->RegisterVariableString('inputtext', 'Eingabe senden', '', 5);
+            $this->EnableAction('inputtext');
         } else {
-            $this->UnregisterVariable("inputrequested");
+            $this->UnregisterVariable('inputrequested');
         }
 
 
@@ -375,10 +377,13 @@ class KodiDeviceInput extends KodiBase
      */
     protected function ProcessHookdata()
     {
-        if (isset($_GET["button"])) {
-            if ($this->ExecuteAction($_GET["button"]) === true) {
-                echo "OK";
+        if (isset($_GET['button'])) {
+            if ($this->ExecuteAction($_GET['button']) === true) {
+                echo 'OK';
             }
+        } else {
+            $this->SendDebug('illegal HOOK', $_GET, 0);
+            echo 'Illegal hook';
         }
     }
 
@@ -392,11 +397,11 @@ class KodiDeviceInput extends KodiBase
     protected function Decode($Method, $KodiPayload)
     {
         switch ($Method) {
-            case "OnInputRequested":
-                $this->SetValueBoolean("inputrequested", true);
+            case 'OnInputRequested':
+                $this->SetValueBoolean('inputrequested', true);
                 break;
-            case "OnInputFinished":
-                $this->SetValueBoolean("inputrequested", true);
+            case 'OnInputFinished':
+                $this->SetValueBoolean('inputrequested', true);
                 break;
         }
     }
@@ -411,8 +416,11 @@ class KodiDeviceInput extends KodiBase
      */
     public function RequestAction($Ident, $Value)
     {
+        if (parent::RequestAction($Ident, $Value)) {
+            return true;
+        }
         switch ($Ident) {
-            case "navremote":
+            case 'navremote':
                 switch ($Value) {
                     case 1:
                         $ret = $this->Left();
@@ -439,31 +447,31 @@ class KodiDeviceInput extends KodiBase
                         return trigger_error('Invalid Value.', E_USER_NOTICE);
                 }
                 break;
-            case "ctrlremote":
+            case 'ctrlremote':
                 switch ($Value) {
                     case 1:
-                        $ret = $this->ExecuteAction("rewind");
+                        $ret = $this->ExecuteAction('rewind');
                         break;
                     case 2:
-                        $ret = $this->ExecuteAction("mplayerosd");
+                        $ret = $this->ExecuteAction('mplayerosd');
                         break;
                     case 3:
-                        $ret = $this->ExecuteAction("play");
+                        $ret = $this->ExecuteAction('play');
                         break;
                     case 4:
-                        $ret = $this->ExecuteAction("pause");
+                        $ret = $this->ExecuteAction('pause');
                         break;
                     case 5:
-                        $ret = $this->ExecuteAction("stop");
+                        $ret = $this->ExecuteAction('stop');
                         break;
                     case 6:
-                        $ret = $this->ExecuteAction("fastforward");
+                        $ret = $this->ExecuteAction('fastforward');
                         break;
                     default:
                         return trigger_error('Invalid Value.', E_USER_NOTICE);
                 }
                 break;
-            case "inputtext":
+            case 'inputtext':
                 $ret = $this->SendText($Value, true);
                 break;
             default:
@@ -681,7 +689,7 @@ class KodiDeviceInput extends KodiBase
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAction(array("action" => $Action));
+        $KodiData->ExecuteAction(['action' => $Action]);
         $ret = $this->Send($KodiData);
         if (is_null($ret)) {
             return false;
@@ -704,13 +712,14 @@ class KodiDeviceInput extends KodiBase
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->SendText(array("text" => $Text, "done" => $Done));
+        $KodiData->SendText(['text' => $Text, 'done' => $Done]);
         $ret = $this->Send($KodiData);
         if (is_null($ret)) {
             return false;
         }
         return $ret === 'OK';
     }
+
 }
 
 /** @} */

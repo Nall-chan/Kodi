@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * @addtogroup kodi
@@ -14,7 +14,7 @@ declare(strict_types = 1);
  * @version       2.0
  *
  */
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
 
 /**
  * KodiDeviceSystem Klasse für den Namespace System der KODI-API.
@@ -29,7 +29,6 @@ require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
  */
 class KodiDeviceSystem extends KodiBase
 {
-
     /**
      * RPC-Namespace
      *
@@ -37,7 +36,7 @@ class KodiDeviceSystem extends KodiBase
      * @var string
      * @value 'Application'
      */
-    public static $Namespace = 'System';
+    protected static $Namespace = 'System';
 
     /**
      * Alle Properties des RPC-Namespace
@@ -45,12 +44,12 @@ class KodiDeviceSystem extends KodiBase
      * @access private
      * @var array
      */
-    public static $Properties = array(
-        "canshutdown",
-        "canhibernate",
-        "cansuspend",
-        "canreboot"
-    );
+    protected static $Properties = [
+        'canshutdown',
+        'canhibernate',
+        'cansuspend',
+        'canreboot'
+    ];
 
     /**
      * Interne Funktion des SDK.
@@ -73,9 +72,9 @@ class KodiDeviceSystem extends KodiBase
      */
     public function ApplyChanges()
     {
-        $this->RegisterProfileIntegerEx("Action.Kodi", "", "", "", array(
-            array(0, "Ausführen", "", -1)
-        ));
+        $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
+            [0, 'Ausführen', '', -1]
+        ]);
 
         switch ($this->ReadPropertyInteger('PreSelectScript')) {
             case 0:
@@ -95,24 +94,23 @@ class KodiDeviceSystem extends KodiBase
             IPS_Applychanges($this->InstanceID);
             return true;
         }
-        $this->RegisterVariableBoolean("Power", "Power", "~Switch", 0);
-        $this->EnableAction("Power");
-        $this->RegisterVariableInteger("suspend", "Standby", "Action.Kodi", 1);
-        $this->EnableAction("suspend");
-        $this->RegisterVariableInteger("hibernate", "Ruhezustand", "Action.Kodi", 2);
-        $this->EnableAction("hibernate");
-        $this->RegisterVariableInteger("reboot", "Neustart", "Action.Kodi", 3);
-        $this->EnableAction("reboot");
-        $this->RegisterVariableInteger("shutdown", "Herunterfahren", "Action.Kodi", 4);
-        $this->EnableAction("shutdown");
-        $this->RegisterVariableInteger("ejectOpticalDrive", "Laufwerk öffnen", "Action.Kodi", 5);
-        $this->EnableAction("ejectOpticalDrive");
-        $this->RegisterVariableBoolean("LowBatteryEvent", "Batterie leer Event", "", 6);
+        $this->RegisterVariableBoolean('Power', 'Power', '~Switch', 0);
+        $this->EnableAction('Power');
+        $this->RegisterVariableInteger('suspend', 'Standby', 'Action.Kodi', 1);
+        $this->EnableAction('suspend');
+        $this->RegisterVariableInteger('hibernate', 'Ruhezustand', 'Action.Kodi', 2);
+        $this->EnableAction('hibernate');
+        $this->RegisterVariableInteger('reboot', 'Neustart', 'Action.Kodi', 3);
+        $this->EnableAction('reboot');
+        $this->RegisterVariableInteger('shutdown', 'Herunterfahren', 'Action.Kodi', 4);
+        $this->EnableAction('shutdown');
+        $this->RegisterVariableInteger('ejectOpticalDrive', 'Laufwerk öffnen', 'Action.Kodi', 5);
+        $this->EnableAction('ejectOpticalDrive');
+        $this->RegisterVariableBoolean('LowBatteryEvent', 'Batterie leer Event', '', 6);
         parent::ApplyChanges();
     }
 
     ################## PRIVATE
-
     /**
      * Liest den String auf der Instanz-Eigenschaft MACAddress und konvertiert sie in ein bereinigtes Format.
      *
@@ -138,7 +136,7 @@ class KodiDeviceSystem extends KodiBase
      */
     private function CreateFBPScript()
     {
-        $Script = '<?
+        $Script = '<?php
 $mac = ' . $this->GetMac() . ' ;
 $FBScript = 0;  /* Hier die ID von dem Script [FritzBox Project\Scripte\Aktions & Auslese-Script Host] eintragen */
 
@@ -160,7 +158,7 @@ if ($_IPS["SENDER"] <> "Kodi.System")
      */
     private function CreateWOLScript()
     {
-        $Script = '<?
+        $Script = '<?php
 $mac = ' . $this->GetMac() . ' ;
 if ($_IPS["SENDER"] <> "Kodi.System")
 {
@@ -236,7 +234,6 @@ function wake($ip, $mac)
     }
 
     ################## ActionHandler
-
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
@@ -246,14 +243,17 @@ function wake($ip, $mac)
      */
     public function RequestAction($Ident, $Value)
     {
+        if (parent::RequestAction($Ident, $Value)) {
+            return true;
+        }
         switch ($Ident) {
-            case "Power":
+            case 'Power':
                 return $this->Power($Value);
-            case "shutdown":
-            case "reboot":
-            case "hibernate":
-            case "suspend":
-            case "ejectOpticalDrive":
+            case 'shutdown':
+            case 'reboot':
+            case 'hibernate':
+            case 'suspend':
+            case 'ejectOpticalDrive':
                 return $this->{ucfirst($Ident)}();
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
@@ -262,7 +262,6 @@ function wake($ip, $mac)
     }
 
     ################## PUBLIC
-
     /**
      * IPS-Instanz-Funktion 'KODISYS_Power'. Schaltet Kodi ein oder aus. Einschalten erfolgt per hinterlegten PHP-Script in der Instanz. Der Modus für das Ausschalten ist ebenfalls in der Instanz zu konfigurieren.
      *
@@ -307,7 +306,7 @@ function wake($ip, $mac)
                 return false;
             }
 
-            if (IPS_RunScriptWaitEx($ScriptID, array("SENDER" => "Kodi.System")) == "") {
+            if (IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi.System']) === '') {
                 $this->SetValueBoolean('Power', true);
                 return true;
             }
@@ -438,6 +437,7 @@ function wake($ip, $mac)
     {
         return parent::RequestState($Ident);
     }
+
 }
 
 /** @} */

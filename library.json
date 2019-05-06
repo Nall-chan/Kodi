@@ -4,9 +4,9 @@
     "name": "Kodi Library",
     "url": "https://github.com/Nall-chan/IPSKodi/",
     "compatibility": {
-        "version": "5.0"
+        "version": "5.1"
     },
-    "version": "2.05",
-    "build": 110,
-    "date": 1548958316 
+    "version": "2.3",
+    "build": 130,
+    "date": 1556987178 
 }

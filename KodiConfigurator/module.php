@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * @addtogroup kodi
@@ -34,18 +34,18 @@ class KodiConfigurator extends IPSModule
      * @access private
      *  @var array Key ist der Name, Value ist die GUID
      */
-    public static $Name = array(
-        "Addons"        => "{0731DD94-99E6-43D8-9BE3-2854B0C6EF24}",
-        "Application"   => "{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}",
-        "Audio Library" => "{AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC}",
-        "Favourites"    => "{DA2C90A2-3863-4454-9B07-FBD083420E10}",
-        "Files"         => "{54827867-BB3B-4ACC-A453-7A8D4DC78130}",
-        "GUI"           => "{E15F2C11-0B28-4CFB-AEE6-463BD313A964}",
-        "Input"         => "{9F3BE8BB-4610-49F4-A41A-40E14F641F43}",
-        "TV/Radio"      => "{9D73D46E-7B80-4814-A7B2-31768DC6AB7E}",
-        "System"        => "{03E18A60-02FD-45E8-8A2C-1F8E247C92D0}",
-        "Video Library" => "{07943DF4-FAB9-454F-AA9E-702A5F9C9D57}"
-    );
+    private static $Name = [
+        'Addons'        => '{0731DD94-99E6-43D8-9BE3-2854B0C6EF24}',
+        'Application'   => '{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}',
+        'Audio Library' => '{AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC}',
+        'Favourites'    => '{DA2C90A2-3863-4454-9B07-FBD083420E10}',
+        'Files'         => '{54827867-BB3B-4ACC-A453-7A8D4DC78130}',
+        'GUI'           => '{E15F2C11-0B28-4CFB-AEE6-463BD313A964}',
+        'Input'         => '{9F3BE8BB-4610-49F4-A41A-40E14F641F43}',
+        'TV/Radio'      => '{9D73D46E-7B80-4814-A7B2-31768DC6AB7E}',
+        'System'        => '{03E18A60-02FD-45E8-8A2C-1F8E247C92D0}',
+        'Video Library' => '{07943DF4-FAB9-454F-AA9E-702A5F9C9D57}'
+    ];
 
     /**
      * Zuordnung der möglichen Player-Instanzen zu den GUIDs und Medientyp.
@@ -53,11 +53,11 @@ class KodiConfigurator extends IPSModule
      * @access private
      *  @var array Key ist der Name, Index "GUID" ist die GUID und Index "Typ" ist der Medientyp.
      */
-    public static $PlayerTypes = array(
-        "Audio Player"   => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", 'PlayerID' => 0),
-        "Video Player"   => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", 'PlayerID' => 1),
-        "Picture Player" => array("GUID" => "{BA014AD9-9568-4F12-BE31-17D37BFED06D}", 'PlayerID' => 2),
-    );
+    private static $PlayerTypes = [
+        'Audio Player'   => ['GUID' => '{BA014AD9-9568-4F12-BE31-17D37BFED06D}', 'PlayerID' => 0],
+        'Video Player'   => ['GUID' => '{BA014AD9-9568-4F12-BE31-17D37BFED06D}', 'PlayerID' => 1],
+        'Picture Player' => ['GUID' => '{BA014AD9-9568-4F12-BE31-17D37BFED06D}', 'PlayerID' => 2],
+    ];
 
     /**
      * Zuordnung der möglichen Playlist-Instanzen zu den GUIDs und Medientyp.
@@ -65,11 +65,11 @@ class KodiConfigurator extends IPSModule
      * @access private
      *  @var array Key ist der Name, Index "GUID" ist die GUID und Index "Typ" ist der Medientyp.
      */
-    public static $PlayeListTypes = array(
-        "Audio Playlist"   => array("GUID" => "{7D73D0FF-0CC7-43D0-A196-0D6143E52756}", 'PlaylistID' => 0),
-        "Video Playlist"   => array("GUID" => "{7D73D0FF-0CC7-43D0-A196-0D6143E52756}", 'PlaylistID' => 1),
-        "Picture Playlist" => array("GUID" => "{7D73D0FF-0CC7-43D0-A196-0D6143E52756}", 'PlaylistID' => 2),
-    );
+    private static $PlayeListTypes = [
+        'Audio Playlist'   => ['GUID' => '{7D73D0FF-0CC7-43D0-A196-0D6143E52756}', 'PlaylistID' => 0],
+        'Video Playlist'   => ['GUID' => '{7D73D0FF-0CC7-43D0-A196-0D6143E52756}', 'PlaylistID' => 1],
+        'Picture Playlist' => ['GUID' => '{7D73D0FF-0CC7-43D0-A196-0D6143E52756}', 'PlaylistID' => 2],
+    ];
 
     /**
      * Interne Funktion des SDK.
@@ -79,7 +79,7 @@ class KodiConfigurator extends IPSModule
     public function Create()
     {
         parent::Create();
-        $this->ConnectParent("{D2F106B5-4473-4C19-A48F-812E8BAA316C}");
+        $this->ConnectParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
     }
 
     /**
@@ -183,11 +183,11 @@ class KodiConfigurator extends IPSModule
 
         if ($SplitterID === false) {
             $Form['actions'][] = [
-                "type"  => "PopupAlert",
-                "popup" => [
-                    "items" => [[
-                    "type"    => "Label",
-                    "caption" => "Not connected to Splitter."
+                'type'  => 'PopupAlert',
+                'popup' => [
+                    'items' => [[
+                    'type'    => 'Label',
+                    'caption' => 'Not connected to Splitter.'
                         ]]
                 ]
             ];
@@ -195,11 +195,11 @@ class KodiConfigurator extends IPSModule
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         if (IPS_GetInstance($SplitterID)['InstanceStatus'] != IS_ACTIVE) {
             $Form['actions'][] = [
-                "type"  => "PopupAlert",
-                "popup" => [
-                    "items" => [[
-                    "type"    => "Label",
-                    "caption" => "Instance has no active parent."
+                'type'  => 'PopupAlert',
+                'popup' => [
+                    'items' => [[
+                    'type'    => 'Label',
+                    'caption' => 'Instance has no active parent.'
                         ]]
                 ]
             ];
@@ -270,6 +270,7 @@ class KodiConfigurator extends IPSModule
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
     }
+
 }
 
 /** @} */

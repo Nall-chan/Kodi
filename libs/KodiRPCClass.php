@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /** @addtogroup kodi
  * @{
  *
@@ -28,6 +28,7 @@ class KodiRPCException extends Exception
     {
         parent::__construct($message, $code, $previous);
     }
+
 }
 
 /**
@@ -241,7 +242,7 @@ class Kodi_RPC_Data extends stdClass
             $this->Params = (object) $Params;
         }
         if (is_null($Id)) {
-            $this->Id = round(explode(" ", microtime())[0] * 10000);
+            $this->Id = round(explode(' ', microtime())[0] * 10000);
         } else {
             if ($Id > 0) {
                 $this->Id = $Id;
@@ -273,7 +274,7 @@ class Kodi_RPC_Data extends stdClass
                 $this->Params = $arguments[0];
             }
         }
-        $this->Id = round(explode(" ", microtime())[0] * 10000);
+        $this->Id = round(explode(' ', microtime())[0] * 10000);
     }
 
     /**
@@ -291,7 +292,7 @@ class Kodi_RPC_Data extends stdClass
         if (!is_null($this->Result)) {
             return $this->Result;
         }
-        return array();
+        return [];
     }
 
     /**
@@ -447,7 +448,7 @@ class Kodi_RPC_Data extends stdClass
     public function ToRPCJSONString($GUID)
     {
         $RPC = new stdClass();
-        $RPC->jsonrpc = "2.0";
+        $RPC->jsonrpc = '2.0';
         $RPC->method = $this->Namespace . '.' . $this->Method;
         if (!is_null($this->Params)) {
             $RPC->params = $this->Params;
@@ -468,7 +469,7 @@ class Kodi_RPC_Data extends stdClass
     public function ToRawRPCJSONString()
     {
         $RPC = new stdClass();
-        $RPC->jsonrpc = "2.0";
+        $RPC->jsonrpc = '2.0';
         $RPC->method = $this->Namespace . '.' . $this->Method;
         if (!is_null($this->Params)) {
             $RPC->params = $this->Params;
@@ -535,6 +536,7 @@ class Kodi_RPC_Data extends stdClass
         }
         return $item;
     }
+
 }
 
 /** @} */

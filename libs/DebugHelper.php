@@ -1,6 +1,9 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
+namespace KodiBase;
+
 /**
  * @addtogroup generic
  * @{
@@ -56,7 +59,7 @@ trait DebugHelper
             }
         } elseif (is_object($Data)) {
             foreach ($Data as $Key => $DebugData) {
-                $this->SendDebug($Message . "." . $Key, $DebugData, 0);
+                $this->SendDebug($Message . "->" . $Key, $DebugData, 0);
             }
         } elseif (is_bool($Data)) {
             parent::SendDebug($Message, ($Data ? 'TRUE' : 'FALSE'), 0);
@@ -64,8 +67,9 @@ trait DebugHelper
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 parent::SendDebug($Message, $Data, $Format);
             } else {
-                IPS_LogMessage($this->InstanceID . ": " . $Message, $Data);
+                $this->LogMessage($Message . ':' . (string) $Data, KL_DEBUG);
             }
         }
     }
+
 }

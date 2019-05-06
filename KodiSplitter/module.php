@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * @addtogroup kodi
@@ -14,12 +14,11 @@ declare(strict_types = 1);
  * @version       2.0
  *
  */
-require_once __DIR__ . '/../libs/BufferHelper.php';  // diverse Klassen
-require_once __DIR__ . '/../libs/ConstHelper.php';  // diverse Klassen
+eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
+eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/ParentIOHelper.php') . '}');
+eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/SemaphoreHelper.php') . '}');
 require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
-require_once __DIR__ . '/../libs/ParentIOHelper.php';  // diverse Klassen
-require_once __DIR__ . '/../libs/SemaphoreHelper.php';  // diverse Klassen
-require_once(__DIR__ . "/../libs/KodiRPCClass.php");  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
 
 /**
  * KodiSplitter Klasse für die Kommunikation mit der Kodi-RPC-Api.
@@ -38,12 +37,14 @@ require_once(__DIR__ . "/../libs/KodiRPCClass.php");  // diverse Klassen
  */
 class KodiSplitter extends IPSModule
 {
-    use BufferHelper,
-        InstanceStatus,
-        DebugHelper,
-        Semaphore {
-        InstanceStatus::MessageSink as IOMessageSink;
-        InstanceStatus::RegisterParent as IORegisterParent;
+
+    use \KodiSplitter\BufferHelper,
+        \KodiSplitter\InstanceStatus,
+        \KodiBase\DebugHelper,
+        \KodiSplitter\Semaphore {
+        \KodiSplitter\InstanceStatus::MessageSink as IOMessageSink;
+        \KodiSplitter\InstanceStatus::RegisterParent as IORegisterParent;
+        \KodiSplitter\InstanceStatus::RequestAction as IORequestAction;
     }
     /**
      * RPC-Namespace
@@ -52,7 +53,7 @@ class KodiSplitter extends IPSModule
      * @var string
      * @value 'JSONRPC'
      */
-    public static $Namespace = "JSONRPC";
+    protected static $Namespace = 'JSONRPC';
 
     /**
      * Interne Funktion des SDK.
@@ -62,22 +63,21 @@ class KodiSplitter extends IPSModule
     public function Create()
     {
         parent::Create();
-        $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}");
-//        $this->RegisterPropertyString("Host", "");
-        $this->RegisterPropertyBoolean("Open", false);
-        $this->RegisterPropertyInteger("Port", 9090);
-        $this->RegisterPropertyInteger("Webport", 80);
-        $this->RegisterPropertyBoolean("BasisAuth", false);
-        $this->RegisterPropertyString("Username", "");
-        $this->RegisterPropertyString("Password", "");
-        $this->RegisterPropertyBoolean("Watchdog", false);
-        $this->RegisterPropertyInteger("Interval", 5);
+        $this->RequireParent('{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}');
+        $this->RegisterPropertyBoolean('Open', false);
+        $this->RegisterPropertyInteger('Port', 9090);
+        $this->RegisterPropertyInteger('Webport', 80);
+        $this->RegisterPropertyBoolean('BasisAuth', false);
+        $this->RegisterPropertyString('Username', '');
+        $this->RegisterPropertyString('Password', '');
+        $this->RegisterPropertyBoolean('Watchdog', false);
+        $this->RegisterPropertyInteger('Interval', 5);
         $this->RegisterTimer('KeepAlive', 0, 'KODIRPC_KeepAlive($_IPS[\'TARGET\']);');
         $this->RegisterTimer('Watchdog', 0, 'KODIRPC_Watchdog($_IPS[\'TARGET\']);');
         $this->ParentID = 0;
-        $this->ReplyJSONData = array();
-        $this->BufferIN = "";
-        $this->Host = "";
+        $this->ReplyJSONData = [];
+        $this->BufferIN = '';
+        $this->Host = '';
     }
 
     /**
@@ -93,12 +93,11 @@ class KodiSplitter extends IPSModule
         $this->RegisterMessage($this->InstanceID, IM_CHANGESTATUS);
 
         $this->ParentID = 0;
-        $this->ReplyJSONData = array();
-        $this->BufferIN = "";
-        $this->UnregisterVariable("BufferIN");
-        $this->UnregisterVariable("ReplyJSONData");
+        $this->ReplyJSONData = [];
+        $this->BufferIN = '';
+        $this->UnregisterVariable('BufferIN');
+        $this->UnregisterVariable('ReplyJSONData');
 
-        // Wenn Kernel nicht bereit, dann warten... KR_READY kommt ja gleich
         parent::ApplyChanges();
 
         if (IPS_GetKernelRunlevel() <> KR_READY) {
@@ -163,7 +162,7 @@ class KodiSplitter extends IPSModule
         if ($ParentID > 0) {
             $this->Host = IPS_GetProperty($ParentID, 'Host');
         } else {
-            $this->Host = "";
+            $this->Host = '';
         }
         $this->SetSummary($this->Host);
         return $ParentID;
@@ -186,7 +185,7 @@ class KodiSplitter extends IPSModule
                     switch ($Data[0]) {
                         case IS_ACTIVE:
                             $this->SetWatchdogTimer(false);
-                            $this->SetTimerInterval("KeepAlive", 180 * 1000);
+                            $this->SetTimerInterval('KeepAlive', 180 * 1000);
                             $this->SendPowerEvent(true);
                             break;
                         case IS_EBASE + 3: //ERROR RCP-Server
@@ -194,7 +193,7 @@ class KodiSplitter extends IPSModule
                         case IS_EBASE + 2: //misconfig
                         case IS_INACTIVE:
                             $this->SetWatchdogTimer(true);
-                            $this->SetTimerInterval("KeepAlive", 0);
+                            $this->SetTimerInterval('KeepAlive', 0);
                             $this->SendPowerEvent(false);
                             break;
                     }
@@ -227,7 +226,7 @@ class KodiSplitter extends IPSModule
                 $NewState = IS_ACTIVE;
                 $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
                 $ret = @$this->Send($KodiData);
-                if ($ret == "pong") {
+                if ($ret == 'pong') {
                     if (!$this->CheckWebserver()) {
                         echo 'Could not connect to webserver.';
                         $NewState = 204;
@@ -250,10 +249,17 @@ class KodiSplitter extends IPSModule
         }
     }
 
+    public function RequestAction($Ident, $Value)
+    {
+        if ($this->IORequestAction($Ident, $Value)) {
+            return true;
+        }
+    }
+
     ################## PRIVATE
     private function CheckPort()
     {
-        $Socket = @stream_socket_client("tcp://" . $this->Host . ":" . $this->ReadPropertyInteger('Port'), $errno, $errstr, 1);
+        $Socket = @stream_socket_client('tcp://' . $this->Host . ':' . $this->ReadPropertyInteger('Port'), $errno, $errstr, 1);
         if (!$Socket) {
             $this->SendDebug('CheckPort', false, 0);
             return false;
@@ -277,7 +283,7 @@ class KodiSplitter extends IPSModule
         }
 
         $Result = false;
-        if ($KodiResult->GetResult() == "pong") {
+        if ($KodiResult->GetResult() == 'pong') {
             $Result = true;
         }
         $this->SendDebug('CheckPort', $Result, 0);
@@ -293,7 +299,7 @@ class KodiSplitter extends IPSModule
     {
         $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
         $JSON = $KodiData->ToRawRPCJSONString();
-        $Result = $this->DoWebserverRequest("/jsonrpc?request=" . rawurlencode($JSON));
+        $Result = $this->DoWebserverRequest('/jsonrpc?request=' . rawurlencode($JSON));
         if ($Result !== false) {
             $KodiResult = new Kodi_RPC_Data();
             $KodiResult->CreateFromJSONString($Result);
@@ -301,7 +307,7 @@ class KodiSplitter extends IPSModule
             if (is_a($ret, 'KodiRPCException')) {
                 trigger_error('Error (' . $ret->getCode() . '): ' . $ret->getMessage(), E_USER_NOTICE);
             }
-            if ($KodiResult->GetResult() == "pong") {
+            if ($KodiResult->GetResult() == 'pong') {
                 return true;
             }
         }
@@ -321,7 +327,7 @@ class KodiSplitter extends IPSModule
         $UseBasisAuth = $this->ReadPropertyBoolean('BasisAuth');
         $User = $this->ReadPropertyString('Username');
         $Pass = $this->ReadPropertyString('Password');
-        $URL = "http://" . $Host . ":" . $Port . $URI;
+        $URL = 'http://' . $Host . ':' . $Port . $URI;
         $ch = curl_init();
         $timeout = 1; // 0 wenn kein Timeout
         curl_setopt($ch, CURLOPT_URL, $URL);
@@ -358,13 +364,13 @@ class KodiSplitter extends IPSModule
                 $Interval = $this->ReadPropertyInteger('Interval');
                 $Interval = ($Interval < 5) ? 0 : $Interval;
                 if ($Active) {
-                    $this->SetTimerInterval("Watchdog", $Interval * 1000);
+                    $this->SetTimerInterval('Watchdog', $Interval * 1000);
                     $this->SendDebug('Watchdog', 'active', 0);
                     return;
                 }
             }
         }
-        $this->SetTimerInterval("Watchdog", 0);
+        $this->SetTimerInterval('Watchdog', 0);
         $this->SendDebug('Watchdog', 'inactive', 0);
     }
 
@@ -377,13 +383,13 @@ class KodiSplitter extends IPSModule
      */
     private function SendPowerEvent($value)
     {
-        $KodiData = new Kodi_RPC_Data('System', 'Power', array('data' => $value), 0);
+        $KodiData = new Kodi_RPC_Data('System', 'Power', ['data' => $value], 0);
         $this->SendDataToDevice($KodiData);
-        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', array('data' => array('playlistid' => 0)), 0);
+        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', ['data' => ['playlistid' => 0]], 0);
         $this->SendDataToDevice($KodiData);
-        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', array('data' => array('playlistid' => 1)), 0);
+        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', ['data' => ['playlistid' => 1]], 0);
         $this->SendDataToDevice($KodiData);
-        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', array('data' => array('playlistid' => 2)), 0);
+        $KodiData = new Kodi_RPC_Data('Playlist', 'OnClear', ['data' => ['playlistid' => 2]], 0);
         $this->SendDataToDevice($KodiData);
     }
 
@@ -423,7 +429,7 @@ class KodiSplitter extends IPSModule
      */
     public function GetImage(string $path)
     {
-        $CoverRAW = $this->DoWebserverRequest("/image/" . rawurlencode($path));
+        $CoverRAW = $this->DoWebserverRequest('/image/' . rawurlencode($path));
 
         if ($CoverRAW === false) {
             trigger_error('Error on load image from Kodi.', E_USER_NOTICE);
@@ -442,7 +448,7 @@ class KodiSplitter extends IPSModule
     {
         $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
         $ret = @$this->Send($KodiData);
-        if ($ret !== "pong") {
+        if ($ret !== 'pong') {
             echo 'Connection to Kodi lost.';
             $this->SetStatus(203);
             return false;
@@ -463,7 +469,7 @@ class KodiSplitter extends IPSModule
         if (!$this->ReadPropertyBoolean('Open')) {
             return;
         }
-        if ($this->Host != "") {
+        if ($this->Host != '') {
             if ($this->HasActiveParent()) {
                 return;
             }
@@ -498,7 +504,7 @@ class KodiSplitter extends IPSModule
 //        $this->SendDebug('Forward', $JSONString, 0);
 
         $Data = json_decode($JSONString);
-//        if ($Data->DataID <> "{0222A902-A6FA-4E94-94D3-D54AA4666321}")
+//        if ($Data->DataID <> '{0222A902-A6FA-4E94-94D3-D54AA4666321}')
 //            return false;
         $KodiData = new Kodi_RPC_Data();
         $KodiData->CreateFromGenericObject($Data);
@@ -556,7 +562,7 @@ class KodiSplitter extends IPSModule
             $tail = array_pop($JSONLine);
             $this->BufferIN = $tail;
         } else {
-            $this->BufferIN = "";
+            $this->BufferIN = '';
         }
 
         // Pakete verarbeiten
@@ -565,7 +571,7 @@ class KodiSplitter extends IPSModule
             $KodiData->CreateFromJSONString($JSON);
             if ($KodiData->Typ == Kodi_RPC_Data::$ResultTyp) { // Reply
                 try {
-                    $this->SendQueueUpdate((int)$KodiData->Id, $KodiData);
+                    $this->SendQueueUpdate((int) $KodiData->Id, $KodiData);
                 } catch (Exception $exc) {
                     $buffer = $this->BufferIN;
                     $this->BufferIN = $JSON . $buffer;
@@ -601,9 +607,9 @@ class KodiSplitter extends IPSModule
                 throw new Exception('Instance has no active parent.', E_USER_NOTICE);
             }
             $this->SendDebug('Send', $KodiData, 0);
-            $this->SendQueuePush((int)$KodiData->Id);
+            $this->SendQueuePush((int) $KodiData->Id);
             $this->SendDataToParent($KodiData);
-            $ReplyKodiData = $this->WaitForResponse((int)$KodiData->Id);
+            $ReplyKodiData = $this->WaitForResponse((int) $KodiData->Id);
 
             if ($ReplyKodiData === false) {
                 throw new Exception('No anwser from Kodi', E_USER_NOTICE);
@@ -616,11 +622,11 @@ class KodiSplitter extends IPSModule
             $this->SendDebug('Receive', $ReplyKodiData, 0);
             return $ret;
         } catch (KodiRPCException $ex) {
-            $this->SendDebug("Receive", $ex, 0);
+            $this->SendDebug('Receive', $ex, 0);
             //trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
             echo $ex->getMessage();
         } catch (Exception $ex) {
-            $this->SendDebug("Receive", $ex->getMessage(), 0);
+            $this->SendDebug('Receive', $ex->getMessage(), 0);
             //trigger_error($ex->getMessage(), $ex->getCode());
             echo $ex->getMessage();
         }
@@ -655,7 +661,7 @@ class KodiSplitter extends IPSModule
             if (!array_key_exists($Id, $ret)) {
                 return false;
             }
-            if ($ret[$Id] <> "") {
+            if ($ret[$Id] <> '') {
                 return $this->SendQueuePop($Id);
             }
             IPS_Sleep(5);
@@ -677,7 +683,7 @@ class KodiSplitter extends IPSModule
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
         }
         $data = $this->ReplyJSONData;
-        $data[$Id] = "";
+        $data[$Id] = '';
         $this->ReplyJSONData = $data;
         $this->unlock('ReplyJSONData');
     }
@@ -695,7 +701,7 @@ class KodiSplitter extends IPSModule
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
         }
         $data = $this->ReplyJSONData;
-        $data[$Id] = $KodiData->ToJSONString("");
+        $data[$Id] = $KodiData->ToJSONString('');
         $this->ReplyJSONData = $data;
         $this->unlock('ReplyJSONData');
     }
@@ -733,6 +739,7 @@ class KodiSplitter extends IPSModule
         $this->ReplyJSONData = $data;
         $this->unlock('ReplyJSONData');
     }
+
 }
 
 /** @} */

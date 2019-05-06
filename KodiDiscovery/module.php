@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /*
  * @addtogroup kodi
  * @{
@@ -13,8 +13,8 @@ declare(strict_types = 1);
  * @version       2.01
  *
  */
-require_once __DIR__ . '/../libs/BufferHelper.php';  // diverse Klassen
 require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
+eval('declare(strict_types=1);namespace KodiDiscovery {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
 
 /**
  * KodiDiscovery Klasse implementiert
@@ -30,8 +30,9 @@ require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
  */
 class KodiDiscovery extends ipsmodule
 {
-    use DebugHelper,
-        BufferHelper;
+
+    use \KodiBase\DebugHelper,
+        \KodiDiscovery\BufferHelper;
     /**
      * Interne Funktion des SDK.
      */
@@ -185,7 +186,7 @@ class KodiDiscovery extends ipsmodule
         if (!$socket) {
             return [];
         }
-        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array("sec" => 2, "usec" => 100000));
+        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ['sec' => 2, 'usec' => 100000]);
         socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
         socket_bind($socket, '0.0.0.0', 0);
         $message = [
@@ -262,6 +263,7 @@ class KodiDiscovery extends ipsmodule
         $this->Devices = $this->DiscoverDevices();
         // Alt neu vergleich fehlt, sowie die Events an IPS senden wenn neues Gerät im Netz gefunden wurde.
     }
+
 }
 
 /* @} */

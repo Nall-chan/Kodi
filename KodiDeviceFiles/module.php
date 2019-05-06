@@ -14,7 +14,7 @@ declare(strict_types = 1);
  * @version       2.0
  *
  */
-require_once(__DIR__ . "/../libs/KodiClass.php");  // diverse Klassen
+require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
 
 
 /**
@@ -39,7 +39,7 @@ class KodiDeviceFiles extends KodiBase
      *  @var string
      * @value 'Files'
      */
-    public static $Namespace = 'Files';
+    protected static $Namespace = 'Files';
 
     /**
      * Alle Properties des RPC-Namespace
@@ -47,8 +47,7 @@ class KodiDeviceFiles extends KodiBase
      * @access private
      *  @var array
      */
-    public static $Properties = array(
-    );
+    protected static $Properties = [];
 
     /**
      * Alle Properties eines Item
@@ -56,75 +55,75 @@ class KodiDeviceFiles extends KodiBase
      * @access private
      *  @var array
      */
-    public static $ItemListFull = array(
-        "title",
-        "artist",
-        "albumartist",
-        "genre",
-        "year",
-        "rating",
-        "album",
-        "track",
-        "duration",
-        "comment",
-        "lyrics",
-        "musicbrainztrackid",
-        "musicbrainzartistid",
-        "musicbrainzalbumid",
-        "musicbrainzalbumartistid",
-        "playcount",
-        "fanart",
-        "director",
-        "trailer",
-        "tagline",
-        "plot",
-        "plotoutline",
-        "originaltitle",
-        "lastplayed",
-        "writer",
-        "studio",
-        "mpaa",
-        "cast",
-        "country",
-        "imdbnumber",
-        "premiered",
-        "productioncode",
-        "runtime",
-        "set",
-        "showlink",
-        "streamdetails",
-        "top250",
-        "votes",
-        "firstaired",
-        "season",
-        "episode",
-        "showtitle",
-        "thumbnail",
-        "file",
-        "resume",
-        "artistid",
-        "albumid",
-        "tvshowid",
-        "setid",
-        "watchedepisodes",
-        "disc",
-        "tag",
-        "art",
-        "genreid",
-        "displayartist",
-        "albumartistid",
-        "description",
-        "theme",
-        "mood",
-        "style",
-        "albumlabel",
-        "sorttitle",
-        "episodeguide",
-        "uniqueid",
-        "dateadded",
-        "size",
-        "lastmodified",
-        "mimetype");
+    protected static $ItemListFull = [
+        'title',
+        'artist',
+        'albumartist',
+        'genre',
+        'year',
+        'rating',
+        'album',
+        'track',
+        'duration',
+        'comment',
+        'lyrics',
+        'musicbrainztrackid',
+        'musicbrainzartistid',
+        'musicbrainzalbumid',
+        'musicbrainzalbumartistid',
+        'playcount',
+        'fanart',
+        'director',
+        'trailer',
+        'tagline',
+        'plot',
+        'plotoutline',
+        'originaltitle',
+        'lastplayed',
+        'writer',
+        'studio',
+        'mpaa',
+        'cast',
+        'country',
+        'imdbnumber',
+        'premiered',
+        'productioncode',
+        'runtime',
+        'set',
+        'showlink',
+        'streamdetails',
+        'top250',
+        'votes',
+        'firstaired',
+        'season',
+        'episode',
+        'showtitle',
+        'thumbnail',
+        'file',
+        'resume',
+        'artistid',
+        'albumid',
+        'tvshowid',
+        'setid',
+        'watchedepisodes',
+        'disc',
+        'tag',
+        'art',
+        'genreid',
+        'displayartist',
+        'albumartistid',
+        'description',
+        'theme',
+        'mood',
+        'style',
+        'albumlabel',
+        'sorttitle',
+        'episodeguide',
+        'uniqueid',
+        'dateadded',
+        'size',
+        'lastmodified',
+        'mimetype'];
 
     /**
      * Kleiner Teil der Properties eines Item
@@ -132,25 +131,25 @@ class KodiDeviceFiles extends KodiBase
      * @access private
      *  @var array
      */
-    public static $ItemListSmall = array(
-        "title",
-        "artist",
-        "albumartist",
-        "genre",
-        "year",
-        "album",
-        "track",
-        "duration",
-        "plot",
-        "runtime",
-        "season",
-        "episode",
-        "showtitle",
-        "thumbnail",
-        "file",
-        "disc",
-        "albumlabel",
-    );
+    protected static $ItemListSmall = [
+        'title',
+        'artist',
+        'albumartist',
+        'genre',
+        'year',
+        'album',
+        'track',
+        'duration',
+        'plot',
+        'runtime',
+        'season',
+        'episode',
+        'showtitle',
+        'thumbnail',
+        'file',
+        'disc',
+        'albumlabel',
+       ];
 
     ################## PRIVATE
 
@@ -184,13 +183,13 @@ class KodiDeviceFiles extends KodiBase
         }
 
         $Media = strtolower($Media);
-        if (!in_array($Media, array("video", "music", "pictures", "files", "programs"))) {
+        if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
             trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
             return false;
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetSources(array("media" => $Media));
+        $KodiData->GetSources(['media' => $Media]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -198,7 +197,7 @@ class KodiDeviceFiles extends KodiBase
         if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->sources);
         }
-        return array();
+        return [];
     }
 
     /**
@@ -222,13 +221,13 @@ class KodiDeviceFiles extends KodiBase
         }
 
         $Media = strtolower($Media);
-        if (!in_array($Media, array("video", "music", "pictures", "files", "programs"))) {
+        if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
             trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
             return false;
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetFileDetails(array("file" => $File, "media" => $Media, "properties" => static::$ItemListFull));
+        $KodiData->GetFileDetails(['file' => $File, 'media' => $Media, 'properties' => static::$ItemListFull]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -249,8 +248,8 @@ class KodiDeviceFiles extends KodiBase
             trigger_error('Directory must be string', E_USER_NOTICE);
             return false;
         }
-        $KodiData = new Kodi_RPC_Data(self::$Namespace); // 'GetDirectory', array("directory" => $Directory));
-        $KodiData->GetDirectory(array("directory" => $Directory));
+        $KodiData = new Kodi_RPC_Data(self::$Namespace); // 'GetDirectory', ['directory' => $Directory]);
+        $KodiData->GetDirectory(['directory' => $Directory]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -259,7 +258,7 @@ class KodiDeviceFiles extends KodiBase
         if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->files);
         }
-        return array();
+        return [];
     }
 
     /**
@@ -283,13 +282,13 @@ class KodiDeviceFiles extends KodiBase
         }
 
         $Media = strtolower($Media);
-        if (!in_array($Media, array("video", "music", "pictures", "files", "programs"))) {
+        if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
             trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
             return false;
         }
 
-        $KodiData = new Kodi_RPC_Data(self::$Namespace); //, 'GetDirectory', array("directory" => $Directory, "media" => $Media, "properties" => static::$ItemListSmall));
-        $KodiData->GetDirectory(array("directory" => $Directory, "media" => $Media, "properties" => static::$ItemListSmall));
+        $KodiData = new Kodi_RPC_Data(self::$Namespace); //, 'GetDirectory', ['directory' => $Directory, 'media' => $Media, 'properties' => static::$ItemListSmall]);
+        $KodiData->GetDirectory(['directory' => $Directory, 'media' => $Media, 'properties' => static::$ItemListSmall]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -298,7 +297,7 @@ class KodiDeviceFiles extends KodiBase
         if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->files);
         }
-        return array();
+        return [];
     }
 }
 
