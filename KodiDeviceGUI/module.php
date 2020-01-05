@@ -283,7 +283,6 @@ class KodiDeviceGUI extends KodiBase
     {
         return parent::RequestState($Ident);
     }
-
 }
 
 /** @} */

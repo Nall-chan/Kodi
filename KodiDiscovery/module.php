@@ -30,8 +30,8 @@ eval('declare(strict_types=1);namespace KodiDiscovery {?>' . file_get_contents(_
  */
 class KodiDiscovery extends ipsmodule
 {
-
-    use \KodiBase\DebugHelper,
+    use \KodiBase\DebugHelper;
+    use
         \KodiDiscovery\BufferHelper;
     /**
      * Interne Funktion des SDK.
@@ -75,23 +75,6 @@ class KodiDiscovery extends ipsmodule
         }
     }
 
-    private function GetIPSInstances(): array
-    {
-        $InstanceIDList = IPS_GetInstanceListByModuleID('{7B4F8B62-7AB4-4877-AD60-F3B294DDB43E}');
-        $Devices = [];
-        foreach ($InstanceIDList as $InstanceID) {
-            $Splitter = IPS_GetInstance($InstanceID)['ConnectionID'];
-            if ($Splitter > 0) {
-                $IO = IPS_GetInstance($Splitter)['ConnectionID'];
-                if ($IO > 0) {
-                    $Devices[$InstanceID] = IPS_GetProperty($IO, 'Host');
-                }
-            }
-        }
-        $this->SendDebug('IPS Devices', $Devices, 0);
-        return $Devices;
-    }
-
     /**
      * Interne Funktion des SDK.
      */
@@ -133,7 +116,7 @@ class KodiDiscovery extends ipsmodule
                     'configuration' => [
                         'Host' => $IPAddress
                     ]
-                /* [
+                    /* [
                   'Host' => $IPAddress,
                   'Port' => $Device['port'],
                   'Open' => true
@@ -165,6 +148,30 @@ class KodiDiscovery extends ipsmodule
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
+    }
+
+    public function Discover()
+    {
+        $this->LogMessage($this->Translate('Background discovery of Kodi devices'), KL_NOTIFY);
+        $this->Devices = $this->DiscoverDevices();
+        // Alt neu vergleich fehlt, sowie die Events an IPS senden wenn neues Gerät im Netz gefunden wurde.
+    }
+
+    private function GetIPSInstances(): array
+    {
+        $InstanceIDList = IPS_GetInstanceListByModuleID('{7B4F8B62-7AB4-4877-AD60-F3B294DDB43E}');
+        $Devices = [];
+        foreach ($InstanceIDList as $InstanceID) {
+            $Splitter = IPS_GetInstance($InstanceID)['ConnectionID'];
+            if ($Splitter > 0) {
+                $IO = IPS_GetInstance($Splitter)['ConnectionID'];
+                if ($IO > 0) {
+                    $Devices[$InstanceID] = IPS_GetProperty($IO, 'Host');
+                }
+            }
+        }
+        $this->SendDebug('IPS Devices', $Devices, 0);
+        return $Devices;
     }
 
     private function parseHeader(string $Data): array
@@ -256,14 +263,6 @@ class KodiDiscovery extends ipsmodule
 
         return $Kodi;
     }
-
-    public function Discover()
-    {
-        $this->LogMessage($this->Translate('Background discovery of Kodi devices'), KL_NOTIFY);
-        $this->Devices = $this->DiscoverDevices();
-        // Alt neu vergleich fehlt, sowie die Events an IPS senden wenn neues Gerät im Netz gefunden wurde.
-    }
-
 }
 
 /* @} */

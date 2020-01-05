@@ -719,7 +719,6 @@ class KodiDeviceInput extends KodiBase
         }
         return $ret === 'OK';
     }
-
 }
 
 /** @} */

@@ -1,30 +1,28 @@
 {
-    "elements":
-            [{
-                    "name": "showAddonlist",
-                    "type": "CheckBox",
-                    "caption": "Show HTML-Box for Addons"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Script for HTML-Box Desgin:"
-                },
-                {
-                    "name": "Addonlistconfig",
-                    "type": "SelectScript",
-                    "caption": "Script:"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Size (width) for addon thumnails:"
-                },
-                {
-                    "name": "ThumbSize",
-                    "type": "NumberSpinner",
-                    "caption": "Thumb width"
-                }
-            ],
-    "actions":
-            [
-            ]
+    "elements": [
+        {
+            "name": "showAddonlist",
+            "type": "CheckBox",
+            "caption": "Show HTML-Box for Addons"
+        },
+        {
+            "type": "Label",
+            "caption": "Script for HTML-Box Desgin:"
+        },
+        {
+            "name": "Addonlistconfig",
+            "type": "SelectScript",
+            "caption": "Script:"
+        },
+        {
+            "type": "Label",
+            "caption": "Size (width) for addon thumnails:"
+        },
+        {
+            "name": "ThumbSize",
+            "type": "NumberSpinner",
+            "caption": "Thumb width"
+        }
+    ],
+    "actions": []
 }

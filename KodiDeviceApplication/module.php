@@ -243,7 +243,6 @@ class KodiDeviceApplication extends KodiBase
     {
         return parent::RequestState($Ident);
     }
-
 }
 
 /** @} */

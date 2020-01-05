@@ -2,9 +2,9 @@
     "translations": {
         "de": {
             "Show SVG-Remotecontrol": "SVG-Fernsteuerung anzeigen",
-            "Remote:":"Fernsteuerung:",
-            "vertical":"vertikal",
-            "horizontal":"horizontal",
+            "Remote:": "Fernsteuerung:",
+            "vertical": "vertikal",
+            "horizontal": "horizontal",
             "Show Action-Variable for navigate": "Aktions-Variable zum navigieren anlegen",
             "Show Action-Variable for control": "Aktions-Variable zum steuern anlegen",
             "Show Variable for needed input": "Status-Variable für 'Eingabe erwartet' anlegen",

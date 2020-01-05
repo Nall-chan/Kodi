@@ -1,142 +1,147 @@
 {
-    "elements":
-            [{
-                    "name": "showIsAvailable",
-                    "type": "CheckBox",
-                    "caption": "Show Variable PVR avaiable"
-                }, {
-                    "name": "showIsRecording",
-                    "type": "CheckBox",
-                    "caption": "Show Variable for active recording"
-                }, {
-                    "name": "showDoRecording",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for control recording"
-                }, {
-                    "name": "showIsScanning",
-                    "type": "CheckBox",
-                    "caption": "Show Variable for searching channels"
-                }, {
-                    "name": "showDoScanning",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for serach channels"
-                }, {
-                    "name": "showTVChannellist",
-                    "type": "CheckBox",
-                    "caption": "Show HTML-Box for TV channels"
-                }, {
-                    "type": "Label",
-                    "caption": "Max TV channels to be displayed:"
-                },
-                {
-                    "name": "showMaxTVChannels",
-                    "type": "NumberSpinner",
-                    "caption": "Channels"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Script for TV HTML-Box Desgin:"
-                },
-                {
-                    "name": "TVChannellistconfig",
-                    "type": "SelectScript",
-                    "caption": "Script:"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Size (width) for TV thumnails:"
-                },
-                {
-                    "name": "TVThumbSize",
-                    "type": "NumberSpinner",
-                    "caption": "Thumb width"
-                },
-                {
-                    "name": "showRadioChannellist",
-                    "type": "CheckBox",
-                    "caption": "Show HTML-Box for radio channels"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Max radio channels to be displayed:"
-                },
-                {
-                    "name": "showMaxRadioChannels",
-                    "type": "NumberSpinner",
-                    "caption": "Channels"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Script for radio HTML-Box Desgin:"
-                },
-                {
-                    "name": "RadioChannellistconfig",
-                    "type": "SelectScript",
-                    "caption": "Script:"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Size (width) for radio thumnails:"
-                },
-                {
-                    "name": "RadioThumbSize",
-                    "type": "NumberSpinner",
-                    "caption": "Thumb width"
-                },
-                {
-                    "name": "showRecordinglist",
-                    "type": "CheckBox",
-                    "caption": "Show HTML-Box for recordings"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Max recordings to be displayed:"
-                },
-                {
-                    "name": "showMaxRecording",
-                    "type": "NumberSpinner",
-                    "caption": "Recordings"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Script for recording HTML-Box Desgin:"
-                },
-                {
-                    "name": "Recordinglistconfig",
-                    "type": "SelectScript",
-                    "caption": "Script:"
-                },
-                {
-                    "type": "Label",
-                    "caption": "Size (width) for recording thumnails:"
-                },
-                {
-                    "name": "RecordingThumbSize",
-                    "type": "NumberSpinner",
-                    "caption": "Thumb width"
-                }
-            ],
-    "actions":
-            [
-                {
-                    "type": "Button",
-                    "caption": "Record start",
-                    "onClick": "KODIPVR_Record($id,true,'current');"
-                },
-                {
-                    "type": "Button",
-                    "caption": "Record stop",
-                    "onClick": "KODIPVR_Record($id,false,'current');"
-                },
-                {
-                    "type": "Button",
-                    "caption": "Search channels",
-                    "onClick": "KODIPVR_Scan($id);"
-                },
-                {
-                    "type": "Button",
-                    "caption": "Request all states",
-                    "onClick": "KODIPVR_RequestState($id,'ALL');"
-                }
-            ]
+    "elements": [
+        {
+            "name": "showIsAvailable",
+            "type": "CheckBox",
+            "caption": "Show Variable PVR avaiable"
+        },
+        {
+            "name": "showIsRecording",
+            "type": "CheckBox",
+            "caption": "Show Variable for active recording"
+        },
+        {
+            "name": "showDoRecording",
+            "type": "CheckBox",
+            "caption": "Show Action-Variable for control recording"
+        },
+        {
+            "name": "showIsScanning",
+            "type": "CheckBox",
+            "caption": "Show Variable for searching channels"
+        },
+        {
+            "name": "showDoScanning",
+            "type": "CheckBox",
+            "caption": "Show Action-Variable for serach channels"
+        },
+        {
+            "name": "showTVChannellist",
+            "type": "CheckBox",
+            "caption": "Show HTML-Box for TV channels"
+        },
+        {
+            "type": "Label",
+            "caption": "Max TV channels to be displayed:"
+        },
+        {
+            "name": "showMaxTVChannels",
+            "type": "NumberSpinner",
+            "caption": "Channels"
+        },
+        {
+            "type": "Label",
+            "caption": "Script for TV HTML-Box Desgin:"
+        },
+        {
+            "name": "TVChannellistconfig",
+            "type": "SelectScript",
+            "caption": "Script:"
+        },
+        {
+            "type": "Label",
+            "caption": "Size (width) for TV thumnails:"
+        },
+        {
+            "name": "TVThumbSize",
+            "type": "NumberSpinner",
+            "caption": "Thumb width"
+        },
+        {
+            "name": "showRadioChannellist",
+            "type": "CheckBox",
+            "caption": "Show HTML-Box for radio channels"
+        },
+        {
+            "type": "Label",
+            "caption": "Max radio channels to be displayed:"
+        },
+        {
+            "name": "showMaxRadioChannels",
+            "type": "NumberSpinner",
+            "caption": "Channels"
+        },
+        {
+            "type": "Label",
+            "caption": "Script for radio HTML-Box Desgin:"
+        },
+        {
+            "name": "RadioChannellistconfig",
+            "type": "SelectScript",
+            "caption": "Script:"
+        },
+        {
+            "type": "Label",
+            "caption": "Size (width) for radio thumnails:"
+        },
+        {
+            "name": "RadioThumbSize",
+            "type": "NumberSpinner",
+            "caption": "Thumb width"
+        },
+        {
+            "name": "showRecordinglist",
+            "type": "CheckBox",
+            "caption": "Show HTML-Box for recordings"
+        },
+        {
+            "type": "Label",
+            "caption": "Max recordings to be displayed:"
+        },
+        {
+            "name": "showMaxRecording",
+            "type": "NumberSpinner",
+            "caption": "Recordings"
+        },
+        {
+            "type": "Label",
+            "caption": "Script for recording HTML-Box Desgin:"
+        },
+        {
+            "name": "Recordinglistconfig",
+            "type": "SelectScript",
+            "caption": "Script:"
+        },
+        {
+            "type": "Label",
+            "caption": "Size (width) for recording thumnails:"
+        },
+        {
+            "name": "RecordingThumbSize",
+            "type": "NumberSpinner",
+            "caption": "Thumb width"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "Record start",
+            "onClick": "KODIPVR_Record($id,true,'current');"
+        },
+        {
+            "type": "Button",
+            "caption": "Record stop",
+            "onClick": "KODIPVR_Record($id,false,'current');"
+        },
+        {
+            "type": "Button",
+            "caption": "Search channels",
+            "onClick": "KODIPVR_Scan($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Request all states",
+            "onClick": "KODIPVR_RequestState($id,'ALL');"
+        }
+    ]
 }

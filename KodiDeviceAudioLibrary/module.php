@@ -296,7 +296,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      */
     public function Export(string $Path, bool $Overwrite, bool $includeImages)
     {
-        if (!is_string($Path) or ( strlen($Path) < 2)) {
+        if (!is_string($Path) or (strlen($Path) < 2)) {
             trigger_error('Path is invalid', E_USER_NOTICE);
             return false;
         }
@@ -566,7 +566,6 @@ class KodiDeviceAudioLibrary extends KodiBase
         trigger_error('Error start scanning', E_USER_NOTICE);
         return false;
     }
-
 }
 
 /** @} */

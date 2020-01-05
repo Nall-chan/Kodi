@@ -3,9 +3,16 @@
     "name": "KodiDeviceFiles",
     "type": 3,
     "vendor": "Kodi",
-    "aliases": ["Kodi Files"],
-    "parentRequirements": ["{0222A902-A6FA-4E94-94D3-D54AA4666321}"],
+    "aliases": [
+        "Kodi Files"
+    ],
+    "parentRequirements": [
+        "{0222A902-A6FA-4E94-94D3-D54AA4666321}"
+    ],
     "childRequirements": [],
-    "implemented": ["{73249F91-710A-4D24-B1F1-A72F216C2BDC}"],
-    "prefix": "KODIFILES"
+    "implemented": [
+        "{73249F91-710A-4D24-B1F1-A72F216C2BDC}"
+    ],
+    "prefix": "KODIFILES",
+    "url": "https://github.com/Nall-chan/IPSKodi/README.md"
 }

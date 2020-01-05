@@ -28,7 +28,6 @@ class KodiRPCException extends Exception
     {
         parent::__construct($message, $code, $previous);
     }
-
 }
 
 /**
@@ -536,7 +535,6 @@ class Kodi_RPC_Data extends stdClass
         }
         return $item;
     }
-
 }
 
 /** @} */

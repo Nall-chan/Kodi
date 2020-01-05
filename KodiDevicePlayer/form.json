@@ -1,63 +1,62 @@
 {
-    "elements":
-            [{
-                    "type": "Label",
-                    "caption": "Change off Player affected Status-Variables!"
+    "elements": [
+        {
+            "type": "Label",
+            "caption": "Change off Player affected Status-Variables!"
+        },
+        {
+            "name": "PlayerID",
+            "type": "Select",
+            "caption": "Player:",
+            "options": [
+                {
+                    "caption": "Audio",
+                    "value": 0
                 },
                 {
-                    "name": "PlayerID",
-                    "type": "Select",
-                    "caption": "Player:",
-                    "options": [
-                        {
-                            "caption": "Audio",
-                            "value": 0
-                        },
-                        {
-                            "caption": "Video",
-                            "value": 1
-                        },
-                        {
-                            "caption": "Pictures",
-                            "value": 2
-                        }
-                    ]
+                    "caption": "Video",
+                    "value": 1
                 },
                 {
-                    "name": "CoverSize",
-                    "type": "NumberSpinner",
-                    "caption": "Cover height"
-                },
-                {
-                    "name": "CoverTyp",
-                    "type": "Select",
-                    "caption": "Cover:",
-                    "options": [
-                        {
-                            "caption": "thumbnail (all)",
-                            "value": "thumb"
-                        },
-                        {
-                            "caption": "artist for thumbnail (audio)",
-                            "value": "artist"
-                        },
-                        {
-                            "caption": "poster for banner (video)",
-                            "value": "poster"
-                        },
-                        {
-                            "caption": "banner for poster (video)",
-                            "value": "banner"
-                        }
-                    ]
-                }
-            ],
-    "actions":
-            [
-                {
-                    "type": "Button",
-                    "caption": "Request all states",
-                    "onClick": "KODIPLAYER_RequestState($id,'ALL');"
+                    "caption": "Pictures",
+                    "value": 2
                 }
             ]
+        },
+        {
+            "name": "CoverSize",
+            "type": "NumberSpinner",
+            "caption": "Cover height"
+        },
+        {
+            "name": "CoverTyp",
+            "type": "Select",
+            "caption": "Cover:",
+            "options": [
+                {
+                    "caption": "thumbnail (all)",
+                    "value": "thumb"
+                },
+                {
+                    "caption": "artist for thumbnail (audio)",
+                    "value": "artist"
+                },
+                {
+                    "caption": "poster for banner (video)",
+                    "value": "poster"
+                },
+                {
+                    "caption": "banner for poster (video)",
+                    "value": "banner"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "Request all states",
+            "onClick": "KODIPLAYER_RequestState($id,'ALL');"
+        }
+    ]
 }

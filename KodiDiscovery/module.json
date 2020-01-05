@@ -3,9 +3,12 @@
     "name": "Kodi Discovery",
     "type": 5,
     "vendor": "Kodi",
-    "aliases": ["Kodi Discovery"],
+    "aliases": [
+        "Kodi Discovery"
+    ],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
-    "prefix": "KODI"
+    "prefix": "KODI",
+    "url": "https://github.com/Nall-chan/IPSKodi/README.md"
 }

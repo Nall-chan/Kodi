@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @version       2.0
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDeviceVideoLibrary Klasse für den Namespace VideoLibrary der KODI-API.
@@ -303,25 +303,6 @@ class KodiDeviceVideoLibrary extends KodiBase
         parent::ApplyChanges();
     }
 
-    ################## PRIVATE
-    protected function Decode($Method, $KodiPayload)
-    {
-        switch ($Method) {
-            case 'OnScanStarted':
-                $this->SetValueBoolean('scan', true);
-                break;
-            case 'OnScanFinished':
-                $this->SetValueBoolean('scan', false);
-                break;
-            case 'OnCleanStarted':
-                $this->SetValueBoolean('clean', true);
-                break;
-            case 'OnCleanFinished':
-                $this->SetValueBoolean('clean', false);
-                break;
-        }
-    }
-
     ################## ActionHandler
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
@@ -378,7 +359,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function Export(string $Path, bool $Overwrite, bool $includeImages)
     {
-        if (!is_string($Path) or ( strlen($Path) < 2)) {
+        if (!is_string($Path) || (strlen($Path) < 2)) {
             trigger_error('Path is invalid', E_USER_NOTICE);
             return false;
         }
@@ -396,7 +377,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         if (is_null($ret)) {
             return false;
         }
-        return ($ret === 'OK');
+        return $ret === 'OK';
     }
 
     /**
@@ -528,7 +509,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetMovieSetDetails(['setid' => $SetId, 'properties' => static::SetItemList]);
+        $KodiData->GetMovieSetDetails(['setid' => $SetId, 'properties' => static::$SetItemList]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -746,6 +727,24 @@ class KodiDeviceVideoLibrary extends KodiBase
         return false;
     }
 
+    ################## PRIVATE
+    protected function Decode($Method, $KodiPayload)
+    {
+        switch ($Method) {
+            case 'OnScanStarted':
+                $this->SetValueBoolean('scan', true);
+                break;
+            case 'OnScanFinished':
+                $this->SetValueBoolean('scan', false);
+                break;
+            case 'OnCleanStarted':
+                $this->SetValueBoolean('clean', true);
+                break;
+            case 'OnCleanFinished':
+                $this->SetValueBoolean('clean', false);
+                break;
+        }
+    }
 }
 
 /** @} */

@@ -1,75 +1,88 @@
 {
-    "elements":
-            [
-                {
-                    "name": "Open",
-                    "type": "CheckBox",
-                    "caption": "Open"
-                }, {
-                    "type": "Label",
-                    "caption": "Enter Address of Kodi in the parent Client-Socket."
-                }, {
-                    "name": "Port",
-                    "type": "NumberSpinner",
-                    "caption": "JSON-RPC TCP-Port"
-                }, {
-                    "type": "Label",
-                    "caption": "Kodi-Webserver is needed for image download."
-                }, {
-                    "name": "Webport",
-                    "type": "NumberSpinner",
-                    "caption": "Webserver-Port"
-                }, {
-                    "type": "Label",
-                    "caption": "Optional HTTP Basic-Authentication:"
-                }, {
-                    "name": "BasisAuth",
-                    "type": "CheckBox",
-                    "caption": "Active"
-                }, {
-                    "name": "Username",
-                    "type": "ValidationTextBox",
-                    "caption": "Username"
-                }, {
-                    "name": "Password",
-                    "type": "PasswordTextBox",
-                    "caption": "Password"
-                }, {
-                    "type": "Label",
-                    "caption": "Advanced power watchdog with ping request"
-                }, {
-                    "name": "Watchdog",
-                    "type": "CheckBox",
-                    "caption": "Enabled"
-                }, {
-                    "name": "Interval",
-                    "type": "NumberSpinner",
-                    "caption": "Interval",
-                    "suffix": "seconds"
-                }
-            ],
-    "status":
-            [
-                {
-                    "code": 102,
-                    "icon": "active",
-                    "caption": "Kodi found."
-                }, {
-                    "code": 104,
-                    "icon": "inactive",
-                    "caption": "Interface closed."
-                }, {
-                    "code": 202,
-                    "icon": "error",
-                    "caption": "Host or port is empty."
-                }, {
-                    "code": 203,
-                    "icon": "error",
-                    "caption": "Could not connect RPC-Server."
-                }, {
-                    "code": 204,
-                    "icon": "error",
-                    "caption": "Could not connect to webserver."
-                }
-            ]
+    "elements": [
+        {
+            "name": "Open",
+            "type": "CheckBox",
+            "caption": "Open"
+        },
+        {
+            "type": "Label",
+            "caption": "Enter Address of Kodi in the parent Client-Socket."
+        },
+        {
+            "name": "Port",
+            "type": "NumberSpinner",
+            "caption": "JSON-RPC TCP-Port"
+        },
+        {
+            "type": "Label",
+            "caption": "Kodi-Webserver is needed for image download."
+        },
+        {
+            "name": "Webport",
+            "type": "NumberSpinner",
+            "caption": "Webserver-Port"
+        },
+        {
+            "type": "Label",
+            "caption": "Optional HTTP Basic-Authentication:"
+        },
+        {
+            "name": "BasisAuth",
+            "type": "CheckBox",
+            "caption": "Active"
+        },
+        {
+            "name": "Username",
+            "type": "ValidationTextBox",
+            "caption": "Username"
+        },
+        {
+            "name": "Password",
+            "type": "PasswordTextBox",
+            "caption": "Password"
+        },
+        {
+            "type": "Label",
+            "caption": "Advanced power watchdog with ping request"
+        },
+        {
+            "name": "Watchdog",
+            "type": "CheckBox",
+            "caption": "Enabled"
+        },
+        {
+            "name": "Interval",
+            "type": "NumberSpinner",
+            "caption": "Interval",
+            "suffix": "seconds"
+        }
+    ],
+    "status": [
+        {
+            "code": 102,
+            "icon": "active",
+            "caption": "Kodi found."
+        },
+        {
+            "code": 104,
+            "icon": "inactive",
+            "caption": "Interface closed."
+        },
+        {
+            "code": 202,
+            "icon": "error",
+            "caption": "Host or port is empty."
+        },
+        {
+            "code": 203,
+            "icon": "error",
+            "caption": "Could not connect RPC-Server."
+        },
+        {
+            "code": 204,
+            "icon": "error",
+            "caption": "Could not connect to webserver."
+        }
+    ]
 }

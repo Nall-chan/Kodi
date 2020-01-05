@@ -1,41 +1,44 @@
 {
-    "elements":
-            [{
-                    "name": "showName",
-                    "type": "CheckBox",
-                    "caption": "Show variable for systemname"
-                }, {
-                    "name": "showVersion",
-                    "type": "CheckBox",
-                    "caption": "Show variable for version"
-                }, {
-                    "name": "showExit",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for exit Kodi"
-                }
-            ],
-    "actions":
-            [
-                {
-                    "type": "Button",
-                    "caption": "Mute on",
-                    "onClick": "KODIAPP_SetMute($id, true);"
-                }, {
-                    "type": "Button",
-                    "caption": "Mute off",
-                    "onClick": "KODIAPP_SetMute($id, false);"
-                }, {
-                    "name": "Slider",
-                    "caption": "Volume:",
-                    "type": "HorizontalSlider",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "onChange": "KODIAPP_SetVolume($id, $Slider);"
-                },
-                {
-                    "type": "Button",
-                    "caption": "Request all states",
-                    "onClick": "KODIAPP_RequestState($id,'ALL');"
-                }
-            ]
+    "elements": [
+        {
+            "name": "showName",
+            "type": "CheckBox",
+            "caption": "Show variable for systemname"
+        },
+        {
+            "name": "showVersion",
+            "type": "CheckBox",
+            "caption": "Show variable for version"
+        },
+        {
+            "name": "showExit",
+            "type": "CheckBox",
+            "caption": "Show Action-Variable for exit Kodi"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "Mute on",
+            "onClick": "KODIAPP_SetMute($id, true);"
+        },
+        {
+            "type": "Button",
+            "caption": "Mute off",
+            "onClick": "KODIAPP_SetMute($id, false);"
+        },
+        {
+            "name": "Slider",
+            "caption": "Volume:",
+            "type": "HorizontalSlider",
+            "minimum": 0,
+            "maximum": 100,
+            "onChange": "KODIAPP_SetVolume($id, $Slider);"
+        },
+        {
+            "type": "Button",
+            "caption": "Request all states",
+            "onClick": "KODIAPP_RequestState($id,'ALL');"
+        }
+    ]
 }

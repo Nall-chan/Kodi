@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @version       2.0
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDevicePlayer Klasse für den Namespace Player der KODI-API.
@@ -266,7 +266,7 @@ class KodiDevicePlayer extends KodiBase
      */
     public function Destroy()
     {
-        if (IPS_GetKernelRunlevel() <> KR_READY) {
+        if (IPS_GetKernelRunlevel() != KR_READY) {
             return parent::Destroy();
         }
         if (!IPS_InstanceExists($this->InstanceID)) {
@@ -280,29 +280,6 @@ class KodiDevicePlayer extends KodiBase
             $this->UnregisterProfile('Speed.' . $this->InstanceID . '.Kodi');
         }
         parent::Destroy();
-    }
-
-    /**
-     * Wird ausgeführt wenn sich der Status vom Parent ändert.
-     * @access protected
-     */
-    protected function IOChangeState($State)
-    {
-        parent::IOChangeState($State);
-        if ($State == IS_ACTIVE) {
-            $this->isActive = true;
-            IPS_RunScriptText('<? KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
-            IPS_RunScriptText('<? KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
-        } else {
-            $this->isActive = false;
-            $this->SetTimerInterval('PlayerStatus', 0);
-            $this->SetValueInteger('Status', 1);
-            $this->SetValueString('duration', '');
-            $this->SetValueString('totaltime', '');
-            $this->SetValueString('time', '');
-            $this->SetValueInteger('percentage', 0);
-            $this->SetValueInteger('speed', 0);
-        }
     }
 
     /**
@@ -464,356 +441,11 @@ class KodiDevicePlayer extends KodiBase
 
         parent::ApplyChanges();
 
-
         $this->getActivePlayer();
-
 
         if ($this->isActive) {
             $this->GetItemInternal();
         }
-    }
-
-    ################## PRIVATE
-    /**
-     * Fragt Kodi an ob der Playertyp der Instanz gerade aktiv ist.
-     *
-     * @return bool true wenn Player aktiv ist, sonset false
-     */
-    private function getActivePlayer()
-    {
-        $KodiData = new Kodi_RPC_Data(static::$Namespace);
-        $KodiData->GetActivePlayers();
-        $ret = @$this->SendDirect($KodiData);
-
-        if (is_null($ret) or ( count($ret) == 0)) {
-            $this->isActive = false;
-        } else {
-            $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
-        }
-
-        $this->SendDebug('getActivePlayer', $this->isActive, 0);
-
-        return $this->isActive;
-    }
-
-    /**
-     * Setzt die Eigenschaft isActive sowie die dazugehörige IPS-Variable.
-     *
-     * @access private
-     * @param bool $isActive True wenn Player als aktive gesetzt werden soll, sonder false.
-     */
-    private function setActivePlayer(bool $isActive)
-    {
-        $this->isActive = $isActive;
-        $this->SendDebug('setActive', $this->isActive, 0);
-    }
-
-    /**
-     * Werte der Eigenschaften anfragen.
-     *
-     * @access protected
-     * @param array $Params Enthält den Index "properties", in welchen alle anzufragenden Eigenschaften als Array enthalten sind.
-     * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
-     */
-    protected function RequestProperties(array $Params)
-    {
-        $Param = array_merge($Params, ['playerid' => $this->PlayerId]);
-        if (!$this->isActive) {
-            return false;
-        }
-        $KodiData = new Kodi_RPC_Data(static::$Namespace);
-        $KodiData->GetProperties($Param);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            $KodiPayload = new stdClass();
-            $KodiPayload->player = new stdClass();
-            $KodiPayload->player->playerid = $this->PlayerId;
-            $this->Decode('OnStop', $KodiPayload);
-            return false;
-        }
-        $this->Decode('GetProperties', $ret);
-        return true;
-    }
-
-    /**
-     * Dekodiert die empfangenen Daten und führt die Statusvariablen nach.
-     *
-     * @access protected
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-    protected function Decode($Method, $KodiPayload)
-    {
-        if ($KodiPayload == null) {
-            $this->SendDebug('NULL : ' . $Method, $KodiPayload, 0);
-            return;
-        }
-        if (property_exists($KodiPayload, 'player')) {
-            if ($KodiPayload->player->playerid <> $this->PlayerId) {
-                return false;
-            }
-        } else {
-            if (property_exists($KodiPayload, 'type')) {
-                if (self::$Playertype[(string) $KodiPayload->type] <> $this->PlayerId) {
-                    return false;
-                }
-            } else {
-                if (property_exists($KodiPayload, 'item')) {
-                    if (property_exists($KodiPayload->item, 'channeltype')) {
-                        if (self::$Playertype[(string) $KodiPayload->item->channeltype] <> $this->PlayerId) {
-                            return false;
-                        }
-                    } else {
-                        if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlayerId) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        $this->SendDebug($Method, $KodiPayload, 0);
-
-        switch ($Method) {
-            case 'GetProperties':
-            case 'OnPropertyChanged':
-                foreach ($KodiPayload as $param => $value) {
-                    switch ($param) {
-                        case 'subtitles':
-                            if ($this->PlayerId <> self::Video) {
-                                break;
-                            }
-                            $this->CreateSubtitleProfil($value);
-                            if (count($value) == 0) {
-                                $this->DisableAction('subtitle');
-                            } else {
-                                $this->EnableAction('subtitle');
-                            }
-                            break;
-                        case 'subtitleenabled':
-                            if ($this->PlayerId <> self::Video) {
-                                break;
-                            }
-                            if ($value === false) {
-                                $this->SetValueInteger('subtitle', -1);
-                            }
-                            break;
-                        // Object
-                        case 'currentsubtitle':
-                            if ($this->PlayerId <> self::Video) {
-                                break;
-                            }
-                            /* if (is_object($value)) {
-                              if (property_exists($value, 'index')) {
-                              $this->SetValueInteger('subtitle', (int) $value->index);
-                              } else {
-                              $this->SetValueInteger('subtitle', -1);
-                              }
-                              } else {
-                              $this->SetValueInteger('subtitle', -1);
-                              } */
-                            break;
-                        case 'audiostreams':
-                            if ($this->PlayerId <> self::Video) {
-                                break;
-                            }
-                            $this->CreateAudioProfil($value);
-                            if (count($value) == 1) {
-                                $this->DisableAction('audiostream');
-                            } else {
-                                $this->EnableAction('audiostream');
-                            }
-                            break;
-                        case 'currentaudiostream':
-                            if ($this->PlayerId <> self::Video) {
-                                break;
-                            }
-                            if (is_object($value)) {
-                                if (property_exists($value, 'index')) {
-                                    $this->SetValueInteger('audiostream', (int) $value->index);
-                                } else {
-                                    $this->SetValueInteger('audiostream', 0);
-                                }
-                            } else {
-                                $this->SetValueInteger('audiostream', 0);
-                            }
-                            break;
-                        //time
-                        case 'totaltime':
-                            $this->SetValueString('duration', $this->ConvertTime($value));
-                            break;
-                        case 'time':
-                            $this->SetValueString($param, $this->ConvertTime($value));
-                            break;
-                        // Anzahl
-
-                        case 'repeat': //off
-                            if ($this->PlayerId <> self::Picture) {
-                                $this->SetValueInteger($param, array_search((string) $value, ['off', 'one', 'all']));
-                            }
-                            break;
-                        //boolean
-                        case 'shuffled':
-                        case 'partymode':
-                            $this->SetValueBoolean($param, (bool) $value);
-                            break;
-                        //integer
-                        case 'speed':
-                            if ((int) $value == 0) {
-                                $this->SetValueInteger('Status', 3);
-                            } else {
-                                $this->SetValueInteger('Status', 2);
-                            }
-                        case 'percentage':
-                            $this->SetValueInteger($param, (int) $value);
-                            break;
-
-                        //Action en/disable
-                        case 'canseek':
-                            if ((bool) $value) {
-                                $this->EnableAction('percentage');
-                            } else {
-                                $this->DisableAction('percentage');
-                            }
-                            break;
-                        case 'canshuffle':
-                            if ((bool) $value) {
-                                $this->EnableAction('shuffled');
-                            } else {
-                                $this->DisableAction('shuffled');
-                            }
-                            break;
-                        case 'canrepeat':
-                            if ($this->PlayerId == self::Picture) {
-                                break;
-                            }
-                            if ((bool) $value) {
-                                $this->EnableAction('repeat');
-                            } else {
-                                $this->DisableAction('repeat');
-                            }
-                            break;
-
-                        case 'canchangespeed':
-                            if ((bool) $value) {
-                                $this->EnableAction('speed');
-                            } else {
-                                $this->DisableAction('speed');
-                            }
-                            break;
-                        //ignore
-                        case 'canrotate':
-                        case 'canzoom':
-                        case 'canmove':
-                        case 'playlistid':
-                        case 'live':
-                        case 'playlist':
-                        case 'position':
-                        case 'type':
-                            break;
-                        default:
-                            $this->SendDebug('Todo:' . $param, $value, 0);
-
-                            break;
-                    }
-                }
-                break;
-            case 'OnStop':
-                $this->SetTimerInterval('PlayerStatus', 0);
-                $this->SetValueInteger('Status', 1);
-                $this->SetValueString('duration', '');
-                $this->SetValueString('totaltime', '');
-                $this->SetValueString('time', '');
-                $this->SetValueInteger('percentage', 0);
-                $this->SetValueInteger('speed', 0);
-
-                $this->SetValueString('album', '');
-                $this->SetValueInteger('track', 0);
-                $this->SetValueInteger('disc', 0);
-                $this->SetValueString('artist', '');
-                $this->SetValueString('lyrics', '');
-                $this->SetValueBoolean('partymode', false);
-                $this->SetValueInteger('year', 0);
-                $this->SetValueString('genre', '');
-
-                $this->SetValueString('showtitle', '');
-                $this->SetValueString('channel', '');
-                $this->SetValueInteger('season', 0);
-                $this->SetValueInteger('episode', 0);
-
-                $this->SetValueString('plot', '');
-                $this->SetValueInteger('audiostream', 0);
-                $this->SetValueInteger('subtitle', 0);
-
-                $this->SetValueInteger('repeat', 0);
-                $this->SetValueBoolean('shuffled', false);
-
-                $this->SetValueString('label', '');
-
-
-
-                $this->setActivePlayer(false);
-                $this->SetCover('');
-                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
-                IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
-                break;
-            case 'OnPlay':
-            case 'OnResume':
-                $this->setActivePlayer(true);
-                $this->SetValueInteger('Status', 2);
-                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
-                IPS_RunScriptText('<? @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
-                $this->SetTimerInterval('PlayerStatus', 2000);
-                break;
-            case 'OnPause':
-                $this->SetTimerInterval('PlayerStatus', 0);
-                $this->SetValueInteger('Status', 3);
-                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
-                break;
-            case 'OnSeek':
-                $this->SetValueString('time', $this->ConvertTime($KodiPayload->player->time));
-                break;
-            case 'OnSpeedChanged':
-                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"speed");');
-                break;
-            default:
-                $this->SendDebug($Method, $KodiPayload, 0);
-                break;
-        }
-    }
-
-    /**
-     * Holt das über $flie übergebene Cover vom Kodi-Webinterface, skaliert und konvertiert dieses und speichert es in einem MedienObjekt ab.
-     *
-     * @access private
-     * @param string $file
-     */
-    private function SetCover(string $file)
-    {
-        $CoverID = @IPS_GetObjectIDByIdent('CoverIMG', $this->InstanceID);
-        if ($CoverID === false) {
-            $CoverID = IPS_CreateMedia(1);
-            IPS_SetParent($CoverID, $this->InstanceID);
-            IPS_SetIdent($CoverID, 'CoverIMG');
-            IPS_SetName($CoverID, 'Cover');
-            IPS_SetPosition($CoverID, 27);
-            IPS_SetMediaCached($CoverID, true);
-            $filename = 'media' . DIRECTORY_SEPARATOR . 'Cover_' . $this->InstanceID . '.png';
-            IPS_SetMediaFile($CoverID, $filename, false);
-            $this->SendDebug('Create Media', $filename, 0);
-        }
-
-        if ($file == '') {
-            $CoverRAW = false;
-        } else {
-            $Size = $this->ReadPropertyInteger('CoverSize');
-            $CoverRAW = $this->GetThumbnail($file, 0, $Size);
-        }
-
-        if ($CoverRAW === false) {
-            $CoverRAW = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'nocover.png');
-        }
-
-        IPS_SetMediaContent($CoverID, base64_encode($CoverRAW));
     }
 
     ################## ActionHandler
@@ -845,6 +477,7 @@ class KodiDevicePlayer extends KodiBase
                     default:
                         return trigger_error('Invalid Ident.', E_USER_NOTICE);
                 }
+                // FIXME: No break. Please add proper comment if intentional
             case 'shuffled':
                 return $this->SetShuffle($Value);
             case 'repeat':
@@ -963,29 +596,30 @@ class KodiDevicePlayer extends KodiBase
                     case'artist':
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'artist.fanart')) {
-                                if ($ret->art->{'artist.fanart'} <> '') {
+                                if ($ret->art->{'artist.fanart'} != '') {
                                     $this->SetCover($ret->art->{'artist.fanart'});
                                     break;
                                 }
                             }
                         }
                         if (property_exists($ret, 'fanart')) {
-                            if ($ret->fanart <> '') {
+                            if ($ret->fanart != '') {
                                 $this->SetCover($ret->fanart);
                                 break;
                             }
                         }
+                        // FIXME: No break. Please add proper comment if intentional
                     default:
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'thumb')) {
-                                if ($ret->art->thumb <> '') {
+                                if ($ret->art->thumb != '') {
                                     $this->SetCover($ret->art->thumb);
                                     break;
                                 }
                             }
                         }
                         if (property_exists($ret, 'thumbnail')) {
-                            if ($ret->thumbnail <> '') {
+                            if ($ret->thumbnail != '') {
                                 $this->SetCover($ret->thumbnail);
                                 break;
                             }
@@ -1059,48 +693,48 @@ class KodiDevicePlayer extends KodiBase
                     case'poster':
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'tvshow.poster')) {
-                                if ($ret->art->{'tvshow.poster'} <> '') {
+                                if ($ret->art->{'tvshow.poster'} != '') {
                                     $this->SetCover($ret->art->{'tvshow.poster'});
                                     break;
                                 }
                             }
                             if (property_exists($ret->art, 'poster')) {
-                                if ($ret->art->{'poster'} <> '') {
+                                if ($ret->art->{'poster'} != '') {
                                     $this->SetCover($ret->art->{'poster'});
                                     break;
                                 }
                             }
                         }
                         if (property_exists($ret, 'poster')) {
-                            if ($ret->poster <> '') {
+                            if ($ret->poster != '') {
                                 $this->SetCover($ret->poster);
                                 break;
                             }
                         }
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'tvshow.banner')) {
-                                if ($ret->art->{'tvshow.banner'} <> '') {
+                                if ($ret->art->{'tvshow.banner'} != '') {
                                     $this->SetCover($ret->art->{'tvshow.banner'});
                                     break;
                                 }
                             }
                         }
                         if (property_exists($ret, 'banner')) {
-                            if ($ret->banner <> '') {
+                            if ($ret->banner != '') {
                                 $this->SetCover($ret->banner);
                                 break;
                             }
                         }
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'thumb')) {
-                                if ($ret->art->thumb <> '') {
+                                if ($ret->art->thumb != '') {
                                     $this->SetCover($ret->art->thumb);
                                     break;
                                 }
                             }
                         }
                         if (property_exists($ret, 'thumbnail')) {
-                            if ($ret->thumbnail <> '') {
+                            if ($ret->thumbnail != '') {
                                 $this->SetCover($ret->thumbnail);
                                 break;
                             }
@@ -1111,49 +745,50 @@ class KodiDevicePlayer extends KodiBase
                     case'banner':
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'tvshow.banner')) {
-                                if ($ret->art->{'tvshow.banner'} <> '') {
+                                if ($ret->art->{'tvshow.banner'} != '') {
                                     $this->SetCover($ret->art->{'tvshow.banner'});
                                     break;
                                 }
                             }
                         }
                         if (property_exists($ret, 'banner')) {
-                            if ($ret->banner <> '') {
+                            if ($ret->banner != '') {
                                 $this->SetCover($ret->banner);
                                 break;
                             }
                         }
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'tvshow.poster')) {
-                                if ($ret->art->{'tvshow.poster'} <> '') {
+                                if ($ret->art->{'tvshow.poster'} != '') {
                                     $this->SetCover($ret->art->{'tvshow.poster'});
                                     break;
                                 }
                             }
                             if (property_exists($ret->art, 'poster')) {
-                                if ($ret->art->{'poster'} <> '') {
+                                if ($ret->art->{'poster'} != '') {
                                     $this->SetCover($ret->art->{'poster'});
                                     break;
                                 }
                             }
                         }
                         if (property_exists($ret, 'poster')) {
-                            if ($ret->poster <> '') {
+                            if ($ret->poster != '') {
                                 $this->SetCover($ret->poster);
                                 break;
                             }
                         }
+                        // FIXME: No break. Please add proper comment if intentional
                     default:
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'thumb')) {
-                                if ($ret->art->thumb <> '') {
+                                if ($ret->art->thumb != '') {
                                     $this->SetCover($ret->art->thumb);
                                     break;
                                 }
                             }
                         }
                         if (property_exists($ret, 'thumbnail')) {
-                            if ($ret->thumbnail <> '') {
+                            if ($ret->thumbnail != '') {
                                 $this->SetCover($ret->thumbnail);
                                 break;
                             }
@@ -1176,7 +811,7 @@ class KodiDevicePlayer extends KodiBase
                 $this->SetValueString('label', $label);
                 if (property_exists($ret, 'art')) {
                     if (property_exists($ret->art, 'thumb')) {
-                        if ($ret->art->thumb <> '') {
+                        if ($ret->art->thumb != '') {
                             $this->SetCover($ret->art->thumb);
                         } else {
                             $this->SetCover('');
@@ -1184,7 +819,7 @@ class KodiDevicePlayer extends KodiBase
                     }
                 } else {
                     if (property_exists($ret, 'thumbnail')) {
-                        if ($ret->thumbnail <> '') {
+                        if ($ret->thumbnail != '') {
                             $this->SetCover($ret->thumbnail);
                         }
                     } else {
@@ -1385,34 +1020,6 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-
-     * Springt auf ein bestimmtes Item in der Wiedergabeliste.
-     *
-     * @access private
-     * @param int|string $Value Index oder String-Enum
-     *   enum['previous', 'next']
-     * @return bool True bei Erfolg, sonst false.
-     */
-    private function GoToValue($Value)
-    {
-        if (!$this->isActive) {
-            trigger_error('Player not active', E_USER_NOTICE);
-            return false;
-        }
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GoTo(['playerid' => $this->PlayerId, 'to' => $Value]);
-        $ret = $this->Send($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        if ($ret === 'OK') {
-            return true;
-        }
-        trigger_error('Error on send ' . $Value . '.', E_USER_NOTICE);
-        return false;
-    }
-
-    /**
      * IPS-Instanz-Funktion 'KODIPLAYER_GoToTrack'.
      * Springt auf ein bestimmtes Item in der Wiedergabeliste.
      *
@@ -1472,7 +1079,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ( $Value > 2)) {
+        if (($Value < 0) || ($Value > 2)) {
             trigger_error('Value must be between 0 and 2', E_USER_NOTICE);
             return false;
         }
@@ -1544,7 +1151,6 @@ class KodiDevicePlayer extends KodiBase
             return $this->Pause();
         }
 
-
         if (!$this->isActive) {
             trigger_error('Player not active', E_USER_NOTICE);
             return false;
@@ -1582,7 +1188,7 @@ class KodiDevicePlayer extends KodiBase
             trigger_error('Value must be integer', E_USER_NOTICE);
             return false;
         }
-        if (($Value < 0) or ( $Value > 100)) {
+        if (($Value < 0) || ($Value > 100)) {
             trigger_error('Value must be between 0 and 100', E_USER_NOTICE);
             return false;
         }
@@ -1604,27 +1210,6 @@ class KodiDevicePlayer extends KodiBase
             return true;
         }
         trigger_error('Error on set Position.', E_USER_NOTICE);
-        return false;
-    }
-
-    /**
-     * Lädt ein Item und startet die Wiedergabe.
-     *
-     * @access private
-     * @param string $ItemTyp Der Typ des Item.
-     * @param string $ItemValue Der Wert des Item.
-     * @param array $Ext Array welches mit übergeben werden soll (optional).
-     * @return bool True bei Erfolg. Sonst false.
-     */
-    private function Load(string $ItemTyp, $ItemValue, $Ext = [])
-    {
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->Open(array_merge(['item' => [$ItemTyp => $ItemValue]], $Ext));
-        $ret = $this->Send($KodiData);
-        if ($ret === 'OK') {
-            return true;
-        }
-        trigger_error('Error on load ' . $ItemTyp . '.', E_USER_NOTICE);
         return false;
     }
 
@@ -1845,6 +1430,420 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
+     * Wird ausgeführt wenn sich der Status vom Parent ändert.
+     * @access protected
+     */
+    protected function IOChangeState($State)
+    {
+        parent::IOChangeState($State);
+        if ($State == IS_ACTIVE) {
+            $this->isActive = true;
+            IPS_RunScriptText('<? KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+            IPS_RunScriptText('<? KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
+        } else {
+            $this->isActive = false;
+            $this->SetTimerInterval('PlayerStatus', 0);
+            $this->SetValueInteger('Status', 1);
+            $this->SetValueString('duration', '');
+            $this->SetValueString('totaltime', '');
+            $this->SetValueString('time', '');
+            $this->SetValueInteger('percentage', 0);
+            $this->SetValueInteger('speed', 0);
+        }
+    }
+
+    /**
+     * Werte der Eigenschaften anfragen.
+     *
+     * @access protected
+     * @param array $Params Enthält den Index "properties", in welchen alle anzufragenden Eigenschaften als Array enthalten sind.
+     * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
+     */
+    protected function RequestProperties(array $Params)
+    {
+        $Param = array_merge($Params, ['playerid' => $this->PlayerId]);
+        if (!$this->isActive) {
+            return false;
+        }
+        $KodiData = new Kodi_RPC_Data(static::$Namespace);
+        $KodiData->GetProperties($Param);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            $KodiPayload = new stdClass();
+            $KodiPayload->player = new stdClass();
+            $KodiPayload->player->playerid = $this->PlayerId;
+            $this->Decode('OnStop', $KodiPayload);
+            return false;
+        }
+        $this->Decode('GetProperties', $ret);
+        return true;
+    }
+
+    /**
+     * Dekodiert die empfangenen Daten und führt die Statusvariablen nach.
+     *
+     * @access protected
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
+    protected function Decode($Method, $KodiPayload)
+    {
+        if ($KodiPayload == null) {
+            $this->SendDebug('NULL : ' . $Method, $KodiPayload, 0);
+            return;
+        }
+        if (property_exists($KodiPayload, 'player')) {
+            if ($KodiPayload->player->playerid != $this->PlayerId) {
+                return false;
+            }
+        } else {
+            if (property_exists($KodiPayload, 'type')) {
+                if (self::$Playertype[(string) $KodiPayload->type] != $this->PlayerId) {
+                    return false;
+                }
+            } else {
+                if (property_exists($KodiPayload, 'item')) {
+                    if (property_exists($KodiPayload->item, 'channeltype')) {
+                        if (self::$Playertype[(string) $KodiPayload->item->channeltype] != $this->PlayerId) {
+                            return false;
+                        }
+                    } else {
+                        if (self::$Playertype[(string) $KodiPayload->item->type] != $this->PlayerId) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        $this->SendDebug($Method, $KodiPayload, 0);
+
+        switch ($Method) {
+            case 'GetProperties':
+            case 'OnPropertyChanged':
+                foreach ($KodiPayload as $param => $value) {
+                    switch ($param) {
+                        case 'subtitles':
+                            if ($this->PlayerId != self::Video) {
+                                break;
+                            }
+                            $this->CreateSubtitleProfil($value);
+                            if (count($value) == 0) {
+                                $this->DisableAction('subtitle');
+                            } else {
+                                $this->EnableAction('subtitle');
+                            }
+                            break;
+                        case 'subtitleenabled':
+                            if ($this->PlayerId != self::Video) {
+                                break;
+                            }
+                            if ($value === false) {
+                                $this->SetValueInteger('subtitle', -1);
+                            }
+                            break;
+                        // Object
+                        case 'currentsubtitle':
+                            if ($this->PlayerId != self::Video) {
+                                break;
+                            }
+                            /* if (is_object($value)) {
+                              if (property_exists($value, 'index')) {
+                              $this->SetValueInteger('subtitle', (int) $value->index);
+                              } else {
+                              $this->SetValueInteger('subtitle', -1);
+                              }
+                              } else {
+                              $this->SetValueInteger('subtitle', -1);
+                              } */
+                            break;
+                        case 'audiostreams':
+                            if ($this->PlayerId != self::Video) {
+                                break;
+                            }
+                            $this->CreateAudioProfil($value);
+                            if (count($value) == 1) {
+                                $this->DisableAction('audiostream');
+                            } else {
+                                $this->EnableAction('audiostream');
+                            }
+                            break;
+                        case 'currentaudiostream':
+                            if ($this->PlayerId != self::Video) {
+                                break;
+                            }
+                            if (is_object($value)) {
+                                if (property_exists($value, 'index')) {
+                                    $this->SetValueInteger('audiostream', (int) $value->index);
+                                } else {
+                                    $this->SetValueInteger('audiostream', 0);
+                                }
+                            } else {
+                                $this->SetValueInteger('audiostream', 0);
+                            }
+                            break;
+                        //time
+                        case 'totaltime':
+                            $this->SetValueString('duration', $this->ConvertTime($value));
+                            break;
+                        case 'time':
+                            $this->SetValueString($param, $this->ConvertTime($value));
+                            break;
+                        // Anzahl
+
+                        case 'repeat': //off
+                            if ($this->PlayerId != self::Picture) {
+                                $this->SetValueInteger($param, array_search((string) $value, ['off', 'one', 'all']));
+                            }
+                            break;
+                        //boolean
+                        case 'shuffled':
+                        case 'partymode':
+                            $this->SetValueBoolean($param, (bool) $value);
+                            break;
+                        //integer
+                        case 'speed':
+                            if ((int) $value == 0) {
+                                $this->SetValueInteger('Status', 3);
+                            } else {
+                                $this->SetValueInteger('Status', 2);
+                            }
+                            // FIXME: No break. Please add proper comment if intentional
+                        case 'percentage':
+                            $this->SetValueInteger($param, (int) $value);
+                            break;
+
+                        //Action en/disable
+                        case 'canseek':
+                            if ((bool) $value) {
+                                $this->EnableAction('percentage');
+                            } else {
+                                $this->DisableAction('percentage');
+                            }
+                            break;
+                        case 'canshuffle':
+                            if ((bool) $value) {
+                                $this->EnableAction('shuffled');
+                            } else {
+                                $this->DisableAction('shuffled');
+                            }
+                            break;
+                        case 'canrepeat':
+                            if ($this->PlayerId == self::Picture) {
+                                break;
+                            }
+                            if ((bool) $value) {
+                                $this->EnableAction('repeat');
+                            } else {
+                                $this->DisableAction('repeat');
+                            }
+                            break;
+
+                        case 'canchangespeed':
+                            if ((bool) $value) {
+                                $this->EnableAction('speed');
+                            } else {
+                                $this->DisableAction('speed');
+                            }
+                            break;
+                        //ignore
+                        case 'canrotate':
+                        case 'canzoom':
+                        case 'canmove':
+                        case 'playlistid':
+                        case 'live':
+                        case 'playlist':
+                        case 'position':
+                        case 'type':
+                            break;
+                        default:
+                            $this->SendDebug('Todo:' . $param, $value, 0);
+
+                            break;
+                    }
+                }
+                break;
+            case 'OnStop':
+                $this->SetTimerInterval('PlayerStatus', 0);
+                $this->SetValueInteger('Status', 1);
+                $this->SetValueString('duration', '');
+                $this->SetValueString('totaltime', '');
+                $this->SetValueString('time', '');
+                $this->SetValueInteger('percentage', 0);
+                $this->SetValueInteger('speed', 0);
+
+                $this->SetValueString('album', '');
+                $this->SetValueInteger('track', 0);
+                $this->SetValueInteger('disc', 0);
+                $this->SetValueString('artist', '');
+                $this->SetValueString('lyrics', '');
+                $this->SetValueBoolean('partymode', false);
+                $this->SetValueInteger('year', 0);
+                $this->SetValueString('genre', '');
+
+                $this->SetValueString('showtitle', '');
+                $this->SetValueString('channel', '');
+                $this->SetValueInteger('season', 0);
+                $this->SetValueInteger('episode', 0);
+
+                $this->SetValueString('plot', '');
+                $this->SetValueInteger('audiostream', 0);
+                $this->SetValueInteger('subtitle', 0);
+
+                $this->SetValueInteger('repeat', 0);
+                $this->SetValueBoolean('shuffled', false);
+
+                $this->SetValueString('label', '');
+
+                $this->setActivePlayer(false);
+                $this->SetCover('');
+                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
+                break;
+            case 'OnPlay':
+            case 'OnResume':
+                $this->setActivePlayer(true);
+                $this->SetValueInteger('Status', 2);
+                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                IPS_RunScriptText('<? @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
+                $this->SetTimerInterval('PlayerStatus', 2000);
+                break;
+            case 'OnPause':
+                $this->SetTimerInterval('PlayerStatus', 0);
+                $this->SetValueInteger('Status', 3);
+                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                break;
+            case 'OnSeek':
+                $this->SetValueString('time', $this->ConvertTime($KodiPayload->player->time));
+                break;
+            case 'OnSpeedChanged':
+                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"speed");');
+                break;
+            default:
+                $this->SendDebug($Method, $KodiPayload, 0);
+                break;
+        }
+    }
+
+    ################## PRIVATE
+    /**
+     * Fragt Kodi an ob der Playertyp der Instanz gerade aktiv ist.
+     *
+     * @return bool true wenn Player aktiv ist, sonset false
+     */
+    private function getActivePlayer()
+    {
+        $KodiData = new Kodi_RPC_Data(static::$Namespace);
+        $KodiData->GetActivePlayers();
+        $ret = @$this->SendDirect($KodiData);
+
+        if (is_null($ret) || (count($ret) == 0)) {
+            $this->isActive = false;
+        } else {
+            $this->isActive = ((int) $ret[0]->playerid == $this->PlayerId);
+        }
+
+        $this->SendDebug('getActivePlayer', $this->isActive, 0);
+
+        return $this->isActive;
+    }
+
+    /**
+     * Setzt die Eigenschaft isActive sowie die dazugehörige IPS-Variable.
+     *
+     * @access private
+     * @param bool $isActive True wenn Player als aktive gesetzt werden soll, sonder false.
+     */
+    private function setActivePlayer(bool $isActive)
+    {
+        $this->isActive = $isActive;
+        $this->SendDebug('setActive', $this->isActive, 0);
+    }
+
+    /**
+     * Holt das über $flie übergebene Cover vom Kodi-Webinterface, skaliert und konvertiert dieses und speichert es in einem MedienObjekt ab.
+     *
+     * @access private
+     * @param string $file
+     */
+    private function SetCover(string $file)
+    {
+        $CoverID = @IPS_GetObjectIDByIdent('CoverIMG', $this->InstanceID);
+        if ($CoverID === false) {
+            $CoverID = IPS_CreateMedia(1);
+            IPS_SetParent($CoverID, $this->InstanceID);
+            IPS_SetIdent($CoverID, 'CoverIMG');
+            IPS_SetName($CoverID, 'Cover');
+            IPS_SetPosition($CoverID, 27);
+            IPS_SetMediaCached($CoverID, true);
+            $filename = 'media' . DIRECTORY_SEPARATOR . 'Cover_' . $this->InstanceID . '.png';
+            IPS_SetMediaFile($CoverID, $filename, false);
+            $this->SendDebug('Create Media', $filename, 0);
+        }
+
+        if ($file == '') {
+            $CoverRAW = false;
+        } else {
+            $Size = $this->ReadPropertyInteger('CoverSize');
+            $CoverRAW = $this->GetThumbnail($file, 0, $Size);
+        }
+
+        if ($CoverRAW === false) {
+            $CoverRAW = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'nocover.png');
+        }
+
+        IPS_SetMediaContent($CoverID, base64_encode($CoverRAW));
+    }
+
+    /**
+     *
+     * Springt auf ein bestimmtes Item in der Wiedergabeliste.
+     *
+     * @access private
+     * @param int|string $Value Index oder String-Enum
+     *   enum['previous', 'next']
+     * @return bool True bei Erfolg, sonst false.
+     */
+    private function GoToValue($Value)
+    {
+        if (!$this->isActive) {
+            trigger_error('Player not active', E_USER_NOTICE);
+            return false;
+        }
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GoTo(['playerid' => $this->PlayerId, 'to' => $Value]);
+        $ret = $this->Send($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret === 'OK') {
+            return true;
+        }
+        trigger_error('Error on send ' . $Value . '.', E_USER_NOTICE);
+        return false;
+    }
+
+    /**
+     * Lädt ein Item und startet die Wiedergabe.
+     *
+     * @access private
+     * @param string $ItemTyp Der Typ des Item.
+     * @param string $ItemValue Der Wert des Item.
+     * @param array $Ext Array welches mit übergeben werden soll (optional).
+     * @return bool True bei Erfolg. Sonst false.
+     */
+    private function Load(string $ItemTyp, $ItemValue, $Ext = [])
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->Open(array_merge(['item' => [$ItemTyp => $ItemValue]], $Ext));
+        $ret = $this->Send($KodiData);
+        if ($ret === 'OK') {
+            return true;
+        }
+        trigger_error('Error on load ' . $ItemTyp . '.', E_USER_NOTICE);
+        return false;
+    }
+
+    /**
      * Erzeugt aus einem Objekt ein Array für ein IPS-Variablenprofil
      *
      * @return array Werteliste für das Variablenprofil.
@@ -1883,7 +1882,6 @@ class KodiDevicePlayer extends KodiBase
         $Assos = $this->CreateProfilArray($AudioStream);
         $this->RegisterProfileIntegerEx('AudioStream.' . $this->InstanceID . '.Kodi', '', '', '', $Assos);
     }
-
 }
 
 /** @} */

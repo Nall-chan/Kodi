@@ -217,7 +217,9 @@ class KodiSplitter extends IPSModule
     protected function IOChangeState($State)
     {
         if (!$this->ReadPropertyBoolean('Open')) {
-            $this->SetStatus(IS_INACTIVE);
+            if ($this->GetStatus() != IS_INACTIVE) {
+                $this->SetStatus(IS_INACTIVE);
+            }
             return;
         }
         switch ($State) {
@@ -234,17 +236,21 @@ class KodiSplitter extends IPSModule
                 } else {
                     $NewState = IS_INACTIVE;
                 }
-                $this->SetStatus($NewState);
+                if ($this->GetStatus() != $NewState) {
+
+                    $this->SetStatus($NewState);
+                }
                 break;
             case IS_INACTIVE:
-                $this->SetStatus(IS_INACTIVE);
-                break;
+                if ($this->GetStatus() != IS_INACTIVE) {
+
+                    $this->SetStatus(IS_INACTIVE);
+                } break;
             default:
                 if ($this->ParentID > 0) {
                     IPS_SetProperty($this->ParentID, 'Open', false);
                     @IPS_ApplyChanges($this->ParentID);
                 }
-
                 break;
         }
     }

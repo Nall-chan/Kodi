@@ -1,97 +1,103 @@
 {
-    "elements":
-            [
+    "elements": [
+        {
+            "name": "PowerScript",
+            "type": "SelectScript",
+            "caption": "Power-On script:"
+        },
+        {
+            "name": "PowerOff",
+            "type": "Select",
+            "caption": "Power-Off method:",
+            "options": [
                 {
-                    "name": "PowerScript",
-                    "type": "SelectScript",
-                    "caption": "Power-On script:"
-                }, {
-                    "name": "PowerOff",
-                    "type": "Select",
-                    "caption": "Power-Off method:",
-                    "options": [
-                        {
-                            "caption": "Shutdown",
-                            "value": 0
-                        },
-                        {
-                            "caption": "Hibernate",
-                            "value": 1
-                        },
-                        {
-                            "caption": "Suspend",
-                            "value": 2
-                        }
-                    ]
-                },
-                {
-                    "type": "Label",
-                    "caption": "Model for Power-On script"
-                },
-                {
-                    "name": "PreSelectScript",
-                    "type": "Select",
-                    "caption": "Model:",
-                    "options": [
-                        {
-                            "caption": "no change",
-                            "value": 0
-                        },
-                        {
-                            "caption": "WOL with PHP",
-                            "value": 1
-                        },
-                        {
-                            "caption": "WOL with Fritz-Box Project",
-                            "value": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "MACAddress",
-                    "type": "ValidationTextBox",
-                    "caption": "MAC-Adress:"
-                }
-
-            ],
-    "actions":
-            [{
-                    "type": "Button",
-                    "caption": "Power ON",
-                    "onClick": "KODISYS_Power($id,true);"
-                }, {
-                    "type": "Button",
-                    "caption": "Power OFF",
-                    "onClick": "KODISYS_Power($id,true);"
-                }, {
-                    "type": "Button",
-                    "caption": "WakeUp",
-                    "onClick": "KODISYS_WakeUp($id);"
-                }, {
-                    "type": "Button",
                     "caption": "Shutdown",
-                    "onClick": "KODISYS_Shutdown($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "Hibernate",
-                    "onClick": "KODISYS_Hibernate($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "Suspend",
-                    "onClick": "KODISYS_Suspend($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "Reboot",
-                    "onClick": "KODISYS_Reboot($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "Eject Optical",
-                    "onClick": "KODISYS_EjectOpticalDrive($id);"
+                    "value": 0
                 },
                 {
-                    "type": "Button",
-                    "caption": "Request all states",
-                    "onClick": "KODISYS_RequestState($id,'ALL');"
+                    "caption": "Hibernate",
+                    "value": 1
+                },
+                {
+                    "caption": "Suspend",
+                    "value": 2
                 }
             ]
+        },
+        {
+            "type": "Label",
+            "caption": "Model for Power-On script"
+        },
+        {
+            "name": "PreSelectScript",
+            "type": "Select",
+            "caption": "Model:",
+            "options": [
+                {
+                    "caption": "no change",
+                    "value": 0
+                },
+                {
+                    "caption": "WOL with PHP",
+                    "value": 1
+                },
+                {
+                    "caption": "WOL with Fritz-Box Project",
+                    "value": 2
+                }
+            ]
+        },
+        {
+            "name": "MACAddress",
+            "type": "ValidationTextBox",
+            "caption": "MAC-Adress:"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "Power ON",
+            "onClick": "KODISYS_Power($id,true);"
+        },
+        {
+            "type": "Button",
+            "caption": "Power OFF",
+            "onClick": "KODISYS_Power($id,true);"
+        },
+        {
+            "type": "Button",
+            "caption": "WakeUp",
+            "onClick": "KODISYS_WakeUp($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Shutdown",
+            "onClick": "KODISYS_Shutdown($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Hibernate",
+            "onClick": "KODISYS_Hibernate($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Suspend",
+            "onClick": "KODISYS_Suspend($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Reboot",
+            "onClick": "KODISYS_Reboot($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Eject Optical",
+            "onClick": "KODISYS_EjectOpticalDrive($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Request all states",
+            "onClick": "KODISYS_RequestState($id,'ALL');"
+        }
+    ]
 }

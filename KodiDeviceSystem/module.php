@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @version       2.0
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDeviceSystem Klasse für den Namespace System der KODI-API.
@@ -108,129 +108,6 @@ class KodiDeviceSystem extends KodiBase
         $this->EnableAction('ejectOpticalDrive');
         $this->RegisterVariableBoolean('LowBatteryEvent', 'Batterie leer Event', '', 6);
         parent::ApplyChanges();
-    }
-
-    ################## PRIVATE
-    /**
-     * Liest den String auf der Instanz-Eigenschaft MACAddress und konvertiert sie in ein bereinigtes Format.
-     *
-     * @access private
-     * @result string Die bereinigte Adresse.
-     */
-    private function GetMac()
-    {
-        $Address = $this->ReadPropertyString('MACAddress');
-        $Address = str_replace('-', '', $Address);
-        $Address = str_replace(':', '', $Address);
-        if (strlen($Address) == 12) {
-            return '"' . strtoupper($Address) . '"';
-        }
-        return '"00AABB112233" /* Platzhalter für richtige Adresse */';
-    }
-
-    /**
-     * Liefert einen PHP-Code als Vorlage für das Einschalten von Kodi per WOL der FritzBox. Unter Verwendung des FritzBox-Project.
-     *
-     * @access private
-     * @result string PHP-Code
-     */
-    private function CreateFBPScript()
-    {
-        $Script = '<?php
-$mac = ' . $this->GetMac() . ' ;
-$FBScript = 0;  /* Hier die ID von dem Script [FritzBox Project\Scripte\Aktions & Auslese-Script Host] eintragen */
-
-if ($_IPS["SENDER"] <> "Kodi.System")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-   echo IPS_RunScriptWaitEx ($FBScript,array("SENDER"=>"RequestAction","IDENT"=>$mac,"VALUE"=>true));
-';
-        return $Script;
-    }
-
-    /**
-     * Liefert einen PHP-Code als Vorlage für das Einschalten von Kodi per WOL aus PHP herraus.
-     *
-     * @access private
-     * @result string PHP-Code
-     */
-    private function CreateWOLScript()
-    {
-        $Script = '<?php
-$mac = ' . $this->GetMac() . ' ;
-if ($_IPS["SENDER"] <> "Kodi.System")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-
-$ip = "255.255.255.255"; // Broadcast adresse
-return wake($ip,$mac);
-
-function wake($ip, $mac)
-{
-  $nic = fsockopen("udp://" . $ip, 15);
-  if($nic)
-  {
-    $packet = "";
-    for($i = 0; $i < 6; $i++)
-       $packet .= chr(0xFF);
-    for($j = 0; $j < 16; $j++)
-    {
-      for($k = 0; $k < 6; $k++)
-      {
-        $str = substr($mac, $k * 2, 2);
-        $dec = hexdec($str);
-        $packet .= chr($dec);
-      }
-    }
-    $ret = fwrite($nic, $packet);
-    fclose($nic);
-    if ($ret)
-    {
-      echo "";
-      return true;
-    }
-  }
-  echo "ERROR";
-  return false;
-}  
-';
-        return $Script;
-    }
-
-    /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
-     *
-     * @access protected
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-    protected function Decode($Method, $KodiPayload)
-    {
-        switch ($Method) {
-            case 'GetProperties':
-                foreach ($KodiPayload as $param => $value) {
-                    IPS_SetHidden($this->GetIDForIdent(substr($param, 3)), !$value);
-                }
-                break;
-            case 'Power':
-                $this->SetValueBoolean('Power', $KodiPayload);
-                break;
-            case 'OnLowBattery':
-                IPS_SetValueBoolean($this->GetIDForIdent('LowBatteryEvent'), true);
-                break;
-            case 'OnQuit':
-            case 'OnRestart':
-            case 'OnSleep':
-                $this->SetValueBoolean('Power', false);
-                break;
-            case 'OnWake':
-                $this->SetValueBoolean('Power', true);
-                break;
-        }
     }
 
     ################## ActionHandler
@@ -438,6 +315,128 @@ function wake($ip, $mac)
         return parent::RequestState($Ident);
     }
 
+    /**
+     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     *
+     * @access protected
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
+    protected function Decode($Method, $KodiPayload)
+    {
+        switch ($Method) {
+            case 'GetProperties':
+                foreach ($KodiPayload as $param => $value) {
+                    IPS_SetHidden($this->GetIDForIdent(substr($param, 3)), !$value);
+                }
+                break;
+            case 'Power':
+                $this->SetValueBoolean('Power', $KodiPayload);
+                break;
+            case 'OnLowBattery':
+                $this->SetValue('LowBatteryEvent', true);
+                break;
+            case 'OnQuit':
+            case 'OnRestart':
+            case 'OnSleep':
+                $this->SetValueBoolean('Power', false);
+                break;
+            case 'OnWake':
+                $this->SetValueBoolean('Power', true);
+                break;
+        }
+    }
+
+    ################## PRIVATE
+    /**
+     * Liest den String auf der Instanz-Eigenschaft MACAddress und konvertiert sie in ein bereinigtes Format.
+     *
+     * @access private
+     * @result string Die bereinigte Adresse.
+     */
+    private function GetMac()
+    {
+        $Address = $this->ReadPropertyString('MACAddress');
+        $Address = str_replace('-', '', $Address);
+        $Address = str_replace(':', '', $Address);
+        if (strlen($Address) == 12) {
+            return '"' . strtoupper($Address) . '"';
+        }
+        return '"00AABB112233" /* Platzhalter für richtige Adresse */';
+    }
+
+    /**
+     * Liefert einen PHP-Code als Vorlage für das Einschalten von Kodi per WOL der FritzBox. Unter Verwendung des FritzBox-Project.
+     *
+     * @access private
+     * @result string PHP-Code
+     */
+    private function CreateFBPScript()
+    {
+        $Script = '<?php
+$mac = ' . $this->GetMac() . ' ;
+$FBScript = 0;  /* Hier die ID von dem Script [FritzBox Project\Scripte\Aktions & Auslese-Script Host] eintragen */
+
+if ($_IPS["SENDER"] <> "Kodi.System")
+{
+	echo "Dieses Script kann nicht direkt ausgeführt werden!";
+	return;
+}
+   echo IPS_RunScriptWaitEx ($FBScript,array("SENDER"=>"RequestAction","IDENT"=>$mac,"VALUE"=>true));
+';
+        return $Script;
+    }
+
+    /**
+     * Liefert einen PHP-Code als Vorlage für das Einschalten von Kodi per WOL aus PHP herraus.
+     *
+     * @access private
+     * @result string PHP-Code
+     */
+    private function CreateWOLScript()
+    {
+        $Script = '<?php
+$mac = ' . $this->GetMac() . ' ;
+if ($_IPS["SENDER"] <> "Kodi.System")
+{
+	echo "Dieses Script kann nicht direkt ausgeführt werden!";
+	return;
+}
+
+$ip = "255.255.255.255"; // Broadcast adresse
+return wake($ip,$mac);
+
+function wake($ip, $mac)
+{
+  $nic = fsockopen("udp://" . $ip, 15);
+  if($nic)
+  {
+    $packet = "";
+    for($i = 0; $i < 6; $i++)
+       $packet .= chr(0xFF);
+    for($j = 0; $j < 16; $j++)
+    {
+      for($k = 0; $k < 6; $k++)
+      {
+        $str = substr($mac, $k * 2, 2);
+        $dec = hexdec($str);
+        $packet .= chr($dec);
+      }
+    }
+    $ret = fwrite($nic, $packet);
+    fclose($nic);
+    if ($ret)
+    {
+      echo "";
+      return true;
+    }
+  }
+  echo "ERROR";
+  return false;
+}  
+';
+        return $Script;
+    }
 }
 
 /** @} */

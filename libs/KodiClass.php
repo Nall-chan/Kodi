@@ -35,7 +35,6 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  */
 abstract class KodiBase extends IPSModule
 {
-
     use \KodiBase\VariableProfileHelper,
         \KodiBase\WebhookHelper,
         \KodiBase\DebugHelper,
@@ -52,6 +51,14 @@ abstract class KodiBase extends IPSModule
      * @var string
      */
     protected static $Namespace;
+
+    /**
+     * Nur einige Properties des RPC-Namespace
+     *
+     * @access private
+     * @var array
+     */
+    protected static $PartialProperties;
 
     /**
      * Alle Properties des RPC-Namespace
@@ -100,7 +107,7 @@ abstract class KodiBase extends IPSModule
 
         parent::ApplyChanges();
 
-        if (IPS_GetKernelRunlevel() <> KR_READY) {
+        if (IPS_GetKernelRunlevel() != KR_READY) {
             return;
         }
 
@@ -128,6 +135,61 @@ abstract class KodiBase extends IPSModule
                 $this->KernelReady();
                 break;
         }
+    }
+
+    public function RequestAction($Ident, $Value)
+    {
+        if ($this->IORequestAction($Ident, $Value)) {
+            return true;
+        }
+        return false;
+    }
+
+    ################## PUBLIC
+    /**
+     * IPS-Instanz-Funktion '*_RequestState'. Frage eine oder mehrere Properties eines Namespace ab.
+     *
+     * @access public
+     * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
+     */
+    public function RequestState(string $Ident)
+    {
+        if ($Ident == 'ALL') {
+            return $this->RequestProperties(['properties' => static::$Properties]);
+        }
+        if ($Ident == 'PARTIAL') {
+            return $this->RequestProperties(['properties' => static::$PartialProperties]);
+        }
+        if (!in_array($Ident, static::$Properties)) {
+            trigger_error('Property not found.');
+            return false;
+        }
+        return $this->RequestProperties(['properties' => [$Ident]]);
+    }
+
+    ################## Datapoints
+    /**
+     * Interne SDK-Funktion. Empfängt Datenpakete vom KodiSplitter.
+     *
+     * @access public
+     * @param string $JSONString Das Datenpaket als JSON formatierter String.
+     * @return bool true bei erfolgreicher Datenannahme, sonst false.
+     */
+    public function ReceiveData($JSONString)
+    {
+        $Data = json_decode($JSONString);
+        $KodiData = new Kodi_RPC_Data();
+        $KodiData->CreateFromGenericObject($Data);
+        if ($KodiData->Typ != Kodi_RPC_Data::$EventTyp) {
+            return false;
+        }
+
+        $Event = $KodiData->GetEvent();
+        //$this->SendDebug('Event', $Event, 0);
+
+        $this->Decode($KodiData->Method, $Event);
+        return false;
     }
 
     /**
@@ -161,14 +223,6 @@ abstract class KodiBase extends IPSModule
         if ($State == IS_ACTIVE) {
             $this->RequestProperties(['properties' => static::$Properties]);
         }
-    }
-
-    public function RequestAction($Ident, $Value)
-    {
-        if ($this->IORequestAction($Ident, $Value)) {
-            return true;
-        }
-        return false;
     }
 
     ################## PRIVATE
@@ -353,7 +407,7 @@ sleep(10).then(() => {
                     }
                 }
                 $factor = ($factorh < $factorw ? $factorw : $factorh);
-                if ($factor <> 1) {
+                if ($factor != 1) {
                     $image = imagescale($image, (int) ($width / $factor), (int) ($height / $factor));
                 }
                 imagealphablending($image, false);
@@ -366,53 +420,6 @@ sleep(10).then(() => {
         }
 
         return $ThumbRAW;
-    }
-
-    ################## PUBLIC
-    /**
-     * IPS-Instanz-Funktion '*_RequestState'. Frage eine oder mehrere Properties eines Namespace ab.
-     *
-     * @access public
-     * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
-     * @return bool true bei erfolgreicher Ausführung, sonst false.
-     */
-    public function RequestState(string $Ident)
-    {
-        if ($Ident == 'ALL') {
-            return $this->RequestProperties(['properties' => static::$Properties]);
-        }
-        if ($Ident == 'PARTIAL') {
-            return $this->RequestProperties(['properties' => static::$PartialProperties]);
-        }
-        if (!in_array($Ident, static::$Properties)) {
-            trigger_error('Property not found.');
-            return false;
-        }
-        return $this->RequestProperties(['properties' => [$Ident]]);
-    }
-
-    ################## Datapoints
-    /**
-     * Interne SDK-Funktion. Empfängt Datenpakete vom KodiSplitter.
-     *
-     * @access public
-     * @param string $JSONString Das Datenpaket als JSON formatierter String.
-     * @return bool true bei erfolgreicher Datenannahme, sonst false.
-     */
-    public function ReceiveData($JSONString)
-    {
-        $Data = json_decode($JSONString);
-        $KodiData = new Kodi_RPC_Data();
-        $KodiData->CreateFromGenericObject($Data);
-        if ($KodiData->Typ <> Kodi_RPC_Data::$EventTyp) {
-            return false;
-        }
-
-        $Event = $KodiData->GetEvent();
-        //$this->SendDebug('Event', $Event, 0);
-
-        $this->Decode($KodiData->Method, $Event);
-        return false;
     }
 
     /**
@@ -536,7 +543,7 @@ sleep(10).then(() => {
         if ($id === false) {
             return false;
         }
-        if (GetValueBoolean($id) <> $value) {
+        if (GetValueBoolean($id) != $value) {
             $this->SetValue($Ident, $value);
             return true;
         }
@@ -557,12 +564,12 @@ sleep(10).then(() => {
         if ($id === false) {
             return false;
         }
-        if (GetValueInteger($id) <> $value) {
-            if (!(($Ident[0] == '_') or ( $Ident == 'speed') or ( $Ident == 'repeat') or ( IPS_GetVariable($id)['VariableAction'] <> 0))) {
-                if (($value <= 0) and ( !IPS_GetObject($id)['ObjectIsHidden'])) {
+        if (GetValueInteger($id) != $value) {
+            if (!(($Ident[0] == '_') || ($Ident == 'speed') || ($Ident == 'repeat') || (IPS_GetVariable($id)['VariableAction'] != 0))) {
+                if (($value <= 0) && (!IPS_GetObject($id)['ObjectIsHidden'])) {
                     IPS_SetHidden($id, true);
                 }
-                if (($value > 0) and ( IPS_GetObject($id)['ObjectIsHidden'])) {
+                if (($value > 0) && (IPS_GetObject($id)['ObjectIsHidden'])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -587,12 +594,12 @@ sleep(10).then(() => {
         if ($id === false) {
             return false;
         }
-        if (GetValueString($id) <> $value) {
-            if ($Ident[0] <> '_') {
-                if ((($value == '') or ( $value == 'unknown')) and ( !IPS_GetObject($id)['ObjectIsHidden'])) {
+        if (GetValueString($id) != $value) {
+            if ($Ident[0] != '_') {
+                if ((($value == '') || ($value == 'unknown')) && (!IPS_GetObject($id)['ObjectIsHidden'])) {
                     IPS_SetHidden($id, true);
                 }
-                if ((($value <> '') and ( $value <> 'unknown')) and ( IPS_GetObject($id)['ObjectIsHidden'])) {
+                if ((($value != '') && ($value != 'unknown')) && (IPS_GetObject($id)['ObjectIsHidden'])) {
                     IPS_SetHidden($id, false);
                 }
             }
@@ -618,7 +625,6 @@ sleep(10).then(() => {
         } //bail out
         IPS_DeleteScript($sid, true);
     }
-
 }
 
 /** @} */

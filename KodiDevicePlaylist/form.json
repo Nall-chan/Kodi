@@ -1,38 +1,37 @@
 {
-    "elements":
-            [{
-                    "name": "PlaylistID",
-                    "type": "Select",
-                    "caption": "Playlist for player:",
-                    "options": [
-                        {
-                            "caption": "Audio",
-                            "value": 0
-                        },
-                        {
-                            "caption": "Video",
-                            "value": 1
-                        },
-                        {
-                            "caption": "Pictures",
-                            "value": 2
-                        }
-                    ]
+    "elements": [
+        {
+            "name": "PlaylistID",
+            "type": "Select",
+            "caption": "Playlist for player:",
+            "options": [
+                {
+                    "caption": "Audio",
+                    "value": 0
                 },
                 {
-                    "name": "showPlaylist",
-                    "type": "CheckBox",
-                    "caption": "Show playlist as HTML-Box"
+                    "caption": "Video",
+                    "value": 1
                 },
                 {
-                    "type": "Label",
-                    "caption": "Script for HTML-Box Desgin:"
-                },
-                {
-                    "name": "Playlistconfig",
-                    "type": "SelectScript",
-                    "caption": "Script:"
+                    "caption": "Pictures",
+                    "value": 2
                 }
             ]
-
+        },
+        {
+            "name": "showPlaylist",
+            "type": "CheckBox",
+            "caption": "Show playlist as HTML-Box"
+        },
+        {
+            "type": "Label",
+            "caption": "Script for HTML-Box Desgin:"
+        },
+        {
+            "name": "Playlistconfig",
+            "type": "SelectScript",
+            "caption": "Script:"
+        }
+    ]
 }

@@ -1,41 +1,46 @@
 {
-    "elements":
-            [{
-                    "name": "showCurrentWindow",
-                    "type": "CheckBox",
-                    "caption": "Show variable for current Window"
-                }, {
-                    "name": "showCurrentControl",
-                    "type": "CheckBox",
-                    "caption": "Show variable for current control"
-                }, {
-                    "name": "showSkin",
-                    "type": "CheckBox",
-                    "caption": "Show variable for current skin"
-                }, {
-                    "name": "showFullscreen",
-                    "type": "CheckBox",
-                    "caption": "Show variable for fullscreen mode"
-                }, {
-                    "name": "showScreensaver",
-                    "type": "CheckBox",
-                    "caption": "Show variable for screensaver"
-                }
-            ],
-    "actions":
-            [
-                {
-                    "type": "Button",
-                    "caption": "Fullscreen on",
-                    "onClick": "KODIGUI_SetFullscreen($id,true);"
-                }, {
-                    "type": "Button",
-                    "caption": "Fullscreen off",
-                    "onClick": "KODIGUI_SetFullscreen($id,false);"
-                }, {
-                    "type": "Button",
-                    "caption": "Request all states",
-                    "onClick": "KODIGUI_RequestState($id,'ALL');"
-                }
-            ]
+    "elements": [
+        {
+            "name": "showCurrentWindow",
+            "type": "CheckBox",
+            "caption": "Show variable for current Window"
+        },
+        {
+            "name": "showCurrentControl",
+            "type": "CheckBox",
+            "caption": "Show variable for current control"
+        },
+        {
+            "name": "showSkin",
+            "type": "CheckBox",
+            "caption": "Show variable for current skin"
+        },
+        {
+            "name": "showFullscreen",
+            "type": "CheckBox",
+            "caption": "Show variable for fullscreen mode"
+        },
+        {
+            "name": "showScreensaver",
+            "type": "CheckBox",
+            "caption": "Show variable for screensaver"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "Fullscreen on",
+            "onClick": "KODIGUI_SetFullscreen($id,true);"
+        },
+        {
+            "type": "Button",
+            "caption": "Fullscreen off",
+            "onClick": "KODIGUI_SetFullscreen($id,false);"
+        },
+        {
+            "type": "Button",
+            "caption": "Request all states",
+            "onClick": "KODIGUI_RequestState($id,'ALL');"
+        }
+    ]
 }

@@ -1,6 +1,6 @@
 {
     "actions": [
-        {                
+        {
             "type": "Label",
             "caption": "Non-standard TCP RPC-Port or active user authentication must be set up manually in the 'KodiSplitter'."
         },
@@ -13,24 +13,29 @@
                 "column": "IPAddress",
                 "direction": "ascending"
             },
-            "columns": [{
+            "columns": [
+                {
                     "caption": "IP Address",
                     "name": "IPAddress",
                     "width": "160px"
-                }, {
+                },
+                {
                     "caption": "Devicename",
                     "name": "devicename",
                     "width": "250px"
-                }, {
+                },
+                {
                     "caption": "Name",
                     "name": "name",
                     "width": "auto"
-                }, {
+                },
+                {
                     "caption": "Version",
                     "name": "version",
                     "width": "100px"
                 }
             ],
             "values": []
-        }]
+        }
+    ]
 }

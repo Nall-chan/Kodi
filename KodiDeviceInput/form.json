@@ -1,71 +1,81 @@
 {
-    "elements":
-            [{
-                    "name": "showSVGRemote",
-                    "type": "CheckBox",
-                    "caption": "Show SVG-Remotecontrol"
-                },{
-                    "name": "RemoteId",
-                    "type": "Select",
-                    "caption": "Remote:",
-                    "options": [
-                        {
-                            "caption": "vertical",
-                            "value": "1"
-                        },
-                        {
-                            "caption": "horizontal",
-                            "value": "2"
-                        }
-                    ]
-                }, {
-                    "name": "showNavigationButtons",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for navigate"
-                }, {
-                    "name": "showControlButtons",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for control"
-                }, {
-                    "name": "showInputRequested",
-                    "type": "CheckBox",
-                    "caption": "Show Variable for needed input"
-                }, {
-                    "name": "showTextInput",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for text input"
-                }
-            ],
-    "actions":
-            [
+    "elements": [
+        {
+            "name": "showSVGRemote",
+            "type": "CheckBox",
+            "caption": "Show SVG-Remotecontrol"
+        },
+        {
+            "name": "RemoteId",
+            "type": "Select",
+            "caption": "Remote:",
+            "options": [
                 {
-                    "type": "Button",
-                    "caption": "up",
-                    "onClick": "KODIINPUT_Up($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "down",
-                    "onClick": "KODIINPUT_Down($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "left",
-                    "onClick": "KODIINPUT_Left($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "right",
-                    "onClick": "KODIINPUT_Right($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "select",
-                    "onClick": "KODIINPUT_Select($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "back",
-                    "onClick": "KODIINPUT_Back($id);"
-                }, {
-                    "type": "Button",
-                    "caption": "Contextmenu",
-                    "onClick": "KODIINPUT_ContextMenu($id);"
+                    "caption": "vertical",
+                    "value": 1
+                },
+                {
+                    "caption": "horizontal",
+                    "value": 2
                 }
             ]
+        },
+        {
+            "name": "showNavigationButtons",
+            "type": "CheckBox",
+            "caption": "Show Action-Variable for navigate"
+        },
+        {
+            "name": "showControlButtons",
+            "type": "CheckBox",
+            "caption": "Show Action-Variable for control"
+        },
+        {
+            "name": "showInputRequested",
+            "type": "CheckBox",
+            "caption": "Show Variable for needed input"
+        },
+        {
+            "name": "showTextInput",
+            "type": "CheckBox",
+            "caption": "Show Action-Variable for text input"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "up",
+            "onClick": "KODIINPUT_Up($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "down",
+            "onClick": "KODIINPUT_Down($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "left",
+            "onClick": "KODIINPUT_Left($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "right",
+            "onClick": "KODIINPUT_Right($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "select",
+            "onClick": "KODIINPUT_Select($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "back",
+            "onClick": "KODIINPUT_Back($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Contextmenu",
+            "onClick": "KODIINPUT_ContextMenu($id);"
+        }
+    ]
 }
