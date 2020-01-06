@@ -1,5 +1,5 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Modul%20Version-2.50-blue.svg)]()
+[![Version 2.10](https://img.shields.io/badge/Modul%20Version-2.10-blue.svg)]()
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
 [![Check Style](https://github.com/Nall-chan/IPSKodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/IPSKodi/actions) 
@@ -1896,33 +1896,16 @@ Eigenschaften von KodiSplitter:
 
 **Changlog:**
 
- Version 1.0:  
-  - Release  
+Version 2.10:
+  - Fix: Fehlermeldung VariablenProfil in KodiDevicePlaylist.  
+  - Fix: Traits in neuen Namespace überführt.  
+  - Neu: Strict-Types.  
 
- Version 1.1:  
-  - Diversese Bugfixes  
-  - Horizontale Remote hizugefügt  
-  - PVR zeigt TV & Radio-Kanäle sowie Aufzeichnungen an und kann Diese wiedergeben  
-  - Rückkanal für HTML-Tabellen hinzugefügt  
+Version 2.05:
+  - Neu: Konfigurator meldet wenn IO nicht aktiv ist.  
 
- Version 1.2:  
-  - Fix: Timer in Create verschoben  
-  - Fix: PlayerModul hat IPS Start verhindert  
-  - Neu: Input-Modul hat ein Eingabefeld im WebFront um Zeichenfolgen an Kodi zu senden  
-
- Version 1.3:  
-  - Fix: Konfig-Formular für Input-Modul war nicht übersetzt  
-  - Fix: Konfig-Formular für Input-Modul fehlte eine Checkbox  
-
- Version 1.4:  
-  - Fix: Für IPS 5.0  
-
- Version 1.5:  
-  - Fix: Fehler im Timer der PVR Instanz wenn KODI nicht erreichbar war 
-  - Fix: Fehler in Playlist bei IPS 5.0  
-
- Version 1.6:
-  - Fix: Splitter war bei IPS Neustart im falschen Zustand (verbunden), auch wenn Kodi nicht erreichbar war.  
+Version 2.01:
+  - Fix: HTTP-Port 80 wurde von der Discovery-Instanz nicht erkannt.  
 
  Version 2.0:
   - Fix: Fehler beim starten eines Favoriten über das WebFront.  
@@ -1931,12 +1914,34 @@ Eigenschaften von KodiSplitter:
   - Fix: Fehlende Screenshots ergänzt.  
   - Neu: Kodi Discovery im lokalen Netzwerk.  
   - Neu: Kodi Konfigurator nutzt Listen.  
-  
-Version 2.01:
-  - Fix: HTTP-Port 80 wurde von der Discovery-Instanz nicht erkannt.  
 
-Version 2.05:
-  - Neu: Konfigurator meldet wenn IO nicht aktiv ist.  
+ Version 1.6:
+  - Fix: Splitter war bei IPS Neustart im falschen Zustand (verbunden), auch wenn Kodi nicht erreichbar war.  
+
+ Version 1.5:  
+  - Fix: Fehler im Timer der PVR Instanz wenn KODI nicht erreichbar war 
+  - Fix: Fehler in Playlist bei IPS 5.0  
+
+ Version 1.4:  
+  - Fix: Für IPS 5.0  
+
+ Version 1.3:  
+  - Fix: Konfig-Formular für Input-Modul war nicht übersetzt  
+  - Fix: Konfig-Formular für Input-Modul fehlte eine Checkbox  
+
+ Version 1.2:  
+  - Fix: Timer in Create verschoben  
+  - Fix: PlayerModul hat IPS Start verhindert  
+  - Neu: Input-Modul hat ein Eingabefeld im WebFront um Zeichenfolgen an Kodi zu senden  
+  
+ Version 1.1:  
+  - Diversese Bugfixes  
+  - Horizontale Remote hizugefügt  
+  - PVR zeigt TV & Radio-Kanäle sowie Aufzeichnungen an und kann Diese wiedergeben  
+  - Rückkanal für HTML-Tabellen hinzugefügt  
+
+ Version 1.0:  
+  - Release  
 
 ## 11. Spenden  
   

@@ -8,9 +8,9 @@ declare(strict_types=1);
  * @package       Kodi
  * @file          module.php
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2018 Michael Tröger
+ * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.01
+ * @version       2.10
  *
  */
 require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
@@ -20,11 +20,9 @@ eval('declare(strict_types=1);namespace KodiDiscovery {?>' . file_get_contents(_
  * KodiDiscovery Klasse implementiert
  *
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2018 Michael Tröger
+ * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- *
- * @version       2.01
- *
+ * @version       2.10
  * @example <b>Ohne</b>
  * @property array $Devices
  */

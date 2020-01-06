@@ -6,9 +6,9 @@ declare(strict_types=1);
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2018 Michael Tröger
+ * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.0
+ * @version       2.10
  * @example <b>Ohne</b>
  */
 
@@ -17,9 +17,9 @@ declare(strict_types=1);
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       2.10
  * @example <b>Ohne</b>
  */
 class KodiRPCException extends Exception

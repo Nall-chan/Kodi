@@ -27,7 +27,7 @@ trait DebugHelper
      *
      * @access protected
      * @param string $Message Nachricht für Data.
-     * @param TXB_API_Data|mixed $Data Daten für die Ausgabe.
+     * @param Kodi_RPC_Data|KodiRPCException|mixed $Data Daten für die Ausgabe.
      * @return int $Format Ausgabeformat für Strings.
      */
     protected function SendDebug($Message, $Data, $Format)
