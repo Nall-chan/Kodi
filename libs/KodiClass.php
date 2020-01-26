@@ -615,7 +615,7 @@ sleep(10).then(() => {
      */
     protected function UnregisterScript($Ident)
     {
-        $sid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
+        $sid = @$this->GetIDForIdent($Ident);
         if ($sid === false) {
             return;
         }
