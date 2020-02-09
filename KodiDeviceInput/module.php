@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @version       2.10
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDeviceInput Klasse für den Namespace Input der KODI-API.
@@ -281,7 +281,7 @@ class KodiDeviceInput extends KodiBase
      */
     public function Destroy()
     {
-        if (IPS_GetKernelRunlevel() <> KR_READY) {
+        if (IPS_GetKernelRunlevel() != KR_READY) {
             return parent::Destroy();
         }
         if (!IPS_InstanceExists($this->InstanceID)) {
@@ -364,46 +364,7 @@ class KodiDeviceInput extends KodiBase
             $this->UnregisterVariable('inputrequested');
         }
 
-
         parent::ApplyChanges();
-    }
-
-    ################## PRIVATE
-    /**
-     * Verarbeitet Daten aus dem Webhook.
-     *
-     * @access protected
-     * @global array $_GET
-     */
-    protected function ProcessHookdata()
-    {
-        if (isset($_GET['button'])) {
-            if ($this->ExecuteAction($_GET['button']) === true) {
-                echo 'OK';
-            }
-        } else {
-            $this->SendDebug('illegal HOOK', $_GET, 0);
-            echo 'Illegal hook';
-        }
-    }
-
-    /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
-     *
-     * @access protected
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-    protected function Decode($Method, $KodiPayload)
-    {
-        switch ($Method) {
-            case 'OnInputRequested':
-                $this->SetValueBoolean('inputrequested', true);
-                break;
-            case 'OnInputFinished':
-                $this->SetValueBoolean('inputrequested', true);
-                break;
-        }
     }
 
     ################## ActionHandler
@@ -494,7 +455,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Up();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -511,7 +472,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Down();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -528,7 +489,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Left();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -545,7 +506,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Right();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -562,7 +523,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Back();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -579,7 +540,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ContextMenu();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -596,7 +557,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Home();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -613,7 +574,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Info();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -630,7 +591,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Select();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -647,7 +608,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ShowOSD();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -664,7 +625,7 @@ class KodiDeviceInput extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ShowCodec();
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -690,7 +651,7 @@ class KodiDeviceInput extends KodiBase
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ExecuteAction(['action' => $Action]);
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
@@ -713,11 +674,49 @@ class KodiDeviceInput extends KodiBase
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SendText(['text' => $Text, 'done' => $Done]);
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
         return $ret === 'OK';
+    }
+
+    ################## PRIVATE
+    /**
+     * Verarbeitet Daten aus dem Webhook.
+     *
+     * @access protected
+     * @global array $_GET
+     */
+    protected function ProcessHookdata()
+    {
+        if (isset($_GET['button'])) {
+            if ($this->ExecuteAction($_GET['button']) === true) {
+                echo 'OK';
+            }
+        } else {
+            $this->SendDebug('illegal HOOK', $_GET, 0);
+            echo 'Illegal hook';
+        }
+    }
+
+    /**
+     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     *
+     * @access protected
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
+    protected function Decode($Method, $KodiPayload)
+    {
+        switch ($Method) {
+            case 'OnInputRequested':
+                $this->SetValueBoolean('inputrequested', true);
+                break;
+            case 'OnInputFinished':
+                $this->SetValueBoolean('inputrequested', true);
+                break;
+        }
     }
 }
 

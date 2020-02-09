@@ -21,15 +21,15 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
   - [4. Vorbereitungen](#4-vorbereitungen)
   - [5. Einrichten der Instanzen in IPS](#5-einrichten-der-instanzen-in-ips)
   - [6. Funktionen der Instanzen](#6-funktionen-der-instanzen)
-  - [<img src="docs/Application_WF.png" alt="Application WebFront">](#img-srcdocsapplication_wfpng-altapplication-webfront)
-  - [<img src="docs/AudioLib_WF.png" alt="AudioLibrary WebFront">](#img-srcdocsaudiolib_wfpng-altaudiolibrary-webfront)
-  - [<img src="docs/Favourites_WF.png" alt="Favourites WebFront">](#img-srcdocsfavourites_wfpng-altfavourites-webfront)
-  - [<img src="docs/GUI_WF.png" alt="GUI WebFront">](#img-srcdocsgui_wfpng-altgui-webfront)
-  - [<img src="docs/Input_WF.png" alt="Input WebFront">](#img-srcdocsinput_wfpng-altinput-webfront)
-  - [<img src="docs/VideoPlaylist_WF.png" alt="Video Playlist WebFront">](#img-srcdocsvideoplaylist_wfpng-altvideo-playlist-webfront)
-  - [<img src="docs/PVR_WF.png" alt="PVR WebFront">](#img-srcdocspvr_wfpng-altpvr-webfront)
-  - [<img src="docs/System_WF.png" alt="System WebFront">](#img-srcdocssystem_wfpng-altsystem-webfront)
-  - [<img src="docs/VideoLib_WF.png" alt="VideoLibrary WebFront">](#img-srcdocsvideolib_wfpng-altvideolibrary-webfront)
+  - [!Application WebFront](#application-webfront)
+  - [!AudioLibrary WebFront](#audiolibrary-webfront)
+  - [!Favourites WebFront](#favourites-webfront)
+  - [!GUI WebFront](#gui-webfront)
+  - [!Input WebFront](#input-webfront)
+  - [!Video Playlist WebFront](#video-playlist-webfront)
+  - [!PVR WebFront](#pvr-webfront)
+  - [!System WebFront](#system-webfront)
+  - [!VideoLibrary WebFront](#videolibrary-webfront)
   - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
     - [1. Kodi Addons](#1-kodi-addons)
     - [2. Kodi Anwendung](#2-kodi-anwendung)
@@ -45,7 +45,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
     - [12. Kodi Video Datenbank](#12-kodi-video-datenbank)
     - [13. Kodi Splitter](#13-kodi-splitter)
   - [8. Parameter / Modul-Infos](#8-parameter--modul-infos)
-  - [9. Tips &amp; Tricks](#9-tips-amp-tricks)
+  - [9. Tips & Tricks](#9-tips--tricks)
   - [10. Anhang](#10-anhang)
   - [11. Spenden](#11-spenden)
   - [12. Lizenz](#12-lizenz)
@@ -1896,18 +1896,23 @@ Eigenschaften von KodiSplitter:
 
 **Changlog:**
 
-Version 2.10:
+Version 2.15:  
+  - Fix: Splitter verlor die Verbindung, wenn Kodi mehr als 256kB Daten sendet. Daten dieser größe werden jetzt verworfen.  
+  - Fix: Input-Device sendet Kommandos jetzt direkt, damit beim empfang grosser Daten kein Timeout auftritt.  
+  - Fix: Discovery-Instanz sucht nicht mehr selbstständig nach neuen Geräten.  
+
+Version 2.10:  
   - Fix: Fehlermeldung VariablenProfil in KodiDevicePlaylist.  
   - Fix: Traits in neuen Namespace überführt.  
   - Neu: Strict-Types.  
 
-Version 2.05:
+Version 2.05:  
   - Neu: Konfigurator meldet wenn IO nicht aktiv ist.  
 
-Version 2.01:
+Version 2.01:  
   - Fix: HTTP-Port 80 wurde von der Discovery-Instanz nicht erkannt.  
 
- Version 2.0:
+ Version 2.0:  
   - Fix: Fehler beim starten eines Favoriten über das WebFront.  
   - Fix: Player Instanz hat Variablen nicht aktualisiert, wenn der Player von Stop/Pause mit Resume fortgesetzt wurde.  
   - Fix: Fehlende Übersetzungen ergänzt.  
@@ -1915,11 +1920,11 @@ Version 2.01:
   - Neu: Kodi Discovery im lokalen Netzwerk.  
   - Neu: Kodi Konfigurator nutzt Listen.  
 
- Version 1.6:
+ Version 1.6:  
   - Fix: Splitter war bei IPS Neustart im falschen Zustand (verbunden), auch wenn Kodi nicht erreichbar war.  
 
  Version 1.5:  
-  - Fix: Fehler im Timer der PVR Instanz wenn KODI nicht erreichbar war 
+  - Fix: Fehler im Timer der PVR Instanz wenn KODI nicht erreichbar war  
   - Fix: Fehler in Playlist bei IPS 5.0  
 
  Version 1.4:  

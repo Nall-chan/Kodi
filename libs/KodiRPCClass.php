@@ -203,17 +203,6 @@ class Kodi_RPC_Data extends stdClass
     private $Id;
 
     /**
-     *
-     * @access public
-     * @param string $name Propertyname
-     * @return mixed Value of Name
-     */
-    public function __get($name)
-    {
-        return $this->{$name};
-    }
-
-    /**
      * Erstellt ein Kodi_RPC_Data Objekt.
      *
      * @access public
@@ -229,10 +218,10 @@ class Kodi_RPC_Data extends stdClass
             $this->Namespace = $Namespace;
         }
         if (is_null($Method)) {
-            $this->Typ = Kodi_RPC_Data::$ResultTyp;
+            $this->Typ = self::$ResultTyp;
         } else {
             $this->Method = $Method;
-            $this->Typ = Kodi_RPC_Data::$MethodTyp;
+            $this->Typ = self::$MethodTyp;
         }
         if (is_array($Params)) {
             $this->Params = (object) $Params;
@@ -246,9 +235,20 @@ class Kodi_RPC_Data extends stdClass
             if ($Id > 0) {
                 $this->Id = $Id;
             } else {
-                $this->Typ = Kodi_RPC_Data::$EventTyp;
+                $this->Typ = self::$EventTyp;
             }
         }
+    }
+
+    /**
+     *
+     * @access public
+     * @param string $name Propertyname
+     * @return mixed Value of Name
+     */
+    public function __get($name)
+    {
+        return $this->{$name};
     }
 
     /**
@@ -310,29 +310,6 @@ class Kodi_RPC_Data extends stdClass
     }
 
     /**
-     * Gibt ein Objekt KodiRPCException mit den enthaltenen Fehlermeldung des RPC-Servers zurück.
-     *
-     * @access private
-     * @return KodiRPCException  Enthält die Daten der Fehlermeldung des RPC-Server.
-     */
-    private function GetErrorObject()
-    {
-        if (property_exists($this->Error, 'data')) {
-            if (property_exists($this->Error->data, 'stack')) {
-                if (property_exists($this->Error->data->stack, 'message')) {
-                    return new KodiRPCException((string) $this->Error->data->stack->message, (int) $this->Error->code);
-                } else {
-                    return new KodiRPCException((string) $this->Error->data->message . ':' . (string) $this->Error->data->stack->name, (int) $this->Error->code);
-                }
-            } else {
-                return new KodiRPCException($this->Error->data->message, (int) $this->Error->code);
-            }
-        } else {
-            return new KodiRPCException((string) $this->Error->message, (int) $this->Error->code);
-        }
-    }
-
-    /**
      * Schreibt die Daten aus $Data in das Kodi_RPC_Data-Objekt.
      *
      * @access public
@@ -362,7 +339,7 @@ class Kodi_RPC_Data extends stdClass
         if (property_exists($Data, 'Id')) {
             $this->Id = $Data->Id;
         } else {
-            $this->Typ = Kodi_RPC_Data::$EventTyp;
+            $this->Typ = self::$EventTyp;
         }
 
         if (property_exists($Data, 'Typ')) {
@@ -414,6 +391,9 @@ class Kodi_RPC_Data extends stdClass
     public function CreateFromJSONString($Data)
     {
         $Json = json_decode($Data);
+        if (is_null($Json)) {
+            return false;
+        }
         if (property_exists($Json, 'error')) {
             $this->Error = $Json->error;
         }
@@ -427,14 +407,15 @@ class Kodi_RPC_Data extends stdClass
         }
         if (property_exists($Json, 'result')) {
             $this->Result = $this->DecodeUTF8($Json->result);
-            $this->Typ = Kodi_RPC_Data::$ResultTyp;
+            $this->Typ = self::$ResultTyp;
         }
         if (property_exists($Json, 'id')) {
             $this->Id = $Json->id;
         } else {
             $this->Id = null;
-            $this->Typ = Kodi_RPC_Data::$EventTyp;
+            $this->Typ = self::$EventTyp;
         }
+        return true;
     }
 
     /**
@@ -453,7 +434,7 @@ class Kodi_RPC_Data extends stdClass
             $RPC->params = $this->Params;
         }
         $RPC->id = $this->Id;
-        $SendData = new stdClass;
+        $SendData = new stdClass();
         $SendData->DataID = $GUID;
         $SendData->Buffer = utf8_encode(json_encode($RPC));
         return json_encode($SendData);
@@ -487,6 +468,29 @@ class Kodi_RPC_Data extends stdClass
     public function ToArray($Item)
     {
         return $this->DecodeUTF8(json_decode(json_encode($this->EncodeUTF8($Item)), true));
+    }
+
+    /**
+     * Gibt ein Objekt KodiRPCException mit den enthaltenen Fehlermeldung des RPC-Servers zurück.
+     *
+     * @access private
+     * @return KodiRPCException  Enthält die Daten der Fehlermeldung des RPC-Server.
+     */
+    private function GetErrorObject()
+    {
+        if (property_exists($this->Error, 'data')) {
+            if (property_exists($this->Error->data, 'stack')) {
+                if (property_exists($this->Error->data->stack, 'message')) {
+                    return new KodiRPCException((string) $this->Error->data->stack->message, (int) $this->Error->code);
+                } else {
+                    return new KodiRPCException((string) $this->Error->data->message . ':' . (string) $this->Error->data->stack->name, (int) $this->Error->code);
+                }
+            } else {
+                return new KodiRPCException($this->Error->data->message, (int) $this->Error->code);
+            }
+        } else {
+            return new KodiRPCException((string) $this->Error->message, (int) $this->Error->code);
+        }
     }
 
     /**

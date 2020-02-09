@@ -92,6 +92,106 @@ class KodiConfigurator extends IPSModule
         parent::ApplyChanges();
     }
 
+    ################## PUBLIC
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    public function GetConfigurationForm()
+    {
+        $SplitterID = $this->GetSplitter();
+
+        if ($SplitterID === false) {
+            $Form['actions'][] = [
+                'type'  => 'PopupAlert',
+                'popup' => [
+                    'items' => [[
+                        'type'    => 'Label',
+                        'caption' => 'Not connected to Splitter.'
+                    ]]
+                ]
+            ];
+        }
+        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        if (IPS_GetInstance($SplitterID)['InstanceStatus'] != IS_ACTIVE) {
+            $Form['actions'][] = [
+                'type'  => 'PopupAlert',
+                'popup' => [
+                    'items' => [[
+                        'type'    => 'Label',
+                        'caption' => 'Instance has no active parent.'
+                    ]]
+                ]
+            ];
+        }
+
+        foreach (static::$PlayerTypes as $Name => $ModuleData) {
+            $Value = [
+                'type'   => $this->Translate($Name),
+                'create' => [
+                    'moduleID'      => $ModuleData['GUID'],
+                    'configuration' => ['PlayerID' => $ModuleData['PlayerID']]
+                ]
+            ];
+            $InstanzID = $this->SearchPlayerInstance($SplitterID, $ModuleData['GUID'], $ModuleData['PlayerID']);
+            if ($InstanzID == false) {
+                $Value['name'] = 'Kodi ' . $this->Translate($Name);
+                $Value['location'] = '';
+            } else {
+                $Value['name'] = IPS_GetName($InstanzID);
+                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
+                $Value['instanceID'] = $InstanzID;
+            }
+            $Values[] = $Value;
+        }
+
+        foreach (static::$PlayeListTypes as $Name => $ModuleData) {
+            $Value = [
+                'type'   => $this->Translate($Name),
+                'create' => [
+                    'moduleID'      => $ModuleData['GUID'],
+                    'configuration' => ['PlaylistID' => $ModuleData['PlaylistID']]
+                ]
+            ];
+            $InstanzID = $this->SearchPlaylistInstance($SplitterID, $ModuleData['GUID'], $ModuleData['PlaylistID']);
+            if ($InstanzID == false) {
+                $Value['name'] = 'Kodi ' . $this->Translate($Name);
+                $Value['location'] = '';
+            } else {
+                $Value['name'] = IPS_GetName($InstanzID);
+                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
+                $Value['instanceID'] = $InstanzID;
+            }
+            $Values[] = $Value;
+        }
+
+        foreach (static::$Name as $Name => $ModuleID) {
+            $Value = [
+                'type'   => $this->Translate($Name),
+                'create' => [
+                    'moduleID'      => $ModuleID,
+                    'configuration' => new stdClass()
+                ]
+            ];
+            $InstanzID = $this->SearchInstance($SplitterID, $ModuleID);
+            if ($InstanzID == false) {
+                $Value['name'] = 'Kodi ' . $this->Translate($Name);
+                $Value['location'] = '';
+            } else {
+                $Value['name'] = IPS_GetName($InstanzID);
+                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
+                $Value['instanceID'] = $InstanzID;
+            }
+            $Values[] = $Value;
+        }
+
+        $Form['actions'][0]['values'] = $Values;
+        $this->SendDebug('FORM', json_encode($Form), 0);
+        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        return json_encode($Form);
+    }
+
     ################## PRIVATE
     /**
      * Liefert den aktuell verbundenen Splitter.
@@ -169,106 +269,6 @@ class KodiConfigurator extends IPSModule
             }
         }
         return false;
-    }
-
-    ################## PUBLIC
-    /**
-     * Interne Funktion des SDK.
-     *
-     * @access public
-     */
-    public function GetConfigurationForm()
-    {
-        $SplitterID = $this->GetSplitter();
-
-        if ($SplitterID === false) {
-            $Form['actions'][] = [
-                'type'  => 'PopupAlert',
-                'popup' => [
-                    'items' => [[
-                    'type'    => 'Label',
-                    'caption' => 'Not connected to Splitter.'
-                        ]]
-                ]
-            ];
-        }
-        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        if (IPS_GetInstance($SplitterID)['InstanceStatus'] != IS_ACTIVE) {
-            $Form['actions'][] = [
-                'type'  => 'PopupAlert',
-                'popup' => [
-                    'items' => [[
-                    'type'    => 'Label',
-                    'caption' => 'Instance has no active parent.'
-                        ]]
-                ]
-            ];
-        }
-
-        foreach (static::$PlayerTypes as $Name => $ModuleData) {
-            $Value = [
-                'type'   => $this->Translate($Name),
-                'create' => [
-                    'moduleID'      => $ModuleData['GUID'],
-                    'configuration' => ['PlayerID' => $ModuleData['PlayerID']]
-                ]
-            ];
-            $InstanzID = $this->SearchPlayerInstance($SplitterID, $ModuleData['GUID'], $ModuleData['PlayerID']);
-            if ($InstanzID == false) {
-                $Value['name'] = 'Kodi ' . $this->Translate($Name);
-                $Value['location'] = '';
-            } else {
-                $Value['name'] = IPS_GetName($InstanzID);
-                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
-                $Value['instanceID'] = $InstanzID;
-            }
-            $Values[] = $Value;
-        }
-
-        foreach (static::$PlayeListTypes as $Name => $ModuleData) {
-            $Value = [
-                'type'   => $this->Translate($Name),
-                'create' => [
-                    'moduleID'      => $ModuleData['GUID'],
-                    'configuration' => ['PlaylistID' => $ModuleData['PlaylistID']]
-                ]
-            ];
-            $InstanzID = $this->SearchPlaylistInstance($SplitterID, $ModuleData['GUID'], $ModuleData['PlaylistID']);
-            if ($InstanzID == false) {
-                $Value['name'] = 'Kodi ' . $this->Translate($Name);
-                $Value['location'] = '';
-            } else {
-                $Value['name'] = IPS_GetName($InstanzID);
-                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
-                $Value['instanceID'] = $InstanzID;
-            }
-            $Values[] = $Value;
-        }
-
-        foreach (static::$Name as $Name => $ModuleID) {
-            $Value = [
-                'type'   => $this->Translate($Name),
-                'create' => [
-                    'moduleID'      => $ModuleID,
-                    'configuration' => new stdClass()
-                ]
-            ];
-            $InstanzID = $this->SearchInstance($SplitterID, $ModuleID);
-            if ($InstanzID == false) {
-                $Value['name'] = 'Kodi ' . $this->Translate($Name);
-                $Value['location'] = '';
-            } else {
-                $Value['name'] = IPS_GetName($InstanzID);
-                $Value['location'] = stristr(IPS_GetLocation($InstanzID), IPS_GetName($InstanzID), true);
-                $Value['instanceID'] = $InstanzID;
-            }
-            $Values[] = $Value;
-        }
-
-        $Form['actions'][0]['values'] = $Values;
-        $this->SendDebug('FORM', json_encode($Form), 0);
-        $this->SendDebug('FORM', json_last_error_msg(), 0);
-        return json_encode($Form);
     }
 }
 

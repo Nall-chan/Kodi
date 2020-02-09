@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.15
  *
  */
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -29,7 +29,7 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.15
  * @property array $ReplyJSONData
  * @property string $BufferIN
  * @property string $Host
@@ -37,7 +37,6 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  */
 class KodiSplitter extends IPSModule
 {
-
     use \KodiSplitter\BufferHelper,
         \KodiSplitter\InstanceStatus,
         \KodiBase\DebugHelper,
@@ -100,7 +99,7 @@ class KodiSplitter extends IPSModule
 
         parent::ApplyChanges();
 
-        if (IPS_GetKernelRunlevel() <> KR_READY) {
+        if (IPS_GetKernelRunlevel() != KR_READY) {
             return;
         }
 
@@ -144,7 +143,7 @@ class KodiSplitter extends IPSModule
             return;
         }
 
-        if (IPS_GetProperty($ParentID, 'Port') <> $this->ReadPropertyInteger('Port')) {
+        if (IPS_GetProperty($ParentID, 'Port') != $this->ReadPropertyInteger('Port')) {
             IPS_SetProperty($ParentID, 'Port', $this->ReadPropertyInteger('Port'));
         }
 
@@ -154,18 +153,6 @@ class KodiSplitter extends IPSModule
 
         @IPS_ApplyChanges($ParentID);
         return;
-    }
-
-    protected function RegisterParent()
-    {
-        $ParentID = $this->IORegisterParent();
-        if ($ParentID > 0) {
-            $this->Host = IPS_GetProperty($ParentID, 'Host');
-        } else {
-            $this->Host = '';
-        }
-        $this->SetSummary($this->Host);
-        return $ParentID;
     }
 
     /**
@@ -200,6 +187,209 @@ class KodiSplitter extends IPSModule
                 }
                 break;
         }
+    }
+
+    public function RequestAction($Ident, $Value)
+    {
+        if ($this->IORequestAction($Ident, $Value)) {
+            return true;
+        }
+    }
+
+    /**
+     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     *
+     * @access protected
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
+//    protected function Decode($Method, $Event)
+//    {
+//        $this->SendDebug('Decode' . $Method, $Event, 0);
+//
+//        if ($Method == 'OnQuit')
+//            $this->IOChangeState(IS_INACTIVE);
+//    }
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    public function GetConfigurationForParent()
+    {
+        $Config['Port'] = $this->ReadPropertyInteger('Port');
+        $Config['Open'] = $this->ReadPropertyBoolean('Open');
+        return json_encode($Config);
+    }
+
+    ################## PUBLIC
+    /**
+     * IPS-Instanz-Funktion 'KODIRPC_GetImage'. Holt ein Bild vom Kodi-Webfront.
+     *
+     * @access public
+     * @param string $path Pfad des Bildes.
+     * @result string Bildinhalt als Bytestring.
+     */
+    public function GetImage(string $path)
+    {
+        $CoverRAW = $this->DoWebserverRequest('/image/' . rawurlencode($path));
+
+        if ($CoverRAW === false) {
+            trigger_error('Error on load image from Kodi.', E_USER_NOTICE);
+        }
+        return $CoverRAW;
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIRPC_KeepAlive'.
+     * Sendet einen RPC-Ping an Kodi und prüft die erreichbarkeit.
+     *
+     * @access public
+     * @result bool true wenn Kodi erreichbar, sonst false.
+     */
+    public function KeepAlive()
+    {
+        $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
+        $ret = @$this->Send($KodiData);
+        if ($ret !== 'pong') {
+            echo 'Connection to Kodi lost.';
+            $this->SetStatus(203);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIRPC_Watchdog'.
+     * Sendet einen TCP-Ping an Kodi und prüft die erreichbarkeit des OS.
+     * Wird erkannt, dass das OS erreichbar ist, wird versucht eine RPC-Verbindung zu Kodi aufzubauen.
+     *
+     * @access public
+     */
+    public function Watchdog()
+    {
+        $this->SendDebug('Watchdog', 'run', 0);
+        if (!$this->ReadPropertyBoolean('Open')) {
+            return;
+        }
+        if ($this->Host != '') {
+            if ($this->HasActiveParent()) {
+                return;
+            }
+            if (!$this->DoPing()) {
+                return;
+            }
+            if (!$this->CheckPort()) {
+                return;
+            }
+            IPS_SetProperty($this->ParentID, 'Open', true);
+            @IPS_ApplyChanges($this->ParentID);
+        }
+    }
+
+    ################## DATAPOINTS DEVICE
+    /**
+     * Interne Funktion des SDK. Nimmt Daten von Childs entgegen und sendet Diese weiter.
+     *
+     * @access public
+     * @param string $JSONString Ein Kodi_RPC_Data-Objekt welches als JSONString kodiert ist.
+     * @result bool true wenn Daten gesendet werden konnten, sonst false.
+     */
+    public function ForwardData($JSONString)
+    {
+//        $this->SendDebug('Forward', $JSONString, 0);
+
+        $Data = json_decode($JSONString);
+//        if ($Data->DataID <> '{0222A902-A6FA-4E94-94D3-D54AA4666321}')
+//            return false;
+        $KodiData = new Kodi_RPC_Data();
+        $KodiData->CreateFromGenericObject($Data);
+//        try
+//        {
+        $ret = $this->Send($KodiData);
+        //          $this->SendDebug('Result', $anwser, 0);
+        if (!is_null($ret)) {
+            return serialize($ret);
+        }
+//        }
+//        catch (Exception $ex)
+//        {
+//            trigger_error($ex->getMessage(), $ex->getCode());
+//        }
+        return false;
+    }
+
+    ################## DATAPOINTS PARENT
+    /**
+     * Empfängt Daten vom Parent.
+     *
+     * @access public
+     * @param string $JSONString Das empfangene JSON-kodierte Objekt vom Parent.
+     * @result bool True wenn Daten verarbeitet wurden, sonst false.
+     */
+    public function ReceiveData($JSONString)
+    {
+        $data = json_decode($JSONString);
+
+        // Datenstream zusammenfügen
+        $head = $this->BufferIN;
+        $Data = $head . utf8_decode($data->Buffer);
+
+        // Stream in einzelne Pakete schneiden
+        $Count = 0;
+        $Data = str_replace('}{', '}' . chr(0x04) . '{', $Data, $Count);
+        $JSONLine = explode(chr(0x04), $Data);
+
+        if (is_null(json_decode($JSONLine[$Count]))) {
+            // Rest vom Stream wieder in den Empfangsbuffer schieben
+            $tail = array_pop($JSONLine);
+            if (strlen($tail) > 256 * 1024) { //Drop large Paket
+                $this->LogMessage('Kodi-RPC server send date over 265kB', KL_DEBUG);
+                $tail = '';
+            }
+            $this->BufferIN = $tail;
+        } else {
+            $this->BufferIN = '';
+        }
+
+        // Pakete verarbeiten
+        foreach ($JSONLine as $JSON) {
+            $KodiData = new Kodi_RPC_Data();
+            if (!$KodiData->CreateFromJSONString($JSON)) {
+                $this->SendDebug('Skip error on receive', $JSON, 0);
+                continue;
+            }
+            if ($KodiData->Typ == Kodi_RPC_Data::$ResultTyp) { // Reply
+                try {
+                    $this->SendQueueUpdate((int) $KodiData->Id, $KodiData);
+                } catch (Exception $exc) {
+                    $buffer = $this->BufferIN;
+                    $this->BufferIN = $JSON . $buffer;
+                    trigger_error($exc->getMessage(), E_USER_NOTICE);
+                    continue;
+                }
+            } elseif ($KodiData->Typ == Kodi_RPC_Data::$EventTyp) { // Event
+                $this->SendDebug('Receive Event', $KodiData, 0);
+//                if (($KodiData->Namespace == 'System') and ( $KodiData->Method == 'OnQuit'))
+//                    $this->Decode($KodiData->Method, $KodiData->GetEvent());
+                $this->SendDataToDevice($KodiData);
+//                if (self::$Namespace == $KodiData->Namespace)
+//                    $this->Decode($KodiData->Method, $KodiData->GetEvent());
+            }
+        }
+        return true;
+    }
+
+    protected function RegisterParent()
+    {
+        $ParentID = $this->IORegisterParent();
+        if ($ParentID > 0) {
+            $this->Host = IPS_GetProperty($ParentID, 'Host');
+        } else {
+            $this->Host = '';
+        }
+        $this->SetSummary($this->Host);
+        return $ParentID;
     }
 
     /**
@@ -237,13 +427,11 @@ class KodiSplitter extends IPSModule
                     $NewState = IS_INACTIVE;
                 }
                 if ($this->GetStatus() != $NewState) {
-
                     $this->SetStatus($NewState);
                 }
                 break;
             case IS_INACTIVE:
                 if ($this->GetStatus() != IS_INACTIVE) {
-
                     $this->SetStatus(IS_INACTIVE);
                 } break;
             default:
@@ -255,11 +443,62 @@ class KodiSplitter extends IPSModule
         }
     }
 
-    public function RequestAction($Ident, $Value)
+    /**
+     * Versendet ein Kodi_RPC-Objekt und empfängt die Antwort.
+     *
+     * @access protected
+     * @param Kodi_RPC_Data $KodiData Das Objekt welches versendet werden soll.
+     * @result mixed Enthält die Antwort auf das Versendete Objekt oder NULL im Fehlerfall.
+     */
+    protected function Send(Kodi_RPC_Data $KodiData)
     {
-        if ($this->IORequestAction($Ident, $Value)) {
-            return true;
+        try {
+            if ($this->ReadPropertyBoolean('Open') === false) {
+                throw new Exception('Instance inactiv.', E_USER_NOTICE);
+            }
+
+            if (!$this->HasActiveParent()) {
+                throw new Exception('Instance has no active parent.', E_USER_NOTICE);
+            }
+            $this->SendDebug('Send', $KodiData, 0);
+            $this->SendQueuePush((int) $KodiData->Id);
+            $this->SendDataToParent($KodiData);
+            $ReplyKodiData = $this->WaitForResponse((int) $KodiData->Id);
+
+            if ($ReplyKodiData === false) {
+                throw new Exception('No anwser from Kodi', E_USER_NOTICE);
+            }
+
+            $ret = $ReplyKodiData->GetResult();
+            if (is_a($ret, 'KodiRPCException')) {
+                throw $ret;
+            }
+            $this->SendDebug('Receive', $ReplyKodiData, 0);
+            return $ret;
+        } catch (KodiRPCException $ex) {
+            $this->SendDebug('Receive', $ex, 0);
+            //trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
+            echo $ex->getMessage();
+        } catch (Exception $ex) {
+            $this->SendDebug('Receive', $ex->getMessage(), 0);
+            //trigger_error($ex->getMessage(), $ex->getCode());
+            echo $ex->getMessage();
         }
+        return null;
+    }
+
+    /**
+     * Sendet ein Kodi_RPC-Objekt an den Parent.
+     *
+     * @access protected
+     * @param Kodi_RPC_Data $Data Das Objekt welches versendet werden soll.
+     * @result bool true
+     */
+    protected function SendDataToParent($Data)
+    {
+        $JsonString = $Data->ToRPCJSONString('{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}');
+        parent::SendDataToParent($JsonString);
+        return true;
     }
 
     ################## PRIVATE
@@ -399,134 +638,11 @@ class KodiSplitter extends IPSModule
         $this->SendDataToDevice($KodiData);
     }
 
-    /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
-     *
-     * @access protected
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-//    protected function Decode($Method, $Event)
-//    {
-//        $this->SendDebug('Decode' . $Method, $Event, 0);
-//
-//        if ($Method == 'OnQuit')
-//            $this->IOChangeState(IS_INACTIVE);
-//    }
-    /**
-     * Interne Funktion des SDK.
-     *
-     * @access public
-     */
-    public function GetConfigurationForParent()
-    {
-        $Config['Port'] = $this->ReadPropertyInteger('Port');
-        $Config['Open'] = $this->ReadPropertyBoolean('Open');
-        return json_encode($Config);
-    }
-
-    ################## PUBLIC
-    /**
-     * IPS-Instanz-Funktion 'KODIRPC_GetImage'. Holt ein Bild vom Kodi-Webfront.
-     *
-     * @access public
-     * @param string $path Pfad des Bildes.
-     * @result string Bildinhalt als Bytestring.
-     */
-    public function GetImage(string $path)
-    {
-        $CoverRAW = $this->DoWebserverRequest('/image/' . rawurlencode($path));
-
-        if ($CoverRAW === false) {
-            trigger_error('Error on load image from Kodi.', E_USER_NOTICE);
-        }
-        return $CoverRAW;
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIRPC_KeepAlive'.
-     * Sendet einen RPC-Ping an Kodi und prüft die erreichbarkeit.
-     *
-     * @access public
-     * @result bool true wenn Kodi erreichbar, sonst false.
-     */
-    public function KeepAlive()
-    {
-        $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
-        $ret = @$this->Send($KodiData);
-        if ($ret !== 'pong') {
-            echo 'Connection to Kodi lost.';
-            $this->SetStatus(203);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIRPC_Watchdog'.
-     * Sendet einen TCP-Ping an Kodi und prüft die erreichbarkeit des OS.
-     * Wird erkannt, dass das OS erreichbar ist, wird versucht eine RPC-Verbindung zu Kodi aufzubauen.
-     *
-     * @access public
-     */
-    public function Watchdog()
-    {
-        $this->SendDebug('Watchdog', 'run', 0);
-        if (!$this->ReadPropertyBoolean('Open')) {
-            return;
-        }
-        if ($this->Host != '') {
-            if ($this->HasActiveParent()) {
-                return;
-            }
-            if (!$this->DoPing()) {
-                return;
-            }
-            if (!$this->CheckPort()) {
-                return;
-            }
-            IPS_SetProperty($this->ParentID, 'Open', true);
-            @IPS_ApplyChanges($this->ParentID);
-        }
-    }
-
     private function DoPing()
     {
         $Result = @Sys_Ping($this->Host, 500);
         $this->SendDebug('Pinging', $Result, 0);
         return $Result;
-    }
-
-    ################## DATAPOINTS DEVICE
-    /**
-     * Interne Funktion des SDK. Nimmt Daten von Childs entgegen und sendet Diese weiter.
-     *
-     * @access public
-     * @param string $JSONString Ein Kodi_RPC_Data-Objekt welches als JSONString kodiert ist.
-     * @result bool true wenn Daten gesendet werden konnten, sonst false.
-     */
-    public function ForwardData($JSONString)
-    {
-//        $this->SendDebug('Forward', $JSONString, 0);
-
-        $Data = json_decode($JSONString);
-//        if ($Data->DataID <> '{0222A902-A6FA-4E94-94D3-D54AA4666321}')
-//            return false;
-        $KodiData = new Kodi_RPC_Data();
-        $KodiData->CreateFromGenericObject($Data);
-//        try
-//        {
-        $ret = $this->Send($KodiData);
-        //          $this->SendDebug('Result', $anwser, 0);
-        if (!is_null($ret)) {
-            return serialize($ret);
-        }
-//        }
-//        catch (Exception $ex)
-//        {
-//            trigger_error($ex->getMessage(), $ex->getCode());
-//        }
-        return false;
     }
 
     /**
@@ -538,119 +654,8 @@ class KodiSplitter extends IPSModule
     private function SendDataToDevice(Kodi_RPC_Data $KodiData)
     {
         $Data = $KodiData->ToJSONString('{73249F91-710A-4D24-B1F1-A72F216C2BDC}');
-        $this->SendDebug('IPS_SendDataToChildren', $Data, 0);
+        //$this->SendDebug('IPS_SendDataToChildren', $Data, 0);
         $this->SendDataToChildren($Data);
-    }
-
-    ################## DATAPOINTS PARENT
-    /**
-     * Empfängt Daten vom Parent.
-     *
-     * @access public
-     * @param string $JSONString Das empfangene JSON-kodierte Objekt vom Parent.
-     * @result bool True wenn Daten verarbeitet wurden, sonst false.
-     */
-    public function ReceiveData($JSONString)
-    {
-        $data = json_decode($JSONString);
-
-        // Datenstream zusammenfügen
-        $head = $this->BufferIN;
-        $Data = $head . utf8_decode($data->Buffer);
-
-        // Stream in einzelne Pakete schneiden
-        $Count = 0;
-        $Data = str_replace('}{', '}' . chr(0x04) . '{', $Data, $Count);
-        $JSONLine = explode(chr(0x04), $Data);
-
-        if (is_null(json_decode($JSONLine[$Count]))) {
-            // Rest vom Stream wieder in den Empfangsbuffer schieben
-            $tail = array_pop($JSONLine);
-            $this->BufferIN = $tail;
-        } else {
-            $this->BufferIN = '';
-        }
-
-        // Pakete verarbeiten
-        foreach ($JSONLine as $JSON) {
-            $KodiData = new Kodi_RPC_Data();
-            $KodiData->CreateFromJSONString($JSON);
-            if ($KodiData->Typ == Kodi_RPC_Data::$ResultTyp) { // Reply
-                try {
-                    $this->SendQueueUpdate((int) $KodiData->Id, $KodiData);
-                } catch (Exception $exc) {
-                    $buffer = $this->BufferIN;
-                    $this->BufferIN = $JSON . $buffer;
-                    trigger_error($exc->getMessage(), E_USER_NOTICE);
-                    continue;
-                }
-            } elseif ($KodiData->Typ == Kodi_RPC_Data::$EventTyp) { // Event
-//                if (($KodiData->Namespace == 'System') and ( $KodiData->Method == 'OnQuit'))
-//                    $this->Decode($KodiData->Method, $KodiData->GetEvent());
-                $this->SendDataToDevice($KodiData);
-//                if (self::$Namespace == $KodiData->Namespace)
-//                    $this->Decode($KodiData->Method, $KodiData->GetEvent());
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Versendet ein Kodi_RPC-Objekt und empfängt die Antwort.
-     *
-     * @access protected
-     * @param Kodi_RPC_Data $KodiData Das Objekt welches versendet werden soll.
-     * @result mixed Enthält die Antwort auf das Versendete Objekt oder NULL im Fehlerfall.
-     */
-    protected function Send(Kodi_RPC_Data $KodiData)
-    {
-        try {
-            if ($this->ReadPropertyBoolean('Open') === false) {
-                throw new Exception('Instance inactiv.', E_USER_NOTICE);
-            }
-
-            if (!$this->HasActiveParent()) {
-                throw new Exception('Instance has no active parent.', E_USER_NOTICE);
-            }
-            $this->SendDebug('Send', $KodiData, 0);
-            $this->SendQueuePush((int) $KodiData->Id);
-            $this->SendDataToParent($KodiData);
-            $ReplyKodiData = $this->WaitForResponse((int) $KodiData->Id);
-
-            if ($ReplyKodiData === false) {
-                throw new Exception('No anwser from Kodi', E_USER_NOTICE);
-            }
-
-            $ret = $ReplyKodiData->GetResult();
-            if (is_a($ret, 'KodiRPCException')) {
-                throw $ret;
-            }
-            $this->SendDebug('Receive', $ReplyKodiData, 0);
-            return $ret;
-        } catch (KodiRPCException $ex) {
-            $this->SendDebug('Receive', $ex, 0);
-            //trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
-            echo $ex->getMessage();
-        } catch (Exception $ex) {
-            $this->SendDebug('Receive', $ex->getMessage(), 0);
-            //trigger_error($ex->getMessage(), $ex->getCode());
-            echo $ex->getMessage();
-        }
-        return null;
-    }
-
-    /**
-     * Sendet ein Kodi_RPC-Objekt an den Parent.
-     *
-     * @access protected
-     * @param Kodi_RPC_Data $Data Das Objekt welches versendet werden soll.
-     * @result bool true
-     */
-    protected function SendDataToParent($Data)
-    {
-        $JsonString = $Data->ToRPCJSONString('{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}');
-        parent::SendDataToParent($JsonString);
-        return true;
     }
 
     /**
@@ -667,7 +672,7 @@ class KodiSplitter extends IPSModule
             if (!array_key_exists($Id, $ret)) {
                 return false;
             }
-            if ($ret[$Id] <> '') {
+            if ($ret[$Id] != '') {
                 return $this->SendQueuePop($Id);
             }
             IPS_Sleep(5);
@@ -745,7 +750,6 @@ class KodiSplitter extends IPSModule
         $this->ReplyJSONData = $data;
         $this->unlock('ReplyJSONData');
     }
-
 }
 
 /** @} */

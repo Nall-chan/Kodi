@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @version       2.10
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDeviceAudioLibrary Klasse für den Namespace AudioLibrary der KODI-API.
@@ -215,31 +215,6 @@ class KodiDeviceAudioLibrary extends KodiBase
         parent::ApplyChanges();
     }
 
-    ################## PRIVATE
-    /**
-     * Dekodiert die empfangenen Events.
-     *
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-    protected function Decode($Method, $KodiPayload)
-    {
-        switch ($Method) {
-            case 'OnScanStarted':
-                $this->SetValueBoolean('scan', true);
-                break;
-            case 'OnScanFinished':
-                $this->SetValueBoolean('scan', false);
-                break;
-            case 'OnCleanStarted':
-                $this->SetValueBoolean('clean', true);
-                break;
-            case 'OnCleanFinished':
-                $this->SetValueBoolean('clean', false);
-                break;
-        }
-    }
-
     ################## ActionHandler
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
@@ -296,7 +271,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      */
     public function Export(string $Path, bool $Overwrite, bool $includeImages)
     {
-        if (!is_string($Path) or (strlen($Path) < 2)) {
+        if (!is_string($Path) || (strlen($Path) < 2)) {
             trigger_error('Path is invalid', E_USER_NOTICE);
             return false;
         }
@@ -565,6 +540,31 @@ class KodiDeviceAudioLibrary extends KodiBase
         }
         trigger_error('Error start scanning', E_USER_NOTICE);
         return false;
+    }
+
+    ################## PRIVATE
+    /**
+     * Dekodiert die empfangenen Events.
+     *
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
+    protected function Decode($Method, $KodiPayload)
+    {
+        switch ($Method) {
+            case 'OnScanStarted':
+                $this->SetValueBoolean('scan', true);
+                break;
+            case 'OnScanFinished':
+                $this->SetValueBoolean('scan', false);
+                break;
+            case 'OnCleanStarted':
+                $this->SetValueBoolean('clean', true);
+                break;
+            case 'OnCleanFinished':
+                $this->SetValueBoolean('clean', false);
+                break;
+        }
     }
 }
 

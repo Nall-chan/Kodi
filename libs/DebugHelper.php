@@ -33,16 +33,16 @@ trait DebugHelper
     protected function SendDebug($Message, $Data, $Format)
     {
         if (is_a($Data, 'Kodi_RPC_Data')) {
-            parent::SendDebug($Message . " Method", $Data->Namespace . '.' . $Data->Method, 0);
+            parent::SendDebug($Message . ' Method', $Data->Namespace . '.' . $Data->Method, 0);
             switch ($Data->Typ) {
                 case Kodi_RPC_Data::$EventTyp:
-                    $this->SendDebug($Message . " Event", $Data->GetEvent(), 0);
+                    $this->SendDebug($Message . ' Event', $Data->GetEvent(), 0);
                     break;
                 case Kodi_RPC_Data::$ResultTyp:
-                    $this->SendDebug($Message . " Result", $Data->GetResult(), 0);
+                    $this->SendDebug($Message . ' Result', $Data->GetResult(), 0);
                     break;
                 default:
-                    $this->SendDebug($Message . " Params", $Data->Params, 0);
+                    $this->SendDebug($Message . ' Params', $Data->Params, 0);
                     break;
             }
         } elseif (is_a($Data, 'KodiRPCException')) {
@@ -54,12 +54,12 @@ trait DebugHelper
                 $this->SendDebug($Message, array_slice($Data, -5, null, true), 0);
             } else {
                 foreach ($Data as $Key => $DebugData) {
-                    $this->SendDebug($Message . ":" . $Key, $DebugData, 0);
+                    $this->SendDebug($Message . ':' . $Key, $DebugData, 0);
                 }
             }
         } elseif (is_object($Data)) {
             foreach ($Data as $Key => $DebugData) {
-                $this->SendDebug($Message . "->" . $Key, $DebugData, 0);
+                $this->SendDebug($Message . '->' . $Key, $DebugData, 0);
             }
         } elseif (is_bool($Data)) {
             parent::SendDebug($Message, ($Data ? 'TRUE' : 'FALSE'), 0);

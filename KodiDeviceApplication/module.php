@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @version       2.10
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDeviceApplication Klasse für den Namespace Application der KODI-API.
@@ -101,34 +101,6 @@ class KodiDeviceApplication extends KodiBase
         $this->EnableAction('volume');
 
         parent::ApplyChanges();
-    }
-
-    ################## PRIVATE
-    /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
-     *
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-    protected function Decode($Method, $KodiPayload)
-    {
-        foreach ($KodiPayload as $param => $value) {
-            switch ($param) {
-                case 'mute':
-                case 'muted':
-                    $this->SetValueBoolean('mute', $value);
-                    break;
-                case 'volume':
-                    $this->SetValueInteger('volume', $value);
-                    break;
-                case 'name':
-                    $this->SetValueString('name', $value);
-                    break;
-                case 'version':
-                    $this->SetValueString('version', $value->major . '.' . $value->minor);
-                    break;
-            }
-        }
     }
 
     ################## ActionHandler
@@ -242,6 +214,34 @@ class KodiDeviceApplication extends KodiBase
     public function RequestState(string $Ident)
     {
         return parent::RequestState($Ident);
+    }
+
+    ################## PRIVATE
+    /**
+     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     *
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
+    protected function Decode($Method, $KodiPayload)
+    {
+        foreach ($KodiPayload as $param => $value) {
+            switch ($param) {
+                case 'mute':
+                case 'muted':
+                    $this->SetValueBoolean('mute', $value);
+                    break;
+                case 'volume':
+                    $this->SetValueInteger('volume', $value);
+                    break;
+                case 'name':
+                    $this->SetValueString('name', $value);
+                    break;
+                case 'version':
+                    $this->SetValueString('version', $value->major . '.' . $value->minor);
+                    break;
+            }
+        }
     }
 }
 

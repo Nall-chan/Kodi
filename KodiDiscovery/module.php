@@ -14,7 +14,6 @@ declare(strict_types=1);
  *
  */
 require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
-eval('declare(strict_types=1);namespace KodiDiscovery {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
 
 /**
  * KodiDiscovery Klasse implementiert
@@ -24,21 +23,16 @@ eval('declare(strict_types=1);namespace KodiDiscovery {?>' . file_get_contents(_
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       2.10
  * @example <b>Ohne</b>
- * @property array $Devices
  */
 class KodiDiscovery extends ipsmodule
 {
     use \KodiBase\DebugHelper;
-    use
-        \KodiDiscovery\BufferHelper;
     /**
      * Interne Funktion des SDK.
      */
     public function Create()
     {
         parent::Create();
-        $this->Devices = [];
-        $this->RegisterTimer('Discovery', 0, 'KODI_Discover($_IPS[\'TARGET\']);');
     }
 
     /**
@@ -46,31 +40,7 @@ class KodiDiscovery extends ipsmodule
      */
     public function ApplyChanges()
     {
-        $this->RegisterMessage(0, IPS_KERNELSTARTED);
         parent::ApplyChanges();
-        $this->SetTimerInterval('Discovery', 300000);
-        if (IPS_GetKernelRunlevel() != KR_READY) {
-            return;
-        }
-        $this->Devices = $this->DiscoverDevices();
-    }
-
-    /**
-     * Interne Funktion des SDK.
-     * Verarbeitet alle Nachrichten auf die wir uns registriert haben.
-     *
-     * @param int       $TimeStamp
-     * @param int       $SenderID
-     * @param int       $Message
-     * @param array|int $Data
-     */
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
-    {
-        switch ($Message) {
-            case IPS_KERNELSTARTED:
-                $this->Devices = $this->DiscoverDevices();
-                break;
-        }
     }
 
     /**
@@ -148,13 +118,6 @@ class KodiDiscovery extends ipsmodule
         return json_encode($Form);
     }
 
-    public function Discover()
-    {
-        $this->LogMessage($this->Translate('Background discovery of Kodi devices'), KL_NOTIFY);
-        $this->Devices = $this->DiscoverDevices();
-        // Alt neu vergleich fehlt, sowie die Events an IPS senden wenn neues Gerät im Netz gefunden wurde.
-    }
-
     private function GetIPSInstances(): array
     {
         $InstanceIDList = IPS_GetInstanceListByModuleID('{7B4F8B62-7AB4-4877-AD60-F3B294DDB43E}');
@@ -187,6 +150,7 @@ class KodiDiscovery extends ipsmodule
 
     private function DiscoverDevices(): array
     {
+        $this->LogMessage($this->Translate('Background discovery of Kodi devices'), KL_NOTIFY);
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         if (!$socket) {
             return [];

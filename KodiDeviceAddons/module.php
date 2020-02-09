@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * @addtogroup kodi
@@ -14,7 +14,7 @@ declare(strict_types = 1);
  * @version       2.10
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDeviceAddons Klasse für den Namespace Addons der KODI-API.
@@ -67,7 +67,7 @@ class KodiDeviceAddons extends KodiBase
         'extrainfo',
         'rating',
         'enabled'
-       ];
+    ];
 
     /**
      * Interne Funktion des SDK.
@@ -94,7 +94,7 @@ class KodiDeviceAddons extends KodiBase
      */
     public function Destroy()
     {
-        if (IPS_GetKernelRunlevel() <> KR_READY) {
+        if (IPS_GetKernelRunlevel() != KR_READY) {
             return parent::Destroy();
         }
         if (!IPS_InstanceExists($this->InstanceID)) {
@@ -133,6 +133,206 @@ class KodiDeviceAddons extends KodiBase
         parent::ApplyChanges();
     }
 
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_EnableAddon'. Aktiviert / Deaktiviert ein Addon
+     *
+     * @access public
+     * @param string $AddonId Das zu aktivirende / deaktivierende Addon.
+     * @return bool true bei Erfolg oder false bei Fehler.
+     */
+    public function EnableAddon(string $AddonId, bool $Value)
+    {
+        if (!is_string($AddonId)) {
+            trigger_error('AddonId must be string', E_USER_NOTICE);
+            return false;
+        }
+        if (!is_bool($Value)) {
+            trigger_error('Value must be boolean', E_USER_NOTICE);
+            return false;
+        }
+
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        $this->RefreshAddonlist();
+        return $ret === 'OK';
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_ExecuteAddon'. Startet ein Addon
+     *
+     * @access public
+     * @param string $AddonId Das zu startenden Addon.
+     * @return bool true bei Erfolg oder false bei Fehler.
+     */
+    public function ExecuteAddon(string $AddonId)
+    {
+        if (!is_string($AddonId)) {
+            trigger_error('AddonId must be string', E_USER_NOTICE);
+            return false;
+        }
+
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->ExecuteAddon(['addonid' => $AddonId]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $ret === 'OK';
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_ExecuteAddonWait'. Startet ein Addon und wartet auf die Ausführung.
+     *
+     * @access public
+     * @param string $AddonId Das zu startenden Addon.
+     * @return bool true bei Erfolg oder false bei Fehler.
+     */
+    public function ExecuteAddonWait(string $AddonId)
+    {
+        if (!is_string($AddonId)) {
+            trigger_error('AddonId must be string', E_USER_NOTICE);
+            return false;
+        }
+
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'wait' => true]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $ret === 'OK';
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_ExecuteAddonEx'. Startet ein Addon mit Parametern.
+     *
+     * @access public
+     * @param string $AddonId Das zu startenden Addon.
+     * @param string $Params Die zu übergebenden Parameter an das AddOn als JSON-String.
+     * @return bool true bei Erfolg oder false bei Fehler.
+     */
+    public function ExecuteAddonEx(string $AddonId, string $Params)
+    {
+        if (!is_string($AddonId)) {
+            trigger_error('AddonId must be string', E_USER_NOTICE);
+            return false;
+        }
+        if (!is_string($Params)) {
+            trigger_error('Params must be string', E_USER_NOTICE);
+            return false;
+        }
+        $param = json_decode($Params, true);
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'params' => $param]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $ret === 'OK';
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_ExecuteAddonExWait'. Startet ein Addon mit Parametern und wartet auf die Ausführung.
+     *
+     * @access public
+     * @param string $AddonId Das zu startenden Addon.
+     * @param string $Params Die zu übergebenden Parameter an das AddOn als JSON-String.
+     * @return bool true bei Erfolg oder false bei Fehler.
+     */
+    public function ExecuteAddonExWait(string $AddonId, string $Params)
+    {
+        if (!is_string($AddonId)) {
+            trigger_error('AddonId must be string', E_USER_NOTICE);
+            return false;
+        }
+        if (!is_string($Params)) {
+            trigger_error('Params must be string', E_USER_NOTICE);
+            return false;
+        }
+        $param = json_decode($Params, true);
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'params' => $param, 'wait' => true]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $ret === 'OK';
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_GetAddonDetails'. Liefert alle Details zu einem Addon.
+     *
+     * @access public
+     * @param string $AddonId Addon welches gelesen werden soll.
+     * @return array|bool Array mit den Eigenschaften des Addon oder false bei Fehler.
+     */
+    public function GetAddonDetails(string $AddonId)
+    {
+        if (!is_string($AddonId)) {
+            trigger_error('AddonId must be string', E_USER_NOTICE);
+            return false;
+        }
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetAddonDetails(['addonid' => $AddonId, 'properties' => static::$AddOnItemList]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $KodiData->ToArray($ret->addon);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_GetAddons'. Liefert Informationen zu allen Addons.
+     *
+     * @access public
+     * @return array|bool Array mit den Eigenschaften der Addons oder false bei Fehler.
+     */
+    public function GetAddons()
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetAddons(['properties' => static::$AddOnItemList]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+
+        if ($ret->limits->total > 0) {
+            return $KodiData->ToArray($ret->addons);
+        }
+        return [];
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_SetAddonEnabled'. Liefert alle Details eines Verzeichnisses.
+     *
+     * @access public
+     * @param string $AddonId Addon welches aktiviert/deaktiviert werden soll.
+     * @param bool $Value True zum aktivieren, false zum deaktivieren des Addon.
+     * @return bool true bei Erfolg oder false bei Fehler.
+     */
+    public function SetAddonEnabled(string $AddonId, bool $Value)
+    {
+        if (!is_string($AddonId)) {
+            trigger_error('AddonId must be string', E_USER_NOTICE);
+            return false;
+        }
+        if (!is_bool($Value)) {
+            trigger_error('Value must be boolean', E_USER_NOTICE);
+            return false;
+        }
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
+        $ret = $this->Send($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $ret === 'OK';
+    }
+
     ################## PRIVATE
     /**
      * Wird ausgeführt wenn sich der Status vom Parent ändert.
@@ -159,6 +359,58 @@ class KodiDeviceAddons extends KodiBase
     }
 
     /**
+     * Filter die Liste der Addons.
+     *
+     * @param array $Addon Array aller Addons
+     * @return boolean True für behalten, False für verwerfen.
+     */
+    protected function FilterAddons($Addon)
+    {
+        if (($Addon['type'] == 'xbmc.python.pluginsource') || ($Addon['type'] == 'xbmc.python.script')) {
+            return true;
+        }
+        return false;
+    }
+
+    ################## PUBLIC
+    /**
+     * Verarbeitet Daten aus dem Webhook.
+     *
+     * @access protected
+     * @global array $_GET
+     */
+    protected function ProcessHookdata()
+    {
+        if (!((isset($_GET['Addonid'])) && (isset($_GET['Action'])))) {
+            $this->SendDebug('illegal HOOK', $_GET, 0);
+            echo 'Illegal hook';
+            return;
+        }
+
+        switch ($_GET['Action']) {
+            case 'Execute':
+                if ($this->ExecuteAddon($_GET['Addonid']) === true) {
+                    echo 'OK';
+                }
+                break;
+            case 'Enable':
+                if ($this->EnableAddon($_GET['Addonid'], true) === true) {
+                    echo 'OK';
+                }
+                break;
+            case 'Disable':
+                if ($this->EnableAddon($_GET['Addonid'], false) === true) {
+                    echo 'OK';
+                }
+                break;
+            default:
+                $this->SendDebug('illegal HOOK', $_GET, 0);
+                echo 'Illegal hook';
+                break;
+        }
+    }
+
+    /**
      * Erzeugt aus der Liste der Addons eine HTML-Tabelle für eine ~HTMLBox-Variable.
      *
      * @access private
@@ -178,7 +430,7 @@ class KodiDeviceAddons extends KodiBase
 
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
-        if (($Config === false) or (!is_array($Config))) {
+        if (($Config === false) || (!is_array($Config))) {
             trigger_error('Error on read Addonlistconfig-Script');
             return;
         }
@@ -201,7 +453,7 @@ class KodiDeviceAddons extends KodiBase
                     } //$key is not a string
                 }
                 if (array_key_exists('Thumbnail', $Config['Spalten'])) {
-                    if ($Line['Thumbnail'] <> '') {
+                    if ($Line['Thumbnail'] != '') {
                         $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger('ThumbSize'), 0);
                         if ($CoverRAW === false) {
                             $Line['Thumbnail'] = '';
@@ -210,7 +462,7 @@ class KodiDeviceAddons extends KodiBase
                         }
                     }
                 }
-                if ((array_key_exists('Fanart', $Config['Spalten'])) and ($Line['Fanart'] <> '')) {
+                if ((array_key_exists('Fanart', $Config['Spalten'])) && ($Line['Fanart'] != '')) {
                     $CoverRAW = $this->GetThumbnail($Line['Fanart'], $this->ReadPropertyInteger('ThumbSize'), 0);
                     if ($CoverRAW === false) {
                         $Line['Fanart'] = '';
@@ -219,8 +471,8 @@ class KodiDeviceAddons extends KodiBase
                     }
                 }
 
-                $Line['Enabled'] = $Line['Enabled'] == true ? '<div class="dodisabled" ' . $this->GetWebHookLink($Line['Addonid'], "Disable") . '>Aus</div><div class="isenabled" ' . $this->GetWebHookLink($Line['Addonid'], "Enable") . '>An</div>' : '<div class="isdisabled" ' . $this->GetWebHookLink($Line['Addonid'], "Disable") . '>Aus</div><div class="doenabled" ' . $this->GetWebHookLink($Line['Addonid'], "Enable") . '>An</div>';
-                $Line['Execute'] = '<div class="execute" ' . $this->GetWebHookLink($Line['Addonid'], "Execute") . '>Ausführen</div>';
+                $Line['Enabled'] = $Line['Enabled'] == true ? '<div class="dodisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable') . '>Aus</div><div class="isenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable') . '>An</div>' : '<div class="isdisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable') . '>Aus</div><div class="doenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable') . '>An</div>';
+                $Line['Execute'] = '<div class="execute" ' . $this->GetWebHookLink($Line['Addonid'], 'Execute') . '>Ausführen</div>';
 
                 $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '">';
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
@@ -254,20 +506,6 @@ class KodiDeviceAddons extends KodiBase
     {
         //return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
         return 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
-    }
-
-    /**
-     * Filter die Liste der Addons.
-     *
-     * @param array $Addon Array aller Addons
-     * @return boolean True für behalten, False für verwerfen.
-     */
-    protected function FilterAddons($Addon)
-    {
-        if (($Addon['type'] == 'xbmc.python.pluginsource') or ($Addon['type'] == 'xbmc.python.script')) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -556,244 +794,6 @@ vertical-align: middle;",
 echo serialize($Config);
 ';
         return $Script;
-    }
-
-    ################## PUBLIC
-    /**
-     * Verarbeitet Daten aus dem Webhook.
-     *
-     * @access protected
-     * @global array $_GET
-     */
-    protected function ProcessHookdata()
-    {
-        if (!((isset($_GET['Addonid'])) and (isset($_GET['Action'])))) {
-            $this->SendDebug('illegal HOOK', $_GET, 0);
-            echo 'Illegal hook';
-            return;
-        }
-
-        switch ($_GET['Action']) {
-            case 'Execute':
-                if ($this->ExecuteAddon($_GET['Addonid']) === true) {
-                    echo 'OK';
-                }
-                break;
-            case 'Enable':
-                if ($this->EnableAddon($_GET['Addonid'], true) === true) {
-                    echo 'OK';
-                }
-                break;
-            case 'Disable':
-                if ($this->EnableAddon($_GET['Addonid'], false) === true) {
-                    echo 'OK';
-                }
-                break;
-            default:
-                $this->SendDebug('illegal HOOK', $_GET, 0);
-                echo 'Illegal hook';
-                break;
-        }
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_EnableAddon'. Aktiviert / Deaktiviert ein Addon
-     *
-     * @access public
-     * @param string $AddonId Das zu aktivirende / deaktivierende Addon.
-     * @return bool true bei Erfolg oder false bei Fehler.
-     */
-    public function EnableAddon(string $AddonId, bool $Value)
-    {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
-
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        $this->RefreshAddonlist();
-        return ($ret === 'OK');
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_ExecuteAddon'. Startet ein Addon
-     *
-     * @access public
-     * @param string $AddonId Das zu startenden Addon.
-     * @return bool true bei Erfolg oder false bei Fehler.
-     */
-    public function ExecuteAddon(string $AddonId)
-    {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAddon(['addonid' => $AddonId]);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        return ($ret === 'OK');
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_ExecuteAddonWait'. Startet ein Addon und wartet auf die Ausführung.
-     *
-     * @access public
-     * @param string $AddonId Das zu startenden Addon.
-     * @return bool true bei Erfolg oder false bei Fehler.
-     */
-    public function ExecuteAddonWait(string $AddonId)
-    {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'wait' => true]);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        return ($ret === 'OK');
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_ExecuteAddonEx'. Startet ein Addon mit Parametern.
-     *
-     * @access public
-     * @param string $AddonId Das zu startenden Addon.
-     * @param string $Params Die zu übergebenden Parameter an das AddOn als JSON-String.
-     * @return bool true bei Erfolg oder false bei Fehler.
-     */
-    public function ExecuteAddonEx(string $AddonId, string $Params)
-    {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($Params)) {
-            trigger_error('Params must be string', E_USER_NOTICE);
-            return false;
-        }
-        $param = json_decode($Params, true);
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'params' => $param]);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        return ($ret === 'OK');
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_ExecuteAddonExWait'. Startet ein Addon mit Parametern und wartet auf die Ausführung.
-     *
-     * @access public
-     * @param string $AddonId Das zu startenden Addon.
-     * @param string $Params Die zu übergebenden Parameter an das AddOn als JSON-String.
-     * @return bool true bei Erfolg oder false bei Fehler.
-     */
-    public function ExecuteAddonExWait(string $AddonId, string $Params)
-    {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($Params)) {
-            trigger_error('Params must be string', E_USER_NOTICE);
-            return false;
-        }
-        $param = json_decode($Params, true);
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->ExecuteAddon(['addonid' => $AddonId, 'params' => $param, 'wait' => true]);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        return ($ret === 'OK');
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_GetAddonDetails'. Liefert alle Details zu einem Addon.
-     *
-     * @access public
-     * @param string $AddonId Addon welches gelesen werden soll.
-     * @return array|bool Array mit den Eigenschaften des Addon oder false bei Fehler.
-     */
-    public function GetAddonDetails(string $AddonId)
-    {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetAddonDetails(['addonid' => $AddonId, 'properties' => static::$AddOnItemList]);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        return $KodiData->ToArray($ret->addon);
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_GetAddons'. Liefert Informationen zu allen Addons.
-     *
-     * @access public
-     * @return array|bool Array mit den Eigenschaften der Addons oder false bei Fehler.
-     */
-    public function GetAddons()
-    {
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetAddons(['properties' => static::$AddOnItemList]);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-
-        if ($ret->limits->total > 0) {
-            return $KodiData->ToArray($ret->addons);
-        }
-        return [];
-    }
-
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_SetAddonEnabled'. Liefert alle Details eines Verzeichnisses.
-     *
-     * @access public
-     * @param string $AddonId Addon welches aktiviert/deaktiviert werden soll.
-     * @param bool $Value True zum aktivieren, false zum deaktivieren des Addon.
-     * @return bool true bei Erfolg oder false bei Fehler.
-     */
-    public function SetAddonEnabled(string $AddonId, bool $Value)
-    {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
-        $ret = $this->Send($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        return ($ret === 'OK');
     }
 }
 

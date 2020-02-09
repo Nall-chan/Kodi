@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @version       2.10
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDeviceGUI Klasse für den Namespace GUI der KODI-API.
@@ -112,46 +112,6 @@ class KodiDeviceGUI extends KodiBase
         }
 
         parent::ApplyChanges();
-    }
-
-    ################## PRIVATE
-    /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
-     *
-     * @access protected
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-    protected function Decode($Method, $KodiPayload)
-    {
-        switch ($Method) {
-            case 'GetProperties':
-                foreach ($KodiPayload as $param => $value) {
-                    switch ($param) {
-                        case 'currentcontrol':
-                            $this->SetValueString('currentcontrol', $value->label);
-                            break;
-                        case 'currentwindow':
-                            $this->SetValueString('currentwindow', $value->label);
-                            $this->SetValueInteger('_currentwindowid', $value->id);
-                            break;
-                        case 'fullscreen':
-                            $this->SetValueBoolean('fullscreen', $value);
-                            break;
-                        case 'skin':
-                            $this->SetValueString('skin', $value->name);
-                            $this->SetValueString('_skinid', $value->id);
-                            break;
-                    }
-                }
-                break;
-            case 'OnScreensaverDeactivated':
-                $this->SetValueBoolean('screensaver', false);
-                break;
-            case 'OnScreensaverActivated':
-                $this->SetValueBoolean('screensaver', true);
-                break;
-        }
     }
 
     ################## ActionHandler
@@ -282,6 +242,46 @@ class KodiDeviceGUI extends KodiBase
     public function RequestState(string $Ident)
     {
         return parent::RequestState($Ident);
+    }
+
+    ################## PRIVATE
+    /**
+     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     *
+     * @access protected
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
+    protected function Decode($Method, $KodiPayload)
+    {
+        switch ($Method) {
+            case 'GetProperties':
+                foreach ($KodiPayload as $param => $value) {
+                    switch ($param) {
+                        case 'currentcontrol':
+                            $this->SetValueString('currentcontrol', $value->label);
+                            break;
+                        case 'currentwindow':
+                            $this->SetValueString('currentwindow', $value->label);
+                            $this->SetValueInteger('_currentwindowid', $value->id);
+                            break;
+                        case 'fullscreen':
+                            $this->SetValueBoolean('fullscreen', $value);
+                            break;
+                        case 'skin':
+                            $this->SetValueString('skin', $value->name);
+                            $this->SetValueString('_skinid', $value->id);
+                            break;
+                    }
+                }
+                break;
+            case 'OnScreensaverDeactivated':
+                $this->SetValueBoolean('screensaver', false);
+                break;
+            case 'OnScreensaverActivated':
+                $this->SetValueBoolean('screensaver', true);
+                break;
+        }
     }
 }
 

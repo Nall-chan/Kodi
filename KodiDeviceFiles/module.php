@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * @addtogroup kodi
@@ -14,8 +14,7 @@ declare(strict_types = 1);
  * @version       2.10
  *
  */
-require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
-
+require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
  * KodiDeviceFiles Klasse für den Namespace Files der KODI-API.
@@ -31,7 +30,6 @@ require_once(__DIR__ . '/../libs/KodiClass.php');  // diverse Klassen
  */
 class KodiDeviceFiles extends KodiBase
 {
-
     /**
      * RPC-Namespace
      *
@@ -149,21 +147,7 @@ class KodiDeviceFiles extends KodiBase
         'file',
         'disc',
         'albumlabel',
-       ];
-
-    ################## PRIVATE
-
-    /**
-     * Keine Funktion.
-     *
-     * @access protected
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-    protected function Decode($Method, $KodiPayload)
-    {
-        return;
-    }
+    ];
 
     ################## PUBLIC
 
@@ -298,6 +282,20 @@ class KodiDeviceFiles extends KodiBase
             return $KodiData->ToArray($ret->files);
         }
         return [];
+    }
+
+    ################## PRIVATE
+
+    /**
+     * Keine Funktion.
+     *
+     * @access protected
+     * @param string $Method RPC-Funktion ohne Namespace
+     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
+     */
+    protected function Decode($Method, $KodiPayload)
+    {
+        return;
     }
 }
 
