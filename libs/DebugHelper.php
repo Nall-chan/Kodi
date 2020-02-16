@@ -11,7 +11,7 @@ namespace KodiBase;
  * @package       generic
  * @file          DebugHelper.php
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2018 Michael Tröger
+ * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       5.0
  */
@@ -27,7 +27,7 @@ trait DebugHelper
      *
      * @access protected
      * @param string $Message Nachricht für Data.
-     * @param Kodi_RPC_Data|KodiRPCException|mixed $Data Daten für die Ausgabe.
+     * @param \Kodi_RPC_Data|\KodiRPCException|mixed $Data Daten für die Ausgabe.
      * @return int $Format Ausgabeformat für Strings.
      */
     protected function SendDebug($Message, $Data, $Format)
@@ -35,10 +35,10 @@ trait DebugHelper
         if (is_a($Data, 'Kodi_RPC_Data')) {
             parent::SendDebug($Message . ' Method', $Data->Namespace . '.' . $Data->Method, 0);
             switch ($Data->Typ) {
-                case Kodi_RPC_Data::$EventTyp:
+                case \Kodi_RPC_Data::$EventTyp:
                     $this->SendDebug($Message . ' Event', $Data->GetEvent(), 0);
                     break;
-                case Kodi_RPC_Data::$ResultTyp:
+                case \Kodi_RPC_Data::$ResultTyp:
                     $this->SendDebug($Message . ' Result', $Data->GetResult(), 0);
                     break;
                 default:

@@ -1,5 +1,5 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version 2.10](https://img.shields.io/badge/Modul%20Version-2.10-blue.svg)]()
+[![Version 2.10](https://img.shields.io/badge/Modul%20Version-2.16-blue.svg)]()
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
 [![Check Style](https://github.com/Nall-chan/IPSKodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/IPSKodi/actions) 
@@ -9,46 +9,36 @@
 
 Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
-## Dokumentation
+## Dokumentation <!-- omit in toc -->
 
 **Inhaltsverzeichnis**
 
-- [IPSKodi](#ipskodi)
-  - [Dokumentation](#dokumentation)
-  - [1. Funktionsumfang](#1-funktionsumfang)
-  - [2. Voraussetzungen](#2-voraussetzungen)
-  - [3. Installation](#3-installation)
-  - [4. Vorbereitungen](#4-vorbereitungen)
-  - [5. Einrichten der Instanzen in IPS](#5-einrichten-der-instanzen-in-ips)
-  - [6. Funktionen der Instanzen](#6-funktionen-der-instanzen)
-  - [!Application WebFront](#application-webfront)
-  - [!AudioLibrary WebFront](#audiolibrary-webfront)
-  - [!Favourites WebFront](#favourites-webfront)
-  - [!GUI WebFront](#gui-webfront)
-  - [!Input WebFront](#input-webfront)
-  - [!Video Playlist WebFront](#video-playlist-webfront)
-  - [!PVR WebFront](#pvr-webfront)
-  - [!System WebFront](#system-webfront)
-  - [!VideoLibrary WebFront](#videolibrary-webfront)
-  - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
-    - [1. Kodi Addons](#1-kodi-addons)
-    - [2. Kodi Anwendung](#2-kodi-anwendung)
-    - [3. Kodi Audio Datenbank](#3-kodi-audio-datenbank)
-    - [4. Kodi Favoriten](#4-kodi-favoriten)
-    - [5. Kodi Files](#5-kodi-files)
-    - [6. Kodi GUI](#6-kodi-gui)
-    - [7. Kodi Input](#7-kodi-input)
-    - [8. Kodi Player](#8-kodi-player)
-    - [9. Kodi Playlist](#9-kodi-playlist)
-    - [10. Kodi PVR](#10-kodi-pvr)
-    - [11. Kodi System](#11-kodi-system)
-    - [12. Kodi Video Datenbank](#12-kodi-video-datenbank)
-    - [13. Kodi Splitter](#13-kodi-splitter)
-  - [8. Parameter / Modul-Infos](#8-parameter--modul-infos)
-  - [9. Tips & Tricks](#9-tips--tricks)
-  - [10. Anhang](#10-anhang)
-  - [11. Spenden](#11-spenden)
-  - [12. Lizenz](#12-lizenz)
+- [1. Funktionsumfang](#1-funktionsumfang)
+- [2. Voraussetzungen](#2-voraussetzungen)
+- [3. Installation](#3-installation)
+- [4. Vorbereitungen](#4-vorbereitungen)
+- [5. Einrichten der Instanzen in IPS](#5-einrichten-der-instanzen-in-ips)
+- [6. Funktionen der Instanzen](#6-funktionen-der-instanzen)
+- [!AudioLibrary WebFront](#audiolibrary-webfront)
+- [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+  - [1. Kodi Addons](#1-kodi-addons)
+  - [2. Kodi Anwendung](#2-kodi-anwendung)
+  - [3. Kodi Audio Datenbank](#3-kodi-audio-datenbank)
+  - [4. Kodi Favoriten](#4-kodi-favoriten)
+  - [5. Kodi Files](#5-kodi-files)
+  - [6. Kodi GUI](#6-kodi-gui)
+  - [7. Kodi Input](#7-kodi-input)
+  - [8. Kodi Player](#8-kodi-player)
+  - [9. Kodi Playlist](#9-kodi-playlist)
+  - [10. Kodi PVR](#10-kodi-pvr)
+  - [11. Kodi System](#11-kodi-system)
+  - [12. Kodi Video Datenbank](#12-kodi-video-datenbank)
+  - [13. Kodi Splitter](#13-kodi-splitter)
+- [8. Parameter / Modul-Infos](#8-parameter--modul-infos)
+- [9. Tips & Tricks](#9-tips--tricks)
+- [10. Anhang](#10-anhang)
+- [11. Spenden](#11-spenden)
+- [12. Lizenz](#12-lizenz)
 
 ## 1. Funktionsumfang
 
@@ -68,9 +58,8 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
 ## 3. Installation
 
-**IPS 5.0:**  
-   Bei privater Nutzung: Über das Modul-Control folgende URL hinzufügen.  
-   `git://github.com/Nall-chan/IPSKodi.git`  
+   Bei privater Nutzung:  
+   * Über den Module Store das 'ONVIF'-Modul installieren.
 
    **Bei kommerzieller Nutzung (z.B. als Errichter oder Integrator) wenden Sie sich bitte an den Autor.**  
 
@@ -112,7 +101,7 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
   ![Addon](docs/Addon.png)  
   ![Addon WebFront](docs/Addon_WF.png)  
 
----
+---  
 
  **Kodi Anwendung (KodiDeviceApplication):**  
  RPC-Namensraum : Application
@@ -124,7 +113,8 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
  Version der Software   - Lesen und visualisieren.  
   ![Application](docs/Application.png)  
   ![Application WebFront](docs/Application_WF.png)  
----
+
+---  
 
  **Kodi Audio Datenbank (KodiDeviceAudioLibrary):**
  RPC-Namensraum : AudioLibrary
@@ -145,6 +135,7 @@ Das Setzen von Daten in der Datenbank ist nicht möglich!
 
   ![Favourites](docs/Favourites.png)  
   ![Favourites WebFront](docs/Favourites_WF.png)  
+
 ---
 
  **Kodi Files (KodiDeviceFiles):**
@@ -170,6 +161,7 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
 [Kodi Website - Window IDs] (http://kodi.wiki/view/Window_IDs)  
   ![GUI](docs/GUI.png)  
   ![GUI WebFront](docs/GUI_WF.png)  
+
 ---
 
  **Kodi Input (KodiDeviceInput):**  
@@ -180,6 +172,7 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
 
   ![Input](docs/Input.png)  
   ![Input WebFront](docs/Input_WF.png)  
+
 ---
 
  **Kodi Playerstatus (KodiDevicePlayer):**  
@@ -210,6 +203,7 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
   ![Audio Playlist WebFront](docs/AudioPlaylist_WF.png)  
   ![Picture Playlist WebFront](docs/PicturePlaylist_WF.png)    
   ![Video Playlist WebFront](docs/VideoPlaylist_WF.png)  
+
 ---
 
  **Kodi PVR (KodiDevicePVR):**  
@@ -223,7 +217,8 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Timer              - Lesen  
   ![PVR](docs/PVR.png)  
   ![PVR WebFront](docs/PVR_WF.png)  
- ---
+
+---
 
  **Kodi System (KodiDeviceSystem):**  
  RPC-Namensraum : System  
@@ -231,7 +226,8 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Systemzustand  - Starten, Beenden, Status visualisieren.  
  Optisches LW   - Auswerfen  
   ![System](docs/System.png)  
-  ![System WebFront](docs/System_WF.png) 
+  ![System WebFront](docs/System_WF.png)  
+
 ---
 
  **Kodi VideoLibrary (KodiDeviceVideoLibrary):**  
@@ -245,6 +241,7 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
 Das Setzen von Daten in der Datenbank ist nicht möglich!  
   ![VideoLibrary](docs/VideoLib.png)  
   ![VideoLibrary WebFront](docs/VideoLib_WF.png)  
+
 ---
 
  **Kodi Splitter (KodiSplitter):**  
@@ -1895,6 +1892,9 @@ Eigenschaften von KodiSplitter:
 ## 10. Anhang
 
 **Changlog:**
+
+Version 2.16:  
+  - Fix: Fehler im Debug-Ausgabe behoben.  
 
 Version 2.15:  
   - Fix: Splitter verlor die Verbindung, wenn Kodi mehr als 256kB Daten sendet. Daten dieser größe werden jetzt verworfen.  
