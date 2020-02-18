@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.15
+ * @version       2.17
  *
  */
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -29,7 +29,7 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.15
+ * @version       2.17
  * @property array $ReplyJSONData
  * @property string $BufferIN
  * @property string $Host
@@ -344,6 +344,7 @@ class KodiSplitter extends IPSModule
             // Rest vom Stream wieder in den Empfangsbuffer schieben
             $tail = array_pop($JSONLine);
             if (strlen($tail) > 256 * 1024) { //Drop large Paket
+                $this->SendDebug('Skip date over 265kB', '', 0);
                 $this->LogMessage('Kodi-RPC server send date over 265kB', KL_DEBUG);
                 $tail = '';
             }
@@ -353,10 +354,12 @@ class KodiSplitter extends IPSModule
         }
 
         // Pakete verarbeiten
-        foreach ($JSONLine as $JSON) {
+        foreach ($JSONLine as $i => $JSON) {
             $KodiData = new Kodi_RPC_Data();
             if (!$KodiData->CreateFromJSONString($JSON)) {
-                $this->SendDebug('Skip error on receive', $JSON, 0);
+                if (($i != 0) || ($JSON[0] != '{')) {
+                    $this->SendDebug('Skip error on receive', $JSON, 0);
+                }
                 continue;
             }
             if ($KodiData->Typ == Kodi_RPC_Data::$ResultTyp) { // Reply
@@ -369,6 +372,10 @@ class KodiSplitter extends IPSModule
                     continue;
                 }
             } elseif ($KodiData->Typ == Kodi_RPC_Data::$EventTyp) { // Event
+                if ($KodiData->Namespace == 'Other'){
+                    //skip
+                    continue;
+                }
                 $this->SendDebug('Receive Event', $KodiData, 0);
 //                if (($KodiData->Namespace == 'System') and ( $KodiData->Method == 'OnQuit'))
 //                    $this->Decode($KodiData->Method, $KodiData->GetEvent());

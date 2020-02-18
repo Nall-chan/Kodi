@@ -1,5 +1,5 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version 2.10](https://img.shields.io/badge/Modul%20Version-2.16-blue.svg)]()
+[![Version 2.10](https://img.shields.io/badge/Modul%20Version-2.17-blue.svg)]()
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
 [![Check Style](https://github.com/Nall-chan/IPSKodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/IPSKodi/actions) 
@@ -1892,6 +1892,11 @@ Eigenschaften von KodiSplitter:
 ## 10. Anhang
 
 **Changlog:**
+
+Version 2.17:  
+  - Fix: Fehlermeldung im Debug wenn Splitter mehr als 256Kb Daten hat.  
+  - Fix: RPC-Funktionen mit 'Punkt' im Namen wurden nicht korrekt verarbeitet.  
+  - Fix: RPC-Namespace 'Other' wird ignoriert, dieser liefert keine verwertbaren Daten.  
 
 Version 2.16:  
   - Fix: Fehler im Debug-Ausgabe behoben.  

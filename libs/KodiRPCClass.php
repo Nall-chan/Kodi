@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.17
  * @example <b>Ohne</b>
  */
 
@@ -19,7 +19,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.17
  * @example <b>Ohne</b>
  */
 class KodiRPCException extends Exception
@@ -37,7 +37,7 @@ class KodiRPCException extends Exception
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2016 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       1.0
+ * @version       2.17
  * @example <b>Ohne</b>
  *
  * @method null ExecuteAddon
@@ -399,8 +399,8 @@ class Kodi_RPC_Data extends stdClass
         }
         if (property_exists($Json, 'method')) {
             $part = explode('.', $Json->method);
-            $this->Namespace = $part[0];
-            $this->Method = $part[1];
+            $this->Namespace = array_shift($part);
+            $this->Method = implode('.',$part);
         }
         if (property_exists($Json, 'params')) {
             $this->Params = $this->DecodeUTF8($Json->params);
