@@ -256,7 +256,7 @@ class KodiDeviceAudioLibrary extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error start cleaning', E_USER_NOTICE);
+        trigger_error($this->Translate('Error start cleaning'), E_USER_NOTICE);
         return false;
     }
 
@@ -538,7 +538,7 @@ class KodiDeviceAudioLibrary extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error start scanning', E_USER_NOTICE);
+        trigger_error($this->Translate('Error start scanning'), E_USER_NOTICE);
         return false;
     }
 

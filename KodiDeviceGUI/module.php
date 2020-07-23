@@ -99,7 +99,7 @@ class KodiDeviceGUI extends KodiBase
         }
 
         if ($this->ReadPropertyBoolean('showFullscreen')) {
-            $this->RegisterVariableBoolean('fullscreen', $this->Translate('Fullscreen'), '~Switch', 3);
+            $this->RegisterVariableBoolean('fullscreen', $this->Translate('Full screen'), '~Switch', 3);
             $this->EnableAction('fullscreen');
         } else {
             $this->UnregisterVariable('fullscreen');
@@ -161,7 +161,7 @@ class KodiDeviceGUI extends KodiBase
         if ($ret === $Value) {
             return true;
         }
-        trigger_error('Error set fullscreen.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error set full screen mode.'), E_USER_NOTICE);
         return false;
     }
 

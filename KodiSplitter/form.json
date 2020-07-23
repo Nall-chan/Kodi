@@ -33,29 +33,39 @@
             "caption": "Active"
         },
         {
-            "name": "Username",
-            "type": "ValidationTextBox",
-            "caption": "Username"
-        },
-        {
-            "name": "Password",
-            "type": "PasswordTextBox",
-            "caption": "Password"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "name": "Username",
+                    "type": "ValidationTextBox",
+                    "caption": "Username"
+                },
+                {
+                    "name": "Password",
+                    "type": "PasswordTextBox",
+                    "caption": "Password"
+                }
+            ]
         },
         {
             "type": "Label",
             "caption": "Advanced power watchdog with ping request"
         },
         {
-            "name": "Watchdog",
-            "type": "CheckBox",
-            "caption": "Enabled"
-        },
-        {
-            "name": "Interval",
-            "type": "NumberSpinner",
-            "caption": "Interval",
-            "suffix": "seconds"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "name": "Watchdog",
+                    "type": "CheckBox",
+                    "caption": "Enabled"
+                },
+                {
+                    "name": "Interval",
+                    "type": "NumberSpinner",
+                    "caption": "Interval",
+                    "suffix": "seconds"
+                }
+            ]
         }
     ],
     "status": [

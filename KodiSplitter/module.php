@@ -235,7 +235,7 @@ class KodiSplitter extends IPSModule
         $CoverRAW = $this->DoWebserverRequest('/image/' . rawurlencode($path));
 
         if ($CoverRAW === false) {
-            trigger_error('Error on load image from Kodi.', E_USER_NOTICE);
+            trigger_error($this->Translate('Error on load image from Kodi.'), E_USER_NOTICE);
         }
         return $CoverRAW;
     }
@@ -372,7 +372,7 @@ class KodiSplitter extends IPSModule
                     continue;
                 }
             } elseif ($KodiData->Typ == Kodi_RPC_Data::$EventTyp) { // Event
-                if ($KodiData->Namespace == 'Other'){
+                if ($KodiData->Namespace == 'Other') {
                     //skip
                     continue;
                 }

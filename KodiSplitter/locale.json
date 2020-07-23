@@ -18,7 +18,8 @@
             "Interface closed.": "Interface geschlossen.",
             "Host or port is empty.": "Adresse und Port darf nicht leer sein.",
             "Could not connect RPC-Server.": "Keine Verbindung zum RPC-Server.",
-            "Could not connect to webserver.": "Keine Verbindung zum Webserver"
+            "Could not connect to webserver.": "Keine Verbindung zum Webserver",
+            "Error on load image from Kodi.":"Fehler beim laden des Bild von Kodi,"
         }
     }
 }

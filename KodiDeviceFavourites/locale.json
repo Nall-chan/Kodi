@@ -1,12 +1,13 @@
 {
     "translations": {
         "de": {
-            "Show HTML-Box for favourites": "Favoriten als HTML-Box anlegen",
+            "Show HTML-Box for favorites": "Favoriten als HTML-Box anlegen",
             "Script for HTML-Box Desgin:": "Script für HTML-Box Aussehen:",
             "Script:": "Script:",
-            "Favorites":"Favoriten",
-            "Size (width) for favourites thumbnails:": "Größe (Breite) für Vorschaubilder der Favoriten:",
-            "Thumbnail width": "Breite der Vorschau"
+            "Favorites": "Favoriten",
+            "Size (width) for favorites thumbnails:": "Größe (Breite) für Vorschaubilder der Favoriten:",
+            "Thumbnail width": "Breite der Vorschau",
+            "Error on read Favlistconfig-Script": "Fehler beim leser des Favlistconfig-Script"
         }
     }
 }

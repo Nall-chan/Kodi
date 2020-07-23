@@ -10,17 +10,12 @@
             "Show Variable for needed input": "Status-Variable für 'Eingabe erwartet' anlegen",
             "Show Action-Variable for text input": "Aktions-Variable für 'Texteingabe' anlegen",
             "Remote": "Fernsteuerung",
+            "Back": "Zurück",
+            "Menu": "Menü",
             "Control": "Steuerung",
-            "Input expected":"Eingabe erwartet",
-            "Send input":"Eingabe senden",
-            "up": "Hoch",
-            "down": "Runter",
-            "left": "Links",
-            "right": "Rechts",
-            "select": "Auswahl",
-            "back": "Zurück",
-            "Menu":"Menü",
-            "Contexmenu": "Context-Menü"
+            "Input expected": "Eingabe erwartet",
+            "Send input": "Eingabe senden",
+            "Error on execute action.": "Fehler beim ausführen der Aktion."
         }
     }
 }

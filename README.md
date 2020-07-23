@@ -1899,6 +1899,8 @@ Version 3.00:
   - Neu: Übersetzungen der Statusvariablen.  
   - Neu: Profile nutzen englische Namen.  
   - Neu: Übersetzungen der Profile.  
+  - Fix: Fehlende Übersetzungen der Konfiguration ergänzt.
+  - Neu: Übersetzungen der Fehlermeldungen.  
 
 Version 2.17:  
   - Fix: Fehlermeldung im Debug wenn Splitter mehr als 256Kb Daten hat.  

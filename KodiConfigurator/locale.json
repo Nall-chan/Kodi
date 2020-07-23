@@ -3,6 +3,7 @@
         "de": {
             "PVR": "PVR",
             "Type": "Typ",
+            "Location": "Lokation",
             "Application": "Anwendung",
             "Favourites": "Favoriten",
             "Audio Library": "Audio Datenbank",
@@ -19,7 +20,6 @@
             "Video Playlist": "Video Playlist",
             "Picture Playlist": "Bilder Playlist",
             "Not connected to Splitter.": "Nicht mit einem Splitter verbunden.",
-            "Location": "Lokation",
             "Instance has no active parent.": "Instanz hat keinen aktiven Parent."
         }
     }

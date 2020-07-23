@@ -865,7 +865,7 @@ class KodiDevicePlayer extends KodiBase
         }
 
         if (!$this->isActive) {
-            trigger_error('Player not active', E_USER_NOTICE);
+            trigger_error($this->Translate('Player not active'), E_USER_NOTICE);
             return false;
         }
         if ($Value == -1) {
@@ -877,7 +877,7 @@ class KodiDevicePlayer extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on set audiostream.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set audiostream.'), E_USER_NOTICE);
         return false;
     }
 
@@ -907,7 +907,7 @@ class KodiDevicePlayer extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on set audiostream.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set audiostream.'), E_USER_NOTICE);
         return false;
     }
 
@@ -922,7 +922,7 @@ class KodiDevicePlayer extends KodiBase
     {
         if (!$this->isActive) {
             if (!$this->LoadPlaylist()) {
-                trigger_error('Error on send play.', E_USER_NOTICE);
+                trigger_error($this->Translate('Error on send play.'), E_USER_NOTICE);
                 return false;
             }
             return;
@@ -938,7 +938,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueInteger('Status', 2);
             return true;
         }
-        trigger_error('Error on send play.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on send play.'), E_USER_NOTICE);
         return false;
     }
 
@@ -952,7 +952,7 @@ class KodiDevicePlayer extends KodiBase
     public function Pause()
     {
         if (!$this->isActive) {
-            trigger_error('Player not active', E_USER_NOTICE);
+            trigger_error($this->Translate('Player not active'), E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -965,7 +965,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueInteger('Status', 3);
             return true;
         }
-        trigger_error('Error on send pause.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on send pause.'), E_USER_NOTICE);
         return false;
     }
 
@@ -979,7 +979,7 @@ class KodiDevicePlayer extends KodiBase
     public function Stop()
     {
         if (!$this->isActive) {
-            trigger_error('Player not active', E_USER_NOTICE);
+            trigger_error($this->Translate('Player not active'), E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -992,7 +992,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueInteger('Status', 1);
             return true;
         }
-        trigger_error('Error on send stop.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on send stop.'), E_USER_NOTICE);
         return false;
     }
 
@@ -1061,7 +1061,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueBoolean('shuffled', $Value);
             return true;
         }
-        trigger_error('Error on set shuffle.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set shuffle.'), E_USER_NOTICE);
         return false;
     }
 
@@ -1096,7 +1096,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueInteger('repeat', $Value);
             return true;
         }
-        trigger_error('Error on set repeat.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set repeat.'), E_USER_NOTICE);
         return false;
     }
 
@@ -1125,7 +1125,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueBoolean('partymode', $Value);
             return true;
         }
-        trigger_error('Error on set partymode.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set partymode.'), E_USER_NOTICE);
         return false;
     }
 
@@ -1153,12 +1153,12 @@ class KodiDevicePlayer extends KodiBase
         }
 
         if (!$this->isActive) {
-            trigger_error('Player not active', E_USER_NOTICE);
+            trigger_error($this->Translate('Player not active'), E_USER_NOTICE);
             return false;
         }
 
         if (!in_array($Value, [-32, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 32])) {
-            trigger_error('Invalid Value for speed.', E_USER_NOTICE);
+            trigger_error($this->Translate('Invalid Value for speed.'), E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -1171,7 +1171,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueInteger('speed', $Value);
             return true;
         }
-        trigger_error('Error on set speed.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set speed.'), E_USER_NOTICE);
         return false;
     }
 
@@ -1195,7 +1195,7 @@ class KodiDevicePlayer extends KodiBase
         }
 
         if (!$this->isActive) {
-            trigger_error('Player not active', E_USER_NOTICE);
+            trigger_error($this->Translate('Player not active'), E_USER_NOTICE);
             return false;
         }
 
@@ -1210,7 +1210,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueInteger('percentage', $Value);
             return true;
         }
-        trigger_error('Error on set Position.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set Position.'), E_USER_NOTICE);
         return false;
     }
 
@@ -1807,7 +1807,7 @@ class KodiDevicePlayer extends KodiBase
     private function GoToValue($Value)
     {
         if (!$this->isActive) {
-            trigger_error('Player not active', E_USER_NOTICE);
+            trigger_error($this->Translate('Player not active'), E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -1819,7 +1819,7 @@ class KodiDevicePlayer extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on send ' . $Value . '.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on send ') . $Value . '.', E_USER_NOTICE);
         return false;
     }
 
@@ -1840,7 +1840,7 @@ class KodiDevicePlayer extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on load ' . $ItemTyp . '.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on load ') . $ItemTyp . '.', E_USER_NOTICE);
         return false;
     }
 

@@ -331,7 +331,7 @@ class KodiDeviceFavourites extends KodiBase
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
         if (($Config === false) || (!is_array($Config))) {
-            trigger_error('Error on read Favlistconfig-Script');
+            trigger_error($this->Translate('Error on read Favlistconfig-Script'));
             return;
         }
         $AllFavs = $this->GetFavourites('all');

@@ -8,7 +8,14 @@
             "Show playlist as HTML-Box": "Playlist als HTML-Box anlegen",
             "Script for HTML-Box Desgin:": "Script für HTML-Box Aussehen:",
             "Script:": "Script:",
-            "Playlist position":"Playlist Position"
+            "Playlist position": "Playlist Position",
+            "Error on jump to track.": "Fehler beim springen zum Track.",
+            "Error on clear playlist.": "Fehler beim leeren der Playlist.",
+            "Error on remove item.": "Fehler beim entfernen des Eintrags.",
+            "Error on swap items.": "Fehler beim Tauschen von Einträgen.",
+            "Error on read Playlistconfig-Script.": "Fehler beim lesen des Playlistconfig-Script.",
+            "Error on add ": "Fehler beim hinzufügen von ",
+            "Error on insert ": "Fehler beim Einfügen von "
         }
     }
 }

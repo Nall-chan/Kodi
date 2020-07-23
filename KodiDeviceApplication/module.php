@@ -152,7 +152,7 @@ class KodiDeviceApplication extends KodiBase
         if ($ret === $Value) {
             return true;
         }
-        trigger_error('Error on set mute.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set mute.'), E_USER_NOTICE);
         return false;
     }
 
@@ -179,7 +179,7 @@ class KodiDeviceApplication extends KodiBase
         if ($ret === $Value) {
             return true;
         }
-        trigger_error('Error on set volume.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on set volume.'), E_USER_NOTICE);
         return false;
     }
 
@@ -200,7 +200,7 @@ class KodiDeviceApplication extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on quit Kodi.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on quit Kodi.'), E_USER_NOTICE);
         return false;
     }
 

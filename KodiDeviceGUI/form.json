@@ -18,7 +18,7 @@
         {
             "name": "showFullscreen",
             "type": "CheckBox",
-            "caption": "Show variable for fullscreen mode"
+            "caption": "Show variable for full screen mode"
         },
         {
             "name": "showScreensaver",

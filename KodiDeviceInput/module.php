@@ -324,7 +324,7 @@ class KodiDeviceInput extends KodiBase
                 [3, '^', '', -1],
                 [4, 'v', '', -1],
                 [5, 'OK', '', -1],
-                [6, $this->Translate('back'), '', -1],
+                [6, $this->Translate('Back'), '', -1],
                 [7, 'Home', '', -1]
             ]);
             $this->RegisterVariableInteger('navremote', 'Navigation', 'Navigation.Kodi', 2);
@@ -440,7 +440,7 @@ class KodiDeviceInput extends KodiBase
                 return;
         }
         if (!$ret) {
-            trigger_error('Error on execute action.', E_USER_NOTICE);
+            trigger_error($this->Translate('Error on execute action.'), E_USER_NOTICE);
         }
     }
 

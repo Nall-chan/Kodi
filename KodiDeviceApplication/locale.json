@@ -4,13 +4,16 @@
             "Show variable for systemname": "Status-Variable für Namen anlegen",
             "Show variable for version": "Status-Variable für Version anlegen",
             "Show Action-Variable for exit Kodi": "Aktions-Variable für Kodi beenden anlegen",
-            "Quit Kodi":"Kodi beenden",
-            "Mute":"Stumm",
+            "Quit Kodi": "Kodi beenden",
+            "Mute": "Stumm",
             "Mute on": "Stumm Ein",
             "Mute off": "Stumm Aus",
             "Volume:": "Lautstärke:",
-            "Execute":"Ausführen",
-            "Request all states": "Status lesen"
+            "Execute": "Ausführen",
+            "Request all states": "Status lesen",
+            "Error on set mute.": "Fehler beim Stummschalten.",
+            "Error on set volume.": "Fehler beim setzen der Lautstärke.",
+            "Error on quit Kodi.": "Fehler beim verlassen von Kodi."
         }
     }
 }

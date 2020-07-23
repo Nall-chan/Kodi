@@ -187,9 +187,9 @@ class KodiDeviceSystem extends KodiBase
                 $this->SetValueBoolean('Power', true);
                 return true;
             }
-            trigger_error('Error on execute PowerOn-Script.', E_USER_NOTICE);
+            trigger_error($this->Translate('Error on execute PowerOn-Script.'), E_USER_NOTICE);
         } else {
-            trigger_error('Invalid PowerScript for power on.', E_USER_NOTICE);
+            trigger_error($this->Translate('Invalid PowerScript for power on.'), E_USER_NOTICE);
         }
         return false;
     }
@@ -212,7 +212,7 @@ class KodiDeviceSystem extends KodiBase
             $this->SetValueBoolean('Power', false);
             return true;
         }
-        trigger_error('Error on send shutdown', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on send shutdown'), E_USER_NOTICE);
         return false;
     }
 
@@ -234,7 +234,7 @@ class KodiDeviceSystem extends KodiBase
             $this->SetValueBoolean('Power', false);
             return true;
         }
-        trigger_error('Error on send hibernate', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on send hibernate'), E_USER_NOTICE);
         return false;
     }
 
@@ -256,7 +256,7 @@ class KodiDeviceSystem extends KodiBase
             $this->SetValueBoolean('Power', false);
             return true;
         }
-        trigger_error('Error on send suspend', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on send suspend'), E_USER_NOTICE);
         return false;
     }
 
@@ -278,7 +278,7 @@ class KodiDeviceSystem extends KodiBase
             $this->SetValueBoolean('Power', false);
             return true;
         }
-        trigger_error('Error on send reboot', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on send reboot'), E_USER_NOTICE);
         return false;
     }
 
@@ -299,7 +299,7 @@ class KodiDeviceSystem extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on eject optical drive', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on eject optical drive'), E_USER_NOTICE);
         return false;
     }
 

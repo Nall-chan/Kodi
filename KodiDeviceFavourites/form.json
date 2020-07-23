@@ -3,7 +3,7 @@
         {
             "name": "showFavlist",
             "type": "CheckBox",
-            "caption": "Show HTML-Box for favourites"
+            "caption": "Show HTML-Box for favorites"
         },
         {
             "type": "Label",
@@ -16,7 +16,7 @@
         },
         {
             "type": "Label",
-            "caption": "Size (width) for favourites thumbnails:"
+            "caption": "Size (width) for favorites thumbnails:"
         },
         {
             "name": "ThumbSize",

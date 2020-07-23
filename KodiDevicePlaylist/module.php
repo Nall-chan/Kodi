@@ -294,7 +294,7 @@ class KodiDevicePlaylist extends KodiBase
                 if ($ret === 'OK') {
                     return true;
                 }
-                return trigger_error('Error on GoTo Track.', E_USER_NOTICE);
+                return trigger_error($this->Translate('Error on jump to track.'), E_USER_NOTICE);
             default:
                 return trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
@@ -530,7 +530,7 @@ class KodiDevicePlaylist extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on clear playlist.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on clear playlist.'), E_USER_NOTICE);
         return false;
     }
 
@@ -747,7 +747,7 @@ class KodiDevicePlaylist extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on remove item.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on remove item.'), E_USER_NOTICE);
         return false;
     }
 
@@ -777,7 +777,7 @@ class KodiDevicePlaylist extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on swap items.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on swap items.'), E_USER_NOTICE);
         return false;
     }
 
@@ -1026,7 +1026,7 @@ class KodiDevicePlaylist extends KodiBase
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = unserialize($result);
         if (($Config === false) || (!is_array($Config))) {
-            trigger_error('Error on read Playlistconfig-Script', E_USER_NOTICE);
+            trigger_error($this->Translate('Error on read Playlistconfig-Script.'), E_USER_NOTICE);
             return;
         }
 
@@ -1307,7 +1307,7 @@ echo serialize($Config);
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on add ' . $ItemTyp . '.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on add ') . $ItemTyp . '.', E_USER_NOTICE);
         return false;
     }
 
@@ -1335,7 +1335,7 @@ echo serialize($Config);
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error on insert ' . $ItemTyp . '.', E_USER_NOTICE);
+        trigger_error($this->Translate('Error on insert ') . $ItemTyp . '.', E_USER_NOTICE);
         return false;
     }
 }

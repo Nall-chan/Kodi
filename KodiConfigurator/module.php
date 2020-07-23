@@ -108,7 +108,7 @@ class KodiConfigurator extends IPSModule
                 'popup' => [
                     'items' => [[
                         'type'    => 'Label',
-                        'caption' => 'Not connected to Splitter.'
+                        'caption' => $this->Translate('Not connected to Splitter.')
                     ]]
                 ]
             ];
@@ -120,7 +120,7 @@ class KodiConfigurator extends IPSModule
                 'popup' => [
                     'items' => [[
                         'type'    => 'Label',
-                        'caption' => 'Instance has no active parent.'
+                        'caption' => $this->Translate('Instance has no active parent.')
                     ]]
                 ]
             ];

@@ -1,15 +1,27 @@
 {
     "translations": {
         "de": {
-            "Show Variable PVR avaiable": "Status-Variable PVR-Verfügbarkeit anlegen",
+            "Statusvariables": "Statusvariablen",
+            "Show Variable PVR available": "Status-Variable PVR-Verfügbarkeit anlegen",
             "Show Variable for active recording": "Status-Variable Aufzeichnung aktiv anlegen",
             "Show Action-Variable for control recording": "Aktions-Variable zum steuern einer Aufzeichnung anlegen",
             "Show Variable for searching channels": "Status-Variable für aktive Kanalsuche anlegen",
             "Show Action-Variable for serach channels": "Aktions-Variable zum starten einer Kanalsuche anlegen",
-            "Record start:": "Aufnahme starten:",
-            "Record stop": "Aufnahme stoppen",
-            "Search channels": "Kanalsuche",
-            "Available": "Verfügbar",
+            "Show HTML-Box for TV channels": "TV Kanäle als HTML-Box anlegen.",
+            "Max TV channels to be displayed:": "Maximale Anzahl der TV-Kanäle welche angezeigt werden.",
+            "Channels": "Kanäle",
+            "Script for TV HTML-Box Desgin:": "Script für TV HTML-Box Aussehen:",
+            "Size (width) for TV thumbnails:": "Größe (Breite) für Vorschaubilder der TV-Kanäle:",
+            "Thumbnail width": "Breite der Vorschau",
+            "Show HTML-Box for radio channels": "Radiokanäle als HTML-Box anlegen.",
+            "Max radio channels to be displayed:": "Maximale Anzahl der Radiokanäle welche angezeigt werden.",
+            "Script for radio HTML-Box Desgin:": "Script für Radio HTML-Box Aussehen:",
+            "Size (width) for radio thumbnails:": "Größe (Breite) für Vorschaubilder der Radiokanäle:",
+            "Show HTML-Box for recordings": "Aufnahmen als HTML-Box anlegen.",
+            "Max recordings to be displayed:": "Maximale Anzahl der Aufnahmen welche angezeigt werden.",
+            "Script for recording HTML-Box Desgin:": "Script für Aufnahmen HTML-Box Aussehen:",
+            "Size (width) for recording thumbnails:": "Größe (Breite) für Vorschaubilder der Aufnahmen:",
+            "Execute": "Ausführen",
             "Recording is in progress": "Aufnahme läuft",
             "Recording current channel": "Aufnahme aktueller Kanal",
             "Channel search active": "Kanalsuche aktiv",
@@ -17,8 +29,14 @@
             "TV channels": "TV Kanäle",
             "Radio channels": "Radio Kanäle",
             "Recordings": "Aufzeichnungen",
-            "Execute": "Ausführen",
-            "Request all states": "Status lesen"
+            "Available": "Verfügbar",
+            "Request all states": "Status lesen",
+            "Error start scan": "Fehler beim starten der Suche.",
+            "Error start recording": "Fehler beim starten der Aufnahme.",
+            "ChannelTyp must be \"tv\" or \"radio\".": "ChannelTyp muss \"tv\" oder \"radio\" sein.",
+            "Error on read TV Channelistconfig-Script": "Fehler beim lesen des Channelistconfig-Script",
+            "Error on read Radiolistconfig-Script": "Fehler beim lesen des Radiolistconfig-Script",
+            "Error on read Recordinglistconfig-Script": "Fehler beim lesen des Recordinglistconfig-Script"
         }
     }
 }

@@ -431,7 +431,7 @@ class KodiDeviceAddons extends KodiBase
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
         if (($Config === false) || (!is_array($Config))) {
-            trigger_error('Error on read Addonlistconfig-Script');
+            trigger_error($this->Translate('Error on read Addonlistconfig-Script'));
             return;
         }
         $AllAddons = $this->GetAddons();

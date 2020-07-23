@@ -237,7 +237,7 @@ class KodiDevicePVR extends KodiBase
             [0, $this->Translate('Execute'), '', -1]
         ]);
         if ($this->ReadPropertyBoolean('showIsAvailable')) {
-            $this->RegisterVariableBoolean('available', 'Available', '', 1);
+            $this->RegisterVariableBoolean('available', $this->Translate('Available'), '', 1);
         } else {
             $this->UnregisterVariable('available');
         }
@@ -440,7 +440,7 @@ class KodiDevicePVR extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error start scan', E_USER_NOTICE);
+        trigger_error($this->Translate('Error start scan.'), E_USER_NOTICE);
         return false;
     }
 
@@ -463,7 +463,7 @@ class KodiDevicePVR extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        trigger_error('Error start recording', E_USER_NOTICE);
+        trigger_error($this->Translate('Error start recording.'), E_USER_NOTICE);
         return false;
     }
 
@@ -477,7 +477,7 @@ class KodiDevicePVR extends KodiBase
     public function GetChannels(string $ChannelTyp)
     {
         if (!in_array($ChannelTyp, ['radio', 'tv'])) {
-            trigger_error('ChannelTyp must "tv" or "radio".', E_USER_NOTICE);
+            trigger_error($this->Translate('ChannelTyp must be "tv" or "radio".'), E_USER_NOTICE);
             return false;
         }
 
@@ -526,7 +526,7 @@ class KodiDevicePVR extends KodiBase
     public function GetChannelGroups(string $ChannelTyp)
     {
         if (!in_array($ChannelTyp, ['radio', 'tv'])) {
-            trigger_error('ChannelTyp must "tv" or "radio".', E_USER_NOTICE);
+            trigger_error($this->Translate('ChannelTyp must be "tv" or "radio".'), E_USER_NOTICE);
             return false;
         }
 
@@ -797,7 +797,7 @@ class KodiDevicePVR extends KodiBase
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
         if (($Config === false) || (!is_array($Config))) {
-            trigger_error('Error on read TV Channelistconfig-Script');
+            trigger_error($this->Translate('Error on read TV Channelistconfig-Script'));
             return;
         }
 
@@ -915,7 +915,7 @@ class KodiDevicePVR extends KodiBase
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
         if (($Config === false) || (!is_array($Config))) {
-            trigger_error('Error on read radio Channelistconfig-Script');
+            trigger_error($this->Translate('Error on read radio Channelistconfig-Script'));
             return;
         }
 
@@ -1033,7 +1033,7 @@ class KodiDevicePVR extends KodiBase
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
         if (($Config === false) || (!is_array($Config))) {
-            trigger_error('Error on read Recordinglistconfig-Script');
+            trigger_error($this->Translate('Error on read Recordinglistconfig-Script'));
             return;
         }
 

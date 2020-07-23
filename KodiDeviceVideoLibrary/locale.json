@@ -11,7 +11,9 @@
             "Database cleanup in progress": "Bereinigung der Datenbank läuft",
             "Scan": "Scannen",
             "Execute": "Ausführen",
-            "Clean": "Bereinigen"
+            "Clean": "Bereinigen",
+            "Error start cleaning": "Fehler beim Starten der Bereinigung",
+            "Error start scanning": "Fehler beim starten der Aktualisierung"
         }
     }
 }

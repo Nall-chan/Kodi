@@ -1,125 +1,208 @@
 {
     "elements": [
         {
-            "name": "showIsAvailable",
-            "type": "CheckBox",
-            "caption": "Show Variable PVR avaiable"
+            "type": "ExpansionPanel",
+            "caption": "Statusvariables",
+            "expanded": false,
+            "items": [
+                {
+                    "name": "showIsAvailable",
+                    "type": "CheckBox",
+                    "caption": "Show Variable PVR available"
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "name": "showIsRecording",
+                            "type": "CheckBox",
+                            "caption": "Show Variable for active recording"
+                        },
+                        {
+                            "name": "showDoRecording",
+                            "type": "CheckBox",
+                            "caption": "Show Action-Variable for control recording"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "name": "showIsScanning",
+                            "type": "CheckBox",
+                            "caption": "Show Variable for searching channels"
+                        },
+                        {
+                            "name": "showDoScanning",
+                            "type": "CheckBox",
+                            "caption": "Show Action-Variable for serach channels"
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "name": "showIsRecording",
-            "type": "CheckBox",
-            "caption": "Show Variable for active recording"
+            "type": "ExpansionPanel",
+            "caption": "TV channels",
+            "expanded": false,
+            "items": [
+                {
+                    "name": "showTVChannellist",
+                    "type": "CheckBox",
+                    "caption": "Show HTML-Box for TV channels"
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Max TV channels to be displayed:"
+                        },
+                        {
+                            "name": "showMaxTVChannels",
+                            "type": "NumberSpinner",
+                            "caption": "Channels"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Script for TV HTML-Box Desgin:"
+                        },
+                        {
+                            "name": "TVChannellistconfig",
+                            "type": "SelectScript",
+                            "caption": "Script:"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Size (width) for TV thumbnails:"
+                        },
+                        {
+                            "name": "TVThumbSize",
+                            "type": "NumberSpinner",
+                            "caption": "Thumbnail width"
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "name": "showDoRecording",
-            "type": "CheckBox",
-            "caption": "Show Action-Variable for control recording"
+            "type": "ExpansionPanel",
+            "caption": "Radio channels",
+            "expanded": false,
+            "items": [
+                {
+                    "name": "showRadioChannellist",
+                    "type": "CheckBox",
+                    "caption": "Show HTML-Box for radio channels"
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Max radio channels to be displayed:"
+                        },
+                        {
+                            "name": "showMaxRadioChannels",
+                            "type": "NumberSpinner",
+                            "caption": "Channels"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Script for radio HTML-Box Desgin:"
+                        },
+                        {
+                            "name": "RadioChannellistconfig",
+                            "type": "SelectScript",
+                            "caption": "Script:"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Size (width) for radio thumbnails:"
+                        },
+                        {
+                            "name": "RadioThumbSize",
+                            "type": "NumberSpinner",
+                            "caption": "Thumbnail width"
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "name": "showIsScanning",
-            "type": "CheckBox",
-            "caption": "Show Variable for searching channels"
-        },
-        {
-            "name": "showDoScanning",
-            "type": "CheckBox",
-            "caption": "Show Action-Variable for serach channels"
-        },
-        {
-            "name": "showTVChannellist",
-            "type": "CheckBox",
-            "caption": "Show HTML-Box for TV channels"
-        },
-        {
-            "type": "Label",
-            "caption": "Max TV channels to be displayed:"
-        },
-        {
-            "name": "showMaxTVChannels",
-            "type": "NumberSpinner",
-            "caption": "Channels"
-        },
-        {
-            "type": "Label",
-            "caption": "Script for TV HTML-Box Desgin:"
-        },
-        {
-            "name": "TVChannellistconfig",
-            "type": "SelectScript",
-            "caption": "Script:"
-        },
-        {
-            "type": "Label",
-            "caption": "Size (width) for TV thumbnails:"
-        },
-        {
-            "name": "TVThumbSize",
-            "type": "NumberSpinner",
-            "caption": "Thumbnail width"
-        },
-        {
-            "name": "showRadioChannellist",
-            "type": "CheckBox",
-            "caption": "Show HTML-Box for radio channels"
-        },
-        {
-            "type": "Label",
-            "caption": "Max radio channels to be displayed:"
-        },
-        {
-            "name": "showMaxRadioChannels",
-            "type": "NumberSpinner",
-            "caption": "Channels"
-        },
-        {
-            "type": "Label",
-            "caption": "Script for radio HTML-Box Desgin:"
-        },
-        {
-            "name": "RadioChannellistconfig",
-            "type": "SelectScript",
-            "caption": "Script:"
-        },
-        {
-            "type": "Label",
-            "caption": "Size (width) for radio thumbnails:"
-        },
-        {
-            "name": "RadioThumbSize",
-            "type": "NumberSpinner",
-            "caption": "Thumbnail width"
-        },
-        {
-            "name": "showRecordinglist",
-            "type": "CheckBox",
-            "caption": "Show HTML-Box for recordings"
-        },
-        {
-            "type": "Label",
-            "caption": "Max recordings to be displayed:"
-        },
-        {
-            "name": "showMaxRecording",
-            "type": "NumberSpinner",
-            "caption": "Recordings"
-        },
-        {
-            "type": "Label",
-            "caption": "Script for recording HTML-Box Desgin:"
-        },
-        {
-            "name": "Recordinglistconfig",
-            "type": "SelectScript",
-            "caption": "Script:"
-        },
-        {
-            "type": "Label",
-            "caption": "Size (width) for recording thumbnails:"
-        },
-        {
-            "name": "RecordingThumbSize",
-            "type": "NumberSpinner",
-            "caption": "Thumbnail width"
+            "type": "ExpansionPanel",
+            "caption": "Recordings",
+            "expanded": false,
+            "items": [
+                {
+                    "name": "showRecordinglist",
+                    "type": "CheckBox",
+                    "caption": "Show HTML-Box for recordings"
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Max recordings to be displayed:"
+                        },
+                        {
+                            "name": "showMaxRecording",
+                            "type": "NumberSpinner",
+                            "caption": "Recordings"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Script for recording HTML-Box Desgin:"
+                        },
+                        {
+                            "name": "Recordinglistconfig",
+                            "type": "SelectScript",
+                            "caption": "Script:"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Label",
+                            "caption": "Size (width) for recording thumbnails:"
+                        },
+                        {
+                            "name": "RecordingThumbSize",
+                            "type": "NumberSpinner",
+                            "caption": "Thumbnail width"
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "actions": [
