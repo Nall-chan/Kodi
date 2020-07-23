@@ -9,6 +9,14 @@
             "Record start:": "Aufnahme starten:",
             "Record stop": "Aufnahme stoppen",
             "Search channels": "Kanalsuche",
+            "Available": "Verfügbar",
+            "Recording is in progress": "Aufnahme läuft",
+            "Recording current channel": "Aufnahme aktueller Kanal",
+            "Channel search active": "Kanalsuche aktiv",
+            "Start channel search": "Kanalsuche starten",
+            "TV channels": "TV Kanäle",
+            "Radio channels": "Radio Kanäle",
+            "Recordings": "Aufzeichnungen",
             "Request all states": "Status lesen"
         }
     }

@@ -75,8 +75,8 @@ class KodiDeviceGUI extends KodiBase
     public function ApplyChanges()
     {
         if ($this->ReadPropertyBoolean('showCurrentWindow')) {
-            $this->RegisterVariableString('currentwindow', 'Aktuelles Fenster', '', 0);
-            $this->RegisterVariableInteger('_currentwindowid', 'Aktuelles Fenster (id)', '', 0);
+            $this->RegisterVariableString('currentwindow', $this->Translate('Current window'), '', 0);
+            $this->RegisterVariableInteger('_currentwindowid', $this->Translate('Current window (id)'), '', 0);
             IPS_SetHidden($this->GetIDForIdent('_currentwindowid'), true);
         } else {
             $this->UnregisterVariable('currentwindow');
@@ -84,14 +84,14 @@ class KodiDeviceGUI extends KodiBase
         }
 
         if ($this->ReadPropertyBoolean('showCurrentControl')) {
-            $this->RegisterVariableString('currentcontrol', 'Aktuelles Control', '', 1);
+            $this->RegisterVariableString('currentcontrol', $this->Translate('Current control'), '', 1);
         } else {
             $this->UnregisterVariable('currentcontrol');
         }
 
         if ($this->ReadPropertyBoolean('showSkin')) {
-            $this->RegisterVariableString('skin', 'Aktuelles Skin', '', 2);
-            $this->RegisterVariableString('_skinid', 'Aktuelles Skin (id)', '', 2);
+            $this->RegisterVariableString('skin', $this->Translate('Current skin'), '', 2);
+            $this->RegisterVariableString('_skinid', $this->Translate('Current skin (id)'), '', 2);
             IPS_SetHidden($this->GetIDForIdent('_skinid'), true);
         } else {
             $this->UnregisterVariable('skin');
@@ -99,14 +99,14 @@ class KodiDeviceGUI extends KodiBase
         }
 
         if ($this->ReadPropertyBoolean('showFullscreen')) {
-            $this->RegisterVariableBoolean('fullscreen', 'Vollbild', '~Switch', 3);
+            $this->RegisterVariableBoolean('fullscreen', $this->Translate('Fullscreen'), '~Switch', 3);
             $this->EnableAction('fullscreen');
         } else {
             $this->UnregisterVariable('fullscreen');
         }
 
         if ($this->ReadPropertyBoolean('showScreensaver')) {
-            $this->RegisterVariableBoolean('screensaver', 'Bildschirmschoner', '~Switch', 4);
+            $this->RegisterVariableBoolean('screensaver', $this->Translate('Screensaver'), '~Switch', 4);
         } else {
             $this->UnregisterVariable('screensaver');
         }

@@ -237,32 +237,32 @@ class KodiDevicePVR extends KodiBase
             [0, 'Ausführen', '', -1]
         ]);
         if ($this->ReadPropertyBoolean('showIsAvailable')) {
-            $this->RegisterVariableBoolean('available', 'Verfügbar', '', 1);
+            $this->RegisterVariableBoolean('available', 'Available', '', 1);
         } else {
             $this->UnregisterVariable('available');
         }
 
         if ($this->ReadPropertyBoolean('showIsRecording')) {
-            $this->RegisterVariableBoolean('recording', 'Aufnahme läuft', '', 3);
+            $this->RegisterVariableBoolean('recording', $this->Translate('Recording is in progress'), '', 3);
         } else {
             $this->UnregisterVariable('recording');
         }
 
         if ($this->ReadPropertyBoolean('showDoRecording')) {
-            $this->RegisterVariableBoolean('record', 'Aufnahme aktueller Kanal', '~Switch', 4);
+            $this->RegisterVariableBoolean('record', $this->Translate('Recording current channel'), '~Switch', 4);
             $this->EnableAction('record');
         } else {
             $this->UnregisterVariable('record');
         }
 
         if ($this->ReadPropertyBoolean('showIsScanning')) {
-            $this->RegisterVariableBoolean('scanning', 'Kanalsuche aktiv', '', 5);
+            $this->RegisterVariableBoolean('scanning', $this->Translate('Channel search active'), '', 5);
         } else {
             $this->UnregisterVariable('scanning');
         }
 
         if ($this->ReadPropertyBoolean('showDoScanning')) {
-            $this->RegisterVariableInteger('scan', 'Kanalsuche starten', 'Action.Kodi', 6);
+            $this->RegisterVariableInteger('scan', $this->Translate('Start channel search'), 'Action.Kodi', 6);
             $this->EnableAction('scan');
         } else {
             $this->UnregisterVariable('scan');
@@ -273,7 +273,7 @@ class KodiDevicePVR extends KodiBase
         $this->UnregisterScript('WebHookRecordinglist');
 
         if ($this->ReadPropertyBoolean('showTVChannellist')) {
-            $this->RegisterVariableString('TVChannellist', 'TV Kanäle', '~HTMLBox', 1);
+            $this->RegisterVariableString('TVChannellist', $this->Translate('TV channels'), '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
             }
@@ -291,7 +291,7 @@ class KodiDevicePVR extends KodiBase
         }
 
         if ($this->ReadPropertyBoolean('showRadioChannellist')) {
-            $this->RegisterVariableString('RadioChannellist', 'Radio Kanäle', '~HTMLBox', 1);
+            $this->RegisterVariableString('RadioChannellist', $this->Translate('Radio channels'), '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
             }
@@ -309,7 +309,7 @@ class KodiDevicePVR extends KodiBase
         }
 
         if ($this->ReadPropertyBoolean('showRecordinglist')) {
-            $this->RegisterVariableString('Recordinglist', 'Aufzeichnungen', '~HTMLBox', 1);
+            $this->RegisterVariableString('Recordinglist', $this->Translate('Recordings'), '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
             }

@@ -262,7 +262,7 @@ class KodiDevicePlaylist extends KodiBase
 
         $this->RegisterProfileInteger('Tracklist.' . $this->InstanceID . '.Kodi', '', '', '', 1, 1, 1);
 
-        $this->RegisterVariableInteger('position', 'Playlist Position', 'Tracklist.' . $this->InstanceID . '.Kodi', 1);
+        $this->RegisterVariableInteger('position', $this->Translate('Playlist position'), 'Tracklist.' . $this->InstanceID . '.Kodi', 1);
         $this->EnableAction('position');
         $this->Multi_Playlist = [];
         $this->LastAddonItem = 0;

@@ -187,27 +187,27 @@ class KodiDeviceAudioLibrary extends KodiBase
         ]);
 
         if ($this->ReadPropertyBoolean('showDoScan')) {
-            $this->RegisterVariableInteger('doscan', 'Suche nach neuen / veränderten Inhalten', 'Action.Kodi', 1);
+            $this->RegisterVariableInteger('doscan', $this->Translate('Search for new / changed content'), 'Action.Kodi', 1);
             $this->EnableAction('doscan');
         } else {
             $this->UnregisterVariable('doscan');
         }
 
         if ($this->ReadPropertyBoolean('showScan')) {
-            $this->RegisterVariableBoolean('scan', 'Datenbanksuche läuft', '~Switch', 2);
+            $this->RegisterVariableBoolean('scan', $this->Translate('Database search in progress'), '~Switch', 2);
         } else {
             $this->UnregisterVariable('scan');
         }
 
         if ($this->ReadPropertyBoolean('showDoClean')) {
-            $this->RegisterVariableInteger('doclean', 'Bereinigen der Datenbank', 'Action.Kodi', 3);
+            $this->RegisterVariableInteger('doclean', $this->Translate('Clean up the database'), 'Action.Kodi', 3);
             $this->EnableAction('doclean');
         } else {
             $this->UnregisterVariable('doclean');
         }
 
         if ($this->ReadPropertyBoolean('showClean')) {
-            $this->RegisterVariableBoolean('clean', 'Bereinigung der Datenbank läuft', '~Switch', 4);
+            $this->RegisterVariableBoolean('clean', $this->Translate('Database cleanup in progress'), '~Switch', 4);
         } else {
             $this->UnregisterVariable('clean');
         }

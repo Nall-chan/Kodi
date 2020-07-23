@@ -337,14 +337,14 @@ class KodiDevicePlayer extends KodiBase
                 $this->RegisterVariableInteger('disc', 'Disc', '', 17);
                 $this->RegisterVariableString('artist', 'Artist', '', 20);
                 $this->RegisterVariableString('lyrics', 'Lyrics', '', 30);
-                $this->RegisterVariableBoolean('partymode', 'Partymodus', '~Switch', 13);
+                $this->RegisterVariableBoolean('partymode', $this->Translate('Partymode'), '~Switch', 13);
                 $this->EnableAction('partymode');
-                $this->RegisterVariableInteger('repeat', 'Wiederholen', 'Repeat.Kodi', 11);
+                $this->RegisterVariableInteger('repeat', $this->Translate('Repeat'), 'Repeat.Kodi', 11);
                 $this->EnableAction('repeat');
-                $this->RegisterVariableInteger('year', 'Jahr', '', 19);
+                $this->RegisterVariableInteger('year', $this->Translate('Year'), '', 19);
                 $this->RegisterVariableString('genre', 'Genre', '', 21);
-                $this->RegisterVariableString('duration', 'Dauer', '', 24);
-                $this->RegisterVariableString('time', 'Spielzeit', '', 25);
+                $this->RegisterVariableString('duration', $this->Translate('Duration'), '', 24);
+                $this->RegisterVariableString('time', $this->Translate('Runtime'), '', 25);
                 break;
             case self::Video:
                 $this->UnregisterVariable('album');
@@ -373,26 +373,26 @@ class KodiDevicePlayer extends KodiBase
                 ]);
 
                 $this->RegisterVariableString('showtitle', 'Serie', '', 13);
-                $this->RegisterVariableString('channel', 'Kanal', '', 13);
-                $this->RegisterVariableInteger('season', 'Staffel', '', 15);
+                $this->RegisterVariableString('channel', $this->Translate('Channel'), '', 13);
+                $this->RegisterVariableInteger('season', $this->Translate('Season'), '', 15);
                 $this->RegisterVariableInteger('episode', 'Episode', '', 16);
 
-                $this->RegisterVariableString('plot', 'Handlung', '~TextBox', 19);
-                $this->RegisterVariableInteger('audiostream', 'Audiospur', 'AudioStream.' . $this->InstanceID . '.Kodi', 30);
+                $this->RegisterVariableString('plot', $this->Translate('Plot'), '~TextBox', 19);
+                $this->RegisterVariableInteger('audiostream', $this->Translate('Audiostream'), 'AudioStream.' . $this->InstanceID . '.Kodi', 30);
 
                 $this->RegisterProfileIntegerEx('Subtitels.' . $this->InstanceID . '.Kodi', '', '', '', [
                     [-1, 'Aus', '', -1],
                     [0, 'Extern', '', -1]
                 ]);
-                $this->RegisterVariableInteger('subtitle', 'Aktiver Untertitel', 'Subtitels.' . $this->InstanceID . '.Kodi', 41);
-                $this->RegisterVariableBoolean('partymode', 'Partymodus', '~Switch', 13);
+                $this->RegisterVariableInteger('subtitle', $this->Translate('Active subtitle'), 'Subtitels.' . $this->InstanceID . '.Kodi', 41);
+                $this->RegisterVariableBoolean('partymode', $this->Translate('Partymode'), '~Switch', 13);
                 $this->EnableAction('partymode');
-                $this->RegisterVariableInteger('repeat', 'Wiederholen', 'Repeat.Kodi', 11);
+                $this->RegisterVariableInteger('repeat', $this->Translate('Repeat'), 'Repeat.Kodi', 11);
                 $this->EnableAction('repeat');
-                $this->RegisterVariableInteger('year', 'Jahr', '', 19);
+                $this->RegisterVariableInteger('year', $this->Translate('Year'), '', 19);
                 $this->RegisterVariableString('genre', 'Genre', '', 21);
                 $this->RegisterVariableString('duration', 'Dauer', '', 24);
-                $this->RegisterVariableString('time', 'Spielzeit', '', 25);
+                $this->RegisterVariableString('time', $this->Translate('Runtime'), '', 25);
                 break;
 
             case self::Picture:
@@ -427,13 +427,13 @@ class KodiDevicePlayer extends KodiBase
 
                 break;
         }
-        $this->RegisterVariableBoolean('shuffled', 'Zufall', '~Switch', 12);
+        $this->RegisterVariableBoolean('shuffled', $this->Translate('Shuffle'), '~Switch', 12);
         $this->EnableAction('shuffled');
 
         $this->RegisterVariableString('label', 'Titel', '', 14);
         $this->RegisterVariableInteger('Status', 'Status', 'Status.Kodi', 3);
         $this->EnableAction('Status');
-        $this->RegisterVariableInteger('speed', 'Geschwindigkeit', 'Speed.' . $this->InstanceID . '.Kodi', 10);
+        $this->RegisterVariableInteger('speed', $this->Translate('Speed'), 'Speed.' . $this->InstanceID . '.Kodi', 10);
         $this->RegisterVariableInteger('percentage', 'Position', 'Intensity.Kodi', 26);
         $this->EnableAction('percentage');
 

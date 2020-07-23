@@ -4,8 +4,8 @@
             "Show HTML-Box for Addons": "Addons als HTML-Box anlegen",
             "Script for HTML-Box Desgin:": "Script für HTML-Box Aussehen:",
             "Script:": "Script:",
-            "Size (width) for addon thumnails:": "Größe (Breite) für Vorschaubilder der Addons:",
-            "Thumb width": "Thumb Breite"
+            "Size (width) for addon thumbnails:": "Größe (Breite) für Vorschaubilder der Addons:",
+            "Thumbnail width": "Breite der Vorschau"
         }
     }
 }

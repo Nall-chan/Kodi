@@ -16,12 +16,12 @@
         },
         {
             "type": "Label",
-            "caption": "Size (width) for addon thumnails:"
+            "caption": "Size (width) for addon thumbnails:"
         },
         {
             "name": "ThumbSize",
             "type": "NumberSpinner",
-            "caption": "Thumb width"
+            "caption": "Thumbnail width"
         }
     ],
     "actions": []

@@ -103,7 +103,7 @@ class KodiDeviceFavourites extends KodiBase
         $this->UnregisterScript('WebHookFavlist');
 
         if ($this->ReadPropertyBoolean('showFavlist')) {
-            $this->RegisterVariableString('Favlist', 'Favourites', '~HTMLBox', 1);
+            $this->RegisterVariableString('Favlist', $this->Translate('Favorites'), '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->RegisterHook('/hook/KodiFavlist' . $this->InstanceID);
             }

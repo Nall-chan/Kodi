@@ -7,7 +7,8 @@
             "Pictures": "Bilder",
             "Show playlist as HTML-Box": "Playlist als HTML-Box anlegen",
             "Script for HTML-Box Desgin:": "Script für HTML-Box Aussehen:",
-            "Script:": "Script:"
+            "Script:": "Script:",
+            "Playlist position":"Playlist Position"
         }
     }
 }

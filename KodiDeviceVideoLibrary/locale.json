@@ -5,6 +5,10 @@
             "Show Action-Variable for DB scan": "Aktions-Variable für Starten des Scan anlegen",
             "Show Variable DB cleaning": "Status-Variable Datenbankbereinigung anlegen",
             "Show Action-Variable for DB clean": "Aktions-Variable für Bereinigung anlegen",
+            "Search for new / changed content": "Suche nach neuen / veränderten Inhalten",
+            "Database search in progress": "Datenbanksuche läuft",
+            "Clean up the database": "Bereinigen der Datenbank",
+            "Database cleanup in progress": "Bereinigung der Datenbank läuft",
             "Scan": "Scannen",
             "Clean": "Bereinigen"
         }

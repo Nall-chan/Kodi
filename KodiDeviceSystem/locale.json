@@ -16,7 +16,8 @@
             "Power OFF": "Ausschalten",
             "WakeUp": "Aufwecken",
             "Reboot": "Neustart",
-            "Eject Optical": "Laufwerk öffnen",
+            "Eject optical drive": "Laufwerk öffnen",
+            "Low battery event": "Batterie leer Event",
             "Request all states": "Status lesen"
         }
     }

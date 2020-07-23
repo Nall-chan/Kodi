@@ -12,6 +12,18 @@
             "artist for thumbnail (audio)": "Artist vor Thumbnail (Audio)",
             "poster for banner (video)": "Poster vor Banner (Video)",
             "banner for poster (video)": "Banner vor Poster (Video)",
+            "Partymode":"Partymodus",
+            "Repeat":"Wiederholen",
+            "Year":"Jahr",
+            "Duration":"Dauer",
+            "Runtime":"Spielzeit",
+            "Channel":"Kanal",
+            "Season":"Staffel",
+            "Plot":"Handlung",
+            "Audiostream":"Audiospur",
+            "Active subtitle":"Aktiver Untertitel",
+            "Shuffle":"Zufall",
+            "Speed":"Geschwindigkeit",
             "Request all states": "Status lesen"
         }
     }

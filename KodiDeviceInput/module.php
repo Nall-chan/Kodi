@@ -305,7 +305,7 @@ class KodiDeviceInput extends KodiBase
                 $this->RegisterHook('/hook/KodiRemote' . $this->InstanceID);
             }
             if (@$this->GetIDForIdent('Remote') == false) {
-                $remoteID = $this->RegisterVariableString('Remote', 'Remote', '~HTMLBox', 1);
+                $remoteID = $this->RegisterVariableString('Remote', $this->Translate('Remote'), '~HTMLBox', 1);
                 /* @var $remote string */
                 include 'generateRemote' . ($this->ReadPropertyInteger('RemoteId')) . '.php';
                 SetValueString($remoteID, $remote);
@@ -342,14 +342,14 @@ class KodiDeviceInput extends KodiBase
                 [5, 'Stop', '', -1],
                 [6, '>>', '', -1]
             ]);
-            $this->RegisterVariableInteger('ctrlremote', 'Steuerung', 'Control.Kodi', 3);
+            $this->RegisterVariableInteger('ctrlremote', $this->Translate('Control'), 'Control.Kodi', 3);
             $this->EnableAction('ctrlremote');
         } else {
             $this->UnregisterVariable('ctrlremote');
         }
 
         if ($this->ReadPropertyBoolean('showInputRequested')) {
-            $this->RegisterVariableBoolean('inputrequested', 'Eingabe erwartet', '', 4);
+            $this->RegisterVariableBoolean('inputrequested', $this->Translate('Input expected'), '', 4);
             if (IPS_GetKernelRunlevel() == KR_INIT) {
                 $this->SetValueBoolean('inputrequested', false);
             }
@@ -358,7 +358,7 @@ class KodiDeviceInput extends KodiBase
         }
 
         if ($this->ReadPropertyBoolean('showTextInput')) {
-            $this->RegisterVariableString('inputtext', 'Eingabe senden', '', 5);
+            $this->RegisterVariableString('inputtext', $this->Translate('Send input'), '', 5);
             $this->EnableAction('inputtext');
         } else {
             $this->UnregisterVariable('inputrequested');

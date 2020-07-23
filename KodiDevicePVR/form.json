@@ -50,12 +50,12 @@
         },
         {
             "type": "Label",
-            "caption": "Size (width) for TV thumnails:"
+            "caption": "Size (width) for TV thumbnails:"
         },
         {
             "name": "TVThumbSize",
             "type": "NumberSpinner",
-            "caption": "Thumb width"
+            "caption": "Thumbnail width"
         },
         {
             "name": "showRadioChannellist",
@@ -82,12 +82,12 @@
         },
         {
             "type": "Label",
-            "caption": "Size (width) for radio thumnails:"
+            "caption": "Size (width) for radio thumbnails:"
         },
         {
             "name": "RadioThumbSize",
             "type": "NumberSpinner",
-            "caption": "Thumb width"
+            "caption": "Thumbnail width"
         },
         {
             "name": "showRecordinglist",
@@ -114,12 +114,12 @@
         },
         {
             "type": "Label",
-            "caption": "Size (width) for recording thumnails:"
+            "caption": "Size (width) for recording thumbnails:"
         },
         {
             "name": "RecordingThumbSize",
             "type": "NumberSpinner",
-            "caption": "Thumb width"
+            "caption": "Thumbnail width"
         }
     ],
     "actions": [

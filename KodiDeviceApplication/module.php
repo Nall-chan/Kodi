@@ -88,13 +88,13 @@ class KodiDeviceApplication extends KodiBase
         }
 
         if ($this->ReadPropertyBoolean('showExit')) {
-            $this->RegisterVariableInteger('quit', 'Kodi beenden', 'Action.Kodi', 2);
+            $this->RegisterVariableInteger('quit', $this->Translate('Quit Kodi'), 'Action.Kodi', 2);
             $this->EnableAction('quit');
         } else {
             $this->UnregisterVariable('quit');
         }
 
-        $this->RegisterVariableBoolean('mute', 'Mute', '~Switch', 3);
+        $this->RegisterVariableBoolean('mute', $this->Translate('Mute'), '~Switch', 3);
         $this->EnableAction('mute');
 
         $this->RegisterVariableInteger('volume', 'Volume', '~Intensity.100', 4);

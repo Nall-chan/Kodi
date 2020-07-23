@@ -98,15 +98,15 @@ class KodiDeviceSystem extends KodiBase
         $this->EnableAction('Power');
         $this->RegisterVariableInteger('suspend', 'Standby', 'Action.Kodi', 1);
         $this->EnableAction('suspend');
-        $this->RegisterVariableInteger('hibernate', 'Ruhezustand', 'Action.Kodi', 2);
+        $this->RegisterVariableInteger('hibernate', $this->Translate('Hibernate'), 'Action.Kodi', 2);
         $this->EnableAction('hibernate');
-        $this->RegisterVariableInteger('reboot', 'Neustart', 'Action.Kodi', 3);
+        $this->RegisterVariableInteger('reboot', $this->Translate('Reboot'), 'Action.Kodi', 3);
         $this->EnableAction('reboot');
-        $this->RegisterVariableInteger('shutdown', 'Herunterfahren', 'Action.Kodi', 4);
+        $this->RegisterVariableInteger('shutdown', $this->Translate('Shutdown'), 'Action.Kodi', 4);
         $this->EnableAction('shutdown');
-        $this->RegisterVariableInteger('ejectOpticalDrive', 'Laufwerk öffnen', 'Action.Kodi', 5);
+        $this->RegisterVariableInteger('ejectOpticalDrive', $this->Translate('Eject optical drive'), 'Action.Kodi', 5);
         $this->EnableAction('ejectOpticalDrive');
-        $this->RegisterVariableBoolean('LowBatteryEvent', 'Batterie leer Event', '', 6);
+        $this->RegisterVariableBoolean('LowBatteryEvent', $this->Translate('Low battery event'), '', 6);
         parent::ApplyChanges();
     }
 
