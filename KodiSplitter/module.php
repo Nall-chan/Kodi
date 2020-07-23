@@ -215,12 +215,12 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      */
-    public function GetConfigurationForParent()
+    /*public function GetConfigurationForParent()
     {
         $Config['Port'] = $this->ReadPropertyInteger('Port');
         $Config['Open'] = $this->ReadPropertyBoolean('Open');
         return json_encode($Config);
-    }
+    }*/
 
     ################## PUBLIC
     /**

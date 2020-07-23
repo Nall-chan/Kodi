@@ -55,7 +55,6 @@ class KodiDiscovery extends ipsmodule
         $Values = [];
 
         foreach ($Devices as $IPAddress => $Device) {
-            $InstanceID = array_search($IPAddress, $IPSDevices);
             $AddValue = [
                 'IPAddress'  => $IPAddress,
                 'devicename' => $Device['devicename'],
@@ -63,6 +62,13 @@ class KodiDiscovery extends ipsmodule
                 'version'    => $Device['version'],
                 'instanceID' => 0
             ];
+            $InstanceID = array_search($IPAddress, $IPSDevices);
+            if ($InstanceID === false) {
+                $InstanceID = array_search(strtolower($Device['Host']), $IPSDevices);
+                if ($InstanceID !== false) {
+                    $AddValue['IPAddress'] = $Device['Host'];
+                }
+            }
             if ($InstanceID !== false) {
                 unset($IPSDevices[$InstanceID]);
                 $AddValue['name'] = IPS_GetLocation($InstanceID);
@@ -84,11 +90,6 @@ class KodiDiscovery extends ipsmodule
                     'configuration' => [
                         'Host' => $IPAddress
                     ]
-                    /* [
-                  'Host' => $IPAddress,
-                  'Port' => $Device['port'],
-                  'Open' => true
-                  ] */
                 ]
             ];
             $Values[] = $AddValue;
@@ -103,15 +104,6 @@ class KodiDiscovery extends ipsmodule
                 'instanceID' => $InstanceID
             ];
         }
-
-        /* if (count($Values) > 0) {
-          foreach ($Values as $key => $row) {
-          $SortDevice[$key] = $row['device'];
-          $SortType[$key] = $row['type'];
-          }
-          array_multisort($SortDevice, SORT_ASC, $SortType, SORT_ASC, $Values);
-          } */
-
         $Form['actions'][1]['values'] = $Values;
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
@@ -219,10 +211,11 @@ class KodiDiscovery extends ipsmodule
                 'devicename' => (string) $Xml->device->friendlyName,
                 'version'    => explode(' ', (string) $Xml->device->modelNumber)[0],
                 'WebPort'    => $WebPort,
-                'RPCPort'    => 9090
+                'RPCPort'    => 9090,
+                'Host'       => gethostbyaddr($IPAddress)
             ];
         }
-
+        $this->SendDebug('Found', $Kodi, 0);
         return $Kodi;
     }
 }

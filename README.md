@@ -2,16 +2,14 @@
 [![Version 2.10](https://img.shields.io/badge/Modul%20Version-2.17-blue.svg)]()
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
-[![Check Style](https://github.com/Nall-chan/IPSKodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/IPSKodi/actions) 
-[![Run Tests](https://github.com/Nall-chan/IPSKodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/IPSKodi/actions)  
+[![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions) 
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 
-# IPSKodi
+# Kodi
 
 Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
-## Dokumentation <!-- omit in toc -->
-
-**Inhaltsverzeichnis**
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -19,7 +17,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 - [4. Vorbereitungen](#4-vorbereitungen)
 - [5. Einrichten der Instanzen in IPS](#5-einrichten-der-instanzen-in-ips)
 - [6. Funktionen der Instanzen](#6-funktionen-der-instanzen)
-- [!AudioLibrary WebFront](#audiolibrary-webfront)
+- [!AudioLibrary WebFront](#img-srcdocsaudiolib_wfpng-altaudiolibrary-webfront)
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
   - [1. Kodi Addons](#1-kodi-addons)
   - [2. Kodi Anwendung](#2-kodi-anwendung)
@@ -35,7 +33,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
   - [12. Kodi Video Datenbank](#12-kodi-video-datenbank)
   - [13. Kodi Splitter](#13-kodi-splitter)
 - [8. Parameter / Modul-Infos](#8-parameter--modul-infos)
-- [9. Tips & Tricks](#9-tips--tricks)
+- [9. Tipps & Tricks](#9-tipps--tricks)
 - [10. Anhang](#10-anhang)
 - [11. Spenden](#11-spenden)
 - [12. Lizenz](#12-lizenz)
@@ -1883,7 +1881,7 @@ Eigenschaften von KodiSplitter:
 | Watchdog    | boolean | false        | Mit Ping prüfen bevor versucht wird eine Verbindung aufzubauen |
 | Interval    | integer | 5            | Interval der Ping-Prüfung                                      |
 
-## 9. Tips & Tricks
+## 9. Tipps & Tricks
 
 - ...
 - ...
@@ -1892,6 +1890,10 @@ Eigenschaften von KodiSplitter:
 ## 10. Anhang
 
 **Changlog:**
+
+Version 3.00:
+  - Neu: Discovery kann auch mit Hostnamen umgehen.  
+  - Fix: Links zur Dokumentation korrigiert.  
 
 Version 2.17:  
   - Fix: Fehlermeldung im Debug wenn Splitter mehr als 256Kb Daten hat.  
