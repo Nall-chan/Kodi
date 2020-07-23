@@ -10,6 +10,7 @@
             "Clean up the database": "Bereinigen der Datenbank",
             "Database cleanup in progress": "Bereinigung der Datenbank läuft",
             "Scan": "Scannen",
+            "Execute": "Ausführen",
             "Clean": "Bereinigen"
         }
     }

@@ -73,7 +73,7 @@ class KodiDeviceSystem extends KodiBase
     public function ApplyChanges()
     {
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
-            [0, 'Ausführen', '', -1]
+            [0, $this->Translate('Execute'), '', -1]
         ]);
 
         switch ($this->ReadPropertyInteger('PreSelectScript')) {

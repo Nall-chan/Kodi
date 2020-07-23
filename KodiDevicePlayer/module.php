@@ -291,18 +291,18 @@ class KodiDevicePlayer extends KodiBase
     {
         $this->PlayerId = $this->ReadPropertyInteger('PlayerID');
         $this->RegisterProfileIntegerEx('Repeat.Kodi', '', '', '', [
-            [0, 'Aus', '', -1],
-            [1, 'Titel', '', -1],
+            [0, $this->Translate('Off'), '', -1],
+            [1, $this->Translate('Title'), '', -1],
             [2, 'Playlist', '', -1]
         ]);
 
         $this->RegisterProfileInteger('Intensity.Kodi', 'Intensity', '', ' %', 0, 100, 1);
         $this->RegisterProfileIntegerEx('Status.Kodi', 'Information', '', '', [
-            [0, 'Zurück', '', -1],
+            [0, $this->Translate('Previous'), '', -1],
             [1, 'Stop', '', -1],
             [2, 'Play', '', -1],
             [3, 'Pause', '', -1],
-            [4, 'Weiter', '', -1]
+            [4, $this->Translate('Next'), '', -1]
         ]);
 
         switch ($this->PlayerId) {
@@ -381,7 +381,7 @@ class KodiDevicePlayer extends KodiBase
                 $this->RegisterVariableInteger('audiostream', $this->Translate('Audiostream'), 'AudioStream.' . $this->InstanceID . '.Kodi', 30);
 
                 $this->RegisterProfileIntegerEx('Subtitels.' . $this->InstanceID . '.Kodi', '', '', '', [
-                    [-1, 'Aus', '', -1],
+                    [-1, $this->Translate('Off'), '', -1],
                     [0, 'Extern', '', -1]
                 ]);
                 $this->RegisterVariableInteger('subtitle', $this->Translate('Active subtitle'), 'Subtitels.' . $this->InstanceID . '.Kodi', 41);
@@ -420,9 +420,9 @@ class KodiDevicePlayer extends KodiBase
                 $this->UnregisterVariable('time');
 
                 $this->RegisterProfileIntegerEx('Speed.' . $this->InstanceID . '.Kodi', 'Intensity', '', '', [
-                    [-1, 'Rückwärts', '', -1],
-                    [0, 'Standbild', '', 0x0000FF],
-                    [1, 'Vorwärts', '', 0x00FF00],
+                    [-1, $this->Translate('Back'), '', -1],
+                    [0, 'Pause', '', 0x0000FF],
+                    [1, $this->Translate('Forward'), '', 0x00FF00],
                 ]);
 
                 break;

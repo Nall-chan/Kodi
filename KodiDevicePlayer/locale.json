@@ -24,6 +24,12 @@
             "Active subtitle":"Aktiver Untertitel",
             "Shuffle":"Zufall",
             "Speed":"Geschwindigkeit",
+            "Off":"Aus",
+            "Title":"Titel",
+            "Previous":"Zurück",
+            "Next":"Weiter",
+            "Back":"Rückwärts",
+            "Forward":"Vorwärts",
             "Request all states": "Status lesen"
         }
     }

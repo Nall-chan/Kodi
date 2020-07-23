@@ -324,7 +324,7 @@ class KodiDeviceInput extends KodiBase
                 [3, '^', '', -1],
                 [4, 'v', '', -1],
                 [5, 'OK', '', -1],
-                [6, 'Zurück', '', -1],
+                [6, $this->Translate('back'), '', -1],
                 [7, 'Home', '', -1]
             ]);
             $this->RegisterVariableInteger('navremote', 'Navigation', 'Navigation.Kodi', 2);
@@ -336,7 +336,7 @@ class KodiDeviceInput extends KodiBase
         if ($this->ReadPropertyBoolean('showControlButtons')) {
             $this->RegisterProfileIntegerEx('Control.Kodi', '', '', '', [
                 [1, '<<', '', -1],
-                [2, 'Menü', '', -1],
+                [2, $this->Translate('Menu'), '', -1],
                 [3, 'Play', '', -1],
                 [4, 'Pause', '', -1],
                 [5, 'Stop', '', -1],

@@ -72,7 +72,7 @@ class KodiDeviceApplication extends KodiBase
     public function ApplyChanges()
     {
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
-            [0, 'Ausführen', '', -1]
+            [0, $this->Translate('Execute'), '', -1]
         ]);
 
         if ($this->ReadPropertyBoolean('showName')) {
@@ -218,7 +218,7 @@ class KodiDeviceApplication extends KodiBase
 
     ################## PRIVATE
     /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     * Dekodiert die empfangenen Events und Antworten auf 'GetProperties'.
      *
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.

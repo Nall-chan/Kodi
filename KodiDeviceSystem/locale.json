@@ -18,6 +18,7 @@
             "Reboot": "Neustart",
             "Eject optical drive": "Laufwerk öffnen",
             "Low battery event": "Batterie leer Event",
+            "Execute":"Ausführen",
             "Request all states": "Status lesen"
         }
     }

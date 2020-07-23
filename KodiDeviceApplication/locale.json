@@ -9,6 +9,7 @@
             "Mute on": "Stumm Ein",
             "Mute off": "Stumm Aus",
             "Volume:": "Lautstärke:",
+            "Execute":"Ausführen",
             "Request all states": "Status lesen"
         }
     }
