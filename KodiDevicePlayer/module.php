@@ -446,6 +446,7 @@ class KodiDevicePlayer extends KodiBase
         if ($this->isActive) {
             $this->GetItemInternal();
         }
+        $this->ReloadForm(); // Force refresh TestCenter
     }
 
     ################## ActionHandler

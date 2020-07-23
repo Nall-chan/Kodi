@@ -1894,6 +1894,7 @@ Eigenschaften von KodiSplitter:
 Version 3.00:
   - Neu: Discovery kann auch mit Hostnamen umgehen.  
   - Fix: Links zur Dokumentation korrigiert.  
+  - Neu: Testcenter ergänzt.  
 
 Version 2.17:  
   - Fix: Fehlermeldung im Debug wenn Splitter mehr als 256Kb Daten hat.  

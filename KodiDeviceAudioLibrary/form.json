@@ -1,33 +1,36 @@
 {
-    "elements":
-            [{
-                    "name": "showScan",
-                    "type": "CheckBox",
-                    "caption": "Show Variable DB scanning"
-                }, {
-                    "name": "showDoScan",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for DB scan"
-                }, {
-                    "name": "showClean",
-                    "type": "CheckBox",
-                    "caption": "Show Variable DB cleaning"
-                }, {
-                    "name": "showDoClean",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for DB clean"
-                }
-            ],
-    "actions":
-            [
-                {
-                    "type": "Button",
-                    "caption": "Scan",
-                    "onClick": "KODIAUDIOLIB_Scan($id);"
-                },{
-                    "type": "Button",
-                    "caption": "Clean",
-                    "onClick": "KODIAUDIOLIB_Clean($id);"
-                }
-            ]
+    "elements": [
+        {
+            "name": "showScan",
+            "type": "CheckBox",
+            "caption": "Show Variable DB scanning"
+        },
+        {
+            "name": "showDoScan",
+            "type": "CheckBox",
+            "caption": "Show Action-Variable for DB scan"
+        },
+        {
+            "name": "showClean",
+            "type": "CheckBox",
+            "caption": "Show Variable DB cleaning"
+        },
+        {
+            "name": "showDoClean",
+            "type": "CheckBox",
+            "caption": "Show Action-Variable for DB clean"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "Scan",
+            "onClick": "KODIAUDIOLIB_Scan($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Clean",
+            "onClick": "KODIAUDIOLIB_Clean($id);"
+        }
+    ]
 }

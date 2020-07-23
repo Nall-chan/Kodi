@@ -18,22 +18,7 @@
     ],
     "actions": [
         {
-            "type": "Button",
-            "caption": "Mute on",
-            "onClick": "KODIAPP_SetMute($id, true);"
-        },
-        {
-            "type": "Button",
-            "caption": "Mute off",
-            "onClick": "KODIAPP_SetMute($id, false);"
-        },
-        {
-            "name": "Slider",
-            "caption": "Volume:",
-            "type": "HorizontalSlider",
-            "minimum": 0,
-            "maximum": 100,
-            "onChange": "KODIAPP_SetVolume($id, $Slider);"
+            "type": "TestCenter"
         },
         {
             "type": "Button",

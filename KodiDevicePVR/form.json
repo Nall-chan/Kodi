@@ -124,19 +124,7 @@
     ],
     "actions": [
         {
-            "type": "Button",
-            "caption": "Record start",
-            "onClick": "KODIPVR_Record($id,true,'current');"
-        },
-        {
-            "type": "Button",
-            "caption": "Record stop",
-            "onClick": "KODIPVR_Record($id,false,'current');"
-        },
-        {
-            "type": "Button",
-            "caption": "Search channels",
-            "onClick": "KODIPVR_Scan($id);"
+            "type": "TestCenter"
         },
         {
             "type": "Button",

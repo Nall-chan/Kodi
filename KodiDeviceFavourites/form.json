@@ -16,12 +16,12 @@
         },
         {
             "type": "Label",
-            "caption": "Size (width) for favourites thumnails:"
+            "caption": "Size (width) for favourites thumbnails:"
         },
         {
             "name": "ThumbSize",
             "type": "NumberSpinner",
-            "caption": "Thumb width"
+            "caption": "Thumbnail width"
         }
     ],
     "actions": []

@@ -54,6 +54,9 @@
     ],
     "actions": [
         {
+            "type": "TestCenter"
+        },
+        {
             "type": "Button",
             "caption": "Request all states",
             "onClick": "KODIPLAYER_RequestState($id,'ALL');"
