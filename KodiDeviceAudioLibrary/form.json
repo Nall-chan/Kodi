@@ -1,24 +1,34 @@
 {
     "elements": [
         {
-            "name": "showScan",
-            "type": "CheckBox",
-            "caption": "Show Variable DB scanning"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "name": "showScan",
+                    "type": "CheckBox",
+                    "caption": "Show Variable DB scanning"
+                },
+                {
+                    "name": "showDoScan",
+                    "type": "CheckBox",
+                    "caption": "Show Action-Variable for DB scan"
+                }
+            ]
         },
         {
-            "name": "showDoScan",
-            "type": "CheckBox",
-            "caption": "Show Action-Variable for DB scan"
-        },
-        {
-            "name": "showClean",
-            "type": "CheckBox",
-            "caption": "Show Variable DB cleaning"
-        },
-        {
-            "name": "showDoClean",
-            "type": "CheckBox",
-            "caption": "Show Action-Variable for DB clean"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "name": "showClean",
+                    "type": "CheckBox",
+                    "caption": "Show Variable DB cleaning"
+                },
+                {
+                    "name": "showDoClean",
+                    "type": "CheckBox",
+                    "caption": "Show Action-Variable for DB clean"
+                }
+            ]
         }
     ],
     "actions": [

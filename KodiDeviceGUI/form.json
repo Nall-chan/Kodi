@@ -3,7 +3,7 @@
         {
             "name": "showCurrentWindow",
             "type": "CheckBox",
-            "caption": "Show variable for current Window"
+            "caption": "Show variable for current window"
         },
         {
             "name": "showCurrentControl",

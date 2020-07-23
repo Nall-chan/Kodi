@@ -25,13 +25,18 @@
             "caption": "Show playlist as HTML-Box"
         },
         {
-            "type": "Label",
-            "caption": "Script for HTML-Box Desgin:"
-        },
-        {
-            "name": "Playlistconfig",
-            "type": "SelectScript",
-            "caption": "Script:"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "type": "Label",
+                    "caption": "Script for HTML-Box Desgin:"
+                },
+                {
+                    "name": "Playlistconfig",
+                    "type": "SelectScript",
+                    "caption": "Script:"
+                }
+            ]
         }
     ],
     "actions": [

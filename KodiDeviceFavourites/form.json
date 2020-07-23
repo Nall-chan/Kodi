@@ -6,22 +6,32 @@
             "caption": "Show HTML-Box for favorites"
         },
         {
-            "type": "Label",
-            "caption": "Script for HTML-Box Desgin:"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "type": "Label",
+                    "caption": "Script for HTML-Box Desgin:"
+                },
+                {
+                    "name": "Favlistconfig",
+                    "type": "SelectScript",
+                    "caption": "Script:"
+                }
+            ]
         },
         {
-            "name": "Favlistconfig",
-            "type": "SelectScript",
-            "caption": "Script:"
-        },
-        {
-            "type": "Label",
-            "caption": "Size (width) for favorites thumbnails:"
-        },
-        {
-            "name": "ThumbSize",
-            "type": "NumberSpinner",
-            "caption": "Thumbnail width"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "type": "Label",
+                    "caption": "Size (width) for favorites thumbnails:"
+                },
+                {
+                    "name": "ThumbSize",
+                    "type": "NumberSpinner",
+                    "caption": "Thumbnail width"
+                }
+            ]
         }
     ],
     "actions": []
