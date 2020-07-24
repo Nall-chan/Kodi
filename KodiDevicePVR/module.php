@@ -1065,7 +1065,7 @@ class KodiDevicePVR extends KodiBase
                 }
                 $Line['Runtime'] = $this->ConvertTime($Line['Runtime']);
                 $LineSecret = rawurlencode(base64_encode(sha1($NewSecretRecording . '0' . $Line['Recordingid'], true)));
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?TYP=recording&ID=' . $Line['Recordingid'] .'&Secret=' . $LineSecret .  '\' })" >';
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?TYP=recording&ID=' . $Line['Recordingid'] . '&Secret=' . $LineSecret . '\' })" >';
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
                     if (!array_key_exists($feldIndex, $Line)) {
                         $Line[$feldIndex] = '';

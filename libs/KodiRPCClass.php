@@ -400,7 +400,7 @@ class Kodi_RPC_Data extends stdClass
         if (property_exists($Json, 'method')) {
             $part = explode('.', $Json->method);
             $this->Namespace = array_shift($part);
-            $this->Method = implode('.',$part);
+            $this->Method = implode('.', $part);
         }
         if (property_exists($Json, 'params')) {
             $this->Params = $this->DecodeUTF8($Json->params);

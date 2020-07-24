@@ -895,6 +895,7 @@ class KodiDevicePlaylist extends KodiBase
             case 'OnStop':
                 $this->SetValueInteger('position', 0);
                 // FIXME: No break. Please add proper comment if intentional
+                // Auch bei OnStop muss die Position neu erfragt und ein RefreshPlaylist erfolgen.
             case 'OnPlay':
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
                 $KodiData->GetProperties(['playerid' => $this->PlaylistId, 'properties' => ['playlistid', 'position']]);

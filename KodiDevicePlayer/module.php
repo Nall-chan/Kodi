@@ -475,10 +475,8 @@ class KodiDevicePlayer extends KodiBase
                         return $this->Pause();
                     case 4: //Next
                         return $this->GoToNext();
-                    default:
-                        return trigger_error('Invalid Ident.', E_USER_NOTICE);
                 }
-                // FIXME: No break. Please add proper comment if intentional
+                return trigger_error('Invalid Value.', E_USER_NOTICE);
             case 'shuffled':
                 return $this->SetShuffle($Value);
             case 'repeat':
@@ -609,6 +607,7 @@ class KodiDevicePlayer extends KodiBase
                                 break;
                             }
                         }
+                        // Keine Grafik bei artist gefunden, somit greift default.
                         // FIXME: No break. Please add proper comment if intentional
                     default:
                         if (property_exists($ret, 'art')) {
@@ -778,6 +777,7 @@ class KodiDevicePlayer extends KodiBase
                                 break;
                             }
                         }
+                        // Keine Grafik bei Banner gefunden, somit greift default.
                         // FIXME: No break. Please add proper comment if intentional
                     default:
                         if (property_exists($ret, 'art')) {
@@ -1608,7 +1608,7 @@ class KodiDevicePlayer extends KodiBase
                             } else {
                                 $this->SetValueInteger('Status', 2);
                             }
-                            // FIXME: No break. Please add proper comment if intentional
+                            break;
                         case 'percentage':
                             $this->SetValueInteger($param, (int) $value);
                             break;
