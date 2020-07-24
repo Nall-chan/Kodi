@@ -31,6 +31,7 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * @version       2.10
  * @example <b>Ohne</b>
  * @property int $ParentID
+ * @property string $WebHookSecret
  */
 abstract class KodiBase extends IPSModule
 {
@@ -77,6 +78,7 @@ abstract class KodiBase extends IPSModule
         parent::Create();
         $this->ConnectParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
         $this->ParentID = 0;
+        $this->WebHookSecret = '';
     }
 
     /**
@@ -248,7 +250,7 @@ abstract class KodiBase extends IPSModule
     }
 
     /**
-     * Muss überschieben werden. Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     * Muss überschieben werden. Dekodiert die empfangenen Events und Antworten auf 'GetProperties'.
      *
      * @abstract
      * @access protected
@@ -566,9 +568,11 @@ sleep(10).then(() => {
         if (GetValueInteger($id) != $value) {
             if (!(($Ident[0] == '_') || ($Ident == 'speed') || ($Ident == 'repeat') || (IPS_GetVariable($id)['VariableAction'] != 0))) {
                 if (($value <= 0) && (!IPS_GetObject($id)['ObjectIsHidden'])) {
+                    //ToDo: Prüfen und IPS_SetHidden entsorgen.
                     IPS_SetHidden($id, true);
                 }
                 if (($value > 0) && (IPS_GetObject($id)['ObjectIsHidden'])) {
+                    //ToDo: Prüfen und IPS_SetHidden entsorgen.
                     IPS_SetHidden($id, false);
                 }
             }
@@ -596,9 +600,11 @@ sleep(10).then(() => {
         if (GetValueString($id) != $value) {
             if ($Ident[0] != '_') {
                 if ((($value == '') || ($value == 'unknown')) && (!IPS_GetObject($id)['ObjectIsHidden'])) {
+                    //ToDo: Prüfen und IPS_SetHidden entsorgen.
                     IPS_SetHidden($id, true);
                 }
                 if ((($value != '') && ($value != 'unknown')) && (IPS_GetObject($id)['ObjectIsHidden'])) {
+                    //ToDo: Prüfen und IPS_SetHidden entsorgen.
                     IPS_SetHidden($id, false);
                 }
             }

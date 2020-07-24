@@ -197,7 +197,7 @@ class KodiSplitter extends IPSModule
     }
 
     /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     * Dekodiert die empfangenen Events und Antworten auf 'GetProperties'.
      *
      * @access protected
      * @param string $Method RPC-Funktion ohne Namespace

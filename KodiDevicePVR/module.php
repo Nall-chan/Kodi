@@ -181,8 +181,8 @@ class KodiDevicePVR extends KodiBase
         $ID = @$this->GetIDForIdent('TVChannellistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('TVChannellistDesign', 'TV Channellist Config', $this->CreateTVChannellistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
         }
-        IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger('TVChannellistconfig', $ID);
         $this->RegisterPropertyInteger('TVThumbSize', 100);
         $this->RegisterPropertyBoolean('showRadioChannellist', true);
@@ -190,8 +190,8 @@ class KodiDevicePVR extends KodiBase
         $ID = @$this->GetIDForIdent('RadioChannellistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('RadioChannellistDesign', 'Radio Channellist Config', $this->CreateRadioChannellistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
         }
-        IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger('RadioChannellistconfig', $ID);
         $this->RegisterPropertyInteger('RadioThumbSize', 100);
 
@@ -200,8 +200,8 @@ class KodiDevicePVR extends KodiBase
         $ID = @$this->GetIDForIdent('RecordinglistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
         }
-        IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger('Recordinglistconfig', $ID);
         $this->RegisterPropertyInteger('RecordingThumbSize', 100);
         $this->RegisterTimer('RefreshLists', 0, 'KODIPVR_RefreshAll(' . $this->InstanceID . ');');
@@ -281,8 +281,8 @@ class KodiDevicePVR extends KodiBase
             $ID = @$this->GetIDForIdent('TVChannellistDesign');
             if ($ID == false) {
                 $ID = $this->RegisterScript('TVChannellistDesign', 'TVChannellist Config', $this->CreateTVChannellistConfigScript(), -7);
+                IPS_SetHidden($ID, true);
             }
-            IPS_SetHidden($ID, true);
         } else {
             $this->UnregisterVariable('TVChannellist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
@@ -299,8 +299,8 @@ class KodiDevicePVR extends KodiBase
             $ID = @$this->GetIDForIdent('RadioChannellistDesign');
             if ($ID == false) {
                 $ID = $this->RegisterScript('RadioChannellistDesign', 'RadioChannellist Config', $this->CreateRadioChannellistConfigScript(), -7);
+                IPS_SetHidden($ID, true);
             }
-            IPS_SetHidden($ID, true);
         } else {
             $this->UnregisterVariable('RadioChannellist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
@@ -317,8 +317,8 @@ class KodiDevicePVR extends KodiBase
             $ID = @$this->GetIDForIdent('RecordinglistDesign');
             if ($ID == false) {
                 $ID = $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
+                IPS_SetHidden($ID, true);
             }
-            IPS_SetHidden($ID, true);
         } else {
             $this->UnregisterVariable('Recordinglist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
@@ -747,7 +747,7 @@ class KodiDevicePVR extends KodiBase
 
     ################## PRIVATE
     /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     * Dekodiert die empfangenen Events und Antworten auf 'GetProperties'.
      *
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.

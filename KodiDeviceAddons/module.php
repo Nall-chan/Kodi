@@ -81,8 +81,8 @@ class KodiDeviceAddons extends KodiBase
         $ID = @$this->GetIDForIdent('AddonlistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
         }
-        IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger('Addonlistconfig', $ID);
         $this->RegisterPropertyInteger('ThumbSize', 100);
     }
@@ -121,8 +121,8 @@ class KodiDeviceAddons extends KodiBase
             $ID = @$this->GetIDForIdent('AddonlistDesign');
             if ($ID == false) {
                 $ID = $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
+                IPS_SetHidden($ID, true);
             }
-            IPS_SetHidden($ID, true);
         } else {
             $this->UnregisterVariable('Addonlist');
             if (IPS_GetKernelRunlevel() == KR_READY) {

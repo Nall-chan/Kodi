@@ -77,7 +77,6 @@ class KodiDeviceGUI extends KodiBase
         if ($this->ReadPropertyBoolean('showCurrentWindow')) {
             $this->RegisterVariableString('currentwindow', $this->Translate('Current window'), '', 0);
             $this->RegisterVariableInteger('_currentwindowid', $this->Translate('Current window (id)'), '', 0);
-            IPS_SetHidden($this->GetIDForIdent('_currentwindowid'), true);
         } else {
             $this->UnregisterVariable('currentwindow');
             $this->UnregisterVariable('_currentwindowid');
@@ -92,7 +91,6 @@ class KodiDeviceGUI extends KodiBase
         if ($this->ReadPropertyBoolean('showSkin')) {
             $this->RegisterVariableString('skin', $this->Translate('Current skin'), '', 2);
             $this->RegisterVariableString('_skinid', $this->Translate('Current skin (id)'), '', 2);
-            IPS_SetHidden($this->GetIDForIdent('_skinid'), true);
         } else {
             $this->UnregisterVariable('skin');
             $this->UnregisterVariable('_skinid');
@@ -246,7 +244,7 @@ class KodiDeviceGUI extends KodiBase
 
     ################## PRIVATE
     /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     * Dekodiert die empfangenen Events und Antworten auf 'GetProperties'.
      *
      * @access protected
      * @param string $Method RPC-Funktion ohne Namespace

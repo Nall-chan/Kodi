@@ -1902,6 +1902,7 @@ Version 3.00:
   - Fix: Fehlende Übersetzungen der Konfiguration ergänzt.
   - Neu: Übersetzungen der Fehlermeldungen.  
   - Neu: Konfigurationsformulare optisch angepasst.  
+  - Fix: Config-Scripte werden nur beim erzeugen initial versteckt.  
 
 Version 2.17:  
   - Fix: Fehlermeldung im Debug wenn Splitter mehr als 256Kb Daten hat.  

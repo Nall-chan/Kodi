@@ -71,8 +71,8 @@ class KodiDeviceFavourites extends KodiBase
         $ID = @$this->GetIDForIdent('FavlistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
         }
-        IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger('Favlistconfig', $ID);
         $this->RegisterPropertyInteger('ThumbSize', 100);
     }
@@ -111,8 +111,8 @@ class KodiDeviceFavourites extends KodiBase
             $ID = @$this->GetIDForIdent('FavlistDesign');
             if ($ID == false) {
                 $ID = $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
+                IPS_SetHidden($ID, true);
             }
-            IPS_SetHidden($ID, true);
         } else {
             $this->UnregisterVariable('Favlist');
             if (IPS_GetKernelRunlevel() == KR_READY) {

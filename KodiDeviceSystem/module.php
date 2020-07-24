@@ -88,6 +88,7 @@ class KodiDeviceSystem extends KodiBase
                 break;
         }
         if ($ID > 0) {
+            // ToDo. Anstelle von Property einen Action-Button benutzen.
             IPS_SetHidden($ID, true);
             IPS_SetProperty($this->InstanceID, 'PowerScript', $ID);
             IPS_SetProperty($this->InstanceID, 'PreSelectScript', 0);
@@ -316,7 +317,7 @@ class KodiDeviceSystem extends KodiBase
     }
 
     /**
-     * Dekodiert die empfangenen Events und Anworten auf 'GetProperties'.
+     * Dekodiert die empfangenen Events und Antworten auf 'GetProperties'.
      *
      * @access protected
      * @param string $Method RPC-Funktion ohne Namespace
@@ -327,6 +328,7 @@ class KodiDeviceSystem extends KodiBase
         switch ($Method) {
             case 'GetProperties':
                 foreach ($KodiPayload as $param => $value) {
+                    // ToDo: Wofür war das?
                     IPS_SetHidden($this->GetIDForIdent(substr($param, 3)), !$value);
                 }
                 break;

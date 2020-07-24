@@ -213,8 +213,8 @@ class KodiDevicePlaylist extends KodiBase
         $ID = @$this->GetIDForIdent('PlaylistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
+            IPS_SetHidden($ID, true);
         }
-        IPS_SetHidden($ID, true);
         $this->RegisterPropertyInteger('Playlistconfig', $ID);
         $this->PlaylistId = 0;
     }
@@ -251,8 +251,8 @@ class KodiDevicePlaylist extends KodiBase
             $ID = @$this->GetIDForIdent('PlaylistDesign');
             if ($ID == false) {
                 $ID = $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
+                IPS_SetHidden($ID, true);
             }
-            IPS_SetHidden($ID, true);
         } else {
             $this->UnregisterVariable('Playlist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
