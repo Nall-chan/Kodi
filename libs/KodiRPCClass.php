@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.17
+ * @version       2.90
  * @example <b>Ohne</b>
  */
 
@@ -19,7 +19,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.17
+ * @version       2.90
  * @example <b>Ohne</b>
  */
 class KodiRPCException extends Exception
@@ -35,9 +35,9 @@ class KodiRPCException extends Exception
  *
  * @package       Kodi
  * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2016 Michael Tröger
+ * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.17
+ * @version       2.90
  * @example <b>Ohne</b>
  *
  * @method null ExecuteAddon
@@ -72,7 +72,7 @@ class KodiRPCException extends Exception
  * @method null ActivateWindow(array $Params (int "window" ID des Fensters)) Aktiviert ein Fenster.
  * @method null Up(null) Tastendruck hoch.
  * @method null Down(null) Tastendruck runter.
- * @method null Left(null) Tastendruch links.
+ * @method null Left(null) Tastendruck links.
  * @method null Right(null) Tastendruck right.
  * @method null Back(null) Tastendruck zurück.
  * @method null ContextMenu(null) Tastendruck Context-Menü.
@@ -243,7 +243,7 @@ class Kodi_RPC_Data extends stdClass
     /**
      *
      * @access public
-     * @param string $name Propertyname
+     * @param string $name PropertyName
      * @return mixed Value of Name
      */
     public function __get($name)
@@ -348,7 +348,7 @@ class Kodi_RPC_Data extends stdClass
     }
 
     /**
-     * Erzeugt einen, mit der GUDI versehenen, JSON-kodierten String.
+     * Erzeugt einen, mit der GUID versehenen, JSON-kodierten String.
      *
      * @access public
      * @param string $GUID Die Interface-GUID welche mit in den JSON-String integriert werden soll.
@@ -419,7 +419,7 @@ class Kodi_RPC_Data extends stdClass
     }
 
     /**
-     * Erzeugt einen, mit der GUDI versehenen, JSON-kodierten String zum versand an den RPC-Server.
+     * Erzeugt einen, mit der GUID versehenen, JSON-kodierten String zum versand an den RPC-Server.
      *
      * @access public
      * @param string $GUID Die Interface-GUID welche mit in den JSON-String integriert werden soll.
@@ -462,7 +462,7 @@ class Kodi_RPC_Data extends stdClass
      * Erzeugt aus dem $Item ein Array.
      *
      * @access public
-     * @param object $Item Das Objekt welches zu einem Array kovertiert wird.
+     * @param object $Item Das Objekt welches zu einem Array konvertiert wird.
      * @return array Das konvertierte Objekt als Array.
      */
     public function ToArray($Item)
@@ -497,7 +497,7 @@ class Kodi_RPC_Data extends stdClass
      * Führt eine UTF8-Dekodierung für einen String oder ein Objekt durch (rekursiv)
      *
      * @access private
-     * @param string|object $item Zu dekodierene Daten.
+     * @param string|object $item Zu dekodierenden Daten.
      * @return string|object Dekodierte Daten.
      */
     private function DecodeUTF8($item)
@@ -518,10 +518,10 @@ class Kodi_RPC_Data extends stdClass
     }
 
     /**
-     * Führt eine UTF8-Enkodierung für einen String oder ein Objekt durch (rekursiv)
+     * Führt eine UTF8-Kodierung für einen String oder ein Objekt durch (rekursiv)
      *
      * @access private
-     * @param string|object $item Zu Enkodierene Daten.
+     * @param string|object $item Zu kodierenden Daten.
      * @return string|object Enkodierte Daten.
      */
     private function EncodeUTF8($item)

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  *
  */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
@@ -24,7 +24,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  */
 class KodiDeviceAddons extends KodiBase
@@ -381,9 +381,13 @@ class KodiDeviceAddons extends KodiBase
      */
     protected function ProcessHookdata()
     {
-        if (!((isset($_GET['Addonid'])) && (isset($_GET['Action'])))) {
-            $this->SendDebug('illegal HOOK', $_GET, 0);
-            echo 'Illegal hook';
+        if ((!isset($_GET['Addonid'])) || (!isset($_GET['Action'])) || (!isset($_GET['Secret']))) {
+            echo $this->Translate('Bad Request');
+            return;
+        }
+        $CalcSecret = base64_encode(sha1($this->WebHookSecret . '0' . $_GET['Addonid'], true));
+        if ($CalcSecret != rawurldecode($_GET['Secret'])) {
+            echo $this->Translate('Access denied');
             return;
         }
 
@@ -404,8 +408,7 @@ class KodiDeviceAddons extends KodiBase
                 }
                 break;
             default:
-                $this->SendDebug('illegal HOOK', $_GET, 0);
-                echo 'Illegal hook';
+                echo $this->Translate('Bad Request');
                 break;
         }
     }
@@ -439,9 +442,13 @@ class KodiDeviceAddons extends KodiBase
             $AllAddons = [];
         }
         $Data = array_filter($AllAddons, [$this, 'FilterAddons'], ARRAY_FILTER_USE_BOTH);
-        $HTMLData = $this->GetTableHeader($Config);
-        $pos = 0;
 
+        $NewSecret = base64_encode(openssl_random_pseudo_bytes(12));
+        $this->WebHookSecret = $NewSecret;
+
+        $HTMLData = $this->GetTableHeader($Config);
+
+        $pos = 0;
         if (count($Data) > 0) {
             foreach ($Data as $line) {
                 $Line = [];
@@ -471,8 +478,8 @@ class KodiDeviceAddons extends KodiBase
                     }
                 }
 
-                $Line['Enabled'] = $Line['Enabled'] == true ? '<div class="dodisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable') . '>Aus</div><div class="isenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable') . '>An</div>' : '<div class="isdisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable') . '>Aus</div><div class="doenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable') . '>An</div>';
-                $Line['Execute'] = '<div class="execute" ' . $this->GetWebHookLink($Line['Addonid'], 'Execute') . '>Ausführen</div>';
+                $Line['Enabled'] = $Line['Enabled'] == true ? '<div class="dodisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable', $NewSecret) . '>Aus</div><div class="isenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable', $NewSecret) . '>An</div>' : '<div class="isdisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable', $NewSecret) . '>Aus</div><div class="doenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable', $NewSecret) . '>An</div>';
+                $Line['Execute'] = '<div class="execute" ' . $this->GetWebHookLink($Line['Addonid'], 'Execute', $NewSecret) . '>Ausführen</div>';
 
                 $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '">';
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
@@ -502,14 +509,15 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Action Die Aktion welche der Webhook auslösen soll.
      * @return string JS-Code
      */
-    private function GetWebHookLink(string $Addonid, string $Action)
+    private function GetWebHookLink(string $Addonid, string $Action, string $NewSecret)
     {
         //return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
-        return 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
+        $LineSecret = rawurlencode(base64_encode(sha1($NewSecret . '0' . $Addonid, true)));
+        return 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '&Secret=' . $LineSecret . '\' })"';
     }
 
     /**
-     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Addon-Tabelle enthält.
+     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Addon-Tabelle enthält.
      *
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.

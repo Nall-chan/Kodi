@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  *
  */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
@@ -24,7 +24,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  * @property int $LastAddonItem
  * @property array $Multi_Playlist
@@ -361,7 +361,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddArtist'.
-     * Fügt der Playlist alle Itemes eines Artist hinzu.
+     * Fügt der Playlist alle Item eines Artist hinzu.
      *
      * @access public
      * @param int $ArtistId ID des Artist.
@@ -378,7 +378,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddDirectory'.
-     * Fügt der Playlist alle Itemes eines Verzeichnisses hinzu.
+     * Fügt der Playlist alle Item eines Verzeichnisses hinzu.
      *
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
@@ -395,7 +395,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_AddDirectoryRecursive'.
-     * Fügt der Playlist alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, hinzu.
+     * Fügt der Playlist alle Item eines Verzeichnisses, sowie dessen Unterverzeichnisse, hinzu.
      *
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
@@ -483,7 +483,7 @@ class KodiDevicePlaylist extends KodiBase
      * Fügt der Playlist ein Musicvideo hinzu.
      *
      * @access public
-     * @param int $MusicvideoId ID des Musicvideos.
+     * @param int $MusicvideoId ID des Musikvideos.
      * @return bool True bei Erfolg. Sonst false.
      */
     public function AddMusicVideo(int $MusicvideoId)
@@ -574,7 +574,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertDirectory'.
-     * Fügt in der Playlist alle Itemes eines Verzeichnisses ein.
+     * Fügt in der Playlist alle Item eines Verzeichnisses ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      *
      * @access public
@@ -593,7 +593,7 @@ class KodiDevicePlaylist extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYLIST_InsertDirectoryRecursive'.
-     * Fügt in der Playlist alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, ein.
+     * Fügt in der Playlist alle Item eines Verzeichnisses, sowie dessen Unterverzeichnisse, ein.
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      *
      * @access public
@@ -692,7 +692,7 @@ class KodiDevicePlaylist extends KodiBase
      * Alle anderen Einträge werden automatisch nach hinten verschoben.
      *
      * @access public
-     * @param int $MusicvideoId ID des Musicvideos.
+     * @param int $MusicvideoId ID des Musikvideos.
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
@@ -756,7 +756,7 @@ class KodiDevicePlaylist extends KodiBase
      * Tauscht zwei Einträge innerhalb der Playlist.
      *
      * @access public
-     * @param int $Position1 | $Position2 Positionen der Einträge welche untereinander getsucht werden.
+     * @param int $Position1 | $Position2 Positionen der Einträge welche untereinander getauscht werden.
      * @return bool True bei Erfolg. Sonst false.
      */
     public function Swap(int $Position1, int $Position2)
@@ -1104,7 +1104,7 @@ class KodiDevicePlaylist extends KodiBase
     }
 
     /**
-     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Playlist-Tabelle enthält.
+     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Playlist-Tabelle enthält.
      *
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.

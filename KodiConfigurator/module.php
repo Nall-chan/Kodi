@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  *
  */
 
@@ -23,13 +23,13 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  */
 class KodiConfigurator extends IPSModule
 {
     /**
-     * Zuordnung der möglichen Kodi-Instanzen zu den GUIDs
+     * Zuordnung der möglichen Kodi-Instanzen zu den GUID
      *
      * @access private
      *  @var array Key ist der Name, Value ist die GUID
@@ -48,7 +48,7 @@ class KodiConfigurator extends IPSModule
     ];
 
     /**
-     * Zuordnung der möglichen Player-Instanzen zu den GUIDs und Medientyp.
+     * Zuordnung der möglichen Player-Instanzen zu den GUID und Medientyp.
      *
      * @access private
      *  @var array Key ist der Name, Index "GUID" ist die GUID und Index "Typ" ist der Medientyp.
@@ -60,12 +60,12 @@ class KodiConfigurator extends IPSModule
     ];
 
     /**
-     * Zuordnung der möglichen Playlist-Instanzen zu den GUIDs und Medientyp.
+     * Zuordnung der möglichen Playlist-Instanzen zu den GUID und Medientyp.
      *
      * @access private
      *  @var array Key ist der Name, Index "GUID" ist die GUID und Index "Typ" ist der Medientyp.
      */
-    private static $PlayeListTypes = [
+    private static $PlayerListTypes = [
         'Audio Playlist'   => ['GUID' => '{7D73D0FF-0CC7-43D0-A196-0D6143E52756}', 'PlaylistID' => 0],
         'Video Playlist'   => ['GUID' => '{7D73D0FF-0CC7-43D0-A196-0D6143E52756}', 'PlaylistID' => 1],
         'Picture Playlist' => ['GUID' => '{7D73D0FF-0CC7-43D0-A196-0D6143E52756}', 'PlaylistID' => 2],
@@ -146,7 +146,7 @@ class KodiConfigurator extends IPSModule
             $Values[] = $Value;
         }
 
-        foreach (static::$PlayeListTypes as $Name => $ModuleData) {
+        foreach (static::$PlayerListTypes as $Name => $ModuleData) {
             $Value = [
                 'type'   => $this->Translate($Name),
                 'create' => [

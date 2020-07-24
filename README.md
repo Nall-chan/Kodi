@@ -1,5 +1,5 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version 2.10](https://img.shields.io/badge/Modul%20Version-2.17-blue.svg)]()
+[![Version 2.90](https://img.shields.io/badge/Modul%20Version-2.90-blue.svg)]()
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions) 
@@ -17,7 +17,6 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 - [4. Vorbereitungen](#4-vorbereitungen)
 - [5. Einrichten der Instanzen in IPS](#5-einrichten-der-instanzen-in-ips)
 - [6. Funktionen der Instanzen](#6-funktionen-der-instanzen)
-- [!AudioLibrary WebFront](#img-srcdocsaudiolib_wfpng-altaudiolibrary-webfront)
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
   - [1. Kodi Addons](#1-kodi-addons)
   - [2. Kodi Anwendung](#2-kodi-anwendung)
@@ -57,7 +56,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 ## 3. Installation
 
    Bei privater Nutzung:  
-   * Über den Module Store das 'ONVIF'-Modul installieren.
+   * Über den Module Store das 'KODI'-Modul installieren.
 
    **Bei kommerzieller Nutzung (z.B. als Errichter oder Integrator) wenden Sie sich bitte an den Autor.**  
 
@@ -82,7 +81,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
   - Auf die Instanz 'Kodi Discovery' doppelt klicken. ![Discovery öffnen](docs/Discovery1.png)  
   - Im folgenden Dialog sollten alle im lokalen Netzwerk verfügbaren Kodi-Systeme aufgelistet werden.  ![Discovery](docs/Discovery.png)  
   - Im Dialog das gewünschte System auswählen und den Button 'Erstellen' betätigen.
-  - Anschließend ändert sich der Button zu 'Konfigurieren' und muss erneutr betätigt werden.  
+  - Anschließend ändert sich der Button zu 'Konfigurieren' und muss erneut betätigt werden.  
   - Im sich öffnenden Konfigurator alle gewünschten Funktionen wie zuvor erzeugen.  ![Instanzen erzeugen](docs/Konfigurator.png)  
   - Über den Button 'Gateway konfigurieren' kann die optionale HTTP-Authentifizierung sowie ein abweichender JSON-RPC Port konfiguriert werden.  
   - In den jeweiligen Instanzen sind dann noch weitere Einstellungen nach eigenen Vorlieben einzustellen.  
@@ -125,7 +124,9 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
 Das Setzen von Daten in der Datenbank ist nicht möglich!  
   ![AudioLibrary](docs/AudioLib.png)  
   ![AudioLibrary WebFront](docs/AudioLib_WF.png)  
+
 ---  
+
 **Kodi Favoriten (KodiDeviceFavourites):**  
  RPC-Namensraum : Favourites  
 
@@ -152,7 +153,7 @@ Das Setzen von Daten in der Datenbank ist nicht möglich!
  Aktuelle Steuerung - Lesen und visualisieren.  
  Aktueller Skin     - Lesen und visualisieren.  
  Vollbildmodus      - Setzen, lesen und visualisieren.  
- Bildschrimschoner  - Status visualisieren.  
+ Bildschirmschoner  - Status visualisieren.  
  Benachrichtungen   - Senden.  
 
 Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:  
@@ -280,7 +281,7 @@ boolean KODIADDONS_ExecuteAddonExWait(integer $InstanzeID, string $AddonId, stri
 array|boolean KODIADDONS_GetAddonDetails(integer $InstanzeID, string $AddonId);
 ```
  Liest die Eigenschaften eines Addons aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.  
 
 | Index                     | Typ       | Beschreibung               |
 |:-------------------------:|:---------:|:--------------------------:|
@@ -305,7 +306,7 @@ array|boolean KODIADDONS_GetAddonDetails(integer $InstanzeID, string $AddonId);
 array|boolean KODIADDONS_GetAddons(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller Addons aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.  
  Es gilt die Tabelle von KODIADDONS_GetAddonDetails.  
 
 ```php
@@ -366,7 +367,7 @@ boolean KODIAUDIOLIB_Export(integer $InstanzeID, string $Path, boolean $Overwrit
 array|boolean KODIAUDIOLIB_GetAlbumDetails(integer $InstanzeID, integer $AlbumID);
 ```
  Liest die Eigenschaften eines Album aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.  
 
 | Index                     | Typ       | Beschreibung               |
 |:-------------------------:|:---------:|:--------------------------:|
@@ -395,28 +396,28 @@ array|boolean KODIAUDIOLIB_GetAlbumDetails(integer $InstanzeID, integer $AlbumID
 array|boolean KODIAUDIOLIB_GetAlbums(integer $InstanzeID);
 ```
  Liest einen Teil der Eigenschaften aller Alben aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.  
  Es gilt die Tabelle von KODIAUDIOLIB_GetAlbumDetails.  
 
 ```php
 array|boolean KODIAUDIOLIB_GetRecentlyAddedAlbums(integer $InstanzeID);
 ```
  Liest die Eigenschaften der Alben aus, welche zuletzt zur Datenbank hinzugefügt wurden.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.  
  Es gilt die Tabelle von KODIAUDIOLIB_GetAlbumDetails.  
 
 ```php
 array|boolean KODIAUDIOLIB_GetRecentlyPlayedAlbums(integer $InstanzeID);
 ```
  Liest die Eigenschaften der Alben aus, welche zuletzt zur wiedergegeben wurden.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIAUDIOLIB_GetAlbumDetails.  
 
 ```php
 array|boolean KODIAUDIOLIB_GetArtistDetails(integer $InstanzeID, integer $ArtistID);
 ```
  Liest die Eigenschaften eines Künstlers aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                 | Typ       | Beschreibung      |
 |:---------------------:|:---------:|:-----------------:|
@@ -440,14 +441,14 @@ array|boolean KODIAUDIOLIB_GetArtistDetails(integer $InstanzeID, integer $Artist
 array|boolean KODIAUDIOLIB_GetArtists(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller Künstler aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIAUDIOLIB_GetArtistDetails.  
 
 ```php
 array|boolean KODIAUDIOLIB_GetGenres(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller bekannten Genres aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  
 | Index     | Typ     | Beschreibung    |
 |:---------:|:-------:|:---------------:|
@@ -459,7 +460,7 @@ array|boolean KODIAUDIOLIB_GetGenres(integer $InstanzeID);
 array|boolean KODIAUDIOLIB_GetSongDetails(integer $InstanzeID, integer $SongID);
 ```
  Liest die Eigenschaften eines Songs aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                     | Typ       | Beschreibung                  |
 |:-------------------------:|:---------:|:-----------------------------:|
@@ -495,21 +496,21 @@ array|boolean KODIAUDIOLIB_GetSongDetails(integer $InstanzeID, integer $SongID);
 array|boolean KODIAUDIOLIB_GetSongs(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller Songs aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIAUDIOLIB_GetSongDetails.  
 
 ```php
 array|boolean KODIAUDIOLIB_GetRecentlyAddedSongs(integer $InstanzeID);
 ```
  Liest die Eigenschaften der Songs aus, welche zuletzt zur Datenbank hinzugefügt wurden.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIAUDIOLIB_GetSongDetails.  
 
 ```php
 array|boolean KODIAUDIOLIB_GetRecentlyPlayedSongs(integer $InstanzeID);
 ```
  Liest die Eigenschaften der Songs aus, welche zuletzt zur wiedergegeben wurden.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIAUDIOLIB_GetSongDetails.  
 
 ### 4. Kodi Favoriten
@@ -519,8 +520,8 @@ array|boolean KODIFAV_GetFavourites(integer $InstanzeID, string $Type);
 ```
  Liest die Eigenschaften der Favoriten aus, welche dem im $Type übergeben Typen angehören.  
  $Type kann dabei "all", "media", "window", "script" oder "unknown" annehmen.
- Rückgabewert ist ein assoziertes Array mit den Daten. Je nach Type, sind nicht alle Werte vorhanden.  
- Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Je nach Type, sind nicht alle Werte vorhanden.  
+ Tritt ein Fehler auf, wird FALSE k.  
  
 | Index                     | Typ       | Beschreibung                          |
 |:-------------------------:|:---------:|:-------------------------------------:|
@@ -566,7 +567,7 @@ array|boolean KODIFILES_GetSources(integer $InstanzeID, string $Media);
 
 | Index   | Typ     | Beschreibung                  |
 |:-------:|:-------:|:-----------------------------:|
-| file    | string  | Verzeichniss der Quelle       |
+| file    | string  | Verzeichnis der Quelle       |
 | label   | string  | Name der Quelle               |
 
  ```php
@@ -661,7 +662,7 @@ array|boolean KODIFILES_GetDirectory(integer $InstanzeID, string $Directory);
 ```
  Liefert Informationen zu einem Verzeichnis.  
  $Directory : Verzeichnis  
- Rückgabewert ist ein Array mit den Eigenschaften des Verzeichnises FALSE bei einem Fehler.  
+ Rückgabewert ist ein Array mit den Eigenschaften des Verzeichnisses FALSE bei einem Fehler.  
  Es gilt die Tabelle von KODIFILES_GetFileDetails.  
 
  ```php
@@ -775,7 +776,7 @@ boolean KODIINPUT_ShowCodec(integer $InstanzeID);
 ```php
 boolean KODIINPUT_ExecuteAction(integer $InstanzeID, string $Action);
 ```
- Sendet die in $Action übegebene Aktion.  
+ Sendet die in $Action übergebene Aktion.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
  $Action kann sein:  
  "left", "right", "up", "down", "pageup", "pagedown", "select", "highlight", "parentdir",
@@ -813,7 +814,7 @@ boolean KODIINPUT_ExecuteAction(integer $InstanzeID, string $Action);
 ```php
 boolean KODIINPUT_SendText(integer $InstanzeID, string $Text, boolean $Done);
 ```
- Sendet den in $Text übegebenen Text an Kodi.  
+ Sendet den in $Text rn Text an Kodi.  
  Mit $Done = true kann die Eingabe beendet werden.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
@@ -928,7 +929,7 @@ boolean KODIPLAYER_LoadAlbum(integer $InstanzeID, integer $AlbumId);
  ```php
 boolean KODIPLAYER_LoadArtist(integer $InstanzeID, integer $ArtistId);
 ```  
- Lädt alle Itemes eines Artist und startet die Wiedergabe.  
+ Lädt alle Item eines Artist und startet die Wiedergabe.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
@@ -940,13 +941,13 @@ boolean KODIPLAYER_LoadChannel(integer $InstanzeID, integer $ChannelId);
  ```php
 boolean KODIPLAYER_LoadDirectory(integer $InstanzeID, string $Directory);
 ```  
- Lädt alle Itemes eines Verzeichnisses und startet die Wiedergabe.  
+ Lädt alle Item eines Verzeichnisses und startet die Wiedergabe.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYER_LoadDirectoryRecursive(integer $InstanzeID, string $Directory);
 ```  
- Lädt alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, und startet die Wiedergabe.  
+ Lädt alle Item eines Verzeichnisses, sowie dessen Unterverzeichnisse, und startet die Wiedergabe.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
@@ -1064,66 +1065,66 @@ boolean KODIPLAYER_Stop(integer $InstanzeID);
 
 ### 9. Kodi Playlist
 
-Hinweis: Ein mischen von verschiednen Medien (Audio, Video, Bilder) ist nicht möglich.  
+Hinweis: Ein mischen von verschiedenen Medien (Audio, Video, Bilder) ist nicht möglich.  
 
  ```php
 boolean KODIPLAYLIST_AddAlbum(integer $InstanzeID, integer $AlbumId);
 ```  
- Fügt der Playliste ein Album hinzu.  
+ Fügt der Playlist ein Album hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddArtist(integer $InstanzeID, integer $ArtistId);
 ```  
- Fügt der Playliste alle Itemes eines Artist hinzu.  
+ Fügt der Playlist alle Item eines Artist hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddDirectory(integer $InstanzeID, string $Directory);
 ```  
- Fügt der Playliste alle Itemes eines Verzeichnisses hinzu.  
+ Fügt der Playlist alle Item eines Verzeichnisses hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddDirectoryRecursive(integer $InstanzeID, string $Directory);
 ```  
- Fügt der Playliste alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, hinzu.  
+ Fügt der Playlist alle Item eines Verzeichnisses, sowie dessen Unterverzeichnisse, hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddEpisode(integer $InstanzeID, integer $EpisodeId);
 ```  
- Fügt der Playliste eine Episode hinzu.  
+ Fügt der Playlist eine Episode hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddFile(integer $InstanzeID, string $File);
 ```  
- Fügt der Playliste eine Datei hinzu.  
+ Fügt der Playlist eine Datei hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddGenre(integer $InstanzeID, integer $GenreId);
 ```  
- Fügt der Playliste eine komplettes Genre hinzu.  
+ Fügt der Playlist eine komplettes Genre hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddMovie(integer $InstanzeID, integer $MovieId);
 ```  
- Fügt der Playliste ein Film hinzu.  
+ Fügt der Playlist ein Film hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddMusicVideo(integer $InstanzeID, integer $MusicvideoId);
 ```  
- Fügt der Playliste ein Musicvideo hinzu.  
+ Fügt der Playlist ein Musicvideo hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_AddSong(integer $InstanzeID, integer $SongId);
 ```  
- Fügt der Playliste ein Song hinzu.  
+ Fügt der Playlist ein Song hinzu.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
@@ -1136,7 +1137,7 @@ boolean KODIPLAYLIST_Clear(integer $InstanzeID);
 boolean KODIPLAYLIST_Get(integer $InstanzeID);
 ```  
  Gibt alle Einträge Einträge der Playlist als Array zurück.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                     | Typ       | Beschreibung                  |
 |:-------------------------:|:---------:|:-----------------------------:|
@@ -1161,70 +1162,70 @@ boolean KODIPLAYLIST_Get(integer $InstanzeID);
  ```php
 boolean KODIPLAYLIST_InsertAlbum(integer $InstanzeID, integer $AlbumId, integer $Position);
 ```  
- Fügt in der Playliste ein Album ein.  
+ Fügt in der Playlist ein Album ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertArtist(integer $InstanzeID, integer $ArtistId, integer $Position);
 ```  
- Fügt in der Playliste alle Itemes eines Artist ein.  
+ Fügt in der Playlist alle Item eines Artist ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertDirectory(integer $InstanzeID, string $Directory, integer $Position);
 ```  
- Fügt in der Playliste alle Itemes eines Verzeichnisses ein.  
+ Fügt in der Playlist alle Item eines Verzeichnisses ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertDirectoryRecursive(integer $InstanzeID, string $Directory, integer $Position);
 ```  
- Fügt in der Playliste alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, ein.  
+ Fügt in der Playlist alle Item eines Verzeichnisses, sowie dessen Unterverzeichnisse, ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertEpisode(integer $InstanzeID, integer $EpisodeId, integer $Position);
 ```  
- Fügt in der Playliste eine Episode ein.  
+ Fügt in der Playlist eine Episode ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertFile(integer $InstanzeID, string $File, integer $Position);
 ```  
- Fügt in der Playliste eine Datei ein.  
+ Fügt in der Playlist eine Datei ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertGenre(integer $InstanzeID, integer $GenreId, integer $Position);
 ```  
- Fügt in der Playliste eine komplettes Genre ein.  
+ Fügt in der Playlist eine komplettes Genre ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertMovie(integer $InstanzeID, integer $MovieId, integer $Position);
 ```  
- Fügt in der Playliste ein Film ein.  
+ Fügt in der Playlist ein Film ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertMusicVideo(integer $InstanzeID, integer $MusicvideoId, integer $Position);
 ```  
- Fügt in der Playliste ein Musicvideo ein.  
+ Fügt in der Playlist ein Musicvideo ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
  ```php
 boolean KODIPLAYLIST_InsertSong(integer $InstanzeID, integer $SongId, integer $Position);
 ```  
- Fügt in der Playliste ein Song ein.  
+ Fügt in der Playlist ein Song ein.  
  Alle anderen Einträge werden automatisch nach hinten verschoben.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
@@ -1331,9 +1332,9 @@ array|boolean KODIPVR_GetChannelGroups(integer $InstanzeID, string $ChannelTyp);
 | channelgroupid           | integer  |                              |
     
 ```php
-array|boolean KODIPVR_GetChannelGroupDetails(integer $InstanzeID, integer $ChannelGroupdId);
+array|boolean KODIPVR_GetChannelGroupDetails(integer $InstanzeID, integer $ChannelGroupId);
 ```
- Liefert die Eigenschaften der in $ChannelGroupdId übergeben Kanalgruppe als Array.  
+ Liefert die Eigenschaften der in $ChannelGroupId übergeben Kanalgruppe als Array.  
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
  Es gilt die Tabelle von KODIAPP_GetChannelGroups.  
 
@@ -1373,7 +1374,7 @@ array|boolean KODIPVR_GetRecordingDetails(integer $InstanzeID, integer $Recordin
 ```php
 array|boolean KODIPVR_GetTimers(integer $InstanzeID);
 ```
- Liefert alle Aufnahmentimer als Array.
+ Liefert alle Aufnahmen-Timer als Array.
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
 
 | Index                     | Typ       | Beschreibung                  |
@@ -1400,7 +1401,7 @@ array|boolean KODIPVR_GetTimers(integer $InstanzeID);
 ```php
 array|boolean KODIPVR_GetTimerDetails(integer $InstanzeID, integer $TimerId);
 ```
- Liefert die Eigenschaften des in $TimerId übergeben Aufnahmetimers als Array.  
+ Liefert die Eigenschaften des in $TimerId übergeben Aufnahme-Timers als Array.  
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
  Es gilt die Tabelle von KODIPVR_GetTimers. 
 
@@ -1479,7 +1480,7 @@ boolean KODIVIDEOLIB_Clean(integer $InstanzeID);
 array|boolean KODIVIDEOLIB_GetEpisodeDetails(integer $InstanzeID, integer $EpisodeId);
 ```
  Liest die Eigenschaften einer Episode aus.
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                     | Typ       | Beschreibung                  |
 |:-------------------------:|:---------:|:-----------------------------:|
@@ -1514,21 +1515,21 @@ array|boolean KODIVIDEOLIB_GetEpisodeDetails(integer $InstanzeID, integer $Episo
 array|boolean KODIVIDEOLIB_GetEpisodes(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller Episoden aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIVIDEOLIB_GetEpisodeDetails.  
 
 ```php
 array|boolean KODIVIDEOLIB_GetRecentlyAddedAlbums(integer $InstanzeID);
 ```
  Liest die Eigenschaften der Episoden aus, welche zuletzt zur Datenbank hinzugefügt wurden.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIVIDEOLIB_GetEpisodeDetails.  
 
 ```php
 array|boolean KODIVIDEOLIB_GetGenres(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller bekannten Genres aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  
 | Index     | Typ     | Beschreibung    |
 |:---------:|:-------:|:---------------:|
@@ -1540,7 +1541,7 @@ array|boolean KODIVIDEOLIB_GetGenres(integer $InstanzeID);
 array|boolean KODIVIDEOLIB_GetMovieDetails(integer $InstanzeID, integer $MovieId);
 ```
  Liest die Eigenschaften eines Film aus.
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                     | Typ       | Beschreibung                  |
 |:-------------------------:|:---------:|:-----------------------------:|
@@ -1586,21 +1587,21 @@ array|boolean KODIVIDEOLIB_GetMovieDetails(integer $InstanzeID, integer $MovieId
 array|boolean KODIVIDEOLIB_GetMovies(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller Filme aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIVIDEOLIB_GetMovieDetails.  
 
 ```php
 array|boolean KODIVIDEOLIB_GetRecentlyAddedMovies(integer $InstanzeID);
 ```
  Liest die Eigenschaften der Filme aus, welche zuletzt zur Datenbank hinzugefügt wurden.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIVIDEOLIB_GetMovieDetails.  
 
 ```php
 array|boolean KODIVIDEOLIB_GetMovieSetDetails(integer $InstanzeID, integer $SetId);
 ```
  Liest die Eigenschaften eines Film-Sets aus.
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                     | Typ       | Beschreibung                      |
 |:-------------------------:|:---------:|:---------------------------------:|
@@ -1616,14 +1617,14 @@ array|boolean KODIVIDEOLIB_GetMovieSetDetails(integer $InstanzeID, integer $SetI
 array|boolean KODIVIDEOLIB_GetMovieSets(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller Film-Sets aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIVIDEOLIB_GetMovieSetDetails.  
 
 ```php
 array|boolean KODIVIDEOLIB_GetMusicVideoDetails(integer $InstanzeID, integer $MusicVideoId);
 ```
  Liest die Eigenschaften eines Musikvideos aus.
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                     | Typ       | Beschreibung                  |
 |:-------------------------:|:---------:|:-----------------------------:|
@@ -1653,21 +1654,21 @@ array|boolean KODIVIDEOLIB_GetMusicVideoDetails(integer $InstanzeID, integer $Mu
 array|boolean KODIVIDEOLIB_GetMusicVideos(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller Musikvideos aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIVIDEOLIB_GetMusicVideoDetails.  
 
 ```php
 array|boolean KODIVIDEOLIB_GetRecentlyAddedMusicVideos(integer $InstanzeID);
 ```
  Liest die Eigenschaften der Musikvideos aus, welche zuletzt zur Datenbank hinzugefügt wurden.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIVIDEOLIB_GetMusicVideoDetails.  
 
 ```php
 array|boolean KODIVIDEOLIB_GetSeasons(integer $InstanzeID, integer $TvShowId);
 ```
  Liest die Eigenschaften Alles Seasons eine TV-Serie ($TvShowId) aus.
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                     | Typ       | Beschreibung                  |
 |:-------------------------:|:---------:|:-----------------------------:|
@@ -1685,7 +1686,7 @@ array|boolean KODIVIDEOLIB_GetSeasons(integer $InstanzeID, integer $TvShowId);
 array|boolean KODIVIDEOLIB_GetTVShowDetails(integer $InstanzeID, integer $TvShowId);
 ```
  Liest die Eigenschaften eines TV-Serie aus.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
 | Index                     | Typ       | Beschreibung                  |
 |:-------------------------:|:---------:|:-----------------------------:|
@@ -1720,7 +1721,7 @@ array|boolean KODIVIDEOLIB_GetTVShowDetails(integer $InstanzeID, integer $TvShow
 array|boolean KODIVIDEOLIB_GetTVShows(integer $InstanzeID);
 ```
  Liest die Eigenschaften aller TV-Serien.  
- Rückgabewert ist ein assoziertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurüchgegeben.  
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  Es gilt die Tabelle von KODIVIDEOLIB_GetTVShowDetails.  
 
 ```php
@@ -1735,7 +1736,7 @@ TODO
 
 ## 8. Parameter / Modul-Infos
 
-GUIDs der Instanzen (z.B. wenn Instanz per PHP angelegt werden soll):  
+GUID der Instanzen (z.B. wenn Instanz per PHP angelegt werden soll):  
 
 | Instanz                | GUID                                   |
 | :--------------------: | :------------------------------------: |
@@ -1818,7 +1819,7 @@ keine
 | showIsAvailable        | boolean | true         | Status-Variable PVR-Verfügbarkeit anzeigen               |
 | showIsRecording        | boolean | true         | Status-Variable Aufzeichnung aktiv anzeigen              |
 | showDoRecording        | boolean | true         | Aktions-Variable zum steuern einer Aufzeichnung anzeigen |
-| showIsScanning         | boolean | true         | Status-Variable für sktive Kanalsuche anzeigen           |
+| showIsScanning         | boolean | true         | Status-Variable für aktive Kanalsuche anzeigen           |
 | showTVChannellist      | boolean | true         | HTML-Tabelle mit den TV Kanälen erzeugen                 |
 | showMaxTVChannels      | integer | 20           | Anzahl der darzustellenden TV Kanäle                     |
 | TVChannellistconfig    | integer | auto         | Script mit den Style für die HTML-Tabelle                |
@@ -1854,7 +1855,7 @@ keine
 | :-------------: | :-----: | :----------: | :--------------------------------------------------------------: |
 | PowerScript     | integer | 0            | Script welches zum einschalten des System ausgeführt werden soll |
 | PowerOff        | integer | 0            | Ausschalt-Methode: 0 = OFF, 1 = Hibernate, 2 = Standby           |
-| PreSelectScript | integer | 0            | immer 0 nach Appylchanges, Erzeugt eine PowerScript aus Vorlagen |
+| PreSelectScript | integer | 0            | immer 0 nach ApplyChanges, Erzeugt eine PowerScript aus Vorlagen |
 | MACAddress      | string  |              | MAC-Adresse für PowerScript                                      |
 
  Eigenschaften von KodiDeviceVideoLibrary:  
@@ -1889,9 +1890,9 @@ Eigenschaften von KodiSplitter:
 
 ## 10. Anhang
 
-**Changlog:**
+**Changelog:**
 
-Version 3.00:
+Version 2.90:
   - Neu: Discovery kann auch mit Hostnamen umgehen.  
   - Fix: Links zur Dokumentation korrigiert.  
   - Neu: Testcenter ergänzt.  
@@ -1903,6 +1904,8 @@ Version 3.00:
   - Neu: Übersetzungen der Fehlermeldungen.  
   - Neu: Konfigurationsformulare optisch angepasst.  
   - Fix: Config-Scripte werden nur beim erzeugen initial versteckt.  
+  - Fix: Diverse Schreibfehler korrigiert  
+  - Neu: Alle Webhooks der HTML-Tabellen werden mit einem Hash abgesichert.  
 
 Version 2.17:  
   - Fix: Fehlermeldung im Debug wenn Splitter mehr als 256Kb Daten hat.  
@@ -1956,8 +1959,8 @@ Version 2.01:
   - Neu: Input-Modul hat ein Eingabefeld im WebFront um Zeichenfolgen an Kodi zu senden  
   
  Version 1.1:  
-  - Diversese Bugfixes  
-  - Horizontale Remote hizugefügt  
+  - Diverse Bugfixes  
+  - Horizontale Remote hinzugefügt  
   - PVR zeigt TV & Radio-Kanäle sowie Aufzeichnungen an und kann Diese wiedergeben  
   - Rückkanal für HTML-Tabellen hinzugefügt  
 
@@ -1966,7 +1969,7 @@ Version 2.01:
 
 ## 11. Spenden  
   
-  Die Library ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  
+  Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G2SLW2MEMQZH2" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>
 

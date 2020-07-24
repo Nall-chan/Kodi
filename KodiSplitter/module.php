@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.17
+ * @version       2.90
  *
  */
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -29,7 +29,7 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.17
+ * @version       2.90
  * @property array $ReplyJSONData
  * @property string $BufferIN
  * @property string $Host
@@ -177,7 +177,7 @@ class KodiSplitter extends IPSModule
                             break;
                         case IS_EBASE + 3: //ERROR RCP-Server
                         case IS_EBASE + 4: //ERROR WebServer
-                        case IS_EBASE + 2: //misconfig
+                        case IS_EBASE + 2: //mis config
                         case IS_INACTIVE:
                             $this->SetWatchdogTimer(true);
                             $this->SetTimerInterval('KeepAlive', 0);
@@ -289,7 +289,7 @@ class KodiSplitter extends IPSModule
 
     ################## DATAPOINTS DEVICE
     /**
-     * Interne Funktion des SDK. Nimmt Daten von Childs entgegen und sendet Diese weiter.
+     * Interne Funktion des SDK. Nimmt Daten von Children entgegen und sendet Diese weiter.
      *
      * @access public
      * @param string $JSONString Ein Kodi_RPC_Data-Objekt welches als JSONString kodiert ist.
@@ -307,7 +307,7 @@ class KodiSplitter extends IPSModule
 //        try
 //        {
         $ret = $this->Send($KodiData);
-        //          $this->SendDebug('Result', $anwser, 0);
+        //          $this->SendDebug('Result', $answer, 0);
         if (!is_null($ret)) {
             return serialize($ret);
         }
@@ -331,7 +331,7 @@ class KodiSplitter extends IPSModule
     {
         $data = json_decode($JSONString);
 
-        // Datenstream zusammenfügen
+        // DatenStream zusammenfügen
         $head = $this->BufferIN;
         $Data = $head . utf8_decode($data->Buffer);
 
@@ -341,7 +341,7 @@ class KodiSplitter extends IPSModule
         $JSONLine = explode(chr(0x04), $Data);
 
         if (is_null(json_decode($JSONLine[$Count]))) {
-            // Rest vom Stream wieder in den Empfangsbuffer schieben
+            // Rest vom Stream wieder in den EmpfangsBuffer schieben
             $tail = array_pop($JSONLine);
             if (strlen($tail) > 256 * 1024) { //Drop large Paket
                 $this->SendDebug('Skip date over 265kB', '', 0);
@@ -461,7 +461,7 @@ class KodiSplitter extends IPSModule
     {
         try {
             if ($this->ReadPropertyBoolean('Open') === false) {
-                throw new Exception('Instance inactiv.', E_USER_NOTICE);
+                throw new Exception('Instance inactive.', E_USER_NOTICE);
             }
 
             if (!$this->HasActiveParent()) {
@@ -473,7 +473,7 @@ class KodiSplitter extends IPSModule
             $ReplyKodiData = $this->WaitForResponse((int) $KodiData->Id);
 
             if ($ReplyKodiData === false) {
-                throw new Exception('No anwser from Kodi', E_USER_NOTICE);
+                throw new Exception('No answer from Kodi', E_USER_NOTICE);
             }
 
             $ret = $ReplyKodiData->GetResult();
@@ -591,15 +591,15 @@ class KodiSplitter extends IPSModule
             curl_setopt($ch, CURLOPT_USERPWD, $User . ':' . $Pass);
         }
 
-        $this->SendDebug('DoWebrequest', $URL, 0);
+        $this->SendDebug('DoWebRequest', $URL, 0);
         $Result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         if ($http_code >= 400) {
-            $this->SendDebug('Webrequest Error', $http_code, 0);
+            $this->SendDebug('WebRequest Error', $http_code, 0);
             $Result = false;
         } else {
-            $this->SendDebug('Webrequest Result:' . $http_code, substr($Result, 0, 100), 0);
+            $this->SendDebug('WebRequest Result:' . $http_code, substr($Result, 0, 100), 0);
         }
         return $Result;
     }
@@ -607,7 +607,7 @@ class KodiSplitter extends IPSModule
     /**
      * Aktiviert / Deaktiviert den WatchdogTimer.
      *
-     * @param bool $Active True für aktiv, false für deaktiv.
+     * @param bool $Active True für aktiv, false für desaktiv.
      */
     private function SetWatchdogTimer(bool $Active)
     {
@@ -627,8 +627,8 @@ class KodiSplitter extends IPSModule
     }
 
     /**
-     * Sendet ein PowerEvent an die Childs.
-     * Ermöglicht es dass der Child vom Typ KodiDeviceSystem den aktuellen an/aus Zustand von Kodi kennt.
+     * Sendet ein PowerEvent an die Children.
+     * Ermöglicht es dass der Children vom Typ KodiDeviceSystem den aktuellen an/aus Zustand von Kodi kennt.
      *
      * @access private
      * @param bool $value true für an, false für aus.
@@ -653,7 +653,7 @@ class KodiSplitter extends IPSModule
     }
 
     /**
-     * Sendet Kodi_RPC_Data an die Childs.
+     * Sendet Kodi_RPC_Data an die Children.
      *
      * @access private
      * @param Kodi_RPC_Data $KodiData Ein Kodi_RPC_Data-Objekt.

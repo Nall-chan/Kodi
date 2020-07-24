@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  *
  */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
@@ -24,7 +24,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle.
  * @todo VideoLibrary.GetInProgressTVShows ab v8
@@ -328,7 +328,7 @@ class KodiDeviceVideoLibrary extends KodiBase
 
     ################## PUBLIC
     /**
-     * IPS-Instanz-Funktion 'KODIVIDOLIB_Clean'. Startet das bereinigen der Datenbank
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_Clean'. Startet das bereinigen der Datenbank
      *
      * @access public
      * @return bool true bei erfolgreicher Ausführung, sonst false.
@@ -349,7 +349,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIVIDOLIB_Export'. Exportiert die Video Datenbank.
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_Export'. Exportiert die Video Datenbank.
      *
      * @access public
      * @param  string $Path Ziel-Verzeichnis für den Export.

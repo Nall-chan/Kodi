@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  */
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -28,7 +28,7 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  * @property int $ParentID
  * @property string $WebHookSecret
@@ -288,7 +288,7 @@ abstract class KodiBase extends IPSModule
      * Liefert den Header der HTML-Tabelle.
      *
      * @access private
-     * @param array $Config Die Kofiguration der Tabelle
+     * @param array $Config Die Konfiguration der Tabelle
      * @return string HTML-String
      */
     protected function GetTableHeader($Config)
@@ -395,19 +395,19 @@ sleep(10).then(() => {
             if ($image !== false) {
                 $width = imagesx($image);
                 $height = imagesy($image);
-                $factorw = 1;
-                $factorh = 1;
+                $FactorW = 1;
+                $FactorH = 1;
                 if ($SizeWidth > 0) {
                     if ($width > $SizeWidth) {
-                        $factorw = $width / $SizeWidth;
+                        $FactorW = $width / $SizeWidth;
                     }
                 }
                 if ($SizeHeight > 0) {
                     if ($height > $SizeHeight) {
-                        $factorh = $height / $SizeHeight;
+                        $FactorH = $height / $SizeHeight;
                     }
                 }
-                $factor = ($factorh < $factorw ? $factorw : $factorh);
+                $factor = ($FactorH < $FactorW ? $FactorW : $FactorH);
                 if ($factor != 1) {
                     $image = imagescale($image, (int) ($width / $factor), (int) ($height / $factor));
                 }
@@ -437,13 +437,13 @@ sleep(10).then(() => {
             if (!$this->HasActiveParent()) {
                 throw new Exception('Instance has no active parent.', E_USER_NOTICE);
             }
-            $anwser = $this->SendDataToParent($JSONData);
+            $answer = $this->SendDataToParent($JSONData);
             $this->SendDebug('Send', $JSONData, 0);
-            if ($anwser === false) {
+            if ($answer === false) {
                 $this->SendDebug('Receive', 'No valid answer', 0);
                 return null;
             }
-            $result = unserialize($anwser);
+            $result = unserialize($answer);
             $this->SendDebug('Receive', $result, 0);
             return $result;
         } catch (Exception $exc) {
@@ -470,7 +470,7 @@ sleep(10).then(() => {
 
             $Data = $KodiData->ToRawRPCJSONString();
             if (@IPS_GetProperty($SplitterInstance['ConnectionID'], 'Open') === false) {
-                throw new Exception('Instance inactiv.', E_USER_NOTICE);
+                throw new Exception('Instance inactive.', E_USER_NOTICE);
             }
 
             $Host = @IPS_GetProperty($SplitterInstance['ConnectionID'], 'Host');
@@ -617,7 +617,7 @@ sleep(10).then(() => {
     /**
      * Löscht ein nicht mehr benötigtes Script.
      * @access protected
-     * @param string $Ident Der Ident des Scriptes.
+     * @param string $Ident Der Ident des Script.
      */
     protected function UnregisterScript($Ident)
     {

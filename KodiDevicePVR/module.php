@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  *
  */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
@@ -24,10 +24,13 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  * @todo PVR.AddTimer ab v8
  * @todo PVR.ToggleTimer ab v8
+ * @property string $WebHookSecretTv
+ * @property string $WebHookSecretRadio
+ * @property string $WebHookSecretRecording
  */
 class KodiDevicePVR extends KodiBase
 {
@@ -58,7 +61,7 @@ class KodiDevicePVR extends KodiBase
      * @access private
      *  @var array
      */
-    protected static $ChanneltemList = [
+    protected static $ChannelItemList = [
         'thumbnail',
         'channeltype',
         'hidden',
@@ -73,7 +76,7 @@ class KodiDevicePVR extends KodiBase
      * @access private
      *  @var array
      */
-    protected static $ChanneltemListFull = [
+    protected static $ChannelItemListFull = [
         'thumbnail',
         'channeltype',
         'hidden',
@@ -138,7 +141,7 @@ class KodiDevicePVR extends KodiBase
     ];
 
     /**
-     * Alle Eigenschaften von Timern.
+     * Alle Eigenschaften von Timer.
      *
      * @access private
      *  @var array
@@ -171,6 +174,9 @@ class KodiDevicePVR extends KodiBase
     public function Create()
     {
         parent::Create();
+        $this->WebHookSecretTv = '';
+        $this->WebHookSecretRadio = '';
+        $this->WebHookSecretRecording = '';
         $this->RegisterPropertyBoolean('showIsAvailable', true);
         $this->RegisterPropertyBoolean('showIsRecording', true);
         $this->RegisterPropertyBoolean('showDoRecording', true);
@@ -339,29 +345,6 @@ class KodiDevicePVR extends KodiBase
         parent::ApplyChanges();
     }
 
-    /*
-      ["channel"]=>
-      string(9) "ProSieben"
-      ["endtime"]=>
-      string(19) "2015-04-15 23:04:00"
-      ["genre"]=>
-      array(2) {
-      [0]=>
-      string(6) "Andere"
-      [1]=>
-      string(9) "Unbekannt"
-      }
-      ["plot"]=>
-      string(857) "Tödliche Frequenz, Action, USA 2014Dr. Wells wird von einem Unbekannten angegriffen. Es stellt sich heraus, dass es sich um Hartley Rathaway, einen ehemaligen Mitarbeiter von S.T.A.R.- Labs, handelt, der mit Wells noch eine Rechnung offen hat. Barry kann Hartley im Kampf zwar besiegen, doch der junge Mann kann sich kurze Zeit später aus seinem provisorischen Gefängnis befreien und wichtige Daten aus dem Zentralrechner von S.T.A.R.-Labs zu stehlen ...Regie: John F. ShowalterDrehbuch: Alison Schapker, Brooke EikmeierKamera: C. Kim MilesSchnitt: Paul KarasickDarsteller:Grant Gustin (Barry Allen/The Flash)Candice Patton (Iris West)Danielle Panabaker (Caitlin Snow)Rick Cosnett (Eddie Thawne)Carlos Valdes (Cisco Ramon)Tom Cavanagh (Dr. Harrison Wells)Jesse L. Martin (Detective Joe West)Andy Mientus (Hartley Rathaway/Pied Piper)Tom Butler (Eric Larkin)"
-      ["recordingid"]=>
-      int(1363)
-      ["runtime"]=>
-      int(3720)
-      ["starttime"]=>
-      string(19) "2015-04-15 22:02:00"
-      ["title"]=>
-      string(9) "The Flash"
-     */
     ################## ActionHandler
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
@@ -394,14 +377,13 @@ class KodiDevicePVR extends KodiBase
      */
     public function ProcessHookdata()
     {
-        if (!isset($_GET['ID'])) {
-            $this->SendDebug('illegal HOOK', $_GET, 0);
-            echo 'Illegal hook';
+        if ((!isset($_GET['ID'])) || (!isset($_GET['TYP'])) || (!isset($_GET['Secret']))) {
+            echo $this->Translate('Bad Request');
             return;
         }
-        if (!isset($_GET['TYP'])) {
-            $this->SendDebug('illegal HOOK', $_GET, 0);
-            echo 'Illegal hook';
+        $CalcSecret = base64_encode(sha1($this->{'WebHookSecret' . ucfirst($_GET['TYP'])} . '0' . $_GET['ID'], true));
+        if ($CalcSecret != rawurldecode($_GET['Secret'])) {
+            echo $this->Translate('Access denied');
             return;
         }
         $this->SendDebug($_GET['TYP'] . ' HOOK', $_GET['ID'], 0);
@@ -415,9 +397,8 @@ class KodiDevicePVR extends KodiBase
                 $KodiData->Open(['item' => ['recordingid' => (int) $_GET['ID']]]);
                 break;
             default:
-                $this->SendDebug('illegal HOOK', $_GET, 0);
-                echo 'Illegal hook';
-                return;
+                echo $this->Translate('Bad Request');
+            break;
         }
         $ret = $this->Send($KodiData);
         echo $ret;
@@ -482,7 +463,7 @@ class KodiDevicePVR extends KodiBase
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetChannels(['channelgroupid' => 'all' . $ChannelTyp, 'properties' => static::$ChanneltemList]);
+        $KodiData->GetChannels(['channelgroupid' => 'all' . $ChannelTyp, 'properties' => static::$ChannelItemList]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -508,7 +489,7 @@ class KodiDevicePVR extends KodiBase
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetChannelDetails(['channelid' => $ChannelId, 'properties' => static::$ChanneltemListFull]);
+        $KodiData->GetChannelDetails(['channelid' => $ChannelId, 'properties' => static::$ChannelItemListFull]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -546,18 +527,18 @@ class KodiDevicePVR extends KodiBase
      * IPS-Instanz-Funktion 'KODIPVR_GetChannelGroupDetails'. Liefert die Eigenschaften einer Kanalgruppe.
      *
      * @access public
-     * @param int $ChannelGroupdId Kanal welcher gelesen werden soll.
+     * @param int $ChannelGroupId Kanal welcher gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetChannelGroupDetails(int $ChannelGroupdId)
+    public function GetChannelGroupDetails(int $ChannelGroupId)
     {
-        if (!is_int($ChannelGroupdId)) {
+        if (!is_int($ChannelGroupId)) {
             trigger_error('ChannelId must be integer.', E_USER_NOTICE);
             return false;
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetChannelGroupDetails(['channelgroupid' => $ChannelGroupdId, 'properties' => static::$ChanneltemList]);
+        $KodiData->GetChannelGroupDetails(['channelgroupid' => $ChannelGroupId, 'properties' => static::$ChannelItemList]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -661,7 +642,7 @@ class KodiDevicePVR extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIPVR_GetTimers'. Liefert alle Aufnahmetimer.
+     * IPS-Instanz-Funktion 'KODIPVR_GetTimers'. Liefert alle AufnahmeTimer.
      *
      * @access public
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
@@ -681,7 +662,7 @@ class KodiDevicePVR extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIPVR_GetTimerDetails'. Liefert die Eigenschaften einer Aufnahmetimers.
+     * IPS-Instanz-Funktion 'KODIPVR_GetTimerDetails'. Liefert die Eigenschaften einer AufnahmeTimers.
      *
      * @access public
      * @param int $TimerId Timers welcher gelesen werden soll.
@@ -801,10 +782,9 @@ class KodiDevicePVR extends KodiBase
             return;
         }
 
-        //$Channels = $this->GetChannels('tv');
         $Max = $this->ReadPropertyInteger('showMaxTVChannels');
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetChannels(['channelgroupid' => 'alltv', 'properties' => static::$ChanneltemListFull, 'limits' => ['end' => $Max]]);
+        $KodiData->GetChannels(['channelgroupid' => 'alltv', 'properties' => static::$ChannelItemListFull, 'limits' => ['end' => $Max]]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return;
@@ -815,6 +795,10 @@ class KodiDevicePVR extends KodiBase
         $Channels = $KodiData->ToArray($ret->channels);
 
         $Data = array_filter($Channels, [$this, 'FilterChannels'], ARRAY_FILTER_USE_BOTH);
+
+        $NewSecretTV = base64_encode(openssl_random_pseudo_bytes(12));
+        $this->WebHookSecretTv = $NewSecretTV;
+
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
         if (count($Data) > 0) {
@@ -869,9 +853,8 @@ class KodiDevicePVR extends KodiBase
                 } else {
                     $Line['Next'] = 'No Info';
                 }
-
-                //$HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?TYP=tv&ID=' . $Line['Channelid'] . '\' })" >';
+                $LineSecret = rawurlencode(base64_encode(sha1($NewSecretTV . '0' . $Line['Channelid'], true)));
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?TYP=tv&ID=' . $Line['Channelid'] . '&Secret=' . $LineSecret . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
                     if (!array_key_exists($feldIndex, $Line)) {
@@ -921,7 +904,7 @@ class KodiDevicePVR extends KodiBase
 
         $Max = $this->ReadPropertyInteger('showMaxRadioChannels');
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetChannels(['channelgroupid' => 'allradio', 'properties' => static::$ChanneltemListFull, 'limits' => ['end' => $Max]]);
+        $KodiData->GetChannels(['channelgroupid' => 'allradio', 'properties' => static::$ChannelItemListFull, 'limits' => ['end' => $Max]]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return;
@@ -932,6 +915,10 @@ class KodiDevicePVR extends KodiBase
         $Channels = $KodiData->ToArray($ret->channels);
 
         $Data = array_filter($Channels, [$this, 'FilterChannels'], ARRAY_FILTER_USE_BOTH);
+
+        $NewSecretRadio = base64_encode(openssl_random_pseudo_bytes(12));
+        $this->WebHookSecretRadio = $NewSecretRadio;
+
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
 
@@ -987,9 +974,8 @@ class KodiDevicePVR extends KodiBase
                 } else {
                     $Line['Next'] = 'No Info';
                 }
-
-//                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?ID=' . $Line['Channelid'] . '\' })" >';
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?TYP=radio&ID=' . $Line['Channelid'] . '\' })" >';
+                $LineSecret = rawurlencode(base64_encode(sha1($NewSecretRadio . '0' . $Line['Channelid'], true)));
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?TYP=radio&ID=' . $Line['Channelid'] . '&Secret=' . $LineSecret . '\' })" >';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
                     if (!array_key_exists($feldIndex, $Line)) {
@@ -1049,7 +1035,9 @@ class KodiDevicePVR extends KodiBase
         }
         $Data = $KodiData->ToArray($ret->recordings);
 
-//        $Data = array_filter($Recordings, array($this, 'FilterChannels'), ARRAY_FILTER_USE_BOTH);
+        $NewSecretRecording = base64_encode(openssl_random_pseudo_bytes(12));
+        $this->WebHookSecretRecording = $NewSecretRecording;
+
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
 
@@ -1076,9 +1064,8 @@ class KodiDevicePVR extends KodiBase
                     }
                 }
                 $Line['Runtime'] = $this->ConvertTime($Line['Runtime']);
-
-                //$HTMLData .='<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?ID=' . $Line['Recordingid'] . '\' })" >';
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?TYP=recording&ID=' . $Line['Recordingid'] . '\' })" >';
+                $LineSecret = rawurlencode(base64_encode(sha1($NewSecretRecording . '0' . $Line['Recordingid'], true)));
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?TYP=recording&ID=' . $Line['Recordingid'] .'&Secret=' . $LineSecret .  '\' })" >';
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
                     if (!array_key_exists($feldIndex, $Line)) {
                         $Line[$feldIndex] = '';
@@ -1102,7 +1089,7 @@ class KodiDevicePVR extends KodiBase
     }
 
     /**
-     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der TV Kanal-Tabelle enthält.
+     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der TV Kanal-Tabelle enthält.
      *
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
@@ -1196,7 +1183,7 @@ echo serialize($Config);
     }
 
     /**
-     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Radio Kanal-Tabelle enthält.
+     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Radio Kanal-Tabelle enthält.
      *
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
@@ -1290,7 +1277,7 @@ echo serialize($Config);
     }
 
     /**
-     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Radio Kanal-Tabelle enthält.
+     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Radio Kanal-Tabelle enthält.
      *
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.

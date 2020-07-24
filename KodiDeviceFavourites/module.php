@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  *
  */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
@@ -24,7 +24,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  */
 class KodiDeviceFavourites extends KodiBase
@@ -267,12 +267,15 @@ class KodiDeviceFavourites extends KodiBase
      */
     protected function ProcessHookdata()
     {
-        if (!((isset($_GET['Type'])) && (isset($_GET['Path'])))) {
-            $this->SendDebug('illegal HOOK', $_GET, 0);
-            echo 'Illegal hook';
+        if ((!isset($_GET['Type'])) || (!isset($_GET['Path'])) || (!isset($_GET['Secret']))) {
+            echo $this->Translate('Bad Request');
             return;
         }
-
+        $CalcSecret = base64_encode(sha1($this->WebHookSecret . '0' . $_GET['Path'], true));
+        if ($CalcSecret != rawurldecode($_GET['Secret'])) {
+            echo $this->Translate('Access denied');
+            return;
+        }
         $Path = rawurldecode($_GET['Path']);
         switch ($_GET['Type']) {
             case 'media':
@@ -304,8 +307,7 @@ class KodiDeviceFavourites extends KodiBase
                 echo 'unknown HOOK';
                 break;
             default:
-                $this->SendDebug('illegal HOOK', $_GET, 0);
-                echo 'Illegal hook';
+                echo $this->Translate('Bad Request');
                 break;
         }
     }
@@ -336,6 +338,10 @@ class KodiDeviceFavourites extends KodiBase
         }
         $AllFavs = $this->GetFavourites('all');
         $Data = array_filter($AllFavs, [$this, 'FilterFav'], ARRAY_FILTER_USE_BOTH);
+
+        $NewSecret = base64_encode(openssl_random_pseudo_bytes(12));
+        $this->WebHookSecret = $NewSecret;
+
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
 
@@ -368,7 +374,7 @@ class KodiDeviceFavourites extends KodiBase
                 }
 
                 $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '"
-                        ' . $this->GetWebHookLink($Line) . '>';
+                        ' . $this->GetWebHookLink($Line, $NewSecret) . '>';
 
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
                     if (!array_key_exists($feldIndex, $Line)) {
@@ -396,7 +402,7 @@ class KodiDeviceFavourites extends KodiBase
      * @param array $Data Daten des Favoriten.
      * @return string JS-Code
      */
-    private function GetWebHookLink(array $Data)
+    private function GetWebHookLink(array $Data, string $NewSecret)
     {
         $Extra = '';
         switch ($Data['Type']) {
@@ -417,12 +423,12 @@ class KodiDeviceFavourites extends KodiBase
                 $this->SendDebug('create illegal HOOK', $Data, 0);
                 return '';
         }
-        //return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiFavlist' . $this->InstanceID . '?Type=' . $Data['Type'] . '&Path=' . rawurlencode($Data['Path']) . $Extra . '\' })"';
-        return 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiFavlist' . $this->InstanceID . '?Type=' . $Data['Type'] . '&Path=' . rawurlencode($Data['Path']) . $Extra . '\' })"';
+        $LineSecret = rawurlencode(base64_encode(sha1($NewSecret . '0' . $Data['Path'], true)));
+        return 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiFavlist' . $this->InstanceID . '?Type=' . $Data['Type'] . '&Path=' . rawurlencode($Data['Path']) . '&Secret=' . $LineSecret . $Extra . '\' })"';
     }
 
     /**
-     * Gibt den Inhalt des PHP-Scriptes zurück, welche die Konfiguration und das Design der Favoriten-Tabelle enthält.
+     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Favoriten-Tabelle enthält.
      *
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  *
  */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
@@ -24,7 +24,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  * @todo Input.ShowPlayerProcessInfo ab v8
  */
@@ -662,7 +662,7 @@ class KodiDeviceInput extends KodiBase
      * IPS-Instanz-Funktion 'KODIINPUT_SendText'. Als Parameter übergebenen Text senden.
      *
      * @access public
-     * @param string $Text Der zu sendene Text.
+     * @param string $Text Der zu sendende Text.
      * @param bool $Done True wenn die Eingabe beendet werden soll, sonst false.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */

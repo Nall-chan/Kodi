@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  *
  */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
@@ -24,7 +24,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.10
+ * @version       2.90
  * @example <b>Ohne</b>
  * @property bool $isActive
  * @property int $PlayerId
@@ -594,7 +594,7 @@ class KodiDevicePlayer extends KodiBase
                 }
 
                 switch ($this->ReadPropertyString('CoverTyp')) {
-                    case'artist':
+                    case 'artist':
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'artist.fanart')) {
                                 if ($ret->art->{'artist.fanart'} != '') {
@@ -691,7 +691,7 @@ class KodiDevicePlayer extends KodiBase
                 }
 
                 switch ($this->ReadPropertyString('CoverTyp')) {
-                    case'poster':
+                    case 'poster':
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'tvshow.poster')) {
                                 if ($ret->art->{'tvshow.poster'} != '') {
@@ -743,7 +743,7 @@ class KodiDevicePlayer extends KodiBase
                         $this->SetCover('');
 
                         break;
-                    case'banner':
+                    case 'banner':
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'tvshow.banner')) {
                                 if ($ret->art->{'tvshow.banner'} != '') {
@@ -1041,7 +1041,7 @@ class KodiDevicePlayer extends KodiBase
      * Setzt den Zufallsmodus.
      *
      * @access public
-     * @param bool $Value True für Zufallswiedergabe aktiv, false für deaktiv.
+     * @param bool $Value True für Zufallswiedergabe aktiv, false für desaktiv.
      * @return bool True bei Erfolg, sonst false.
      */
     public function SetShuffle(bool $Value)
@@ -1105,7 +1105,7 @@ class KodiDevicePlayer extends KodiBase
      * Setzt den Partymodus.
      *
      * @access public
-     * @param bool $Value True für Partymodus aktiv, false für deaktiv.
+     * @param bool $Value True für Partymodus aktiv, false für desaktiv.
      * @return bool True bei Erfolg, sonst false.
      */
     public function SetPartymode(bool $Value)
@@ -1233,7 +1233,7 @@ class KodiDevicePlayer extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYER_LoadArtist'.
-     * Lädt alle Itemes eines Artist und startet die Wiedergabe.
+     * Lädt alle Item eines Artist und startet die Wiedergabe.
      *
      * @access public
      * @param int $ArtistId ID des Artist.
@@ -1268,7 +1268,7 @@ class KodiDevicePlayer extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYER_LoadDirectory'.
-     * Lädt alle Itemes eines Verzeichnisses und startet die Wiedergabe.
+     * Lädt alle Item eines Verzeichnisses und startet die Wiedergabe.
      *
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
@@ -1285,7 +1285,7 @@ class KodiDevicePlayer extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYER_LoadDirectoryRecursive'.
-     * Lädt alle Itemes eines Verzeichnisses, sowie dessen Unterverzeichnisse, und startet die Wiedergabe.
+     * Lädt alle Item eines Verzeichnisses, sowie dessen Unterverzeichnisse, und startet die Wiedergabe.
      *
      * @access public
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
@@ -1369,10 +1369,10 @@ class KodiDevicePlayer extends KodiBase
 
     /**
      * IPS-Instanz-Funktion 'KODIPLAYER_LoadMusicvideo'.
-     * Lädt ein Musicvideo und startet die Wiedergabe.
+     * Lädt ein Musikvideo und startet die Wiedergabe.
      *
      * @access public
-     * @param int $MusicvideoId ID des Musicvideos.
+     * @param int $MusicvideoId ID des Musikvideos.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
     public function LoadMusicvideo(int $MusicvideoId)
@@ -1729,7 +1729,7 @@ class KodiDevicePlayer extends KodiBase
     /**
      * Fragt Kodi an ob der Playertyp der Instanz gerade aktiv ist.
      *
-     * @return bool true wenn Player aktiv ist, sonset false
+     * @return bool true wenn Player aktiv ist, sonst false
      */
     private function getActivePlayer()
     {
@@ -1761,7 +1761,7 @@ class KodiDevicePlayer extends KodiBase
     }
 
     /**
-     * Holt das über $flie übergebene Cover vom Kodi-Webinterface, skaliert und konvertiert dieses und speichert es in einem MedienObjekt ab.
+     * Holt das über $file übergebene Cover vom Kodi-Webinterface, skaliert und konvertiert dieses und speichert es in einem MedienObjekt ab.
      *
      * @access private
      * @param string $file
@@ -1849,20 +1849,20 @@ class KodiDevicePlayer extends KodiBase
      *
      * @return array Werteliste für das Variablenprofil.
      */
-    private function CreateProfilArray($Data, $Assos = [])
+    private function CreateProfilArray($Data, $Assoziation = [])
     {
         foreach ($Data as $item) {
             if ($item->language == '') {
                 if (property_exists($item, 'name')) {
-                    $Assos[] = [$item->index, $item->name, '', -1];
+                    $Assoziation[] = [$item->index, $item->name, '', -1];
                 } else {
-                    $Assos[] = [$item->index, 'Unbekannt', '', -1];
+                    $Assoziation[] = [$item->index, 'Unbekannt', '', -1];
                 }
             } else {
-                $Assos[] = [$item->index, $item->language, '', -1];
+                $Assoziation[] = [$item->index, $item->language, '', -1];
             }
         }
-        return $Assos;
+        return $Assoziation;
     }
 
     /**
@@ -1870,9 +1870,9 @@ class KodiDevicePlayer extends KodiBase
      */
     private function CreateSubtitleProfil($Subtitles)
     {
-        $Assos[0] = [-1, 'Aus', '', -1];
-        $Assos = $this->CreateProfilArray($Subtitles, $Assos);
-        $this->RegisterProfileIntegerEx('Subtitels.' . $this->InstanceID . '.Kodi', '', '', '', $Assos);
+        $Assoziation[0] = [-1, 'Aus', '', -1];
+        $Assoziation = $this->CreateProfilArray($Subtitles, $Assoziation);
+        $this->RegisterProfileIntegerEx('Subtitels.' . $this->InstanceID . '.Kodi', '', '', '', $Assoziation);
     }
 
     /**
@@ -1880,8 +1880,8 @@ class KodiDevicePlayer extends KodiBase
      */
     private function CreateAudioProfil($AudioStream)
     {
-        $Assos = $this->CreateProfilArray($AudioStream);
-        $this->RegisterProfileIntegerEx('AudioStream.' . $this->InstanceID . '.Kodi', '', '', '', $Assos);
+        $Assoziation = $this->CreateProfilArray($AudioStream);
+        $this->RegisterProfileIntegerEx('AudioStream.' . $this->InstanceID . '.Kodi', '', '', '', $Assoziation);
     }
 }
 
