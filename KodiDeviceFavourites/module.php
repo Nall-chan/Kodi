@@ -119,6 +119,10 @@ class KodiDeviceFavourites extends KodiBase
                 $this->UnregisterHook('/hook/KodiFavlist' . $this->InstanceID);
             }
         }
+        $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
+        if ($ScriptID > 0) {
+            $this->RegisterReference($ScriptID);
+        }
 
         parent::ApplyChanges();
     }
@@ -304,7 +308,7 @@ class KodiDeviceFavourites extends KodiBase
                 break;
             case 'unknown':
                 $this->SendDebug('unknown HOOK', $_GET, 0);
-                echo 'unknown HOOK';
+                echo $this->Translate('unknown Hook');
                 break;
             default:
                 echo $this->Translate('Bad Request');

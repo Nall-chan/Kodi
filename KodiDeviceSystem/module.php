@@ -95,6 +95,10 @@ class KodiDeviceSystem extends KodiBase
             IPS_Applychanges($this->InstanceID);
             return true;
         }
+        $ScriptID = $this->ReadPropertyInteger('PowerScript');
+        if ($ScriptID > 0) {
+            $this->RegisterReference($ScriptID);
+        }
         $this->RegisterVariableBoolean('Power', 'Power', '~Switch', 0);
         $this->EnableAction('Power');
         $this->RegisterVariableInteger('suspend', 'Standby', 'Action.Kodi', 1);

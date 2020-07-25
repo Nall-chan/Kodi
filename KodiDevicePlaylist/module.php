@@ -259,6 +259,10 @@ class KodiDevicePlaylist extends KodiBase
                 $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
             }
         }
+        $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
+        if ($ScriptID > 0) {
+            $this->RegisterReference($ScriptID);
+        }
 
         $this->RegisterProfileInteger('Tracklist.' . $this->InstanceID . '.Kodi', '', '', '', 1, 1, 1);
 

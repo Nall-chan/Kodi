@@ -341,6 +341,18 @@ class KodiDevicePVR extends KodiBase
         } else {
             $this->SetTimerInterval('RefreshLists', 0);
         }
+        $ScriptID = $this->ReadPropertyInteger('TVChannellistconfig');
+        if ($ScriptID > 0) {
+            $this->RegisterReference($ScriptID);
+        }
+        $ScriptID = $this->ReadPropertyInteger('RadioChannellistconfig');
+        if ($ScriptID > 0) {
+            $this->RegisterReference($ScriptID);
+        }
+        $ScriptID = $this->ReadPropertyInteger('Recordinglistconfig');
+        if ($ScriptID > 0) {
+            $this->RegisterReference($ScriptID);
+        }
 
         parent::ApplyChanges();
     }
