@@ -6,7 +6,9 @@
             "Script:": "Script:",
             "Size (width) for addon thumbnails:": "Größe (Breite) für Vorschaubilder der Addons:",
             "Thumbnail width": "Breite der Vorschau",
-            "Error on read Addonlistconfig-Script": "Fehler beim lesen des Addonlistconfig-Script"
+            "Error on read Addonlistconfig-Script": "Fehler beim lesen des Addonlistconfig-Script",
+            "Bad Request": "Ungültige Anfrage",
+            "Access denied": "Zugriff verweigert"
         }
     }
 }

@@ -15,7 +15,9 @@
             "Error on swap items.": "Fehler beim Tauschen von Einträgen.",
             "Error on read Playlistconfig-Script.": "Fehler beim lesen des Playlistconfig-Script.",
             "Error on add ": "Fehler beim hinzufügen von ",
-            "Error on insert ": "Fehler beim Einfügen von "
+            "Error on insert ": "Fehler beim Einfügen von ",
+            "Bad Request": "Ungültige Anfrage",
+            "Access denied": "Zugriff verweigert"
         }
     }
 }

@@ -15,7 +15,9 @@
             "Control": "Steuerung",
             "Input expected": "Eingabe erwartet",
             "Send input": "Eingabe senden",
-            "Error on execute action.": "Fehler beim ausführen der Aktion."
+            "Error on execute action.": "Fehler beim ausführen der Aktion.",
+            "Bad Request": "Ungültige Anfrage",
+            "Access denied": "Zugriff verweigert"
         }
     }
 }

@@ -696,7 +696,7 @@ class KodiDeviceInput extends KodiBase
             }
         } else {
             $this->SendDebug('illegal HOOK', $_GET, 0);
-            echo 'Illegal hook';
+            echo $this->Translate('Bad Request');
         }
     }
 

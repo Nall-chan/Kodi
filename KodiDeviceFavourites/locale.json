@@ -7,7 +7,10 @@
             "Favorites": "Favoriten",
             "Size (width) for favorites thumbnails:": "Größe (Breite) für Vorschaubilder der Favoriten:",
             "Thumbnail width": "Breite der Vorschau",
-            "Error on read Favlistconfig-Script": "Fehler beim leser des Favlistconfig-Script"
+            "Error on read Favlistconfig-Script": "Fehler beim lesen des Favlistconfig-Script",
+            "Bad Request": "Ungültige Anfrage",
+            "Access denied": "Zugriff verweigert",
+            "unknown Hook": "unbekannter Hook"
         }
     }
 }

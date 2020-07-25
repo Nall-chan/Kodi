@@ -129,7 +129,10 @@ class KodiDeviceAddons extends KodiBase
                 $this->UnregisterHook('/hook/KodiAddonlist' . $this->InstanceID);
             }
         }
-
+        $ScriptID = $this->ReadPropertyInteger('Addonlistconfig');
+        if ($ScriptID > 0) {
+            $this->RegisterReference($ScriptID);
+        }
         parent::ApplyChanges();
     }
 

@@ -778,7 +778,7 @@ class KodiDevicePVR extends KodiBase
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
         if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read TV Channelistconfig-Script'));
+            trigger_error($this->Translate('Error on read TV Channellistconfig-Script'));
             return;
         }
 
@@ -898,7 +898,7 @@ class KodiDevicePVR extends KodiBase
         $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
         $Config = @unserialize($result);
         if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read radio Channelistconfig-Script'));
+            trigger_error($this->Translate('Error on read radio Channellistconfig-Script'));
             return;
         }
 
