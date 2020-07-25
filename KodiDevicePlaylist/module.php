@@ -794,13 +794,17 @@ class KodiDevicePlaylist extends KodiBase
      */
     protected function ProcessHookdata()
     {
-        if (isset($_GET['Index'])) {
-            if ($this->RequestAction('position', $_GET['Index']) === true) {
-                echo 'OK';
-            }
-        } else {
-            $this->SendDebug('illegal HOOK', $_GET, 0);
-            echo 'Illegal hook';
+        if ((!isset($_GET['Index'])) || (!isset($_GET['Secret']))) {
+            echo $this->Translate('Bad Request');
+            return;
+        }
+        $CalcSecret = base64_encode(sha1($this->WebHookSecret . '0' . $_GET['Index'], true));
+        if ($CalcSecret != rawurldecode($_GET['Secret'])) {
+            echo $this->Translate('Access denied');
+            return;
+        }
+        if ($this->RequestAction('position', $_GET['Index']) === true) {
+            echo 'OK';
         }
     }
 
@@ -898,8 +902,8 @@ class KodiDevicePlaylist extends KodiBase
                 break;
             case 'OnStop':
                 $this->SetValueInteger('position', 0);
-                // FIXME: No break. Please add proper comment if intentional
                 // Auch bei OnStop muss die Position neu erfragt und ein RefreshPlaylist erfolgen.
+                // FIXME: No break. Please add proper comment if intentional
             case 'OnPlay':
                 $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
                 $KodiData->GetProperties(['playerid' => $this->PlaylistId, 'properties' => ['playlistid', 'position']]);
@@ -1052,6 +1056,8 @@ class KodiDevicePlaylist extends KodiBase
         if ($Data === false) {
             return;
         }
+        $NewSecret = base64_encode(openssl_random_pseudo_bytes(12));
+        $this->WebHookSecret = $NewSecret;
 
         $HTMLData = $this->GetTableHeader($Config);
         $pos = 0;
@@ -1082,9 +1088,8 @@ class KodiDevicePlaylist extends KodiBase
                 }
 
                 $Line['Play'] = ($Line['Position'] == $CurrentTrack ? '<div class="iconMediumSpinner ipsIconArrowRight" style="width: 100%; background-position: center center;"></div>' : '');
-
-//                $HTMLData .='<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '\' })">';
+                $LineSecret = rawurlencode(base64_encode(sha1($NewSecret . '0' . $Line['Position'], true)));
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] .'&Secret=' . $LineSecret. '\' })">';
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
                     if (!array_key_exists($feldIndex, $Line)) {
                         $Line[$feldIndex] = '';
