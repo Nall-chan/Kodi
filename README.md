@@ -1945,7 +1945,7 @@ Eigenschaften von KodiSplitter:
 **Changelog:**
 
 Version 2.95:
-  - Neu: KodiDeviceSetting Instanz.  
+  - Neu: KodiDeviceSettings Instanz.  
 
 Version 2.90:
   - Neu: Discovery kann auch mit Hostnamen umgehen.  
