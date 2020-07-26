@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.90
+ * @version       2.95
  *
  */
 
@@ -23,7 +23,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.90
+ * @version       2.95
  * @example <b>Ohne</b>
  */
 class KodiConfigurator extends IPSModule
@@ -43,6 +43,7 @@ class KodiConfigurator extends IPSModule
         'GUI'           => '{E15F2C11-0B28-4CFB-AEE6-463BD313A964}',
         'Input'         => '{9F3BE8BB-4610-49F4-A41A-40E14F641F43}',
         'TV/Radio'      => '{9D73D46E-7B80-4814-A7B2-31768DC6AB7E}',
+        'Settings'      => '{310E1F8B-D1B2-460C-9DBB-C7C500B28658}',
         'System'        => '{03E18A60-02FD-45E8-8A2C-1F8E247C92D0}',
         'Video Library' => '{07943DF4-FAB9-454F-AA9E-702A5F9C9D57}'
     ];

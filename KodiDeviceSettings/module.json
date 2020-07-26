@@ -1,0 +1,18 @@
+{
+    "id": "{310E1F8B-D1B2-460C-9DBB-C7C500B28658}",
+    "name": "KodiDeviceSettings",
+    "type": 3,
+    "vendor": "Kodi",
+    "aliases": [
+        "Kodi Settings"
+    ],
+    "parentRequirements": [
+        "{0222A902-A6FA-4E94-94D3-D54AA4666321}"
+    ],
+    "childRequirements": [],
+    "implemented": [
+        "{73249F91-710A-4D24-B1F1-A72F216C2BDC}"
+    ],
+    "prefix": "KODISETTINGS",
+    "url": "https://github.com/Nall-chan/Kodi/"
+}

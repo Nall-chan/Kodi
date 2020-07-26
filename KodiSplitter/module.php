@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.90
+ * @version       2.95
  *
  */
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -29,7 +29,7 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.90
+ * @version       2.95
  * @property array $ReplyJSONData
  * @property string $BufferIN
  * @property string $Host
@@ -171,6 +171,8 @@ class KodiSplitter extends IPSModule
                 if ($SenderID == $this->InstanceID) {
                     switch ($Data[0]) {
                         case IS_ACTIVE:
+                            $this->LogMessage('Connected to Kodi', KL_NOTIFY);
+                            $this->ReadJSONRPCVersion();
                             $this->SetWatchdogTimer(false);
                             $this->SetTimerInterval('KeepAlive', 180 * 1000);
                             $this->SendPowerEvent(true);
@@ -215,12 +217,12 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      */
-    /*public function GetConfigurationForParent()
+    public function GetConfigurationForParent()
     {
         $Config['Port'] = $this->ReadPropertyInteger('Port');
         $Config['Open'] = $this->ReadPropertyBoolean('Open');
         return json_encode($Config);
-    }*/
+    }
 
     ################## PUBLIC
     /**
@@ -509,6 +511,14 @@ class KodiSplitter extends IPSModule
     }
 
     ################## PRIVATE
+    private function ReadJSONRPCVersion()
+    {
+        $KodiData = new Kodi_RPC_Data('JSONRPC', 'Version');
+        $ret = @$this->Send($KodiData);
+        if ($ret !== null) {
+            $this->LogMessage('Kodi RPC-Version: ' . $ret->version->major . '.' . $ret->version->minor . '.' . $ret->version->patch, KL_NOTIFY);
+        }
+    }
     private function CheckPort()
     {
         $Socket = @stream_socket_client('tcp://' . $this->Host . ':' . $this->ReadPropertyInteger('Port'), $errno, $errstr, 1);

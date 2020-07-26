@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.90
+ * @version       2.95
  * @example <b>Ohne</b>
  */
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -28,7 +28,7 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.90
+ * @version       2.95
  * @example <b>Ohne</b>
  * @property int $ParentID
  * @property string $WebHookSecret
@@ -463,7 +463,7 @@ sleep(10).then(() => {
     {
         try {
             if (!$this->HasActiveParent()) {
-                throw new Exception('Instance has no active parent.', E_USER_NOTICE);
+                throw new Exception($this->Translate('Instance has no active parent.'), E_USER_NOTICE);
             }
 
             $SplitterInstance = IPS_GetInstance($this->ParentID);

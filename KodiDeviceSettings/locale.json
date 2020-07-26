@@ -1,0 +1,22 @@
+{
+    "translations": {
+        "de": {
+            "List of possible and controllable settings:": "Liste von möglichen und steuerbaren Einstellungen:",
+            "Label": "Bezeichnung",
+            "Type of setting": "Typ der Einstellung",
+            "Help": "Hilfe",
+            "Create variable for this setting?": "Erzeuge Variable für diese Einstellung?",
+            "Click to create variable": "Klicken um Variable zu erzeugen",
+            "Click for help": "Klicken für Hilfe",
+            "No help available": "Keine Hilfe verfügbar",
+            "Reload":"Neu laden",
+            "Error on set setting.": "Fehler beim setzen der Einstellung.",
+            "Setting must be string.": "Setting muss ein string sein.",
+            "Value must be string.": "Value muss ein string sein.",
+            "Value must be integer.": "Value muss ein integer sein.",
+            "Value must be bool.": "Value muss ein bool sein.",
+            "Invalid ident.": "Ungültiger Ident.",
+            "Instance has no active parent.": "Instanz hat kein aktives übergeordnetes Element."
+        }
+    }
+}

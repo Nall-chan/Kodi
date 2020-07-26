@@ -1,5 +1,5 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version 2.90](https://img.shields.io/badge/Modul%20Version-2.90-blue.svg)]()
+[![Version 2.95](https://img.shields.io/badge/Modul%20Version-2.95-blue.svg)]()
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions) 
@@ -28,9 +28,10 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
   - [8. Kodi Player](#8-kodi-player)
   - [9. Kodi Playlist](#9-kodi-playlist)
   - [10. Kodi PVR](#10-kodi-pvr)
-  - [11. Kodi System](#11-kodi-system)
-  - [12. Kodi Video Datenbank](#12-kodi-video-datenbank)
-  - [13. Kodi Splitter](#13-kodi-splitter)
+  - [11. Kodi Settings](#11-kodi-settings)
+  - [12. Kodi System](#12-kodi-system)
+  - [13. Kodi Video Datenbank](#13-kodi-video-datenbank)
+  - [14. Kodi Splitter](#14-kodi-splitter)
 - [8. Parameter / Modul-Infos](#8-parameter--modul-infos)
 - [9. Tipps & Tricks](#9-tipps--tricks)
 - [10. Anhang](#10-anhang)
@@ -78,11 +79,11 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
   Es wird empfohlen die Einrichtung mit der Instanz Kodi-Discovery durchzuführen.  
   
   - Im Objektbaum die Kategorie 'Discovery Instanzen' öffnen.  
-  - Auf die Instanz 'Kodi Discovery' doppelt klicken. ![Discovery öffnen](docs/Discovery1.png)  
-  - Im folgenden Dialog sollten alle im lokalen Netzwerk verfügbaren Kodi-Systeme aufgelistet werden.  ![Discovery](docs/Discovery.png)  
+  - Auf die Instanz 'Kodi Discovery' doppelt klicken. ![Discovery öffnen](imgs/Discovery1.png)  
+  - Im folgenden Dialog sollten alle im lokalen Netzwerk verfügbaren Kodi-Systeme aufgelistet werden.  ![Discovery](imgs/Discovery.png)  
   - Im Dialog das gewünschte System auswählen und den Button 'Erstellen' betätigen.
   - Anschließend ändert sich der Button zu 'Konfigurieren' und muss erneut betätigt werden.  
-  - Im sich öffnenden Konfigurator alle gewünschten Funktionen wie zuvor erzeugen.  ![Instanzen erzeugen](docs/Konfigurator.png)  
+  - Im sich öffnenden Konfigurator alle gewünschten Funktionen wie zuvor erzeugen.  ![Instanzen erzeugen](imgs/Konfigurator.png)  
   - Über den Button 'Gateway konfigurieren' kann die optionale HTTP-Authentifizierung sowie ein abweichender JSON-RPC Port konfiguriert werden.  
   - In den jeweiligen Instanzen sind dann noch weitere Einstellungen nach eigenen Vorlieben einzustellen.  
 
@@ -95,8 +96,8 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
  RPC-Namensraum : Addons
  
  Addons                 - de/aktivieren, lesen, visualisieren und ausführen.  
-  ![Addon](docs/Addon.png)  
-  ![Addon WebFront](docs/Addon_WF.png)  
+  ![Addon](imgs/Addon.png)  
+  ![Addon WebFront](imgs/Addon_WF.png)  
 
 ---  
 
@@ -108,8 +109,8 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
  Software beenden       - Nur ausführen.  
  Namen der Software     - Lesen und visualisieren.  
  Version der Software   - Lesen und visualisieren.  
-  ![Application](docs/Application.png)  
-  ![Application WebFront](docs/Application_WF.png)  
+  ![Application](imgs/Application.png)  
+  ![Application WebFront](imgs/Application_WF.png)  
 
 ---  
 
@@ -122,8 +123,8 @@ Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
  Datenbank  - Ausführen von Scan un Clean. Status visualisieren.  
 
 Das Setzen von Daten in der Datenbank ist nicht möglich!  
-  ![AudioLibrary](docs/AudioLib.png)  
-  ![AudioLibrary WebFront](docs/AudioLib_WF.png)  
+  ![AudioLibrary](imgs/AudioLib.png)  
+  ![AudioLibrary WebFront](imgs/AudioLib_WF.png)  
 
 ---  
 
@@ -132,8 +133,8 @@ Das Setzen von Daten in der Datenbank ist nicht möglich!
 
  Favoriten   - Lesen, visualisieren und ausführen.  
 
-  ![Favourites](docs/Favourites.png)  
-  ![Favourites WebFront](docs/Favourites_WF.png)  
+  ![Favourites](imgs/Favourites.png)  
+  ![Favourites WebFront](imgs/Favourites_WF.png)  
 
 ---
 
@@ -158,8 +159,8 @@ Das Setzen von Daten in der Datenbank ist nicht möglich!
 
 Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:  
 [Kodi Website - Window IDs] (http://kodi.wiki/view/Window_IDs)  
-  ![GUI](docs/GUI.png)  
-  ![GUI WebFront](docs/GUI_WF.png)  
+  ![GUI](imgs/GUI.png)  
+  ![GUI WebFront](imgs/GUI_WF.png)  
 
 ---
 
@@ -169,8 +170,8 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Tastendruck    - Senden  
  Text           - Senden  
 
-  ![Input](docs/Input.png)  
-  ![Input WebFront](docs/Input_WF.png)  
+  ![Input](imgs/Input.png)  
+  ![Input WebFront](imgs/Input_WF.png)  
 
 ---
 
@@ -180,12 +181,12 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Player              - Setzen, lesen und visualisieren des Status.  
  Aktuelle Wiedergabe - Setzen, lesen und visualisieren.  
 
-  ![Audio Player](docs/AudioPlayer.png)  
-  ![Picture Player](docs/PicturePlayer.png)  
-  ![Video Player](docs/VideoPlayer.png)  
-  ![Audio Player WebFront](docs/AudioPlayer_WF.png)  
-  ![Picture Player WebFront](docs/PicturePlayer_WF.png)    
-  ![Video Player WebFront](docs/VideoPlayer_WF.png)  
+  ![Audio Player](imgs/AudioPlayer.png)  
+  ![Picture Player](imgs/PicturePlayer.png)  
+  ![Video Player](imgs/VideoPlayer.png)  
+  ![Audio Player WebFront](imgs/AudioPlayer_WF.png)  
+  ![Picture Player WebFront](imgs/PicturePlayer_WF.png)    
+  ![Video Player WebFront](imgs/VideoPlayer_WF.png)  
 
 ---
 
@@ -196,12 +197,12 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Playlist           - Beschreiben, lesen und visualisieren.  
  Player             - Direktes anspringen eines Eintrages.
 
-  ![Audio Playlist](docs/AudioPlaylist.png)  
-  ![Picture Playlist](docs/PicturePlaylist.png)  
-  ![Video Playlist](docs/VideoPlaylist.png)  
-  ![Audio Playlist WebFront](docs/AudioPlaylist_WF.png)  
-  ![Picture Playlist WebFront](docs/PicturePlaylist_WF.png)    
-  ![Video Playlist WebFront](docs/VideoPlaylist_WF.png)  
+  ![Audio Playlist](imgs/AudioPlaylist.png)  
+  ![Picture Playlist](imgs/PicturePlaylist.png)  
+  ![Video Playlist](imgs/VideoPlaylist.png)  
+  ![Audio Playlist WebFront](imgs/AudioPlaylist_WF.png)  
+  ![Picture Playlist WebFront](imgs/PicturePlaylist_WF.png)    
+  ![Video Playlist WebFront](imgs/VideoPlaylist_WF.png)  
 
 ---
 
@@ -214,8 +215,16 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Kanäle & Gruppen   - Lesen und visualisieren (inkl. umschalten von Kanälen.)  
  Aufnahmen          - Lesen und visualisieren (inkl. starten der Wiedergabe.)  
  Timer              - Lesen  
-  ![PVR](docs/PVR.png)  
-  ![PVR WebFront](docs/PVR_WF.png)  
+  ![PVR](imgs/PVR.png)  
+  ![PVR WebFront](imgs/PVR_WF.png)  
+
+---
+
+ **Kodi Settings (KodiDeviceSettings):**  
+ RPC-Namensraum : Settings  
+
+  ![Settings](imgs/Settings.png)  
+  ![Settings WebFront](imgs/Settings_WF.png)  
 
 ---
 
@@ -224,8 +233,8 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
 
  Systemzustand  - Starten, Beenden, Status visualisieren.  
  Optisches LW   - Auswerfen  
-  ![System](docs/System.png)  
-  ![System WebFront](docs/System_WF.png)  
+  ![System](imgs/System.png)  
+  ![System WebFront](imgs/System_WF.png)  
 
 ---
 
@@ -238,14 +247,14 @@ Hinweise zu den 'Window IDs' und 'Window Name' sind hier verfügbar:
  Datenbank  - Ausführen von Scan und Clean. Status visualisieren.
 
 Das Setzen von Daten in der Datenbank ist nicht möglich!  
-  ![VideoLibrary](docs/VideoLib.png)  
-  ![VideoLibrary WebFront](docs/VideoLib_WF.png)  
+  ![VideoLibrary](imgs/VideoLib.png)  
+  ![VideoLibrary WebFront](imgs/VideoLib_WF.png)  
 
 ---
 
  **Kodi Splitter (KodiSplitter):**  
  RPC-Namensraum : JSONRPC  
-  ![Splitter](docs/Splitter.png)  
+  ![Splitter](imgs/Splitter.png)  
    
 ## 7. PHP-Befehlsreferenz
 
@@ -1405,9 +1414,46 @@ array|boolean KODIPVR_GetTimerDetails(integer $InstanzeID, integer $TimerId);
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
  Es gilt die Tabelle von KODIPVR_GetTimers. 
 
-### 11. Kodi System
+### 11. Kodi Settings
 
- ```php
+```php
+array KODISETTINGS_GetSettings(integer $InstanzeID);
+```
+Liefert alle Einstellungen als Array.  
+
+```php
+bool|integer|string|array KODISETTINGS_GetSettingValue(integer $InstanzeID, string $Setting);
+```
+Liefert den Wert einer, in Setting übergeben, Einstellung.  
+Es muss die id der Einstellung z.B. `services.devicename` übergeben werden.  
+
+```php
+array KODISETTINGS_ResetSettingValue(integer $InstanzeID, string $Setting);
+```
+Setzen eine Einstellung auf die Werkseinstellung zurück.  
+Es muss die id der Einstellung z.B. `services.devicename` übergeben werden.  
+
+```php
+array KODISETTINGS_SetSettingValueBoolean(integer $InstanzeID, string $Setting, boolean $Value);
+```
+Schreibt den in `$Value` übergeben Wert in die in `$Settings` angegebene Einstellung.  
+Es muss die id der Einstellung z.B. `services.esenabled` übergeben werden.  
+
+```php
+array KODISETTINGS_SetSettingValueInteger(integer $InstanzeID, string $Setting, integer $Value);
+```
+Schreibt den in `$Value` übergeben Wert in die in `$Settings` angegebene Einstellung.  
+Es muss die id der Einstellung z.B. `services.webserverport` übergeben werden.  
+
+```php
+array KODISETTINGS_SetSettingValueString(integer $InstanzeID, string $Setting, string $Value);
+```
+Schreibt den in `$Value` übergeben Wert in die in `$Settings` angegebene Einstellung.  
+Es muss die id der Einstellung z.B. `services.devicename` übergeben werden.  
+
+### 12. Kodi System
+
+```php
 boolean KODISYS_Power(integer $InstanzeID, boolean $Value);
 ```
  Schaltet Kodi ein (TRUE) oder aus (FALSE).  
@@ -1415,7 +1461,7 @@ boolean KODISYS_Power(integer $InstanzeID, boolean $Value);
  Der Modus für das Ausschalten ist ebenfalls in der Instanz zu konfigurieren.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
- ```php
+```php
 boolean KODISYS_WakeUp(integer $InstanzeID);
 ```
  Startet das hinterlegte Einschalt-Script um die Kodi-Hardware einzuschalten.  
@@ -1462,7 +1508,7 @@ boolean KODISYS_RequestState(integer $InstanzeID, string $Ident);
  $Ident kann "canshutdown", "canhibernate", "cansuspend" oder "canreboot" sein.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
-### 12. Kodi Video Datenbank
+### 13. Kodi Video Datenbank
 
 ```php
 boolean KODIVIDEOLIB_Scan(integer $InstanzeID);
@@ -1730,7 +1776,7 @@ boolean KODIVIDEOLIB_Export(integer $InstanzeID, string $Path, boolean $Overwrit
  Exportiert die Audio Datenbank.  
  Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.  
 
-### 13. Kodi Splitter
+### 14. Kodi Splitter
 
 TODO  
 
@@ -1749,6 +1795,8 @@ GUID der Instanzen (z.B. wenn Instanz per PHP angelegt werden soll):
 | KodiDeviceInput        | {9F3BE8BB-4610-49F4-A41A-40E14F641F43} |
 | KodiDevicePVR          | {9D73D46E-7B80-4814-A7B2-31768DC6AB7E} |
 | KodiDevicePlayer       | {BA014AD9-9568-4F12-BE31-17D37BFED06D} |
+| KodiDevicePlaylist     | {7D73D0FF-0CC7-43D0-A196-0D6143E52756} |
+| KodiDeviceSettings     | {310E1F8B-D1B2-460C-9DBB-C7C500B28658} |
 | KodiDeviceSystem       | {03E18A60-02FD-45E8-8A2C-1F8E247C92D0} |
 | KodiDeviceVideoLibrary | {07943DF4-FAB9-454F-AA9E-702A5F9C9D57} |
 | KodiConfigurator       | {7B4F8B62-7AB4-4877-AD60-F3B294DDB43E} |
@@ -1849,6 +1897,10 @@ keine
 | showPlaylist   | boolean | true         | HTML-Tabelle mit der Playlist erzeugen        |
 | Playlistconfig | integer | auto         | Script mit den Style für die HTML-Tabelle     |
 
+ Eigenschaften von KodiDeviceSettings:  
+
+keine  
+
  Eigenschaften von KodiDeviceSystem:  
 
 | Eigenschaft     | Typ     | Standardwert | Funktion                                                         |
@@ -1891,6 +1943,9 @@ Eigenschaften von KodiSplitter:
 ## 10. Anhang
 
 **Changelog:**
+
+Version 2.95:
+  - Neu: KodiDeviceSetting Instanz.  
 
 Version 2.90:
   - Neu: Discovery kann auch mit Hostnamen umgehen.  

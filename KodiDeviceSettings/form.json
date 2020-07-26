@@ -1,0 +1,72 @@
+{
+        "elements": [],
+        "actions": [
+                {
+                        "caption": "List of possible and controllable settings:",
+                        "type": "List",
+                        "name": "Settings",
+                        "add": false,
+                        "delete": false,
+                        "sort": {
+                                "column": "id",
+                                "direction": "ascending"
+                        },
+                        "columns": [
+                                {
+                                        "caption": "Id",
+                                        "name": "id",
+                                        "width": "300px"
+                                },
+                                {
+                                        "caption": "Label",
+                                        "name": "label",
+                                        "width": "auto"
+                                },
+                                {
+                                        "caption": "Type of setting",
+                                        "name": "type",
+                                        "width": "170px"
+                                },
+                                {
+                                        "caption": "Help",
+                                        "name": "Help",
+                                        "width": "170px",
+                                        "onClick": "echo $Settings['help'];"
+                                },
+                                {
+                                        "caption": "Variable",
+                                        "name": "VariableId",
+                                        "width": "250px",
+                                        "confirm": "Create variable for this setting?",
+                                        "onClick": "if (!is_numeric($Settings['VariableId']))IPS_RequestAction($id,'CreateVariable',json_encode($Settings['Data']));"
+                                }
+                        ],
+                        "values": []
+                },
+                {
+                        "name": "Reload",
+                        "type": "Button",
+                        "caption": "Reload",
+                        "onClick": "IPS_RequestAction($id,'ReloadForm',true);"
+                },
+                {
+                        "name": "ErrorPopup",
+                        "type": "PopupAlert",
+                        "visible": false,
+                        "popup": {
+                                "items": [
+                                        {
+                                                "name": "ErrorTitle",
+                                                "type": "Label",
+                                                "caption": ""
+                                        },
+                                        {
+                                                "name": "ErrorText",
+                                                "type": "Label",
+                                                "caption": ""
+                                        }
+                                ]
+                        }
+                }
+        ]
+}
