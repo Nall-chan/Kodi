@@ -566,17 +566,6 @@ sleep(10).then(() => {
             return false;
         }
         if (GetValueInteger($id) != $value) {
-            if (!(($Ident[0] == '_') || ($Ident == 'speed') || ($Ident == 'repeat') || (IPS_GetVariable($id)['VariableAction'] != 0))) {
-                if (($value <= 0) && (!IPS_GetObject($id)['ObjectIsHidden'])) {
-                    //ToDo: Prüfen und IPS_SetHidden entsorgen.
-                    IPS_SetHidden($id, true);
-                }
-                if (($value > 0) && (IPS_GetObject($id)['ObjectIsHidden'])) {
-                    //ToDo: Prüfen und IPS_SetHidden entsorgen.
-                    IPS_SetHidden($id, false);
-                }
-            }
-
             $this->SetValue($Ident, $value);
             return true;
         }
@@ -598,16 +587,6 @@ sleep(10).then(() => {
             return false;
         }
         if (GetValueString($id) != $value) {
-            if ($Ident[0] != '_') {
-                if ((($value == '') || ($value == 'unknown')) && (!IPS_GetObject($id)['ObjectIsHidden'])) {
-                    //ToDo: Prüfen und IPS_SetHidden entsorgen.
-                    IPS_SetHidden($id, true);
-                }
-                if ((($value != '') && ($value != 'unknown')) && (IPS_GetObject($id)['ObjectIsHidden'])) {
-                    //ToDo: Prüfen und IPS_SetHidden entsorgen.
-                    IPS_SetHidden($id, false);
-                }
-            }
             $this->SetValue($Ident, $value);
             return true;
         }

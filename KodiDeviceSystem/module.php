@@ -331,10 +331,6 @@ class KodiDeviceSystem extends KodiBase
     {
         switch ($Method) {
             case 'GetProperties':
-                foreach ($KodiPayload as $param => $value) {
-                    // ToDo: Wofür war das?
-                    IPS_SetHidden($this->GetIDForIdent(substr($param, 3)), !$value);
-                }
                 break;
             case 'Power':
                 $this->SetValueBoolean('Power', $KodiPayload);
