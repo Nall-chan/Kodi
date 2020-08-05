@@ -101,7 +101,7 @@
         },
         {
             "type": "Button",
-            "caption": "Eject Optical",
+            "caption": "Eject optical drive",
             "onClick": "KODISYS_EjectOpticalDrive($id);"
         },
         {
