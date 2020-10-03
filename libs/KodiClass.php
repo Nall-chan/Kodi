@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.95
+ * @version       2.97
  * @example <b>Ohne</b>
  */
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -28,7 +28,7 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.95
+ * @version       2.97
  * @example <b>Ohne</b>
  * @property int $ParentID
  * @property string $WebHookSecret
@@ -79,6 +79,9 @@ abstract class KodiBase extends IPSModule
         $this->ConnectParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
         $this->ParentID = 0;
         $this->WebHookSecret = '';
+        if (IPS_GetKernelRunlevel() != KR_READY) {
+            $this->RegisterMessage(0, IPS_KERNELSTARTED);
+        }
     }
 
     /**
@@ -88,7 +91,6 @@ abstract class KodiBase extends IPSModule
      */
     public function ApplyChanges()
     {
-        $this->RegisterMessage(0, IPS_KERNELSTARTED);
         $this->RegisterMessage($this->InstanceID, FM_CONNECT);
         $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
         $this->ParentID = 0;
@@ -133,6 +135,7 @@ abstract class KodiBase extends IPSModule
 
         switch ($Message) {
             case IPS_KERNELSTARTED:
+                $this->UnregisterMessage(0, IPS_KERNELSTARTED);
                 $this->KernelReady();
                 break;
         }
