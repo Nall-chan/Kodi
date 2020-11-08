@@ -1,11 +1,11 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version 2.95](https://img.shields.io/badge/Modul%20Version-2.95-blue.svg)]()
+[![Version 2.97](https://img.shields.io/badge/Modul%20Version-2.97-blue.svg)]()
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions) 
 [![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 
-# Kodi
+# Kodi Library<!-- omit in toc -->
 
 Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
@@ -292,24 +292,24 @@ array|boolean KODIADDONS_GetAddonDetails(integer $InstanzeID, string $AddonId);
  Liest die Eigenschaften eines Addons aus.  
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.  
 
-| Index                     | Typ       | Beschreibung               |
-|:-------------------------:|:---------:|:--------------------------:|
-| addonid                   | string    |                            |
-| disclaimer                | string    |                            |
-| fanart                    | string    | Pfad zum Fanart            |
-| broken                    | mixed     |                            |
-| author                    | string    |                            |
-| enabled                   | boolean   |                            |
-| extrainfo                 | array     |                            |
-| thumbnail                 | string    | Pfad zum Cover             |
-| path                      | string    |                            |
-| dependencies              | array     |                            |
-| type                      | array     |                            |
-| description               | string    | Beschreibung               |
-| name                      | string    |                            |
-| version                   | string    |                            |
-| summary                   | string    |                            |
-| rating                    | integer   | Bewertung                  |
+|    Index     |   Typ   |  Beschreibung   |
+| :----------: | :-----: | :-------------: |
+|   addonid    | string  |                 |
+|  disclaimer  | string  |                 |
+|    fanart    | string  | Pfad zum Fanart |
+|    broken    |  mixed  |                 |
+|    author    | string  |                 |
+|   enabled    | boolean |                 |
+|  extrainfo   |  array  |                 |
+|  thumbnail   | string  | Pfad zum Cover  |
+|     path     | string  |                 |
+| dependencies |  array  |                 |
+|     type     |  array  |                 |
+| description  | string  |  Beschreibung   |
+|     name     | string  |                 |
+|   version    | string  |                 |
+|   summary    | string  |                 |
+|    rating    | integer |    Bewertung    |
 
 ```php
 array|boolean KODIADDONS_GetAddons(integer $InstanzeID);
@@ -378,28 +378,28 @@ array|boolean KODIAUDIOLIB_GetAlbumDetails(integer $InstanzeID, integer $AlbumID
  Liest die Eigenschaften eines Album aus.  
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.  
 
-| Index                     | Typ       | Beschreibung               |
-|:-------------------------:|:---------:|:--------------------------:|
-| theme                     | string[]  |                            |
-| description               | string    | Beschreibung               |
-| type                      | string    |                            |
-| style                     | string[]  | Array der Stiele           |
-| albumid                   | integer   |                            |
-| playcount                 | integer   | Anzahl der Wiedergaben     |
-| albumlabel                | string    |                            |
-| mood                      | string[]  | Array der Stimmungen       |
-| displayartist             | string    | Künstler                   |
-| artist                    | string[]  | Array der Künstler         |
-| genreid                   | integer[] | Array der Genre IDs        |
-| musicbrainzalbumartistid  | string    | Music Brainz AlbumArtistID |
-| year                      | integer   | Erscheinungsjahr           |
-| rating                    | integer   | Bewertung                  |
-| artistid                  | integer[] | Array der Künstler IDs     |
-| title                     | string    | Titel des Album            |
-| musicbrainzalbumid        | string    | Music Brainz AlbumID       |
-| genre                     | string[]  | Array der Genres           |
-| fanart                    | string    | Pfad zum Fanart            |
-| thumbnail                 | string    | Pfad zum Cover             |
+|          Index           |    Typ    |        Beschreibung        |
+| :----------------------: | :-------: | :------------------------: |
+|          theme           | string[]  |                            |
+|       description        |  string   |        Beschreibung        |
+|           type           |  string   |                            |
+|          style           | string[]  |      Array der Stiele      |
+|         albumid          |  integer  |                            |
+|        playcount         |  integer  |   Anzahl der Wiedergaben   |
+|        albumlabel        |  string   |                            |
+|           mood           | string[]  |    Array der Stimmungen    |
+|      displayartist       |  string   |          Künstler          |
+|          artist          | string[]  |     Array der Künstler     |
+|         genreid          | integer[] |    Array der Genre IDs     |
+| musicbrainzalbumartistid |  string   | Music Brainz AlbumArtistID |
+|           year           |  integer  |      Erscheinungsjahr      |
+|          rating          |  integer  |         Bewertung          |
+|         artistid         | integer[] |   Array der Künstler IDs   |
+|          title           |  string   |      Titel des Album       |
+|    musicbrainzalbumid    |  string   |    Music Brainz AlbumID    |
+|          genre           | string[]  |      Array der Genres      |
+|          fanart          |  string   |      Pfad zum Fanart       |
+|        thumbnail         |  string   |       Pfad zum Cover       |
 
 ```php
 array|boolean KODIAUDIOLIB_GetAlbums(integer $InstanzeID);
@@ -428,23 +428,23 @@ array|boolean KODIAUDIOLIB_GetArtistDetails(integer $InstanzeID, integer $Artist
  Liest die Eigenschaften eines Künstlers aus.  
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                 | Typ       | Beschreibung      |
-|:---------------------:|:---------:|:-----------------:|
-| born                  | string    |                   |
-| formed                | string    |                   |
-| died                  | string    |                   |
-| style                 | string[]  |                   |
-| yearsactive           | string[]  |                   |
-| mood                  | string[]  |                   |
-| musicbrainzartistid   | string[]  |                   |
-| disbanded             | string    |                   |
-| description           | string    |                   |
-| artist                | string    |                   |
-| instrument            | string[]  |                   |
-| artistid              | integer   |                   |
-| genre                 | string[]  | Array der Genres  |
-| fanart                | string    | Pfad zum Fanart   |
-| thumbnail             | string    | Pfad zum Cover    |
+|        Index        |   Typ    |   Beschreibung   |
+| :-----------------: | :------: | :--------------: |
+|        born         |  string  |                  |
+|       formed        |  string  |                  |
+|        died         |  string  |                  |
+|        style        | string[] |                  |
+|     yearsactive     | string[] |                  |
+|        mood         | string[] |                  |
+| musicbrainzartistid | string[] |                  |
+|      disbanded      |  string  |                  |
+|     description     |  string  |                  |
+|       artist        |  string  |                  |
+|     instrument      | string[] |                  |
+|      artistid       | integer  |                  |
+|        genre        | string[] | Array der Genres |
+|       fanart        |  string  | Pfad zum Fanart  |
+|      thumbnail      |  string  |  Pfad zum Cover  |
 
 ```php
 array|boolean KODIAUDIOLIB_GetArtists(integer $InstanzeID);
@@ -459,10 +459,10 @@ array|boolean KODIAUDIOLIB_GetGenres(integer $InstanzeID);
  Liest die Eigenschaften aller bekannten Genres aus.  
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  
-| Index     | Typ     | Beschreibung    |
-|:---------:|:-------:|:---------------:|
-| genreid   | integer | ID des Genres   |
-| fanart    | string  | Pfad zum Fanart |
+|   Index   |   Typ   |  Beschreibung   |
+| :-------: | :-----: | :-------------: |
+|  genreid  | integer |  ID des Genres  |
+|  fanart   | string  | Pfad zum Fanart |
 | thumbnail | string  | Pfad zum Cover  |
 
 ```php
@@ -471,35 +471,35 @@ array|boolean KODIAUDIOLIB_GetSongDetails(integer $InstanzeID, integer $SongID);
  Liest die Eigenschaften eines Songs aus.  
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| lyrics                    | string    |                               |
-| songid                    | integer   |                               |
-| albumartistid             | integer[] |                               |
-| disc                      | integer   |                               |
-| comment                   | string    |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| album                     | string    |                               |
-| file                      | string    |                               |
-| lastplayed                | string    |                               |
-| albumid                   | integer   |                               |
-| musicbrainzartistid       | string    |                               |
-| albumartist               | string[]  |                               |
-| duration                  | integer   |                               |
-| musicbrainztrackid        | string    |                               |
-| track                     | integer   |                               |
-| displayartist             | string    | Künstler                      |
-| artist                    | string[]  |                               |
-| genreid                   | integer[] | Array der Genre IDs           |
-| musicbrainzalbumartistid  | string    | Music Brainz AlbumArtistID    |
-| year                      | integer   | Erscheinungsjahr              |
-| rating                    | integer   | Bewertung                     |
-| artistid                  | integer[] | Array der Künstler IDs        |
-| title                     | string    | Titel des Album               |
-| musicbrainzalbumid        | string    | Music Brainz AlbumID          |
-| genre                     | string[]  | Array der Genres              |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
+|          Index           |    Typ    |        Beschreibung        |
+| :----------------------: | :-------: | :------------------------: |
+|          lyrics          |  string   |                            |
+|          songid          |  integer  |                            |
+|      albumartistid       | integer[] |                            |
+|           disc           |  integer  |                            |
+|         comment          |  string   |                            |
+|        playcount         |  integer  |   Anzahl der Wiedergaben   |
+|          album           |  string   |                            |
+|           file           |  string   |                            |
+|        lastplayed        |  string   |                            |
+|         albumid          |  integer  |                            |
+|   musicbrainzartistid    |  string   |                            |
+|       albumartist        | string[]  |                            |
+|         duration         |  integer  |                            |
+|    musicbrainztrackid    |  string   |                            |
+|          track           |  integer  |                            |
+|      displayartist       |  string   |          Künstler          |
+|          artist          | string[]  |                            |
+|         genreid          | integer[] |    Array der Genre IDs     |
+| musicbrainzalbumartistid |  string   | Music Brainz AlbumArtistID |
+|           year           |  integer  |      Erscheinungsjahr      |
+|          rating          |  integer  |         Bewertung          |
+|         artistid         | integer[] |   Array der Künstler IDs   |
+|          title           |  string   |      Titel des Album       |
+|    musicbrainzalbumid    |  string   |    Music Brainz AlbumID    |
+|          genre           | string[]  |      Array der Genres      |
+|          fanart          |  string   |      Pfad zum Fanart       |
+|        thumbnail         |  string   |       Pfad zum Cover       |
 
 ```php
 array|boolean KODIAUDIOLIB_GetSongs(integer $InstanzeID);
@@ -532,14 +532,14 @@ array|boolean KODIFAV_GetFavourites(integer $InstanzeID, string $Type);
  Rückgabewert ist ein assoziiertes Array mit den Daten. Je nach Type, sind nicht alle Werte vorhanden.  
  Tritt ein Fehler auf, wird FALSE k.  
  
-| Index                     | Typ       | Beschreibung                          |
-|:-------------------------:|:---------:|:-------------------------------------:|
-| thumbnail                 | string    | Pfad zum Cover                        |
-| title                     | string    | Titel des Favoriten                   |
-| type                      | string    | Der Typ des Favoriten                 |
-| window                    | string    | Ziel-Fenster eines Window-Favoriten   |
-| windowparameter           | string    | Parameter für das Ziel-Fenster        |
-| path                      | string    | Pfad zum Favoriten (script & media    |
+|      Index      |  Typ   |            Beschreibung             |
+| :-------------: | :----: | :---------------------------------: |
+|    thumbnail    | string |           Pfad zum Cover            |
+|      title      | string |         Titel des Favoriten         |
+|      type       | string |        Der Typ des Favoriten        |
+|     window      | string | Ziel-Fenster eines Window-Favoriten |
+| windowparameter | string |   Parameter für das Ziel-Fenster    |
+|      path       | string | Pfad zum Favoriten (script & media  |
 
 
 ```php
@@ -574,10 +574,10 @@ array|boolean KODIFILES_GetSources(integer $InstanzeID, string $Media);
     "programs"=Programme  
  Rückgabewert ist ein Array mit den Quellen oder FALSE bei einem Fehler.  
 
-| Index   | Typ     | Beschreibung                  |
-|:-------:|:-------:|:-----------------------------:|
-| file    | string  | Verzeichnis der Quelle       |
-| label   | string  | Name der Quelle               |
+| Index |  Typ   |      Beschreibung      |
+| :---: | :----: | :--------------------: |
+| file  | string | Verzeichnis der Quelle |
+| label | string |    Name der Quelle     |
 
  ```php
 array|boolean KODIFILES_GetFileDetails(integer $InstanzeID, string $File, string $Media);
@@ -592,79 +592,79 @@ array|boolean KODIFILES_GetFileDetails(integer $InstanzeID, string $File, string
     "programs"=Programme  
  Rückgabewert ist ein Array mit den Eigenschaften oder FALSE bei einem Fehler.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| filetyp                   | string    |                               |
-| size                      | integer   |                               |
-| mimetype                  | integer   |                               |
-| file                      | string    |                               |
-| lastmodified              | string    |                               |
-| sorttitle                 | string    |                               |
-| productioncode            | string    |                               |
-| cast                      | array     |                               |
-| votes                     | string    |                               |
-| duration                  | integer   |                               |
-| trailer                   | string    |                               |
-| albumid                   | integer   |                               |
-| musicbrainzartistid       | string    |                               |
-| mpaa                      | string    |                               |
-| albumlabel                | string    |                               |
-| originaltitle             | string    |                               |
-| writer                    | string[]  |                               |
-| albumartistid             | integer[] |                               |
-| type                      | string    |                               |
-| episode                   | integer   |                               |
-| firstaired                | string    |                               |
-| showtitle                 | string    |                               |
-| country                   | string[]  ]                               |
-| mood                      | string[]  |                               |
-| set                       | string    |                               |
-| musicbrainztrackid        | string    |                               |
-| tag                       | string[]  |                               |
-| lyrics                    | string    |                               |
-| top250                    | integer   |                               |
-| comment                   | string    |                               |
-| premiered                 | string    |                               |
-| showlink                  | string[]  |                               |
-| style                     | string[]  |                               |
-| album                     | string    |                               |
-| tvshowid                  | integer   |                               |
-| season                    | integer   |                               |
-| theme                     | string[]  |                               |
-| description               | string    |                               |
-| setid                     | integer   |                               |
-| track                     | integer   |                               |
-| tagline                   | string    |                               |
-| plotoutline               | string    |                               |
-| watchedepisodes           | integer   |                               |
-| id                        | integer   |                               |
-| disc                      | integer   |                               |
-| albumartist               | string[]  |                               |
-| studio                    | string[]  |                               |
-| uniqueid                  | array     |                               |
-| episodeguide              | string    |                               |
-| imdbnumber                | string    |                               |
-| dateadded                 | string    |                               |
-| lastplayed                | string    |                               |
-| plot                      | string    |                               |
-| streamdetails             | array     |                               |
-| director                  | string[]  |                               |
-| resume                    | array     |                               |
-| runtime                   | integer   |                               |
-| art                       | array     |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| displayartist             | string    | Künstler                      |
-| artist                    | string[]  | Array der Künstler            |
-| genreid                   | integer[] | Array der Genre IDs           |
-| musicbrainzalbumartistid  | string    | Music Brainz AlbumArtistID    |
-| year                      | integer   | Erscheinungsjahr              |
-| rating                    | integer   | Bewertung                     |
-| artistid                  | integer[] | Array der Künstler IDs        |
-| title                     | string    | Titel der Datei               |
-| musicbrainzalbumid        | string    | Music Brainz AlbumID          |
-| genre                     | string[]  | Array der Genres              |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
+|          Index           |     Typ     |        Beschreibung        |
+| :----------------------: | :---------: | :------------------------: |
+|         filetyp          |   string    |                            |
+|           size           |   integer   |                            |
+|         mimetype         |   integer   |                            |
+|           file           |   string    |                            |
+|       lastmodified       |   string    |                            |
+|        sorttitle         |   string    |                            |
+|      productioncode      |   string    |                            |
+|           cast           |    array    |                            |
+|          votes           |   string    |                            |
+|         duration         |   integer   |                            |
+|         trailer          |   string    |                            |
+|         albumid          |   integer   |                            |
+|   musicbrainzartistid    |   string    |                            |
+|           mpaa           |   string    |                            |
+|        albumlabel        |   string    |                            |
+|      originaltitle       |   string    |                            |
+|          writer          |  string[]   |                            |
+|      albumartistid       |  integer[]  |                            |
+|           type           |   string    |                            |
+|         episode          |   integer   |                            |
+|        firstaired        |   string    |                            |
+|        showtitle         |   string    |                            |
+|         country          | string[]  ] |
+|           mood           |  string[]   |                            |
+|           set            |   string    |                            |
+|    musicbrainztrackid    |   string    |                            |
+|           tag            |  string[]   |                            |
+|          lyrics          |   string    |                            |
+|          top250          |   integer   |                            |
+|         comment          |   string    |                            |
+|        premiered         |   string    |                            |
+|         showlink         |  string[]   |                            |
+|          style           |  string[]   |                            |
+|          album           |   string    |                            |
+|         tvshowid         |   integer   |                            |
+|          season          |   integer   |                            |
+|          theme           |  string[]   |                            |
+|       description        |   string    |                            |
+|          setid           |   integer   |                            |
+|          track           |   integer   |                            |
+|         tagline          |   string    |                            |
+|       plotoutline        |   string    |                            |
+|     watchedepisodes      |   integer   |                            |
+|            id            |   integer   |                            |
+|           disc           |   integer   |                            |
+|       albumartist        |  string[]   |                            |
+|          studio          |  string[]   |                            |
+|         uniqueid         |    array    |                            |
+|       episodeguide       |   string    |                            |
+|        imdbnumber        |   string    |                            |
+|        dateadded         |   string    |                            |
+|        lastplayed        |   string    |                            |
+|           plot           |   string    |                            |
+|      streamdetails       |    array    |                            |
+|         director         |  string[]   |                            |
+|          resume          |    array    |                            |
+|         runtime          |   integer   |                            |
+|           art            |    array    |                            |
+|        playcount         |   integer   |   Anzahl der Wiedergaben   |
+|      displayartist       |   string    |          Künstler          |
+|          artist          |  string[]   |     Array der Künstler     |
+|         genreid          |  integer[]  |    Array der Genre IDs     |
+| musicbrainzalbumartistid |   string    | Music Brainz AlbumArtistID |
+|           year           |   integer   |      Erscheinungsjahr      |
+|          rating          |   integer   |         Bewertung          |
+|         artistid         |  integer[]  |   Array der Künstler IDs   |
+|          title           |   string    |      Titel der Datei       |
+|    musicbrainzalbumid    |   string    |    Music Brainz AlbumID    |
+|          genre           |  string[]   |      Array der Genres      |
+|          fanart          |   string    |      Pfad zum Fanart       |
+|        thumbnail         |   string    |       Pfad zum Cover       |
 
  ```php
 array|boolean KODIFILES_GetDirectory(integer $InstanzeID, string $Directory);
@@ -835,80 +835,80 @@ boolean KODIPLAYER_GetItem(integer $InstanzeID);
  Holt die Daten des aktuellen wiedergegebenen Items, und gibt Diese als Array zurück.  
  Rückgabewert ist ein Array mit den Eigenschaften oder FALSE bei einem Fehler.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| channel                   | string    |                               |
-| channeltype               | string    |                               |
-| file                      | string    |                               |
-| sorttitle                 | string    |                               |
-| productioncode            | string    |                               |
-| cast                      | array     |                               |
-| votes                     | string    |                               |
-| duration                  | integer   |                               |
-| trailer                   | string    |                               |
-| albumid                   | integer   |                               |
-| musicbrainzartistid       | string    |                               |
-| mpaa                      | string    |                               |
-| albumlabel                | string    |                               |
-| originaltitle             | string    |                               |
-| writer                    | string[]  |                               |
-| albumartistid             | integer[] |                               |
-| episode                   | integer   |                               |
-| firstaired                | string    |                               |
-| showtitle                 | string    |                               |
-| country                   | string[]  ]                               |
-| mood                      | string[]  |                               |
-| set                       | string    |                               |
-| musicbrainztrackid        | string    |                               |
-| tag                       | string[]  |                               |
-| lyrics                    | string    |                               |
-| top250                    | integer   |                               |
-| comment                   | string    |                               |
-| premiered                 | string    |                               |
-| showlink                  | string[]  |                               |
-| style                     | string[]  |                               |
-| album                     | string    |                               |
-| tvshowid                  | integer   |                               |
-| season                    | integer   |                               |
-| theme                     | string[]  |                               |
-| description               | string    |                               |
-| setid                     | integer   |                               |
-| track                     | integer   |                               |
-| tagline                   | string    |                               |
-| plotoutline               | string    |                               |
-| watchedepisodes           | integer   |                               |
-| disc                      | integer   |                               |
-| albumartist               | string[]  |                               |
-| studio                    | string[]  |                               |
-| uniqueid                  | array     |                               |
-| episodeguide              | string    |                               |
-| imdbnumber                | string    |                               |
-| dateadded                 | string    |                               |
-| lastplayed                | string    |                               |
-| plot                      | string    |                               |
-| streamdetails             | array     |                               |
-| director                  | string[]  |                               |
-| resume                    | array     |                               |
-| runtime                   | integer   |                               |
-| art                       | array     |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| displayartist             | string    | Künstler                      |
-| artist                    | string[]  | Array der Künstler            |
-| genreid                   | integer[] | Array der Genre IDs           |
-| musicbrainzalbumartistid  | string    | Music Brainz AlbumArtistID    |
-| year                      | integer   | Erscheinungsjahr              |
-| rating                    | integer   | Bewertung                     |
-| artistid                  | integer[] | Array der Künstler IDs        |
-| title                     | string    | Titel der Datei               |
-| musicbrainzalbumid        | string    | Music Brainz AlbumID          |
-| genre                     | string[]  | Array der Genres              |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
-| hidden                    | boolean   |                               |
-| locked                    | boolean   |                               |
-| channelnumber             | integer   |                               |
-| endtime                   | string    |                               |
-| starttime                 | string    |                               |
+|          Index           |     Typ     |        Beschreibung        |
+| :----------------------: | :---------: | :------------------------: |
+|         channel          |   string    |                            |
+|       channeltype        |   string    |                            |
+|           file           |   string    |                            |
+|        sorttitle         |   string    |                            |
+|      productioncode      |   string    |                            |
+|           cast           |    array    |                            |
+|          votes           |   string    |                            |
+|         duration         |   integer   |                            |
+|         trailer          |   string    |                            |
+|         albumid          |   integer   |                            |
+|   musicbrainzartistid    |   string    |                            |
+|           mpaa           |   string    |                            |
+|        albumlabel        |   string    |                            |
+|      originaltitle       |   string    |                            |
+|          writer          |  string[]   |                            |
+|      albumartistid       |  integer[]  |                            |
+|         episode          |   integer   |                            |
+|        firstaired        |   string    |                            |
+|        showtitle         |   string    |                            |
+|         country          | string[]  ] |
+|           mood           |  string[]   |                            |
+|           set            |   string    |                            |
+|    musicbrainztrackid    |   string    |                            |
+|           tag            |  string[]   |                            |
+|          lyrics          |   string    |                            |
+|          top250          |   integer   |                            |
+|         comment          |   string    |                            |
+|        premiered         |   string    |                            |
+|         showlink         |  string[]   |                            |
+|          style           |  string[]   |                            |
+|          album           |   string    |                            |
+|         tvshowid         |   integer   |                            |
+|          season          |   integer   |                            |
+|          theme           |  string[]   |                            |
+|       description        |   string    |                            |
+|          setid           |   integer   |                            |
+|          track           |   integer   |                            |
+|         tagline          |   string    |                            |
+|       plotoutline        |   string    |                            |
+|     watchedepisodes      |   integer   |                            |
+|           disc           |   integer   |                            |
+|       albumartist        |  string[]   |                            |
+|          studio          |  string[]   |                            |
+|         uniqueid         |    array    |                            |
+|       episodeguide       |   string    |                            |
+|        imdbnumber        |   string    |                            |
+|        dateadded         |   string    |                            |
+|        lastplayed        |   string    |                            |
+|           plot           |   string    |                            |
+|      streamdetails       |    array    |                            |
+|         director         |  string[]   |                            |
+|          resume          |    array    |                            |
+|         runtime          |   integer   |                            |
+|           art            |    array    |                            |
+|        playcount         |   integer   |   Anzahl der Wiedergaben   |
+|      displayartist       |   string    |          Künstler          |
+|          artist          |  string[]   |     Array der Künstler     |
+|         genreid          |  integer[]  |    Array der Genre IDs     |
+| musicbrainzalbumartistid |   string    | Music Brainz AlbumArtistID |
+|           year           |   integer   |      Erscheinungsjahr      |
+|          rating          |   integer   |         Bewertung          |
+|         artistid         |  integer[]  |   Array der Künstler IDs   |
+|          title           |   string    |      Titel der Datei       |
+|    musicbrainzalbumid    |   string    |    Music Brainz AlbumID    |
+|          genre           |  string[]   |      Array der Genres      |
+|          fanart          |   string    |      Pfad zum Fanart       |
+|        thumbnail         |   string    |       Pfad zum Cover       |
+|          hidden          |   boolean   |                            |
+|          locked          |   boolean   |                            |
+|      channelnumber       |   integer   |                            |
+|         endtime          |   string    |                            |
+|        starttime         |   string    |                            |
 
 
  ```php
@@ -1148,25 +1148,25 @@ boolean KODIPLAYLIST_Get(integer $InstanzeID);
  Gibt alle Einträge Einträge der Playlist als Array zurück.  
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| title                     | string    | Titel der Datei               |
-| artist                    | string[]  | Array der Künstler            |
-| albumartist               | string[]  |                               |
-| genre                     | string[]  | Array der Genres              |
-| year                      | integer   | Erscheinungsjahr              |
-| album                     | string    |                               |
-| track                     | integer   |                               |
-| duration                  | integer   |                               |
-| plot                      | string    |                               |
-| runtime                   | integer   |                               |
-| season                    | integer   |                               |
-| episode                   | integer   |                               |
-| showtitle                 | string    |                               |
-| thumbnail                 | string    | Pfad zum Cover                |
-| file                      | string    |                               |
-| disc                      | integer   |                               |
-| albumlabel                | string    |                               |
+|    Index    |   Typ    |    Beschreibung    |
+| :---------: | :------: | :----------------: |
+|    title    |  string  |  Titel der Datei   |
+|   artist    | string[] | Array der Künstler |
+| albumartist | string[] |                    |
+|    genre    | string[] |  Array der Genres  |
+|    year     | integer  |  Erscheinungsjahr  |
+|    album    |  string  |                    |
+|    track    | integer  |                    |
+|  duration   | integer  |                    |
+|    plot     |  string  |                    |
+|   runtime   | integer  |                    |
+|   season    | integer  |                    |
+|   episode   | integer  |                    |
+|  showtitle  |  string  |                    |
+|  thumbnail  |  string  |   Pfad zum Cover   |
+|    file     |  string  |                    |
+|    disc     | integer  |                    |
+| albumlabel  |  string  |                    |
 
  ```php
 boolean KODIPLAYLIST_InsertAlbum(integer $InstanzeID, integer $AlbumId, integer $Position);
@@ -1273,28 +1273,28 @@ array|boolean KODIPVR_GetBroadcasts(integer $InstanzeID, integer $ChannelId);
  Liefert die Sendungen des in $ChannelId übergeben Kanals als Array.  
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
  
-| Index                | Typ       | Beschreibung                      |
-|:--------------------:|:---------:|:---------------------------------:|
-| broadcastid          | integer   |                                   |
-| endtime              | string    |                                   |
-| episodename          | string    |                                   |
-| episodenum           | integer   |                                   |
-| episodepart          | integer   |                                   |
-| firstaired           | string    |                                   |
-| genre                | string    |                                   |
-| hastimer             | boolean   |                                   |
-| isactive             | boolean   |                                   |
-| parentalrating       | integer   |                                   |
-| plot                 | string    |                                   |
-| plotoutline          | string    |                                   |
-| progress             | integer   |                                   |
-| progresspercentage   | float     |                                   |
-| rating               | integer   |                                   |
-| runtime              | integer   |                                   |
-| starttime            | string    |                                   |
-| thumbnail            | string    |                                   |
-| title                | string    |                                   |
-| wasactive            | boolean   |                                   |
+|       Index        |   Typ   | Beschreibung |
+| :----------------: | :-----: | :----------: |
+|    broadcastid     | integer |              |
+|      endtime       | string  |              |
+|    episodename     | string  |              |
+|     episodenum     | integer |              |
+|    episodepart     | integer |              |
+|     firstaired     | string  |              |
+|       genre        | string  |              |
+|      hastimer      | boolean |              |
+|      isactive      | boolean |              |
+|   parentalrating   | integer |              |
+|        plot        | string  |              |
+|    plotoutline     | string  |              |
+|      progress      | integer |              |
+| progresspercentage |  float  |              |
+|       rating       | integer |              |
+|      runtime       | integer |              |
+|     starttime      | string  |              |
+|     thumbnail      | string  |              |
+|       title        | string  |              |
+|     wasactive      | boolean |              |
      
 ```php
 array|boolean KODIPVR_GetBroadcastDetails(integer $InstanzeID, integer $BroadcastId);
@@ -1310,15 +1310,15 @@ array|boolean KODIPVR_GetChannels(integer $InstanzeID, string $ChannelTyp);
  $ChannelTyp kann 'tv' oder 'radio' sein.  
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
 
-| Index                    | Typ      | Beschreibung                  |
-|:------------------------:|:--------:|:-----------------------------:|
-| channeltype              | string   |                               |
-| thumbnail                | string   |                               |
-| channel                  | string   |                               |
-| hidden                   | boolean  |                               |
-| channelid                | integer  |                               |
-| locked                   | boolean  |                               |
-| lastplayed               | string   |                               |
+|    Index    |   Typ   | Beschreibung |
+| :---------: | :-----: | :----------: |
+| channeltype | string  |              |
+|  thumbnail  | string  |              |
+|   channel   | string  |              |
+|   hidden    | boolean |              |
+|  channelid  | integer |              |
+|   locked    | boolean |              |
+| lastplayed  | string  |              |
 
 ```php
 array|boolean KODIPVR_GetChannelDetails(integer $InstanzeID, integer $ChannelId);
@@ -1335,10 +1335,10 @@ array|boolean KODIPVR_GetChannelGroups(integer $InstanzeID, string $ChannelTyp);
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
 
 
-| Index                    | Typ      | Beschreibung                  |
-|:------------------------:|:--------:|:-----------------------------:|
-| channeltype              | string   |                               |
-| channelgroupid           | integer  |                              |
+|     Index      |   Typ   | Beschreibung |
+| :------------: | :-----: | :----------: |
+|  channeltype   | string  |              |
+| channelgroupid | integer |              |
     
 ```php
 array|boolean KODIPVR_GetChannelGroupDetails(integer $InstanzeID, integer $ChannelGroupId);
@@ -1353,25 +1353,25 @@ array|boolean KODIPVR_GetRecordings(integer $InstanzeID);
  Liefert alle Aufnahmen als Array.  
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| art                       | array     |                               |
-| channel                   | string    |                               |
-| directory                 | string    |                               |
-| endtime                   | string    |                               |
-| file                      | string    |                               |
-| genre                     | string[]  | Array der Genres              |
-| icon                      | string    |                               |
-| lifetime                  | integer   |                               |
-| playcount                 | integer   |                               |
-| plot                      | string    |                               |
-| plotoutline               | string    |                               |
-| recordingid               | integer   |                               |
-| resume                    | array     |                               |
-| runtime                   | integer   |                               |
-| starttime                 | string    |                               |
-| streamurl                 | string    |                               |
-| title                     | string    |                               |
+|    Index    |   Typ    |   Beschreibung   |
+| :---------: | :------: | :--------------: |
+|     art     |  array   |                  |
+|   channel   |  string  |                  |
+|  directory  |  string  |                  |
+|   endtime   |  string  |                  |
+|    file     |  string  |                  |
+|    genre    | string[] | Array der Genres |
+|    icon     |  string  |                  |
+|  lifetime   | integer  |                  |
+|  playcount  | integer  |                  |
+|    plot     |  string  |                  |
+| plotoutline |  string  |                  |
+| recordingid | integer  |                  |
+|   resume    |  array   |                  |
+|   runtime   | integer  |                  |
+|  starttime  |  string  |                  |
+|  streamurl  |  string  |                  |
+|    title    |  string  |                  |
  
 ```php
 array|boolean KODIPVR_GetRecordingDetails(integer $InstanzeID, integer $RecordingId);
@@ -1386,26 +1386,26 @@ array|boolean KODIPVR_GetTimers(integer $InstanzeID);
  Liefert alle Aufnahmen-Timer als Array.
  Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| channelid                 | integer   |                               |
-| directory                 | string    |                               |
-| endmargin                 | integer   |                               |
-| endtime                   | string    |                               |
-| file                      | string    |                               |
-| firstday                  | string    |                               |
-| isradio                   | boolean   |                               |
-| lifetime                  | integer   |                               |
-| priority                  | integer   |                               |
-| repeating                 | boolean   |                               |
-| runtime                   | integer   |                               |
-| startmargin               | integer   |                               |
-| starttime                 | string    |                               |
-| state                     | array     |                               |
-| summary                   | string    |                               |
-| timerid                   | integer   |                               |
-| title                     | string    |                               |
-| weekdays                  | array     |                               |
+|    Index    |   Typ   | Beschreibung |
+| :---------: | :-----: | :----------: |
+|  channelid  | integer |              |
+|  directory  | string  |              |
+|  endmargin  | integer |              |
+|   endtime   | string  |              |
+|    file     | string  |              |
+|  firstday   | string  |              |
+|   isradio   | boolean |              |
+|  lifetime   | integer |              |
+|  priority   | integer |              |
+|  repeating  | boolean |              |
+|   runtime   | integer |              |
+| startmargin | integer |              |
+|  starttime  | string  |              |
+|    state    |  array  |              |
+|   summary   | string  |              |
+|   timerid   | integer |              |
+|    title    | string  |              |
+|  weekdays   |  array  |              |
 
 ```php
 array|boolean KODIPVR_GetTimerDetails(integer $InstanzeID, integer $TimerId);
@@ -1528,34 +1528,34 @@ array|boolean KODIVIDEOLIB_GetEpisodeDetails(integer $InstanzeID, integer $Episo
  Liest die Eigenschaften einer Episode aus.
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| cast                      | array     |                               |
-| productioncode            | string    |                               |
-| rating                    | integer   | Bewertung                     |
-| votes                     | string    |                               |
-| episode                   | integer   |                               |
-| showtitle                 | string    |                               |
-| episodeid                 | integer   |                               |
-| tvshowid                  | integer   |                               |
-| season                    | integer   |                               |
-| firstaired                | string    |                               |
-| uniqueid                  | array     |                               |
-| originaltitle             | string    |                               |
-| writer                    | string[]  |                               |
-| streamdetails             | array     |                               |
-| director                  | string[]  |                               |
-| resume                    | array     |                               |
-| runtime                   | integer   |                               |
-| dateadded                 | string    |                               |
-| file                      | string    |                               |
-| lastplayed                | string    |                               |
-| plot                      | string    |                               |
-| title                     | string    | Titel der Datei               |
-| art                       | array     |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
+|     Index      |   Typ    |      Beschreibung      |
+| :------------: | :------: | :--------------------: |
+|      cast      |  array   |                        |
+| productioncode |  string  |                        |
+|     rating     | integer  |       Bewertung        |
+|     votes      |  string  |                        |
+|    episode     | integer  |                        |
+|   showtitle    |  string  |                        |
+|   episodeid    | integer  |                        |
+|    tvshowid    | integer  |                        |
+|     season     | integer  |                        |
+|   firstaired   |  string  |                        |
+|    uniqueid    |  array   |                        |
+| originaltitle  |  string  |                        |
+|     writer     | string[] |                        |
+| streamdetails  |  array   |                        |
+|    director    | string[] |                        |
+|     resume     |  array   |                        |
+|    runtime     | integer  |                        |
+|   dateadded    |  string  |                        |
+|      file      |  string  |                        |
+|   lastplayed   |  string  |                        |
+|      plot      |  string  |                        |
+|     title      |  string  |    Titel der Datei     |
+|      art       |  array   |                        |
+|   playcount    | integer  | Anzahl der Wiedergaben |
+|     fanart     |  string  |    Pfad zum Fanart     |
+|   thumbnail    |  string  |     Pfad zum Cover     |
 
 ```php
 array|boolean KODIVIDEOLIB_GetEpisodes(integer $InstanzeID);
@@ -1577,10 +1577,10 @@ array|boolean KODIVIDEOLIB_GetGenres(integer $InstanzeID);
  Liest die Eigenschaften aller bekannten Genres aus.  
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
  
-| Index     | Typ     | Beschreibung    |
-|:---------:|:-------:|:---------------:|
-| genreid   | integer | ID des Genres   |
-| fanart    | string  | Pfad zum Fanart |
+|   Index   |   Typ   |  Beschreibung   |
+| :-------: | :-----: | :-------------: |
+|  genreid  | integer |  ID des Genres  |
+|  fanart   | string  | Pfad zum Fanart |
 | thumbnail | string  | Pfad zum Cover  |
 
 ```php
@@ -1589,44 +1589,44 @@ array|boolean KODIVIDEOLIB_GetMovieDetails(integer $InstanzeID, integer $MovieId
  Liest die Eigenschaften eines Film aus.
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| plotoutline               | string    |                               |
-| sorttitle                 | string    |                               |
-| movieid                   | integer   |                               |
-| cast                      | array     |                               |
-| votes                     | string    |                               |
-| showlink                  | string[]  |                               |
-| top250                    | integer   |                               |
-| trailer                   | string    |                               |
-| year                      | integer   | Erscheinungsjahr              |
-| rating                    | integer   | Bewertung                     |
-| year                      | integer   | Erscheinungsjahr              |
-| country                   | string[]  ]                               |
-| studio                    | string[]  |                               |
-| set                       | string    |                               |
-| genre                     | string[]  | Array der Genres              |
-| mpaa                      | string    |                               |
-| setid                     | integer   |                               |
-| rating                    | integer   | Bewertung                     |
-| tag                       | string[]  |                               |
-| tagline                   | string    |                               |
-| writer                    | string[]  |                               |
-| originaltitle             | string    |                               |
-| imdbnumber                | string    |                               |
-| streamdetails             | array     |                               |
-| director                  | string[]  |                               |
-| resume                    | array     |                               |
-| runtime                   | integer   |                               |
-| dateadded                 | string    |                               |
-| file                      | string    |                               |
-| lastplayed                | string    |                               |
-| plot                      | string    |                               |
-| title                     | string    | Titel der Datei               |
-| art                       | array     |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
+|     Index     |     Typ     |      Beschreibung      |
+| :-----------: | :---------: | :--------------------: |
+|  plotoutline  |   string    |                        |
+|   sorttitle   |   string    |                        |
+|    movieid    |   integer   |                        |
+|     cast      |    array    |                        |
+|     votes     |   string    |                        |
+|   showlink    |  string[]   |                        |
+|    top250     |   integer   |                        |
+|    trailer    |   string    |                        |
+|     year      |   integer   |    Erscheinungsjahr    |
+|    rating     |   integer   |       Bewertung        |
+|     year      |   integer   |    Erscheinungsjahr    |
+|    country    | string[]  ] |
+|    studio     |  string[]   |                        |
+|      set      |   string    |                        |
+|     genre     |  string[]   |    Array der Genres    |
+|     mpaa      |   string    |                        |
+|     setid     |   integer   |                        |
+|    rating     |   integer   |       Bewertung        |
+|      tag      |  string[]   |                        |
+|    tagline    |   string    |                        |
+|    writer     |  string[]   |                        |
+| originaltitle |   string    |                        |
+|  imdbnumber   |   string    |                        |
+| streamdetails |    array    |                        |
+|   director    |  string[]   |                        |
+|    resume     |    array    |                        |
+|    runtime    |   integer   |                        |
+|   dateadded   |   string    |                        |
+|     file      |   string    |                        |
+|  lastplayed   |   string    |                        |
+|     plot      |   string    |                        |
+|     title     |   string    |    Titel der Datei     |
+|      art      |    array    |                        |
+|   playcount   |   integer   | Anzahl der Wiedergaben |
+|    fanart     |   string    |    Pfad zum Fanart     |
+|   thumbnail   |   string    |     Pfad zum Cover     |
 
 
 ```php
@@ -1649,15 +1649,15 @@ array|boolean KODIVIDEOLIB_GetMovieSetDetails(integer $InstanzeID, integer $SetI
  Liest die Eigenschaften eines Film-Sets aus.
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                     | Typ       | Beschreibung                      |
-|:-------------------------:|:---------:|:---------------------------------:|
-| movies                    | array     | Ein Array mit allen Film-Objekten |
-| setid                     | integer   |                                  |
-| title                     | string    | Titel                             |
-| art                       | array     |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
+|   Index   |   Typ   |           Beschreibung            |
+| :-------: | :-----: | :-------------------------------: |
+|  movies   |  array  | Ein Array mit allen Film-Objekten |
+|   setid   | integer |                                   |
+|   title   | string  |               Titel               |
+|    art    |  array  |                                   |
+| playcount | integer |      Anzahl der Wiedergaben       |
+|  fanart   | string  |          Pfad zum Fanart          |
+| thumbnail | string  |          Pfad zum Cover           |
 
 ```php
 array|boolean KODIVIDEOLIB_GetMovieSets(integer $InstanzeID);
@@ -1672,29 +1672,29 @@ array|boolean KODIVIDEOLIB_GetMusicVideoDetails(integer $InstanzeID, integer $Mu
  Liest die Eigenschaften eines Musikvideos aus.
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| genre                     | string[]  | Array der Genres              |
-| artist                    | string[]  | Array der Künstler            |
-| musicvideoid              | integer   |                               |
-| tag                       | string[]  |                               |
-| album                     | string    |                               |
-| track                     | integer   |                               |
-| studio                    | string[]  |                               |
-| year                      | integer   | Erscheinungsjahr              |
-| streamdetails             | array     |                               |
-| director                  | string[]  |                               |
-| resume                    | array     |                               |
-| runtime                   | integer   |                               |
-| dateadded                 | string    |                               |
-| file                      | string    |                               |
-| lastplayed                | string    |                               |
-| plot                      | string    |                               |
-| title                     | string    | Titel der Datei               |
-| art                       | array     |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
+|     Index     |   Typ    |      Beschreibung      |
+| :-----------: | :------: | :--------------------: |
+|     genre     | string[] |    Array der Genres    |
+|    artist     | string[] |   Array der Künstler   |
+| musicvideoid  | integer  |                        |
+|      tag      | string[] |                        |
+|     album     |  string  |                        |
+|     track     | integer  |                        |
+|    studio     | string[] |                        |
+|     year      | integer  |    Erscheinungsjahr    |
+| streamdetails |  array   |                        |
+|   director    | string[] |                        |
+|    resume     |  array   |                        |
+|    runtime    | integer  |                        |
+|   dateadded   |  string  |                        |
+|     file      |  string  |                        |
+|  lastplayed   |  string  |                        |
+|     plot      |  string  |                        |
+|     title     |  string  |    Titel der Datei     |
+|      art      |  array   |                        |
+|   playcount   | integer  | Anzahl der Wiedergaben |
+|    fanart     |  string  |    Pfad zum Fanart     |
+|   thumbnail   |  string  |     Pfad zum Cover     |
 
 ```php
 array|boolean KODIVIDEOLIB_GetMusicVideos(integer $InstanzeID);
@@ -1716,17 +1716,17 @@ array|boolean KODIVIDEOLIB_GetSeasons(integer $InstanzeID, integer $TvShowId);
  Liest die Eigenschaften Alles Seasons eine TV-Serie ($TvShowId) aus.
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| showtitle                 | string    |                               |
-| watchedepisodes           | integer   |                               |
-| tvshowid                  | integer   |                               |
-| episode                   | integer   |                               |
-| season                    | integer   |                               |
-| art                       | array     |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
+|      Index      |   Typ   |      Beschreibung      |
+| :-------------: | :-----: | :--------------------: |
+|    showtitle    | string  |                        |
+| watchedepisodes | integer |                        |
+|    tvshowid     | integer |                        |
+|     episode     | integer |                        |
+|     season      | integer |                        |
+|       art       |  array  |                        |
+|    playcount    | integer | Anzahl der Wiedergaben |
+|     fanart      | string  |    Pfad zum Fanart     |
+|    thumbnail    | string  |     Pfad zum Cover     |
 
 ```php
 array|boolean KODIVIDEOLIB_GetTVShowDetails(integer $InstanzeID, integer $TvShowId);
@@ -1734,34 +1734,34 @@ array|boolean KODIVIDEOLIB_GetTVShowDetails(integer $InstanzeID, integer $TvShow
  Liest die Eigenschaften eines TV-Serie aus.  
  Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.  
 
-| Index                     | Typ       | Beschreibung                  |
-|:-------------------------:|:---------:|:-----------------------------:|
-| sorttitle                 | string    |                               |
-| mpaa                      | string    |                               |
-| premiered                 | string    |                               |
-| year                      | integer   | Erscheinungsjahr              |
-| episode                   | integer   |                               |
-| watchedepisodes           | integer   |                               |
-| votes                     | string    |                               |
-| rating                    | integer   | Bewertung                     |
-| tvshowid                  | integer   |                               |
-| studio                    | string[]  |                               |
-| season                    | integer   |                               |
-| genre                     | string[]  | Array der Genres              |
-| cast                      | array     |                               |
-| episodeguide              | string    |                               |
-| tag                       | string[]  |                               |
-| originaltitle             | string    |                               |
-| imdbnumber                | string    |                               |
-| dateadded                 | string    |                               |
-| file                      | string    |                               |
-| lastplayed                | string    |                               |
-| plot                      | string    |                               |
-| title                     | string    | Titel der Datei               |
-| art                       | array     |                               |
-| playcount                 | integer   | Anzahl der Wiedergaben        |
-| fanart                    | string    | Pfad zum Fanart               |
-| thumbnail                 | string    | Pfad zum Cover                |
+|      Index      |   Typ    |      Beschreibung      |
+| :-------------: | :------: | :--------------------: |
+|    sorttitle    |  string  |                        |
+|      mpaa       |  string  |                        |
+|    premiered    |  string  |                        |
+|      year       | integer  |    Erscheinungsjahr    |
+|     episode     | integer  |                        |
+| watchedepisodes | integer  |                        |
+|      votes      |  string  |                        |
+|     rating      | integer  |       Bewertung        |
+|    tvshowid     | integer  |                        |
+|     studio      | string[] |                        |
+|     season      | integer  |                        |
+|      genre      | string[] |    Array der Genres    |
+|      cast       |  array   |                        |
+|  episodeguide   |  string  |                        |
+|       tag       | string[] |                        |
+|  originaltitle  |  string  |                        |
+|   imdbnumber    |  string  |                        |
+|    dateadded    |  string  |                        |
+|      file       |  string  |                        |
+|   lastplayed    |  string  |                        |
+|      plot       |  string  |                        |
+|      title      |  string  |    Titel der Datei     |
+|       art       |  array   |                        |
+|    playcount    | integer  | Anzahl der Wiedergaben |
+|     fanart      |  string  |    Pfad zum Fanart     |
+|    thumbnail    |  string  |     Pfad zum Cover     |
 
 ```php
 array|boolean KODIVIDEOLIB_GetTVShows(integer $InstanzeID);
@@ -1784,57 +1784,57 @@ TODO
 
 GUID der Instanzen (z.B. wenn Instanz per PHP angelegt werden soll):  
 
-| Instanz                | GUID                                   |
+|        Instanz         |                  GUID                  |
 | :--------------------: | :------------------------------------: |
-| KodiDeviceAddons       | {0731DD94-99E6-43D8-9BE3-2854B0C6EF24} |
+|    KodiDeviceAddons    | {0731DD94-99E6-43D8-9BE3-2854B0C6EF24} |
 | KodiDeviceApplication  | {3AF936C4-9B31-48EC-84D8-A30F0BEF104C} |
 | KodiDeviceAudioLibrary | {AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC} |
-| KodiDeviceFavourites   | {DA2C90A2-3863-4454-9B07-FBD083420E10} |
-| KodiDeviceFiles        | {54827867-BB3B-4ACC-A453-7A8D4DC78130} |
-| KodiDeviceGUI          | {E15F2C11-0B28-4CFB-AEE6-463BD313A964} |
-| KodiDeviceInput        | {9F3BE8BB-4610-49F4-A41A-40E14F641F43} |
-| KodiDevicePVR          | {9D73D46E-7B80-4814-A7B2-31768DC6AB7E} |
-| KodiDevicePlayer       | {BA014AD9-9568-4F12-BE31-17D37BFED06D} |
-| KodiDevicePlaylist     | {7D73D0FF-0CC7-43D0-A196-0D6143E52756} |
-| KodiDeviceSettings     | {310E1F8B-D1B2-460C-9DBB-C7C500B28658} |
-| KodiDeviceSystem       | {03E18A60-02FD-45E8-8A2C-1F8E247C92D0} |
+|  KodiDeviceFavourites  | {DA2C90A2-3863-4454-9B07-FBD083420E10} |
+|    KodiDeviceFiles     | {54827867-BB3B-4ACC-A453-7A8D4DC78130} |
+|     KodiDeviceGUI      | {E15F2C11-0B28-4CFB-AEE6-463BD313A964} |
+|    KodiDeviceInput     | {9F3BE8BB-4610-49F4-A41A-40E14F641F43} |
+|     KodiDevicePVR      | {9D73D46E-7B80-4814-A7B2-31768DC6AB7E} |
+|    KodiDevicePlayer    | {BA014AD9-9568-4F12-BE31-17D37BFED06D} |
+|   KodiDevicePlaylist   | {7D73D0FF-0CC7-43D0-A196-0D6143E52756} |
+|   KodiDeviceSettings   | {310E1F8B-D1B2-460C-9DBB-C7C500B28658} |
+|    KodiDeviceSystem    | {03E18A60-02FD-45E8-8A2C-1F8E247C92D0} |
 | KodiDeviceVideoLibrary | {07943DF4-FAB9-454F-AA9E-702A5F9C9D57} |
-| KodiConfigurator       | {7B4F8B62-7AB4-4877-AD60-F3B294DDB43E} |
-| KodiSplitter           | {D2F106B5-4473-4C19-A48F-812E8BAA316C} |
+|    KodiConfigurator    | {7B4F8B62-7AB4-4877-AD60-F3B294DDB43E} |
+|      KodiSplitter      | {D2F106B5-4473-4C19-A48F-812E8BAA316C} |
 
 Eigenschaften von KodiDeviceAddons:  
 
-| Eigenschaft     | Typ     | Standardwert | Funktion                                      |
-| :-------------: | :-----: | :----------: | :-------------------------------------------: |
-| showAddonlist   | boolean | true         | HTML-Tabelle mit den Addons erzeugen          |
-| Addonlistconfig | integer | auto         | Script mit den Style für die HTML-Tabelle     |
-| ThumbSize       | integer | 100          | Breite der Thumbnails                         |
+|   Eigenschaft   |   Typ   | Standardwert |                 Funktion                  |
+| :-------------: | :-----: | :----------: | :---------------------------------------: |
+|  showAddonlist  | boolean |     true     |   HTML-Tabelle mit den Addons erzeugen    |
+| Addonlistconfig | integer |     auto     | Script mit den Style für die HTML-Tabelle |
+|    ThumbSize    | integer |     100      |           Breite der Thumbnails           |
   
 
 Eigenschaften von KodiDeviceApplication:  
 
-| Eigenschaft | Typ     | Standardwert | Funktion                             |
+| Eigenschaft |   Typ   | Standardwert |               Funktion               |
 | :---------: | :-----: | :----------: | :----------------------------------: |
-| showName    | boolean | true         | Statusvariable für Name verwenden    |
-| showVersion | boolean | true         | Statusvariable für Version verwenden |
-| showExit    | boolean | true         | Aktions-Variable für beenden anlegen |
+|  showName   | boolean |     true     |  Statusvariable für Name verwenden   |
+| showVersion | boolean |     true     | Statusvariable für Version verwenden |
+|  showExit   | boolean |     true     | Aktions-Variable für beenden anlegen |
 
 Eigenschaften von KodiDeviceAudioLibrary:  
 
-| Eigenschaft | Typ     | Standardwert | Funktion                                             |
+| Eigenschaft |   Typ   | Standardwert |                       Funktion                       |
 | :---------: | :-----: | :----------: | :--------------------------------------------------: |
-| showScan    | boolean | true         | Statusvariable für DB-Scanner verwenden              |
-| showDoScan  | boolean | true         | Statusvariable für DB-Bereinigung verwenden          |
-| showClean   | boolean | true         | Aktions-Variable zum starten des Scan anlegen        |
-| showDoClean | boolean | true         | Aktions-Variable zum starten der Bereinigung anlegen |
+|  showScan   | boolean |     true     |       Statusvariable für DB-Scanner verwenden        |
+| showDoScan  | boolean |     true     |     Statusvariable für DB-Bereinigung verwenden      |
+|  showClean  | boolean |     true     |    Aktions-Variable zum starten des Scan anlegen     |
+| showDoClean | boolean |     true     | Aktions-Variable zum starten der Bereinigung anlegen |
 
  Eigenschaften von KodiDeviceFavourites:  
 
-| Eigenschaft    | Typ     | Standardwert | Funktion                                      |
-| :------------: | :-----: | :----------: | :-------------------------------------------: |
-| showFavlist    | boolean | true         | HTML-Tabelle mit den Favoriten erzeugen       |
-| Favlistconfig  | integer | auto         | Script mit den Style für die HTML-Tabelle     |
-| ThumbSize      | integer | 100          | Breite der Thumbnails                         |
+|  Eigenschaft  |   Typ   | Standardwert |                 Funktion                  |
+| :-----------: | :-----: | :----------: | :---------------------------------------: |
+|  showFavlist  | boolean |     true     |  HTML-Tabelle mit den Favoriten erzeugen  |
+| Favlistconfig | integer |     auto     | Script mit den Style für die HTML-Tabelle |
+|   ThumbSize   | integer |     100      |           Breite der Thumbnails           |
 
  Eigenschaften von KodiDeviceFiles:  
 
@@ -1842,60 +1842,60 @@ keine
 
  Eigenschaften von KodiDeviceGUI:  
 
-| Eigenschaft        | Typ     | Standardwert | Funktion                                        |
+|    Eigenschaft     |   Typ   | Standardwert |                    Funktion                     |
 | :----------------: | :-----: | :----------: | :---------------------------------------------: |
-| showCurrentWindow  | boolean | true         | Statusvariable für aktuelles Fenster verwenden  |
-| showCurrentControl | boolean | true         | Statusvariable für aktuelle Steuerung verwenden |
-| showSkin           | boolean | true         | Statusvariable für Skin verwenden               |
-| showFullscreen     | boolean | true         | Statusvariable für Vollbildmodus verwenden      |
-| showScreensaver    | boolean | true         | Statusvariable für Bildschirmschoner verwenden  |
+| showCurrentWindow  | boolean |     true     | Statusvariable für aktuelles Fenster verwenden  |
+| showCurrentControl | boolean |     true     | Statusvariable für aktuelle Steuerung verwenden |
+|      showSkin      | boolean |     true     |        Statusvariable für Skin verwenden        |
+|   showFullscreen   | boolean |     true     |   Statusvariable für Vollbildmodus verwenden    |
+|  showScreensaver   | boolean |     true     | Statusvariable für Bildschirmschoner verwenden  |
 
  Eigenschaften von KodiDeviceInput: 
 
-| Eigenschaft           | Typ     | Standardwert | Funktion                                 |
+|      Eigenschaft      |   Typ   | Standardwert |                 Funktion                 |
 | :-------------------: | :-----: | :----------: | :--------------------------------------: |
-| showSVGRemote         | boolean | true         | SVG-Remote anzeigen                      |
-| RemoteId              | integer | 1            | 1=vertikal, 2=horizontal                 |
-| showNavigationButtons | boolean | true         | Aktions-Variable zum navigieren anzeigen |
-| showControlButtons    | boolean | true         | Aktions-Variable zum steuern anzeigen    |
-| showInputRequested    | boolean | true         | Status-Variable wenn Eingaben nötig sind |
+|     showSVGRemote     | boolean |     true     |           SVG-Remote anzeigen            |
+|       RemoteId        | integer |      1       |         1=vertikal, 2=horizontal         |
+| showNavigationButtons | boolean |     true     | Aktions-Variable zum navigieren anzeigen |
+|  showControlButtons   | boolean |     true     |  Aktions-Variable zum steuern anzeigen   |
+|  showInputRequested   | boolean |     true     | Status-Variable wenn Eingaben nötig sind |
 
  Eigenschaften von KodiDevicePVR:  
 
-| Eigenschaft            | Typ     | Standardwert | Funktion                                                 |
+|      Eigenschaft       |   Typ   | Standardwert |                         Funktion                         |
 | :--------------------: | :-----: | :----------: | :------------------------------------------------------: |
-| showIsAvailable        | boolean | true         | Status-Variable PVR-Verfügbarkeit anzeigen               |
-| showIsRecording        | boolean | true         | Status-Variable Aufzeichnung aktiv anzeigen              |
-| showDoRecording        | boolean | true         | Aktions-Variable zum steuern einer Aufzeichnung anzeigen |
-| showIsScanning         | boolean | true         | Status-Variable für aktive Kanalsuche anzeigen           |
-| showTVChannellist      | boolean | true         | HTML-Tabelle mit den TV Kanälen erzeugen                 |
-| showMaxTVChannels      | integer | 20           | Anzahl der darzustellenden TV Kanäle                     |
-| TVChannellistconfig    | integer | auto         | Script mit den Style für die HTML-Tabelle                |
-| TVThumbSize            | integer | 100          | Breite der Senderlogos                                   |
-| showRadioChannellist   | boolean | true         | HTML-Tabelle mit den Radio Kanälen erzeugen              |
-| showMaxRadioChannels   | integer | 20           | Anzahl der darzustellenden Radio Kanäle                  |
-| RadioChannellistconfig | integer | auto         | Script mit den Style für die HTML-Tabelle                |
-| RadioThumbSize         | integer | 100          | Breite der Senderlogos                                   |
-| showRecordinglist      | boolean | true         | HTML-Tabelle mit den Aufzeichnungen erzeugen             |
-| showMaxRecording       | integer | 20           | Anzahl der darzustellenden Aufzeichnungen                |
-| Recordinglistconfig    | integer | auto         | Script mit den Style für die HTML-Tabelle                |
-| RecordingThumbSize     | integer | 100          | Breite der Thumbnails                                    |
+|    showIsAvailable     | boolean |     true     |        Status-Variable PVR-Verfügbarkeit anzeigen        |
+|    showIsRecording     | boolean |     true     |       Status-Variable Aufzeichnung aktiv anzeigen        |
+|    showDoRecording     | boolean |     true     | Aktions-Variable zum steuern einer Aufzeichnung anzeigen |
+|     showIsScanning     | boolean |     true     |      Status-Variable für aktive Kanalsuche anzeigen      |
+|   showTVChannellist    | boolean |     true     |         HTML-Tabelle mit den TV Kanälen erzeugen         |
+|   showMaxTVChannels    | integer |      20      |           Anzahl der darzustellenden TV Kanäle           |
+|  TVChannellistconfig   | integer |     auto     |        Script mit den Style für die HTML-Tabelle         |
+|      TVThumbSize       | integer |     100      |                  Breite der Senderlogos                  |
+|  showRadioChannellist  | boolean |     true     |       HTML-Tabelle mit den Radio Kanälen erzeugen        |
+|  showMaxRadioChannels  | integer |      20      |         Anzahl der darzustellenden Radio Kanäle          |
+| RadioChannellistconfig | integer |     auto     |        Script mit den Style für die HTML-Tabelle         |
+|     RadioThumbSize     | integer |     100      |                  Breite der Senderlogos                  |
+|   showRecordinglist    | boolean |     true     |       HTML-Tabelle mit den Aufzeichnungen erzeugen       |
+|    showMaxRecording    | integer |      20      |        Anzahl der darzustellenden Aufzeichnungen         |
+|  Recordinglistconfig   | integer |     auto     |        Script mit den Style für die HTML-Tabelle         |
+|   RecordingThumbSize   | integer |     100      |                  Breite der Thumbnails                   |
 
  Eigenschaften von KodiDevicePlayer:  
 
-| Eigenschaft | Typ     | Standardwert | Funktion                                                         |
+| Eigenschaft |   Typ   | Standardwert |                             Funktion                             |
 | :---------: | :-----: | :----------: | :--------------------------------------------------------------: |
-| PlayerID    | integer | 0            | Playermodus: 0 = Audio, 1 = Video, 2 = Bilder                    |
-| CoverSize   | integer | 300          | Die Höhe vom Cover in Pixel auf welche das 'Cover' skaliert wird |
-| CoverTyp    | string  | thumb        | Varianten: 'thumb', 'artist', 'poster', 'banner'                 |
+|  PlayerID   | integer |      0       |          Playermodus: 0 = Audio, 1 = Video, 2 = Bilder           |
+|  CoverSize  | integer |     300      | Die Höhe vom Cover in Pixel auf welche das 'Cover' skaliert wird |
+|  CoverTyp   | string  |    thumb     |         Varianten: 'thumb', 'artist', 'poster', 'banner'         |
 
  Eigenschaften von KodiDevicePlaylist:  
 
-| Eigenschaft    | Typ     | Standardwert | Funktion                                      |
+|  Eigenschaft   |   Typ   | Standardwert |                   Funktion                    |
 | :------------: | :-----: | :----------: | :-------------------------------------------: |
-| PlaylistID     | integer | 0            | Playermodus: 0 = Audio, 1 = Video, 2 = Bilder |
-| showPlaylist   | boolean | true         | HTML-Tabelle mit der Playlist erzeugen        |
-| Playlistconfig | integer | auto         | Script mit den Style für die HTML-Tabelle     |
+|   PlaylistID   | integer |      0       | Playermodus: 0 = Audio, 1 = Video, 2 = Bilder |
+|  showPlaylist  | boolean |     true     |    HTML-Tabelle mit der Playlist erzeugen     |
+| Playlistconfig | integer |     auto     |   Script mit den Style für die HTML-Tabelle   |
 
  Eigenschaften von KodiDeviceSettings:  
 
@@ -1903,21 +1903,21 @@ keine
 
  Eigenschaften von KodiDeviceSystem:  
 
-| Eigenschaft     | Typ     | Standardwert | Funktion                                                         |
+|   Eigenschaft   |   Typ   | Standardwert |                             Funktion                             |
 | :-------------: | :-----: | :----------: | :--------------------------------------------------------------: |
-| PowerScript     | integer | 0            | Script welches zum einschalten des System ausgeführt werden soll |
-| PowerOff        | integer | 0            | Ausschalt-Methode: 0 = OFF, 1 = Hibernate, 2 = Standby           |
-| PreSelectScript | integer | 0            | immer 0 nach ApplyChanges, Erzeugt eine PowerScript aus Vorlagen |
-| MACAddress      | string  |              | MAC-Adresse für PowerScript                                      |
+|   PowerScript   | integer |      0       | Script welches zum einschalten des System ausgeführt werden soll |
+|    PowerOff     | integer |      0       |      Ausschalt-Methode: 0 = OFF, 1 = Hibernate, 2 = Standby      |
+| PreSelectScript | integer |      0       | immer 0 nach ApplyChanges, Erzeugt eine PowerScript aus Vorlagen |
+|   MACAddress    | string  |              |                   MAC-Adresse für PowerScript                    |
 
  Eigenschaften von KodiDeviceVideoLibrary:  
 
-| Eigenschaft | Typ     | Standardwert | Funktion                                             |
+| Eigenschaft |   Typ   | Standardwert |                       Funktion                       |
 | :---------: | :-----: | :----------: | :--------------------------------------------------: |
-| showScan    | boolean | true         | Statusvariable für DB-Scanner verwenden              |
-| showDoScan  | boolean | true         | Statusvariable für DB-Bereinigung verwenden          |
-| showClean   | boolean | true         | Aktions-Variable zum starten des Scan anlegen        |
-| showDoClean | boolean | true         | Aktions-Variable zum starten der Bereinigung anlegen |
+|  showScan   | boolean |     true     |       Statusvariable für DB-Scanner verwenden        |
+| showDoScan  | boolean |     true     |     Statusvariable für DB-Bereinigung verwenden      |
+|  showClean  | boolean |     true     |    Aktions-Variable zum starten des Scan anlegen     |
+| showDoClean | boolean |     true     | Aktions-Variable zum starten der Bereinigung anlegen |
 
  Eigenschaften von KodiConfigurator:  
 
@@ -1925,14 +1925,14 @@ keine
 
 Eigenschaften von KodiSplitter:  
 
-| Eigenschaft | Typ     | Standardwert | Funktion                                                       |
+| Eigenschaft |   Typ   | Standardwert |                            Funktion                            |
 | :---------: | :-----: | :----------: | :------------------------------------------------------------: |
-| Open        | boolean | false        | Verbindung herstellen                                          |
-| Host        | string  |              | Hostnamen, IP-Adresse von Kodi                                 |
-| Port        | integer | 9090         | Ziel-Port in Kodi für die RPC-JSON-API via TCP                 |
-| Webport     | integer | 80           | Webfront von Kodi, wird für den download der Cover genutzt     |
-| Watchdog    | boolean | false        | Mit Ping prüfen bevor versucht wird eine Verbindung aufzubauen |
-| Interval    | integer | 5            | Interval der Ping-Prüfung                                      |
+|    Open     | boolean |    false     |                     Verbindung herstellen                      |
+|    Host     | string  |              |                 Hostnamen, IP-Adresse von Kodi                 |
+|    Port     | integer |     9090     |         Ziel-Port in Kodi für die RPC-JSON-API via TCP         |
+|   Webport   | integer |      80      |   Webfront von Kodi, wird für den download der Cover genutzt   |
+|  Watchdog   | boolean |    false     | Mit Ping prüfen bevor versucht wird eine Verbindung aufzubauen |
+|  Interval   | integer |      5       |                   Interval der Ping-Prüfung                    |
 
 ## 9. Tipps & Tricks
 
@@ -1944,7 +1944,13 @@ Eigenschaften von KodiSplitter:
 
 **Changelog:**
 
-Version 2.95:
+Version 2.97:
+  - Fix: ClientSocket wollte immer Änderungen übernehmen, auch wenn keine da waren.  
+  - Fix: Verbindungtimout beim prüfen der Verfügbarkeit von Kodi erhöht auf 2000ms.  
+  - Fix: Änderungen des Host im ClientSocket wurden nicht erkannt.  
+  - Fix: Fehlermeldung beim Verbindungsaufbau, wenn Kodi nicht geantwortet hat.  
+
+Version 2.96:
   - Neu: KodiDeviceSettings Instanz.  
 
 Version 2.90:

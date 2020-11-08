@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.95
+ * @version       2.97
  *
  */
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -29,7 +29,7 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.95
+ * @version       2.97
  * @property array $ReplyJSONData
  * @property string $BufferIN
  * @property string $Host
@@ -77,6 +77,9 @@ class KodiSplitter extends IPSModule
         $this->ReplyJSONData = [];
         $this->BufferIN = '';
         $this->Host = '';
+        if (IPS_GetKernelRunlevel() != KR_READY) {
+            $this->RegisterMessage(0, IPS_KERNELSTARTED);
+        }
     }
 
     /**
@@ -86,7 +89,6 @@ class KodiSplitter extends IPSModule
      */
     public function ApplyChanges()
     {
-        $this->RegisterMessage(0, IPS_KERNELSTARTED);
         $this->RegisterMessage($this->InstanceID, FM_CONNECT);
         $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
         $this->RegisterMessage($this->InstanceID, IM_CHANGESTATUS);
@@ -100,6 +102,7 @@ class KodiSplitter extends IPSModule
         parent::ApplyChanges();
 
         if (IPS_GetKernelRunlevel() != KR_READY) {
+            $this->SetStatus(IS_INACTIVE);
             return;
         }
 
@@ -165,6 +168,7 @@ class KodiSplitter extends IPSModule
         $this->IOMessageSink($TimeStamp, $SenderID, $Message, $Data);
         switch ($Message) {
             case IPS_KERNELSTARTED:
+                $this->UnregisterMessage(0, IPS_KERNELSTARTED);
                 $this->KernelReady();
                 break;
             case IM_CHANGESTATUS:
@@ -219,8 +223,11 @@ class KodiSplitter extends IPSModule
      */
     public function GetConfigurationForParent()
     {
+        $Config['Open'] =false;
+        if ($this->ReadPropertyBoolean('Open')) {
+            $Config['Open'] =($this->GetStatus() == IS_ACTIVE);
+        }
         $Config['Port'] = $this->ReadPropertyInteger('Port');
-        $Config['Open'] = $this->ReadPropertyBoolean('Open');
         return json_encode($Config);
     }
 
@@ -521,7 +528,7 @@ class KodiSplitter extends IPSModule
     }
     private function CheckPort()
     {
-        $Socket = @stream_socket_client('tcp://' . $this->Host . ':' . $this->ReadPropertyInteger('Port'), $errno, $errstr, 1);
+        $Socket = @stream_socket_client('tcp://' . $this->Host . ':' . $this->ReadPropertyInteger('Port'), $errno, $errstr, 2);
         if (!$Socket) {
             $this->SendDebug('CheckPort', false, 0);
             return false;
@@ -609,7 +616,11 @@ class KodiSplitter extends IPSModule
             $this->SendDebug('WebRequest Error', $http_code, 0);
             $Result = false;
         } else {
-            $this->SendDebug('WebRequest Result:' . $http_code, substr($Result, 0, 100), 0);
+            if ($Result===false) {
+                $this->SendDebug('WebRequest Result:' . $http_code, $Result, 0);
+            } else {
+                $this->SendDebug('WebRequest Result:' . $http_code, substr($Result, 0, 100), 0);
+            }
         }
         return $Result;
     }
