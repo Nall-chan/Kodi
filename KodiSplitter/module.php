@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.97
+ * @version       2.98
  *
  */
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
@@ -29,10 +29,11 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.97
+ * @version       2.98
  * @property array $ReplyJSONData
  * @property string $BufferIN
  * @property string $Host
+ * @property bool $StatusIsChanging
  * @example <b>Ohne</b>
  */
 class KodiSplitter extends IPSModule
@@ -77,6 +78,7 @@ class KodiSplitter extends IPSModule
         $this->ReplyJSONData = [];
         $this->BufferIN = '';
         $this->Host = '';
+        $this->StatusIsChanging=false;
         if (IPS_GetKernelRunlevel() != KR_READY) {
             $this->RegisterMessage(0, IPS_KERNELSTARTED);
         }
@@ -173,6 +175,12 @@ class KodiSplitter extends IPSModule
                 break;
             case IM_CHANGESTATUS:
                 if ($SenderID == $this->InstanceID) {
+                    if ($this->StatusIsChanging) {
+                        $this->SendDebug('MessageSink','StatusIsChanging already locked',0);
+                        return;
+                    }                    
+                    $this->StatusIsChanging = true;
+                    $this->SendDebug('MessageSink','StatusIsChanging now locked',0);
                     switch ($Data[0]) {
                         case IS_ACTIVE:
                             $this->LogMessage('Connected to Kodi', KL_NOTIFY);
@@ -190,6 +198,8 @@ class KodiSplitter extends IPSModule
                             $this->SendPowerEvent(false);
                             break;
                     }
+                    $this->SendDebug('MessageSink','StatusIsChanging now unlocked',0);
+                    $this->StatusIsChanging = false;   
                 }
                 break;
         }
@@ -422,10 +432,18 @@ class KodiSplitter extends IPSModule
      */
     protected function IOChangeState($State)
     {
+        if ($this->StatusIsChanging) {
+            $this->SendDebug('IOChangeState','StatusIsChanging already locked',0);
+            return;
+        }
+        $this->StatusIsChanging = true;
+        $this->SendDebug('IOChangeState','StatusIsChanging now locked',0);
         if (!$this->ReadPropertyBoolean('Open')) {
             if ($this->GetStatus() != IS_INACTIVE) {
                 $this->SetStatus(IS_INACTIVE);
             }
+            $this->SendDebug('IOChangeState','StatusIsChanging now unlocked',0);
+            $this->StatusIsChanging = false;   
             return;
         }
         switch ($State) {
@@ -457,6 +475,8 @@ class KodiSplitter extends IPSModule
                 }
                 break;
         }
+        $this->SendDebug('IOChangeState','StatusIsChanging now unlocked',0);
+        $this->StatusIsChanging = false;   
     }
 
     /**

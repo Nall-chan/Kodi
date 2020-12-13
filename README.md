@@ -1,5 +1,5 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version 2.97](https://img.shields.io/badge/Modul%20Version-2.97-blue.svg)]()
+[![Version 2.98](https://img.shields.io/badge/Modul%20Version-2.98-blue.svg)]()
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions) 
@@ -1943,6 +1943,10 @@ Eigenschaften von KodiSplitter:
 ## 10. Anhang
 
 **Changelog:**
+
+Version 2.98:
+  - Fix: KODIVIDEOLIB_GetMovieDetails war defekt.  
+  - Fix: Verhalten des Splitters bei Verbindungsauf/abbau und Konfigurationsänderungen verbessert.  
 
 Version 2.97:
   - Fix: ClientSocket wollte immer Änderungen übernehmen, auch wenn keine da waren.  

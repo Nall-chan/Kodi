@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.97
+ * @version       2.98
  * @example <b>Ohne</b>
  */
 
@@ -19,7 +19,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.97
+ * @version       2.98
  * @example <b>Ohne</b>
  */
 class KodiRPCException extends Exception
@@ -37,7 +37,7 @@ class KodiRPCException extends Exception
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.97
+ * @version       2.98
  * @example <b>Ohne</b>
  *
  * @method null ExecuteAddon

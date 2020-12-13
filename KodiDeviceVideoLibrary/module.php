@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.97
+ * @version       2.98
  *
  */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
@@ -24,7 +24,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <micha@nall-chan.net>
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       2.97
+ * @version       2.98
  * @example <b>Ohne</b>
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle.
  * @todo VideoLibrary.GetInProgressTVShows ab v8
@@ -466,7 +466,7 @@ class KodiDeviceVideoLibrary extends KodiBase
         }
 
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetEpisodeDetails(['movieid' => $MovieId, 'properties' => static::$MovieItemList]);
+        $KodiData->GetMovieDetails(['movieid' => $MovieId, 'properties' => static::$MovieItemList]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
