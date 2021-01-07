@@ -1,6 +1,6 @@
 [![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Version 2.98](https://img.shields.io/badge/Modul%20Version-2.98-blue.svg)]()
-[![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857-IP-Symcon-5-3-%28Stable%29-Changelog)  
+[![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions) 
 [![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
@@ -51,7 +51,7 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
 ## 2. Voraussetzungen
 
- - IPS ab Version 5.0
+ - IPS ab Version 5.3
  - Installiertes System mit der Software Kodi 
 
 ## 3. Installation
@@ -77,15 +77,19 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 ## 5. Einrichten der Instanzen in IPS
 
   Es wird empfohlen die Einrichtung mit der Instanz Kodi-Discovery durchzuführen.  
-  
+
   - Im Objektbaum die Kategorie 'Discovery Instanzen' öffnen.  
   - Auf die Instanz 'Kodi Discovery' doppelt klicken. ![Discovery öffnen](imgs/Discovery1.png)  
-  - Im folgenden Dialog sollten alle im lokalen Netzwerk verfügbaren Kodi-Systeme aufgelistet werden.  ![Discovery](imgs/Discovery.png)  
+  - Im folgenden Dialog sollten alle im lokalen Netzwerk verfügbaren Kodi-Systeme aufgelistet werden (*).  ![Discovery](imgs/Discovery.png)  
   - Im Dialog das gewünschte System auswählen und den Button 'Erstellen' betätigen.
   - Anschließend ändert sich der Button zu 'Konfigurieren' und muss erneut betätigt werden.  
   - Im sich öffnenden Konfigurator alle gewünschten Funktionen wie zuvor erzeugen.  ![Instanzen erzeugen](imgs/Konfigurator.png)  
   - Über den Button 'Gateway konfigurieren' kann die optionale HTTP-Authentifizierung sowie ein abweichender JSON-RPC Port konfiguriert werden.  
   - In den jeweiligen Instanzen sind dann noch weitere Einstellungen nach eigenen Vorlieben einzustellen.  
+
+**(*)Hinweis:**  
+ Bei bestimmten Host-Systemen wie z.B. Android, Android TV wird das auffinden des Systems eventuell nicht funktionieren.  
+ Dann bitte mit dem anlegen von einem Konfigurator anfangen.  
 
 
 ## 6. Funktionen der Instanzen

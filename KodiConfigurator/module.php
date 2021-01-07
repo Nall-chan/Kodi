@@ -80,7 +80,7 @@ class KodiConfigurator extends IPSModule
     public function Create()
     {
         parent::Create();
-        $this->ConnectParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
+        $this->RequireParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
     }
 
     /**

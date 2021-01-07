@@ -159,7 +159,7 @@ class KodiDiscovery extends ipsmodule
             'Content-Length: 0'
         ];
         $SendData = implode("\r\n", $message) . "\r\n\r\n";
-        $this->SendDebug('Serach', $SendData, 0);
+        $this->SendDebug('Search', $SendData, 0);
         if (@socket_sendto($socket, $SendData, strlen($SendData), 0, '239.255.255.250', 1900) === false) {
             return [];
         }
