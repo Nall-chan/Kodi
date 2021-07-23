@@ -78,7 +78,7 @@ class KodiSplitter extends IPSModule
         $this->ReplyJSONData = [];
         $this->BufferIN = '';
         $this->Host = '';
-        $this->StatusIsChanging=false;
+        $this->StatusIsChanging = false;
         if (IPS_GetKernelRunlevel() != KR_READY) {
             $this->RegisterMessage(0, IPS_KERNELSTARTED);
         }
@@ -176,11 +176,11 @@ class KodiSplitter extends IPSModule
             case IM_CHANGESTATUS:
                 if ($SenderID == $this->InstanceID) {
                     if ($this->StatusIsChanging) {
-                        $this->SendDebug('MessageSink','StatusIsChanging already locked',0);
+                        $this->SendDebug('MessageSink', 'StatusIsChanging already locked', 0);
                         return;
-                    }                    
+                    }
                     $this->StatusIsChanging = true;
-                    $this->SendDebug('MessageSink','StatusIsChanging now locked',0);
+                    $this->SendDebug('MessageSink', 'StatusIsChanging now locked', 0);
                     switch ($Data[0]) {
                         case IS_ACTIVE:
                             $this->LogMessage('Connected to Kodi', KL_NOTIFY);
@@ -198,8 +198,8 @@ class KodiSplitter extends IPSModule
                             $this->SendPowerEvent(false);
                             break;
                     }
-                    $this->SendDebug('MessageSink','StatusIsChanging now unlocked',0);
-                    $this->StatusIsChanging = false;   
+                    $this->SendDebug('MessageSink', 'StatusIsChanging now unlocked', 0);
+                    $this->StatusIsChanging = false;
                 }
                 break;
         }
@@ -233,9 +233,9 @@ class KodiSplitter extends IPSModule
      */
     public function GetConfigurationForParent()
     {
-        $Config['Open'] =false;
+        $Config['Open'] = false;
         if ($this->ReadPropertyBoolean('Open')) {
-            $Config['Open'] =($this->GetStatus() == IS_ACTIVE);
+            $Config['Open'] = ($this->GetStatus() == IS_ACTIVE);
         }
         $Config['Port'] = $this->ReadPropertyInteger('Port');
         return json_encode($Config);
@@ -433,17 +433,17 @@ class KodiSplitter extends IPSModule
     protected function IOChangeState($State)
     {
         if ($this->StatusIsChanging) {
-            $this->SendDebug('IOChangeState','StatusIsChanging already locked',0);
+            $this->SendDebug('IOChangeState', 'StatusIsChanging already locked', 0);
             return;
         }
         $this->StatusIsChanging = true;
-        $this->SendDebug('IOChangeState','StatusIsChanging now locked',0);
+        $this->SendDebug('IOChangeState', 'StatusIsChanging now locked', 0);
         if (!$this->ReadPropertyBoolean('Open')) {
             if ($this->GetStatus() != IS_INACTIVE) {
                 $this->SetStatus(IS_INACTIVE);
             }
-            $this->SendDebug('IOChangeState','StatusIsChanging now unlocked',0);
-            $this->StatusIsChanging = false;   
+            $this->SendDebug('IOChangeState', 'StatusIsChanging now unlocked', 0);
+            $this->StatusIsChanging = false;
             return;
         }
         switch ($State) {
@@ -475,8 +475,8 @@ class KodiSplitter extends IPSModule
                 }
                 break;
         }
-        $this->SendDebug('IOChangeState','StatusIsChanging now unlocked',0);
-        $this->StatusIsChanging = false;   
+        $this->SendDebug('IOChangeState', 'StatusIsChanging now unlocked', 0);
+        $this->StatusIsChanging = false;
     }
 
     /**
@@ -636,7 +636,7 @@ class KodiSplitter extends IPSModule
             $this->SendDebug('WebRequest Error', $http_code, 0);
             $Result = false;
         } else {
-            if ($Result===false) {
+            if ($Result === false) {
                 $this->SendDebug('WebRequest Result:' . $http_code, $Result, 0);
             } else {
                 $this->SendDebug('WebRequest Result:' . $http_code, substr($Result, 0, 100), 0);

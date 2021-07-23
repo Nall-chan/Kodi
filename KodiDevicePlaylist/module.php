@@ -1089,7 +1089,7 @@ class KodiDevicePlaylist extends KodiBase
 
                 $Line['Play'] = ($Line['Position'] == $CurrentTrack ? '<div class="iconMediumSpinner ipsIconArrowRight" style="width: 100%; background-position: center center;"></div>' : '');
                 $LineSecret = rawurlencode(base64_encode(sha1($NewSecret . '0' . $Line['Position'], true)));
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] .'&Secret=' . $LineSecret. '\' })">';
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '&Secret=' . $LineSecret . '\' })">';
                 foreach ($Config['Spalten'] as $feldIndex => $value) {
                     if (!array_key_exists($feldIndex, $Line)) {
                         $Line[$feldIndex] = '';
