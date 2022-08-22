@@ -26,7 +26,8 @@
             "Error on send hibernate": "Fehler beim senden von Ruhezustand.",
             "Error on send suspend": "Fehler beim senden von Standby.",
             "Error on send reboot": "Fehler beim senden von Neustart.",
-            "Error on eject optical drive": "Fehler beim Laufwerk öffnen."
+            "Error on eject optical drive": "Fehler beim Laufwerk öffnen.",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }

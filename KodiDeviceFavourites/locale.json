@@ -10,7 +10,8 @@
             "Error on read Favlistconfig-Script": "Fehler beim lesen des Favlistconfig-Script",
             "Bad Request": "Ungültige Anfrage",
             "Access denied": "Zugriff verweigert",
-            "unknown Hook": "unbekannter Hook"
+            "unknown Hook": "unbekannter Hook",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }

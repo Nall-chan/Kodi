@@ -13,7 +13,8 @@
             "Request all states": "Status lesen",
             "Error on set mute.": "Fehler beim Stummschalten.",
             "Error on set volume.": "Fehler beim setzen der Lautstärke.",
-            "Error on quit Kodi.": "Fehler beim verlassen von Kodi."
+            "Error on quit Kodi.": "Fehler beim verlassen von Kodi.",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }

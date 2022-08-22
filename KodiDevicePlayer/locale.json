@@ -43,7 +43,8 @@
             "Error on set speed.": "Fehler beim setzen der Geschwindigkeit.",
             "Error on set Position.": "",
             "Error on send ": "Fehler beim senden von ",
-            "Error on load ": "Fehler beim laden von "
+            "Error on load ": "Fehler beim laden von ",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }

@@ -19,7 +19,8 @@
             "Host or port is empty.": "Adresse und Port darf nicht leer sein.",
             "Could not connect RPC-Server.": "Keine Verbindung zum RPC-Server.",
             "Could not connect to webserver.": "Keine Verbindung zum Webserver",
-            "Error on load image from Kodi.":"Fehler beim laden des Bild von Kodi,"
+            "Error on load image from Kodi.": "Fehler beim laden des Bild von Kodi,",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }

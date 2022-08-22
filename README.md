@@ -1,9 +1,10 @@
-[![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version 2.98](https://img.shields.io/badge/Modul%20Version-2.98-blue.svg)]()
-[![Version](https://img.shields.io/badge/Symcon%20Version-5.3%20%3E-green.svg)](https://www.symcon.de/forum/threads/30857)  
+[![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![Version 3.00](https://img.shields.io/badge/Modul%20Version-3.00-blue.svg)]()
+[![Version](https://img.shields.io/badge/Symcon%20Version-6.1%20%3E-green.svg)](https://www.symcon.de/service/dokumentation/installation/migrationen/v60-v61-q1-2022/)  
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
-[![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
-[![Spenden](https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_SM.gif)](#11-spenden)  
+[![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
+[![Spenden](https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_SM.gif)](#4-spenden)  
 
 # Kodi Library<!-- omit in toc -->
 
@@ -32,11 +33,13 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
   - [12. Kodi System](#12-kodi-system)
   - [13. Kodi Video Datenbank](#13-kodi-video-datenbank)
   - [14. Kodi Splitter](#14-kodi-splitter)
-- [8. Parameter / Modul-Infos](#8-parameter--modul-infos)
-- [9. Tipps & Tricks](#9-tipps--tricks)
-- [10. Anhang](#10-anhang)
-- [11. Spenden](#11-spenden)
-- [12. Lizenz](#12-lizenz)
+- [8. Aktionen](#8-aktionen)
+- [9. Anhang](#9-anhang)
+  - [1. GUID der Module](#1-guid-der-module)
+  - [2. Eigenschaften der Instanzen](#2-eigenschaften-der-instanzen)
+  - [3. Changelog](#3-changelog)
+  - [4. Spenden](#4-spenden)
+- [11. Lizenz](#11-lizenz)
 
 ## 1. Funktionsumfang
 
@@ -51,8 +54,8 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
 ## 2. Voraussetzungen
 
- - IPS ab Version 5.3
- - Installiertes System mit der Software Kodi 
+ - IPS ab Version 6.1
+ - Kodi installation auf einem unterstützen System
 
 ## 3. Installation
 
@@ -834,7 +837,7 @@ boolean KODIINPUT_SendText(integer $InstanzeID, string $Text, boolean $Done);
 ### 8. Kodi Player
 
  ```php
-boolean KODIPLAYER_GetItem(integer $InstanzeID);
+array | boolean KODIPLAYER_GetItem(integer $InstanzeID);
 ```  
  Holt die Daten des aktuellen wiedergegebenen Items, und gibt Diese als Array zurück.  
  Rückgabewert ist ein Array mit den Eigenschaften oder FALSE bei einem Fehler.  
@@ -1782,11 +1785,23 @@ boolean KODIVIDEOLIB_Export(integer $InstanzeID, string $Path, boolean $Overwrit
 
 ### 14. Kodi Splitter
 
-TODO  
+//Todo  
+1-8 vorbereitet
+9 ff fehlt
 
-## 8. Parameter / Modul-Infos
+## 8. Aktionen
 
-GUID der Instanzen (z.B. wenn Instanz per PHP angelegt werden soll):  
+__Grundsätzlich können alle bedienbaren Statusvariablen als Ziel einer [`Aktion`](https://www.symcon.de/service/dokumentation/konzepte/automationen/ablaufplaene/aktionen/) mit 'Auf Wert schalten' angesteuert werden, so das hier keine speziellen Aktionen benutzt werden müssen.__
+
+Dennoch gibt es diverse Aktionen für die 'ONVIF Media Stream' Instanz.  
+Wenn so eine Instanz als Ziel einer Aktion ausgewählt wurde, stehen folgende Aktionen zur Verfügung:  
+![Aktionen](imgs/Actions.png)  
+//Todo  
+
+
+## 9. Anhang
+
+###  1. GUID der Module
 
 |        Instanz         |                  GUID                  |
 | :--------------------: | :------------------------------------: |
@@ -1805,6 +1820,9 @@ GUID der Instanzen (z.B. wenn Instanz per PHP angelegt werden soll):
 | KodiDeviceVideoLibrary | {07943DF4-FAB9-454F-AA9E-702A5F9C9D57} |
 |    KodiConfigurator    | {7B4F8B62-7AB4-4877-AD60-F3B294DDB43E} |
 |      KodiSplitter      | {D2F106B5-4473-4C19-A48F-812E8BAA316C} |
+
+### 2. Eigenschaften der Instanzen
+
 
 Eigenschaften von KodiDeviceAddons:  
 
@@ -1938,15 +1956,10 @@ Eigenschaften von KodiSplitter:
 |  Watchdog   | boolean |    false     | Mit Ping prüfen bevor versucht wird eine Verbindung aufzubauen |
 |  Interval   | integer |      5       |                   Interval der Ping-Prüfung                    |
 
-## 9. Tipps & Tricks
+### 3. Changelog
 
-- ...
-- ...
-- ...
-
-## 10. Anhang
-
-**Changelog:**
+Version 3.00:
+ - Neu: Aktionen für TODO
 
 Version 2.98:
   - Fix: KODIVIDEOLIB_GetMovieDetails war defekt.  
@@ -2036,13 +2049,18 @@ Version 2.01:
  Version 1.0:  
   - Release  
 
-## 11. Spenden  
+----------
+### 4. Spenden  
   
   Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  
 
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G2SLW2MEMQZH2" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>
+  PayPal:  
+<a href="https://www.paypal.com/donate?hosted_button_id=G2SLW2MEMQZH2" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>  
+
+  Wunschliste:  
+<a href="https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg" border="0" width="100"/></a>  
 
 
-## 12. Lizenz  
+## 11. Lizenz  
 
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)  
