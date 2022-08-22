@@ -17,7 +17,8 @@
             "Error on add ": "Fehler beim hinzufügen von ",
             "Error on insert ": "Fehler beim Einfügen von ",
             "Bad Request": "Ungültige Anfrage",
-            "Access denied": "Zugriff verweigert"
+            "Access denied": "Zugriff verweigert",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }

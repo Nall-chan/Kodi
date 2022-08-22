@@ -13,7 +13,8 @@
             "Execute": "Ausführen",
             "Clean": "Bereinigen",
             "Error start cleaning": "Fehler beim Starten der Bereinigung",
-            "Error start scanning": "Fehler beim starten der Aktualisierung"
+            "Error start scanning": "Fehler beim starten der Aktualisierung",
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }
 }
