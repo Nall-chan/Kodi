@@ -79,9 +79,6 @@ class KodiSplitter extends IPSModule
         $this->BufferIN = '';
         $this->Host = '';
         $this->StatusIsChanging = false;
-        if (IPS_GetKernelRunlevel() != KR_READY) {
-            $this->RegisterMessage(0, IPS_KERNELSTARTED);
-        }
     }
 
     /**
@@ -104,6 +101,7 @@ class KodiSplitter extends IPSModule
         parent::ApplyChanges();
 
         if (IPS_GetKernelRunlevel() != KR_READY) {
+            $this->RegisterMessage(0, IPS_KERNELSTARTED);
             $this->SetStatus(IS_INACTIVE);
             return;
         }
@@ -131,13 +129,17 @@ class KodiSplitter extends IPSModule
         $Open = $this->DoPing();
         if ($Open) {
             if (!$this->CheckPort()) {
-                echo 'Could not connect to JSON-RPC TCP-Port.';
+                // echo 'Could not connect to JSON-RPC TCP-Port.';
+                // todo
+                // Popupalert
                 $Open = false;
             }
         }
         if ($Open) {
             if (!$this->CheckWebserver()) {
-                echo 'Could not connect to webserver.';
+                // echo 'Could not connect to webserver.';
+                // todo
+                // Popupalert
                 $Open = false;
             }
         }
@@ -170,7 +172,6 @@ class KodiSplitter extends IPSModule
         $this->IOMessageSink($TimeStamp, $SenderID, $Message, $Data);
         switch ($Message) {
             case IPS_KERNELSTARTED:
-                $this->UnregisterMessage(0, IPS_KERNELSTARTED);
                 $this->KernelReady();
                 break;
             case IM_CHANGESTATUS:
@@ -423,6 +424,7 @@ class KodiSplitter extends IPSModule
      */
     protected function KernelReady()
     {
+        $this->UnregisterMessage(0, IPS_KERNELSTARTED);
         $this->ApplyChanges();
     }
 
