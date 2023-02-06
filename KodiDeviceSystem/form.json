@@ -1,13 +1,52 @@
 {
     "elements": [
         {
-            "name": "PowerScript",
-            "type": "SelectScript",
-            "caption": "Power-On script:"
+            "type": "RowLayout",
+            "items": [
+                {
+                    "name": "PowerOnType",
+                    "type": "Select",
+                    "onChange": "IPS_RequestAction($id,'PowerOnType',$PowerOnType);",
+                    "width": "300px",
+                    "caption": "Power-On method:",
+                    "options": [
+                        {
+                            "caption": "build-in WOL",
+                            "value": 0
+                        },
+                        {
+                            "caption": "Selected action",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "WOLActionPopup",
+                    "type": "PopupButton",
+                    "width": "300px",
+                    "caption": "Select Power-On action",
+                    "popup": {
+                        "caption": "Power-On action",
+                        "items": [
+                            {
+                                "type": "SelectAction",
+                                "name": "WOLAction"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "MACAddress",
+                    "type": "ValidationTextBox",
+                    "width": "300px",
+                    "caption": "MAC-Address:"
+                }
+            ]
         },
         {
             "name": "PowerOff",
             "type": "Select",
+            "width": "300px",
             "caption": "Power-Off method:",
             "options": [
                 {
@@ -23,34 +62,6 @@
                     "value": 2
                 }
             ]
-        },
-        {
-            "type": "Label",
-            "caption": "Model for Power-On script"
-        },
-        {
-            "name": "PreSelectScript",
-            "type": "Select",
-            "caption": "Model:",
-            "options": [
-                {
-                    "caption": "no change",
-                    "value": 0
-                },
-                {
-                    "caption": "WOL with PHP",
-                    "value": 1
-                },
-                {
-                    "caption": "WOL with Fritz-Box Project",
-                    "value": 2
-                }
-            ]
-        },
-        {
-            "name": "MACAddress",
-            "type": "ValidationTextBox",
-            "caption": "MAC-Address:"
         }
     ],
     "actions": [

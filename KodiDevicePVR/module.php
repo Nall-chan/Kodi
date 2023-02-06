@@ -28,6 +28,8 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @example <b>Ohne</b>
  * @todo PVR.AddTimer ab v8
  * @todo PVR.ToggleTimer ab v8
+ * @todo PVR.GetBroadcastIsPlayable ab v10
+ * @todo PVR.PVR.GetClients ab v10
  * @property string $WebHookSecretTv
  * @property string $WebHookSecretRadio
  * @property string $WebHookSecretRecording
@@ -495,11 +497,6 @@ class KodiDevicePVR extends KodiBase
      */
     public function GetChannelDetails(int $ChannelId)
     {
-        if (!is_int($ChannelId)) {
-            trigger_error('ChannelId must be integer.', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetChannelDetails(['channelid' => $ChannelId, 'properties' => static::$ChannelItemListFull]);
         $ret = $this->SendDirect($KodiData);
@@ -544,11 +541,6 @@ class KodiDevicePVR extends KodiBase
      */
     public function GetChannelGroupDetails(int $ChannelGroupId)
     {
-        if (!is_int($ChannelGroupId)) {
-            trigger_error('ChannelId must be integer.', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetChannelGroupDetails(['channelgroupid' => $ChannelGroupId, 'properties' => static::$ChannelItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -570,11 +562,6 @@ class KodiDevicePVR extends KodiBase
      */
     public function GetBroadcasts(int $ChannelId)
     {
-        if (!is_int($ChannelId)) {
-            trigger_error('ChannelId must be integer.', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetBroadcasts(['channelid' => $ChannelId, 'properties' => static::$BroadcastItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -596,11 +583,6 @@ class KodiDevicePVR extends KodiBase
      */
     public function GetBroadcastDetails(int $BroadcastId)
     {
-        if (!is_int($BroadcastId)) {
-            trigger_error('BroadcastId must be integer.', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetBroadcastDetails(['broadcastid' => $BroadcastId]); //, 'properties' => static::$BroadcastItemList));
         $ret = $this->SendDirect($KodiData);
@@ -639,11 +621,6 @@ class KodiDevicePVR extends KodiBase
      */
     public function GetRecordingDetails(int $RecordingId)
     {
-        if (!is_int($RecordingId)) {
-            trigger_error('RecordingId must be integer.', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecordingDetails(['recordingid' => $RecordingId, 'properties' => static::$RecordingItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -682,11 +659,6 @@ class KodiDevicePVR extends KodiBase
      */
     public function GetTimerDetails(int $TimerId)
     {
-        if (!is_int($TimerId)) {
-            trigger_error('TimerId must be integer.', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetTimerDetails(['timerid' => $TimerId, 'properties' => static::$TimerItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -727,6 +699,10 @@ class KodiDevicePVR extends KodiBase
     protected function IOChangeState($State)
     {
         $this->SetTimerInterval('RefreshLists', 0);
+        if (!$this->PVRAvaiable()) {
+            $this->SetStatus(IS_EBASE + 1);
+            return;
+        }
         parent::IOChangeState($State);
         if ($State == IS_ACTIVE) {
             $this->RefreshTVChannellist();
@@ -737,7 +713,6 @@ class KodiDevicePVR extends KodiBase
             }
         }
     }
-
     ################## PRIVATE
     /**
      * Dekodiert die empfangenen Events und Antworten auf 'GetProperties'.
@@ -745,7 +720,7 @@ class KodiDevicePVR extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         switch ($Method) {
             case 'GetProperties':
@@ -768,6 +743,24 @@ class KodiDevicePVR extends KodiBase
     protected function FilterChannels($Channel)
     {
         return !$Channel['hidden'];
+    }
+    private function PVRAvaiable()
+    {
+        $KodiData = new Kodi_RPC_Data('Addons');
+        $KodiData->GetAddons(['type'=>'kodi.pvrclient', 'properties' => ['enabled']]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+
+        if ($ret->limits->total > 0) {
+            foreach ($KodiData->ToArray($ret->addons) as $Addon) {
+                if ((bool) $Addon['enabled']) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

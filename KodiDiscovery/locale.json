@@ -2,11 +2,11 @@
     "translations": {
         "de": {
             "IP Address": "IP Adresse",
-            "Devicename": "Ger\u00e4tename",
+            "Devicename": "Gerätename",
             "Version": "Version",
             "Name": "Name",
             "Non-standard TCP RPC-Port or active user authentication must be set up manually in the 'KodiSplitter'.": "Nicht standard TCP RPC-Port oder aktive Benutzer Authentifizierung muss manuell im Kodi-Splitter eingerichtet werden.",
-            "Background discovery of Kodi devices": "Hintergrundsuche nach Kodi Ger\u00e4ten",
+            "Background discovery of Kodi devices": "Hintergrundsuche nach Kodi Geräten",
             "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }

@@ -1,0 +1,16 @@
+✅Wiedergabe: ~PlaybackPreviousNext (Erledigt, Offset +1)
+✅Playlist: ~Playlist
+✅Fortschritt: ~Progress
+✅Künstler: ~Artist
+✅Lied: ~Song
+✅Lautstärke: ~Volume 
+✅Stummschaltung: ~Mute
+✅Zufall: ~Shuffle
+✅Wiederholung: ~Repeat
+✅Cover: Beliebiges Image
+🟩1: Konfig-Formen überarbeiten ab PVR (Reihenfolge laut Konfigurator)
+🟩2: Konfigurator soll PVR nur anbieten, wenn Plugin aktiv ist
+🟩3: PopUp-Alert im Splitter wenn JSON-RPC per TCP und/oder WebServer nicht erreicht wird
+🟩4: In der Settings-Instanz fehlen die String-Values
+🟩5: Diverse ToDo's durch neue RPC Version 
+🟩6: Aktionen fehlen

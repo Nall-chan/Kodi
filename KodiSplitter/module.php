@@ -214,20 +214,6 @@ class KodiSplitter extends IPSModule
     }
 
     /**
-     * Dekodiert die empfangenen Events und Antworten auf 'GetProperties'.
-     *
-     * @access protected
-     * @param string $Method RPC-Funktion ohne Namespace
-     * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
-     */
-//    protected function Decode($Method, $Event)
-//    {
-//        $this->SendDebug('Decode' . $Method, $Event, 0);
-//
-//        if ($Method == 'OnQuit')
-//            $this->IOChangeState(IS_INACTIVE);
-//    }
-    /**
      * Interne Funktion des SDK.
      *
      * @access public

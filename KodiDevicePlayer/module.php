@@ -29,6 +29,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @property bool $isActive
  * @property int $PlayerId
  * @todo Player.SetVideoStream ab v8
+ * @todo Player.GetAudioDelay av V10
  */
 class KodiDevicePlayer extends KodiBase
 {
@@ -290,20 +291,10 @@ class KodiDevicePlayer extends KodiBase
     public function ApplyChanges()
     {
         $this->PlayerId = $this->ReadPropertyInteger('PlayerID');
-        $this->RegisterProfileIntegerEx('Repeat.Kodi', '', '', '', [
-            [0, $this->Translate('Off'), '', -1],
-            [1, $this->Translate('Title'), '', -1],
-            [2, 'Playlist', '', -1]
-        ]);
+        $this->UnregisterProfile('Repeat.Kodi');
+        $this->UnregisterProfile('Status.Kodi');
 
         $this->RegisterProfileInteger('Intensity.Kodi', 'Intensity', '', ' %', 0, 100, 1);
-        $this->RegisterProfileIntegerEx('Status.Kodi', 'Information', '', '', [
-            [0, $this->Translate('Previous'), '', -1],
-            [1, 'Stop', '', -1],
-            [2, 'Play', '', -1],
-            [3, 'Pause', '', -1],
-            [4, $this->Translate('Next'), '', -1]
-        ]);
 
         switch ($this->PlayerId) {
             case self::Audio:
@@ -335,11 +326,11 @@ class KodiDevicePlayer extends KodiBase
                 $this->RegisterVariableString('album', 'Album', '', 15);
                 $this->RegisterVariableInteger('track', 'Track', '', 16);
                 $this->RegisterVariableInteger('disc', 'Disc', '', 17);
-                $this->RegisterVariableString('artist', 'Artist', '', 20);
+                $this->RegisterVariableString('artist', 'Artist', '~Artist', 20);
                 $this->RegisterVariableString('lyrics', 'Lyrics', '', 30);
                 $this->RegisterVariableBoolean('partymode', $this->Translate('Partymode'), '~Switch', 13);
                 $this->EnableAction('partymode');
-                $this->RegisterVariableInteger('repeat', $this->Translate('Repeat'), 'Repeat.Kodi', 11);
+                $this->RegisterVariableInteger('repeat', $this->Translate('Repeat'), '~Repeat', 11);
                 $this->EnableAction('repeat');
                 $this->RegisterVariableInteger('year', $this->Translate('Year'), '', 19);
                 $this->RegisterVariableString('genre', 'Genre', '', 21);
@@ -387,7 +378,7 @@ class KodiDevicePlayer extends KodiBase
                 $this->RegisterVariableInteger('subtitle', $this->Translate('Active subtitle'), 'Subtitels.' . $this->InstanceID . '.Kodi', 41);
                 $this->RegisterVariableBoolean('partymode', $this->Translate('Partymode'), '~Switch', 13);
                 $this->EnableAction('partymode');
-                $this->RegisterVariableInteger('repeat', $this->Translate('Repeat'), 'Repeat.Kodi', 11);
+                $this->RegisterVariableInteger('repeat', $this->Translate('Repeat'), '~Repeat', 11);
                 $this->EnableAction('repeat');
                 $this->RegisterVariableInteger('year', $this->Translate('Year'), '', 19);
                 $this->RegisterVariableString('genre', 'Genre', '', 21);
@@ -427,14 +418,14 @@ class KodiDevicePlayer extends KodiBase
 
                 break;
         }
-        $this->RegisterVariableBoolean('shuffled', $this->Translate('Shuffle'), '~Switch', 12);
+        $this->RegisterVariableBoolean('shuffled', $this->Translate('Shuffle'), '~Shuffle', 12);
         $this->EnableAction('shuffled');
 
-        $this->RegisterVariableString('label', 'Titel', '', 14);
-        $this->RegisterVariableInteger('Status', 'Status', 'Status.Kodi', 3);
+        $this->RegisterVariableString('label', 'Titel', '~Song', 14);
+        $this->RegisterVariableInteger('Status', 'Status', '~PlaybackPreviousNext', 3);
         $this->EnableAction('Status');
         $this->RegisterVariableInteger('speed', $this->Translate('Speed'), 'Speed.' . $this->InstanceID . '.Kodi', 10);
-        $this->RegisterVariableInteger('percentage', 'Position', 'Intensity.Kodi', 26);
+        $this->RegisterVariableFloat('percentage', 'Position', '~Progress', 26);
         $this->EnableAction('percentage');
 
         $this->SetCover('');
@@ -464,7 +455,7 @@ class KodiDevicePlayer extends KodiBase
         }
         switch ($Ident) {
             case 'Status':
-                switch ($Value) {
+                switch ((int) $Value) {
                     case 0: //Prev
                         return $this->GoToPrevious();
                     case 1: //Stop
@@ -478,19 +469,24 @@ class KodiDevicePlayer extends KodiBase
                 }
                 return trigger_error('Invalid Value.', E_USER_NOTICE);
             case 'shuffled':
-                return $this->SetShuffle($Value);
+                return $this->SetShuffle((bool) $Value);
             case 'repeat':
-                return $this->SetRepeat($Value);
+                if ((int) $Value == 1) {
+                    $Value = 2;
+                } elseif ((int) $Value == 2) {
+                    $Value = 1;
+                }
+                return $this->SetRepeat((int) $Value);
             case 'speed':
-                return $this->SetSpeed($Value);
+                return $this->SetSpeed((int) $Value);
             case 'partymode':
-                return $this->SetPartymode($Value);
+                return $this->SetPartymode((bool) $Value);
             case 'percentage':
-                return $this->SetPosition($Value);
+                return $this->SetPosition((int) $Value);
             case 'subtitle':
-                return $this->SetSubtitle($Value);
+                return $this->SetSubtitle((int) $Value);
             case 'audiostream':
-                return $this->SetAudioStream($Value);
+                return $this->SetAudioStream((int) $Value);
             default:
                 return trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
@@ -592,6 +588,17 @@ class KodiDevicePlayer extends KodiBase
                 }
 
                 switch ($this->ReadPropertyString('CoverTyp')) {
+                    case 'album':
+                        if (property_exists($ret, 'art')) {
+                            if (property_exists($ret->art, 'album.thumb')) {
+                                if ($ret->art->{'album.thumb'} != '') {
+                                    $this->SetCover($ret->art->{'album.thumb'});
+                                    break;
+                                }
+                            }
+                        }
+                        // Keine Grafik bei artist gefunden, somit greift artist.
+                        // No break. Add additional comment above this line if intentional
                     case 'artist':
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'artist.fanart')) {
@@ -608,7 +615,7 @@ class KodiDevicePlayer extends KodiBase
                             }
                         }
                         // Keine Grafik bei artist gefunden, somit greift default.
-                        // FIXME: No break. Please add proper comment if intentional
+                        // No break. Add additional comment above this line if intentional
                     default:
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'thumb')) {
@@ -690,6 +697,15 @@ class KodiDevicePlayer extends KodiBase
                 }
 
                 switch ($this->ReadPropertyString('CoverTyp')) {
+                    case 'fanart':
+                        if (property_exists($ret, 'fanart')) {
+                            if ($ret->fanart != '') {
+                                $this->SetCover($ret->fanart);
+                                break;
+                            }
+                        }
+                        //No break.
+                        // No break. Add additional comment above this line if intentional
                     case 'poster':
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'tvshow.poster')) {
@@ -778,7 +794,7 @@ class KodiDevicePlayer extends KodiBase
                             }
                         }
                         // Keine Grafik bei Banner gefunden, somit greift default.
-                        // FIXME: No break. Please add proper comment if intentional
+                        // No break. Add additional comment above this line if intentional
                     default:
                         if (property_exists($ret, 'art')) {
                             if (property_exists($ret->art, 'thumb')) {
@@ -859,11 +875,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function SetSubtitle(int $Value)
     {
-        if (!is_int($Value)) {
-            trigger_error('Value must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         if (!$this->isActive) {
             trigger_error($this->Translate('Player not active'), E_USER_NOTICE);
             return false;
@@ -891,11 +902,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function SetAudioStream(int $Value)
     {
-        if (!is_int($Value)) {
-            trigger_error('Value must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         if (!$this->isActive) {
             trigger_error('Player not active', E_USER_NOTICE);
             return false;
@@ -1029,10 +1035,6 @@ class KodiDevicePlayer extends KodiBase
      * @return bool True bei Erfolg, sonst false.
      */ public function GoToTrack(int $Value)
     {
-        if (!is_int($Value)) {
-            trigger_error('Value must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->GoToValue($Value + 1);
     }
 
@@ -1046,11 +1048,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function SetShuffle(bool $Value)
     {
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetShuffle(['playerid' => $this->PlayerId, 'shuffle' => $Value]);
         $ret = $this->Send($KodiData);
@@ -1076,10 +1073,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function SetRepeat(int $Value)
     {
-        if (!is_int($Value)) {
-            trigger_error('Value must be integer', E_USER_NOTICE);
-            return false;
-        }
         if (($Value < 0) || ($Value > 2)) {
             trigger_error('Value must be between 0 and 2', E_USER_NOTICE);
             return false;
@@ -1093,6 +1086,11 @@ class KodiDevicePlayer extends KodiBase
             return false;
         }
         if ($ret === 'OK') {
+            if ($Value == 1) {
+                $Value = 2;
+            } elseif ($Value == 2) {
+                $Value = 1;
+            }
             $this->SetValueInteger('repeat', $Value);
             return true;
         }
@@ -1110,11 +1108,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function SetPartymode(bool $Value)
     {
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetPartymode(['playerid' => $this->PlayerId, 'partymode' => $Value]);
         $ret = $this->Send($KodiData);
@@ -1140,10 +1133,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function SetSpeed(int $Value)
     {
-        if (!is_int($Value)) {
-            trigger_error('Value must be integer', E_USER_NOTICE);
-            return false;
-        }
         if ($Value == 1) {
             return $this->Play();
         }
@@ -1185,10 +1174,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function SetPosition(int $Value)
     {
-        if (!is_int($Value)) {
-            trigger_error('Value must be integer', E_USER_NOTICE);
-            return false;
-        }
         if (($Value < 0) || ($Value > 100)) {
             trigger_error('Value must be between 0 and 100', E_USER_NOTICE);
             return false;
@@ -1205,9 +1190,8 @@ class KodiDevicePlayer extends KodiBase
         if (is_null($ret)) {
             return false;
         }
-        // TODO Werte stimmen bei audio nicht =?!
-        if ((int) $ret->percentage == $Value) {
-            $this->SetValueInteger('percentage', $Value);
+        if (($this->PlayerId == self::Audio) || (round($ret->percentage) == $Value)) {
+            $this->SetValueFloat('percentage', $Value);
             return true;
         }
         trigger_error($this->Translate('Error on set Position.'), E_USER_NOTICE);
@@ -1224,10 +1208,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadAlbum(int $AlbumId)
     {
-        if (!is_int($AlbumId)) {
-            trigger_error('AlbumId must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('albumid', $AlbumId);
     }
 
@@ -1241,10 +1221,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadArtist(int $ArtistId)
     {
-        if (!is_int($ArtistId)) {
-            trigger_error('ArtistId must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('artistid', $ArtistId);
     }
 
@@ -1258,11 +1234,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadChannel(int $ChannelId)
     {
-        if (!is_int($ChannelId)) {
-            trigger_error('ChannelId must be integer', E_USER_NOTICE);
-
-            return false;
-        }
         return $this->Load('channelid', $ChannelId);
     }
 
@@ -1276,10 +1247,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadDirectory(string $Directory)
     {
-        if (!is_string($Directory)) {
-            trigger_error('Directory must be string', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('directory', $Directory);
     }
 
@@ -1293,10 +1260,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadDirectoryRecursive(string $Directory)
     {
-        if (!is_string($Directory)) {
-            trigger_error('Directory must be string', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('Directory', $Directory, ['recursive' => true]);
     }
 
@@ -1310,10 +1273,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadEpisode(int $EpisodeId)
     {
-        if (!is_int($EpisodeId)) {
-            trigger_error('EpisodeId must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('episodeid', $EpisodeId);
     }
 
@@ -1326,10 +1285,6 @@ class KodiDevicePlayer extends KodiBase
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */ public function LoadFile(string $File)
     {
-        if (!is_string($File)) {
-            trigger_error('File must be string', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('file', $File);
     }
 
@@ -1343,10 +1298,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadGenre(int $GenreId)
     {
-        if (!is_int($GenreId)) {
-            trigger_error('GenreId must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('genreid', $GenreId);
     }
 
@@ -1360,10 +1311,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadMovie(int $MovieId)
     {
-        if (!is_int($MovieId)) {
-            trigger_error('MovieId must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('movieid', $MovieId);
     }
 
@@ -1377,10 +1324,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadMusicvideo(int $MusicvideoId)
     {
-        if (!is_int($MusicvideoId)) {
-            trigger_error('MusicvideoId must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('musicvideoid', $MusicvideoId);
     }
 
@@ -1406,10 +1349,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadRecording(int $RecordingId)
     {
-        if (!is_int($RecordingId)) {
-            trigger_error('RecordingId must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('recordingid', $RecordingId);
     }
 
@@ -1423,10 +1362,6 @@ class KodiDevicePlayer extends KodiBase
      */
     public function LoadSong(int $SongId)
     {
-        if (!is_int($SongId)) {
-            trigger_error('SongId must be integer', E_USER_NOTICE);
-            return false;
-        }
         return $this->Load('songid', $SongId);
     }
 
@@ -1448,7 +1383,7 @@ class KodiDevicePlayer extends KodiBase
             $this->SetValueString('duration', '');
             $this->SetValueString('totaltime', '');
             $this->SetValueString('time', '');
-            $this->SetValueInteger('percentage', 0);
+            $this->SetValueFloat('percentage', 0);
             $this->SetValueInteger('speed', 0);
         }
     }
@@ -1487,7 +1422,7 @@ class KodiDevicePlayer extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         if ($KodiPayload == null) {
             $this->SendDebug('NULL : ' . $Method, $KodiPayload, 0);
@@ -1593,7 +1528,7 @@ class KodiDevicePlayer extends KodiBase
 
                         case 'repeat': //off
                             if ($this->PlayerId != self::Picture) {
-                                $this->SetValueInteger($param, array_search((string) $value, ['off', 'one', 'all']));
+                                $this->SetValueInteger($param, array_search((string) $value, ['off', 'all', 'one']));
                             }
                             break;
                         //boolean
@@ -1610,7 +1545,7 @@ class KodiDevicePlayer extends KodiBase
                             }
                             break;
                         case 'percentage':
-                            $this->SetValueInteger($param, (int) $value);
+                            $this->SetValueFloat($param, ((float) $value));
                             break;
 
                         //Action en/disable
@@ -1658,7 +1593,6 @@ class KodiDevicePlayer extends KodiBase
                             break;
                         default:
                             $this->SendDebug('Todo:' . $param, $value, 0);
-
                             break;
                     }
                 }
@@ -1669,7 +1603,7 @@ class KodiDevicePlayer extends KodiBase
                 $this->SetValueString('duration', '');
                 $this->SetValueString('totaltime', '');
                 $this->SetValueString('time', '');
-                $this->SetValueInteger('percentage', 0);
+                $this->SetValueFloat('percentage', 0);
                 $this->SetValueInteger('speed', 0);
 
                 $this->SetValueString('album', '');

@@ -94,10 +94,10 @@ class KodiDeviceApplication extends KodiBase
             $this->UnregisterVariable('quit');
         }
 
-        $this->RegisterVariableBoolean('mute', $this->Translate('Mute'), '~Switch', 3);
+        $this->RegisterVariableBoolean('mute', $this->Translate('Mute'), '~Mute', 3);
         $this->EnableAction('mute');
 
-        $this->RegisterVariableInteger('volume', 'Volume', '~Intensity.100', 4);
+        $this->RegisterVariableInteger('volume', 'Volume', '~Volume', 4);
         $this->EnableAction('volume');
 
         parent::ApplyChanges();
@@ -118,9 +118,9 @@ class KodiDeviceApplication extends KodiBase
         }
         switch ($Ident) {
             case 'mute':
-                return $this->SetMute($Value);
+                return $this->SetMute((bool) $Value);
             case 'volume':
-                return $this->SetVolume($Value);
+                return $this->SetVolume((int) $Value);
             case 'quit':
                 return $this->Quit();
             default:
@@ -138,10 +138,6 @@ class KodiDeviceApplication extends KodiBase
      */
     public function SetMute(bool $Value)
     {
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetMute(['mute' => $Value]);
         $ret = $this->Send($KodiData);
@@ -165,10 +161,6 @@ class KodiDeviceApplication extends KodiBase
      */
     public function SetVolume(int $Value)
     {
-        if (!is_int($Value)) {
-            trigger_error('Value must be integer', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetVolume(['volume' => $Value]);
         $ret = $this->Send($KodiData);
@@ -223,22 +215,22 @@ class KodiDeviceApplication extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         foreach ($KodiPayload as $param => $value) {
             switch ($param) {
                 case 'mute':
                 case 'muted':
-                    $this->SetValueBoolean('mute', $value);
+                    $this->SetValueBoolean('mute', (bool) $value);
                     break;
                 case 'volume':
-                    $this->SetValueInteger('volume', $value);
+                    $this->SetValueInteger('volume', (int) $value);
                     break;
                 case 'name':
-                    $this->SetValueString('name', $value);
+                    $this->SetValueString('name', (string) $value);
                     break;
                 case 'version':
-                    $this->SetValueString('version', $value->major . '.' . $value->minor);
+                    $this->SetValueString('version', (string) $value->major . '.' . (string) $value->minor);
                     break;
             }
         }

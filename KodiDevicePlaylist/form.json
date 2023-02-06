@@ -22,10 +22,12 @@
         {
             "name": "showPlaylist",
             "type": "CheckBox",
-            "caption": "Show playlist as HTML-Box"
+            "caption": "Show playlist as HTML-Box",
+            "onChange": "IPS_RequestAction($id,'showPlaylist',$showPlaylist);"
         },
         {
             "type": "RowLayout",
+            "name": "HTMLRow",
             "items": [
                 {
                     "type": "Label",

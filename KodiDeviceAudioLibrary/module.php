@@ -28,6 +28,8 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @example <b>Ohne</b>
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Album/Artist etc... Ergebnis als HTML-Tabelle.
  * @todo AudioLibrary.GetProperties ab v8
+ * @todo AudioLibrary.GetAvailableArt ab V10
+ * @todo AudioLibrary.GetAvailableArtTypes ab V10
  */
 class KodiDeviceAudioLibrary extends KodiBase
 {
@@ -271,18 +273,6 @@ class KodiDeviceAudioLibrary extends KodiBase
      */
     public function Export(string $Path, bool $Overwrite, bool $includeImages)
     {
-        if (!is_string($Path) || (strlen($Path) < 2)) {
-            trigger_error('Path is invalid', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($Overwrite)) {
-            trigger_error('Overwrite must be boolean', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($includeImages)) {
-            trigger_error('includeImages must be boolean', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Export(['options' => ['path' => $Path, 'overwrite' => $Overwrite, 'images' => $includeImages]]);
         $ret = $this->SendDirect($KodiData);
@@ -301,11 +291,6 @@ class KodiDeviceAudioLibrary extends KodiBase
      */
     public function GetAlbumDetails(int $AlbumID)
     {
-        if (!is_int($AlbumID)) {
-            trigger_error('AlbumID must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetAlbumDetails(['albumid' => $AlbumID, 'properties' => static::$AlbumItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -344,11 +329,6 @@ class KodiDeviceAudioLibrary extends KodiBase
      */
     public function GetArtistDetails(int $ArtistID)
     {
-        if (!is_int($ArtistID)) {
-            trigger_error('AlbumID must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetArtistDetails(['artistid' => $ArtistID, 'properties' => static::$ArtistItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -487,11 +467,6 @@ class KodiDeviceAudioLibrary extends KodiBase
      */
     public function GetSongDetails(int $SongID)
     {
-        if (!is_int($SongID)) {
-            trigger_error('SongID must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSongDetails(['songid' => $SongID, 'properties' => static::$SongItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -549,7 +524,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         switch ($Method) {
             case 'OnScanStarted':

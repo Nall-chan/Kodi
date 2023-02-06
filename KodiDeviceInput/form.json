@@ -3,7 +3,8 @@
         {
             "name": "showSVGRemote",
             "type": "CheckBox",
-            "caption": "Show SVG-Remotecontrol"
+            "caption": "Show SVG-Remotecontrol",
+            "onChange": "IPS_RequestAction($id,'showSVGRemote',$showSVGRemote);"
         },
         {
             "name": "RemoteId",

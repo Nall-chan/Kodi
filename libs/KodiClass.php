@@ -260,7 +260,7 @@ abstract class KodiBase extends IPSModule
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    abstract protected function Decode($Method, $KodiPayload);
+    abstract protected function Decode(string $Method, $KodiPayload);
     /**
      * Erzeugt ein lesbares Zeitformat.
      *
@@ -294,7 +294,7 @@ abstract class KodiBase extends IPSModule
      * @param array $Config Die Konfiguration der Tabelle
      * @return string HTML-String
      */
-    protected function GetTableHeader($Config)
+    protected function GetTableHeader(array $Config)
     {
         $html = '';
         // JS Rückkanal erzeugen
@@ -382,7 +382,7 @@ sleep(10).then(() => {
      * @access private
      * @param string $file Path zum Thumbnail im Kodi-Webserver
      */
-    protected function GetThumbnail(string $file, $SizeWidth = 0, $SizeHeight = 0)
+    protected function GetThumbnail(string $file, int $SizeWidth = 0, int $SizeHeight = 0)
     {
         if ($this->ParentID == 0) {
             return false;
@@ -541,7 +541,7 @@ sleep(10).then(() => {
      * @param bool $value Neuer Wert der Statusvariable.
      * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
-    protected function SetValueBoolean($Ident, $value)
+    protected function SetValueBoolean(string $Ident, bool $value)
     {
         $id = @$this->GetIDForIdent($Ident);
         if ($id === false) {
@@ -555,6 +555,26 @@ sleep(10).then(() => {
     }
 
     /**
+     * Setzte eine IPS-Variable vom Typ float auf den Wert von $value. Versteckt nicht benutzte Variablen anhand der Ident.
+     *
+     * @access protected
+     * @param string $Ident Ident der Statusvariable.
+     * @param float $value Neuer Wert der Statusvariable.
+     * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
+     */
+    protected function SetValueFloat(string $Ident, float $value)
+    {
+        $id = @$this->GetIDForIdent($Ident);
+        if ($id === false) {
+            return false;
+        }
+        if (GetValueFloat($id) != $value) {
+            $this->SetValue($Ident, $value);
+            return true;
+        }
+        return false;
+    }
+    /**
      * Setzte eine IPS-Variable vom Typ integer auf den Wert von $value. Versteckt nicht benutzte Variablen anhand der Ident.
      *
      * @access protected
@@ -562,7 +582,7 @@ sleep(10).then(() => {
      * @param int $value Neuer Wert der Statusvariable.
      * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
-    protected function SetValueInteger($Ident, $value)
+    protected function SetValueInteger(string $Ident, float $value)
     {
         $id = @$this->GetIDForIdent($Ident);
         if ($id === false) {
@@ -574,7 +594,6 @@ sleep(10).then(() => {
         }
         return false;
     }
-
     /**
      * Setzte eine IPS-Variable vom Typ string auf den Wert von $value. Versteckt nicht benutzte Variablen anhand der Ident.
      *
@@ -583,7 +602,7 @@ sleep(10).then(() => {
      * @param string $value Neuer Wert der Statusvariable.
      * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
-    protected function SetValueString($Ident, $value)
+    protected function SetValueString(string $Ident, string $value)
     {
         $id = @$this->GetIDForIdent($Ident);
         if ($id === false) {
@@ -601,7 +620,7 @@ sleep(10).then(() => {
      * @access protected
      * @param string $Ident Der Ident des Script.
      */
-    protected function UnregisterScript($Ident)
+    protected function UnregisterScript(string $Ident)
     {
         $sid = @$this->GetIDForIdent($Ident);
         if ($sid === false) {

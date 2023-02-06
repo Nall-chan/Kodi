@@ -127,7 +127,7 @@ class KodiDeviceGUI extends KodiBase
         }
         switch ($Ident) {
             case 'fullscreen':
-                return $this->SetFullscreen($Value);
+                return $this->SetFullscreen((bool) $Value);
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
                 break;
@@ -145,10 +145,6 @@ class KodiDeviceGUI extends KodiBase
      */
     public function SetFullscreen(bool $Value)
     {
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetFullscreen(['fullscreen' => $Value]);
         $ret = $this->Send($KodiData);
@@ -176,19 +172,6 @@ class KodiDeviceGUI extends KodiBase
      */
     public function ShowNotification(string $Title, string $Message, string $Image, int $Timeout)
     {
-        if (!is_string($Title)) {
-            trigger_error('Title must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($Message)) {
-            trigger_error('Message must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_int($Timeout)) {
-            trigger_error('Timeout must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $Data = ['title' => $Title, 'message' => $Message];
 
         if ($Image != '') {
@@ -217,10 +200,6 @@ class KodiDeviceGUI extends KodiBase
      */
     public function ActivateWindow(string $Window)
     {
-        if (!is_string($Window)) {
-            trigger_error('Window must be string', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ActivateWindow(['window' => $Window]);
         $ret = $this->Send($KodiData);
@@ -250,7 +229,7 @@ class KodiDeviceGUI extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         switch ($Method) {
             case 'GetProperties':

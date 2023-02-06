@@ -7,7 +7,7 @@
         {
             "name": "PlayerID",
             "type": "Select",
-            "caption": "Player:",
+            "caption": "Playertype:",
             "options": [
                 {
                     "caption": "Audio",
@@ -38,21 +38,41 @@
                     "value": "thumb"
                 },
                 {
-                    "caption": "artist for thumbnail (audio)",
+                    "caption": "album bevor artist (audio)",
+                    "value": "album"
+                },
+                {
+                    "caption": "artist bevor thumbnail (audio)",
                     "value": "artist"
                 },
                 {
-                    "caption": "poster for banner (video)",
+                    "caption": "fanart bevor poster (video)",
+                    "value": "fanart"
+                },
+                {
+                    "caption": "poster bevor banner (video)",
                     "value": "poster"
                 },
                 {
-                    "caption": "banner for poster (video)",
+                    "caption": "banner bevor poster (video)",
                     "value": "banner"
                 }
             ]
         }
     ],
     "actions": [
+        {
+            "type": "PopupAlert",
+            "popup": {
+                "closeCaption": "I understand",
+                "items": [
+                    {
+                        "type": "Label",
+                        "caption": "Be careful when configuring the player type.\nChanging it can delete variables!"
+                    }
+                ]
+            }
+        },
         {
             "type": "TestCenter"
         },

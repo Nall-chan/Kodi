@@ -135,7 +135,50 @@ class KodiDeviceAddons extends KodiBase
         }
         parent::ApplyChanges();
     }
+    public function GetConfigurationForm()
+    {
+        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        $Form['elements'][1]['visible'] = $this->ReadPropertyBoolean('showAddonlist');
+        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean('showAddonlist');
+        $this->SendDebug('FORM', json_encode($Form), 0);
+        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        return json_encode($Form);
+    }
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    public function RequestAction($Ident, $Value)
+    {
+        if (parent::RequestAction($Ident, $Value)) {
+            return true;
+        }
+        switch ($Ident) {
+            case 'showAddonlist':
+                $this->UpdateFormField('HTMLRow', 'visible', (bool) $Value);
+                $this->UpdateFormField('ThumbRow', 'visible', (bool) $Value);
+                return;
+            default:
+                return trigger_error('Invalid Ident.', E_USER_NOTICE);
+        }
+    }
 
+    ################## PUBLIC
+    /**
+     * IPS-Instanz-Funktion '*_RequestState'. Frage eine oder mehrere Properties eines Namespace ab.
+     *
+     * @access public
+     * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
+     */
+    public function RequestState(string $Ident)
+    {
+        $this->RefreshAddonlist();
+    }
     /**
      * IPS-Instanz-Funktion 'KODIADDONS_EnableAddon'. Aktiviert / Deaktiviert ein Addon
      *
@@ -145,15 +188,6 @@ class KodiDeviceAddons extends KodiBase
      */
     public function EnableAddon(string $AddonId, bool $Value)
     {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
         $ret = $this->SendDirect($KodiData);
@@ -173,11 +207,6 @@ class KodiDeviceAddons extends KodiBase
      */
     public function ExecuteAddon(string $AddonId)
     {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ExecuteAddon(['addonid' => $AddonId]);
         $ret = $this->SendDirect($KodiData);
@@ -196,11 +225,6 @@ class KodiDeviceAddons extends KodiBase
      */
     public function ExecuteAddonWait(string $AddonId)
     {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ExecuteAddon(['addonid' => $AddonId, 'wait' => true]);
         $ret = $this->SendDirect($KodiData);
@@ -220,14 +244,6 @@ class KodiDeviceAddons extends KodiBase
      */
     public function ExecuteAddonEx(string $AddonId, string $Params)
     {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($Params)) {
-            trigger_error('Params must be string', E_USER_NOTICE);
-            return false;
-        }
         $param = json_decode($Params, true);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ExecuteAddon(['addonid' => $AddonId, 'params' => $param]);
@@ -248,14 +264,6 @@ class KodiDeviceAddons extends KodiBase
      */
     public function ExecuteAddonExWait(string $AddonId, string $Params)
     {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($Params)) {
-            trigger_error('Params must be string', E_USER_NOTICE);
-            return false;
-        }
         $param = json_decode($Params, true);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ExecuteAddon(['addonid' => $AddonId, 'params' => $param, 'wait' => true]);
@@ -275,10 +283,6 @@ class KodiDeviceAddons extends KodiBase
      */
     public function GetAddonDetails(string $AddonId)
     {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetAddonDetails(['addonid' => $AddonId, 'properties' => static::$AddOnItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -319,14 +323,6 @@ class KodiDeviceAddons extends KodiBase
      */
     public function SetAddonEnabled(string $AddonId, bool $Value)
     {
-        if (!is_string($AddonId)) {
-            trigger_error('AddonId must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
         $ret = $this->Send($KodiData);
@@ -337,17 +333,6 @@ class KodiDeviceAddons extends KodiBase
     }
 
     ################## PRIVATE
-    /**
-     * Wird ausgeführt wenn sich der Status vom Parent ändert.
-     * @access protected
-     */
-    protected function IOChangeState($State)
-    {
-        parent::IOChangeState($State);
-        if ($State == IS_ACTIVE) {
-            $this->RefreshAddonlist();
-        }
-    }
 
     /**
      * Keine Funktion.
@@ -356,7 +341,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         return;
     }

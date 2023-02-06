@@ -3,10 +3,12 @@
         {
             "name": "showFavlist",
             "type": "CheckBox",
-            "caption": "Show HTML-Box for favorites"
+            "caption": "Show HTML-Box for favorites",
+            "onChange": "IPS_RequestAction($id,'showFavlist',$showFavlist);"
         },
         {
             "type": "RowLayout",
+            "name": "HTMLRow",
             "items": [
                 {
                     "type": "Label",
@@ -21,6 +23,7 @@
         },
         {
             "type": "RowLayout",
+            "name": "ThumbRow",
             "items": [
                 {
                     "type": "Label",

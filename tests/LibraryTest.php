@@ -70,6 +70,10 @@ class LibraryValidationTest extends TestCaseSymconValidation
     {
         $this->validateModule(__DIR__ . '/../KodiDeviceSystem');
     }
+    public function testValidateKodiDeviceSettings(): void
+    {
+        $this->validateModule(__DIR__ . '/../KodiDeviceSettings');
+    }
     public function testValidateKodiDeviceVideoLibrary(): void
     {
         $this->validateModule(__DIR__ . '/../KodiDeviceVideoLibrary');

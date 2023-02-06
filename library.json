@@ -1,12 +1,12 @@
 {
     "id": "{5603D208-76A4-4359-B546-CC450CAB6984}",
-    "author": "Michael Tr\u00f6ger",
+    "author": "Michael Tröger",
     "name": "Kodi Library",
     "url": "https://github.com/Nall-chan/Kodi/",
     "compatibility": {
-        "version": "5.3"
+        "version": "6.4"
     },
     "version": "3.00",
     "build": 300,
-    "date": 1610039410      
+    "date": 1610039410
 }

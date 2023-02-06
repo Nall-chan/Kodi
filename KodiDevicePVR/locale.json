@@ -39,6 +39,7 @@
             "Error on read Recordinglistconfig-Script": "Fehler beim lesen des Recordinglistconfig-Script",
             "Bad Request": "Ungültige Anfrage",
             "Access denied": "Zugriff verweigert",
+            "PVR not available.": "PVR nicht verfügbar.",
             "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }

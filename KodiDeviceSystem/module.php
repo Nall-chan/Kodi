@@ -59,10 +59,12 @@ class KodiDeviceSystem extends KodiBase
     public function Create()
     {
         parent::Create();
-        $this->RegisterPropertyInteger('PowerScript', 0);
+        $this->RegisterPropertyInteger('PowerScript', 1); // OLD
+        $this->RegisterPropertyInteger('PowerOnType', 1);
         $this->RegisterPropertyInteger('PowerOff', 0);
-        $this->RegisterPropertyInteger('PreSelectScript', 0);
+        //$this->RegisterPropertyInteger('PreSelectScript', 0);
         $this->RegisterPropertyString('MACAddress', '');
+        $this->RegisterPropertyString('WOLAction', '');
     }
 
     /**
@@ -72,10 +74,29 @@ class KodiDeviceSystem extends KodiBase
      */
     public function ApplyChanges()
     {
+        // Update Config
+        // PowerScript in eine Aktion überführen ?
+        if ($this->ReadPropertyInteger('PowerScript') > 1) {
+            // dann Aktion erstellen
+            $Action = [
+                'actionID'  => '{7938A5A2-0981-5FE0-BE6C-8AA610D654EB}',
+                'parameters'=> [
+                    'ENVIRONMENT'=> 'Default',
+                    'PARENT'     => $this->InstanceID,
+                    'TARGET'     => $this->ReadPropertyInteger('PowerScript')
+                ]
+            ];
+            IPS_SetProperty($this->InstanceID, 'WOLAction', json_encode($Action)); // Action setzen
+            IPS_SetProperty($this->InstanceID, 'PowerOnType', 1); // PowerOnType auf Action (1) setzen
+            IPS_SetProperty($this->InstanceID, 'PowerScript', 1); // PowerScript auf 1 setzen
+            IPS_ApplyChanges($this->InstanceID); // speichern
+            return; // verlassen
+        }
+
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
             [0, $this->Translate('Execute'), '', -1]
         ]);
-
+        /*
         switch ($this->ReadPropertyInteger('PreSelectScript')) {
             case 0:
                 $ID = 0;
@@ -86,19 +107,7 @@ class KodiDeviceSystem extends KodiBase
             case 2:
                 $ID = $this->RegisterScript('WOLScript', 'Power ON', $this->CreateFBPScript(), -1);
                 break;
-        }
-        if ($ID > 0) {
-            // ToDo. Anstelle von Property einen Action-Button benutzen.
-            IPS_SetHidden($ID, true);
-            IPS_SetProperty($this->InstanceID, 'PowerScript', $ID);
-            IPS_SetProperty($this->InstanceID, 'PreSelectScript', 0);
-            IPS_Applychanges($this->InstanceID);
-            return true;
-        }
-        $ScriptID = $this->ReadPropertyInteger('PowerScript');
-        if ($ScriptID > 0) {
-            $this->RegisterReference($ScriptID);
-        }
+        }*/
         $this->RegisterVariableBoolean('Power', 'Power', '~Switch', 0);
         $this->EnableAction('Power');
         $this->RegisterVariableInteger('suspend', 'Standby', 'Action.Kodi', 1);
@@ -114,7 +123,21 @@ class KodiDeviceSystem extends KodiBase
         $this->RegisterVariableBoolean('LowBatteryEvent', $this->Translate('Low battery event'), '', 6);
         parent::ApplyChanges();
     }
-
+    public function GetConfigurationForm()
+    {
+        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        switch ($this->ReadPropertyInteger('PowerOnType')) {
+            case 0:
+                $Form['elements'][0]['items'][1]['visible'] = false;
+                break;
+            case 1:
+                $Form['elements'][0]['items'][2]['visible'] = false;
+                break;
+        }
+        $this->SendDebug('FORM', json_encode($Form), 0);
+        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        return json_encode($Form);
+    }
     ################## ActionHandler
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
@@ -129,6 +152,10 @@ class KodiDeviceSystem extends KodiBase
             return true;
         }
         switch ($Ident) {
+            case 'PowerOnType':
+                $this->UpdateFormField('MACAddress', 'visible', $Value == 0);
+                $this->UpdateFormField('WOLActionPopup', 'visible', $Value == 1);
+                break;
             case 'Power':
                 return $this->Power($Value);
             case 'shutdown':
@@ -153,11 +180,6 @@ class KodiDeviceSystem extends KodiBase
      */
     public function Power(bool $Value)
     {
-        if (!is_bool($Value)) {
-            trigger_error('Value must be boolean', E_USER_NOTICE);
-            return false;
-        }
-
         if ($Value) {
             return $this->WakeUp();
         } else {
@@ -182,19 +204,21 @@ class KodiDeviceSystem extends KodiBase
      */
     public function WakeUp()
     {
-        $ScriptID = $this->ReadPropertyInteger('PowerScript');
-        if ($ScriptID > 0) {
-            if (!IPS_ScriptExists($ScriptID)) {
-                return false;
-            }
-
-            if (IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi.System']) === '') {
-                $this->SetValueBoolean('Power', true);
+        switch ($this->ReadPropertyInteger('PowerOnType')) {
+            case 0: // build-in WOL
+                return $this->WOLRequest($this->GetMac());
+            case 1: // Selected action
+                $action = json_decode($this->ReadPropertyString('WOLAction'), true);
+                $this->SendDebug('Run WOLAction', $action, 0);
+                if ($action == null) {
+                    return false;
+                }
+                $Result = IPS_RunActionWait($action['actionID'], $action['parameters']);
+                if ($Result != '') {
+                    trigger_error($Result, E_USER_NOTICE);
+                    return false;
+                }
                 return true;
-            }
-            trigger_error($this->Translate('Error on execute PowerOn-Script.'), E_USER_NOTICE);
-        } else {
-            trigger_error($this->Translate('Invalid PowerScript for power on.'), E_USER_NOTICE);
         }
         return false;
     }
@@ -327,7 +351,7 @@ class KodiDeviceSystem extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         switch ($Method) {
             case 'GetProperties':
@@ -356,88 +380,42 @@ class KodiDeviceSystem extends KodiBase
      * @access private
      * @result string Die bereinigte Adresse.
      */
-    private function GetMac()
+    private function GetMac(): string
     {
         $Address = $this->ReadPropertyString('MACAddress');
         $Address = str_replace('-', '', $Address);
         $Address = str_replace(':', '', $Address);
         if (strlen($Address) == 12) {
-            return '"' . strtoupper($Address) . '"';
+            return  strtoupper($Address);
         }
-        return '"00AABB112233" /* Platzhalter für richtige Adresse */';
+        return '';
     }
 
-    /**
-     * Liefert einen PHP-Code als Vorlage für das Einschalten von Kodi per WOL der FritzBox. Unter Verwendung des FritzBox-Project.
-     *
-     * @access private
-     * @result string PHP-Code
-     */
-    private function CreateFBPScript()
+    private function WOLRequest(string $mac): bool
     {
-        $Script = '<?php
-$mac = ' . $this->GetMac() . ' ;
-$FBScript = 0;  /* Hier die ID von dem Script [FritzBox Project\Scripte\Aktions & Auslese-Script Host] eintragen */
-
-if ($_IPS["SENDER"] <> "Kodi.System")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-   echo IPS_RunScriptWaitEx ($FBScript,array("SENDER"=>"RequestAction","IDENT"=>$mac,"VALUE"=>true));
-';
-        return $Script;
-    }
-
-    /**
-     * Liefert einen PHP-Code als Vorlage für das Einschalten von Kodi per WOL aus PHP herraus.
-     *
-     * @access private
-     * @result string PHP-Code
-     */
-    private function CreateWOLScript()
-    {
-        $Script = '<?php
-$mac = ' . $this->GetMac() . ' ;
-if ($_IPS["SENDER"] <> "Kodi.System")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-
-$ip = "255.255.255.255"; // Broadcast adresse
-return wake($ip,$mac);
-
-function wake($ip, $mac)
-{
-  $nic = fsockopen("udp://" . $ip, 15);
-  if($nic)
-  {
-    $packet = "";
-    for($i = 0; $i < 6; $i++)
-       $packet .= chr(0xFF);
-    for($j = 0; $j < 16; $j++)
-    {
-      for($k = 0; $k < 6; $k++)
-      {
-        $str = substr($mac, $k * 2, 2);
-        $dec = hexdec($str);
-        $packet .= chr($dec);
-      }
-    }
-    $ret = fwrite($nic, $packet);
-    fclose($nic);
-    if ($ret)
-    {
-      echo "";
-      return true;
-    }
-  }
-  echo "ERROR";
-  return false;
-}  
-';
-        return $Script;
+        $this->SendDebug('SendWOL', $mac, 0);
+        $ip = '255.255.255.255'; // Broadcast adresse
+        $nic = fsockopen('udp://' . $ip, 15);
+        if ($nic) {
+            $packet = '';
+            for ($i = 0; $i < 6; $i++) {
+                $packet .= chr(0xFF);
+            }
+            for ($j = 0; $j < 16; $j++) {
+                for ($k = 0; $k < 6; $k++) {
+                    $str = substr($mac, $k * 2, 2);
+                    $dec = hexdec($str);
+                    $packet .= chr($dec);
+                }
+            }
+            $this->SendDebug('SendWOL', $packet, 1);
+            $ret = fwrite($nic, $packet);
+            fclose($nic);
+            if ($ret) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

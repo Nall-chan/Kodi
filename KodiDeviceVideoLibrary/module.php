@@ -29,6 +29,8 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle.
  * @todo VideoLibrary.GetInProgressTVShows ab v8
  * @todo VideoLibrary.GetTags ab v8
+ * @todo VideoLibrary.GetAvailableArt ab v10
+ * @todo VideoLibrary.GetAvailableArtTypes ab v10
  */
 class KodiDeviceVideoLibrary extends KodiBase
 {
@@ -359,18 +361,6 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function Export(string $Path, bool $Overwrite, bool $includeImages)
     {
-        if (!is_string($Path) || (strlen($Path) < 2)) {
-            trigger_error('Path is invalid', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($Overwrite)) {
-            trigger_error('Overwrite must be boolean', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($includeImages)) {
-            trigger_error('includeImages must be boolean', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Export(['options' => ['path' => $Path, 'overwrite' => $Overwrite, 'images' => $includeImages]]);
         $ret = $this->SendDirect($KodiData);
@@ -389,11 +379,6 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetEpisodeDetails(int $EpisodeId)
     {
-        if (!is_int($EpisodeId)) {
-            trigger_error('EpisodeId must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetEpisodeDetails(['episodeid' => $EpisodeId, 'properties' => static::$EpisodeItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -433,12 +418,6 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetGenres(string $Type)
     {
-        $Type = strtolower($Type);
-        if (!in_array($Type, ['movie', 'musicvideo', 'tvshow'])) {
-            trigger_error('Media must be "movie", "tvshow", or "musicvideo".', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetGenres(['properties' => static::$GenreItemList, 'type' => $Type]);
         $ret = $this->SendDirect($KodiData);
@@ -460,11 +439,6 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetMovieDetails(int $MovieId)
     {
-        if (!is_int($MovieId)) {
-            trigger_error('MovieId must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovieDetails(['movieid' => $MovieId, 'properties' => static::$MovieItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -503,11 +477,6 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetMovieSetDetails(int $SetId)
     {
-        if (!is_int($SetId)) {
-            trigger_error('SetId must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovieSetDetails(['setid' => $SetId, 'properties' => static::$SetItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -546,11 +515,6 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetMusicVideoDetails(int $MusicVideoId)
     {
-        if (!is_int($MusicVideoId)) {
-            trigger_error('MusicVideoId must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMusicVideoDetails(['musicvideoid' => $MusicVideoId, 'properties' => static::$MusicVideoItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -649,11 +613,6 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetSeasons(int $TvShowId)
     {
-        if (!is_int($TvShowId)) {
-            trigger_error('TvShowId must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSeasons(['tvshowid' => $TvShowId, 'properties' => static::$SeasonItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -672,11 +631,6 @@ class KodiDeviceVideoLibrary extends KodiBase
      */
     public function GetTVShowDetails(int $TvShowId)
     {
-        if (!is_int($TvShowId)) {
-            trigger_error('TvShowId must be integer', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetTVShowDetails(['tvshowid' => $TvShowId, 'properties' => static::$TvShowItemList]);
         $ret = $this->SendDirect($KodiData);
@@ -728,7 +682,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     }
 
     ################## PRIVATE
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         switch ($Method) {
             case 'OnScanStarted':

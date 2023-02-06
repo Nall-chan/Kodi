@@ -1925,12 +1925,12 @@ keine
 
  Eigenschaften von KodiDeviceSystem:  
 
-|   Eigenschaft   |   Typ   | Standardwert |                             Funktion                             |
-| :-------------: | :-----: | :----------: | :--------------------------------------------------------------: |
-|   PowerScript   | integer |      0       | Script welches zum einschalten des System ausgeführt werden soll |
-|    PowerOff     | integer |      0       |      Ausschalt-Methode: 0 = OFF, 1 = Hibernate, 2 = Standby      |
-| PreSelectScript | integer |      0       | immer 0 nach ApplyChanges, Erzeugt eine PowerScript aus Vorlagen |
-|   MACAddress    | string  |              |                   MAC-Adresse für PowerScript                    |
+| Eigenschaft |   Typ   | Standardwert |                        Funktion                        |
+| :---------: | :-----: | :----------: | :----------------------------------------------------: |
+| PowerOnType | integer |      1       |       0 = internes WOL, 1 = WOLAction ausführen        |
+| MACAddress  | string  |              |              MAC-Adresse für internes WOL              |
+|  WOLAction  | string  |              |  Aktion welche zum einschalten ausgeführt werden soll  |
+|  PowerOff   | integer |      0       | Ausschalt-Methode: 0 = OFF, 1 = Hibernate, 2 = Standby |
 
  Eigenschaften von KodiDeviceVideoLibrary:  
 
@@ -1959,7 +1959,16 @@ Eigenschaften von KodiSplitter:
 ### 3. Changelog
 
 Version 3.00:
+ - ÄNDERUNG: Positionsvariable (seek) ist jetzt float, die VariableID hat sich beim Update geändert!
+ - Fix: Fehlermeldungen beim anspringen einer Position (seek).  
+ - Fix: Position des aktuellen Titel war in der Playlist falsch, wenn Shuffle aktiviert/deaktiviert wurde.  
+ - Fix: PVR Instanz hat versucht Daten abzufragen, auch wenn kein PVR Addon aktiv war.  
+ - Neu: Konfigurator bietet keine PVR Instanz an, wenn kein PVR-Addon erkannt wurde.  
+ - Neu: Statusvariablen nutzen die neuen Profile von Symcon.  
+ - Neu: Eingebautes WOL und alternativ eigene Aktion um Hardware einzuschalten.  
+ - Neu: Diverse Konfigurationsformulare überarbeitet und mit Dynamik versehen.  
  - Neu: Aktionen für TODO
+ 
 
 Version 2.98:
   - Fix: KODIVIDEOLIB_GetMovieDetails war defekt.  

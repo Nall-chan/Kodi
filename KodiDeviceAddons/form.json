@@ -3,10 +3,12 @@
         {
             "name": "showAddonlist",
             "type": "CheckBox",
-            "caption": "Show HTML-Box for Addons"
+            "caption": "Show HTML-Box for Addons",
+            "onChange": "IPS_RequestAction($id,'showAddonlist',$showAddonlist);"
         },
         {
             "type": "RowLayout",
+            "name": "HTMLRow",
             "items": [
                 {
                     "type": "Label",
@@ -21,6 +23,7 @@
         },
         {
             "type": "RowLayout",
+            "name": "ThumbRow",
             "items": [
                 {
                     "type": "Label",
@@ -35,6 +38,11 @@
         }
     ],
     "actions": [
+        {
+            "type": "Button",
+            "caption": "Request addons",
+            "onClick": "KODIADDONS_RequestState($id,'ALL');"
+        },
         {
             "type": "Label",
             "caption": "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:"

@@ -11,10 +11,6 @@
             "No help available": "Keine Hilfe verfügbar",
             "Reload": "Neu laden",
             "Error on set setting.": "Fehler beim setzen der Einstellung.",
-            "Setting must be string.": "Setting muss ein string sein.",
-            "Value must be string.": "Value muss ein string sein.",
-            "Value must be integer.": "Value muss ein integer sein.",
-            "Value must be bool.": "Value muss ein bool sein.",
             "Invalid ident.": "Ungültiger Ident.",
             "Instance has no active parent.": "Instanz hat kein aktives übergeordnetes Element.",
             "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"

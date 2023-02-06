@@ -126,7 +126,37 @@ class KodiDeviceFavourites extends KodiBase
 
         parent::ApplyChanges();
     }
-
+    public function GetConfigurationForm()
+    {
+        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        $Form['elements'][1]['visible'] = $this->ReadPropertyBoolean('showFavlist');
+        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean('showFavlist');
+        $this->SendDebug('FORM', json_encode($Form), 0);
+        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        return json_encode($Form);
+    }
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    public function RequestAction($Ident, $Value)
+    {
+        if (parent::RequestAction($Ident, $Value)) {
+            return true;
+        }
+        switch ($Ident) {
+            case 'showFavlist':
+                $this->UpdateFormField('HTMLRow', 'visible', (bool) $Value);
+                $this->UpdateFormField('ThumbRow', 'visible', (bool) $Value);
+                return;
+            default:
+                return trigger_error('Invalid Ident.', E_USER_NOTICE);
+        }
+    }
     ################## PUBLIC
     /**
      * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteMedia'. Lädt einen Media Favoriten.
@@ -136,10 +166,6 @@ class KodiDeviceFavourites extends KodiBase
      */
     public function LoadFavouriteMedia(string $Path)
     {
-        if (!is_string($Path)) {
-            trigger_error('Path must be string', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data('Player');
         $KodiData->Open(['item' => ['file' => utf8_encode(rawurlencode($Path))]]);
         $ret = $this->Send($KodiData);
@@ -154,10 +180,6 @@ class KodiDeviceFavourites extends KodiBase
      */
     public function LoadFavouriteScript(string $Script)
     {
-        if (!is_string($Script)) {
-            trigger_error('Script must be string', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data('Addons');
         $KodiData->ExecuteAddon(['addonid' => rawurlencode($Script)]);
         $ret = $this->SendDirect($KodiData);
@@ -173,14 +195,6 @@ class KodiDeviceFavourites extends KodiBase
      */
     public function LoadFavouriteWindow(string $Window, string $WindowParameter)
     {
-        if (!is_string($Window)) {
-            trigger_error('Window must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($WindowParameter)) {
-            trigger_error('WindowParameter must be string', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data('GUI');
         $KodiData->ActivateWindow(['window' => $Window, 'parameters' => [rawurlencode($WindowParameter)]]);
         $ret = $this->Send($KodiData);
@@ -197,11 +211,6 @@ class KodiDeviceFavourites extends KodiBase
      */
     public function GetFavourites(string $Type)
     {
-        if (!is_string($Type)) {
-            trigger_error('Type must be string', E_USER_NOTICE);
-            return false;
-        }
-
         $Type = strtolower($Type);
         if (!in_array($Type, ['all', 'media', 'window', 'script', 'unknown'])) {
             trigger_error('Type must be "all", "media", "window", "script" or "unknown".', E_USER_NOTICE);
@@ -244,7 +253,7 @@ class KodiDeviceFavourites extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         return;
     }

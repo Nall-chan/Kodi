@@ -25,8 +25,8 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       3.00
+ * @todo Settings.SetSkinSettingValue ab v10
  * @example <b>Ohne</b>
- * @todo Suche über WF einbauen. String und Int-Var für Text suche in Album/Artist etc... Ergebnis als HTML-Tabelle.
  */
 class KodiDeviceSettings extends KodiBase
 {
@@ -82,11 +82,6 @@ class KodiDeviceSettings extends KodiBase
      */
     public function GetSettingValue(string $Setting)
     {
-        if (!is_string($Setting)) {
-            trigger_error('Setting must be string', E_USER_NOTICE);
-            return false;
-        }
-
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSettingValue(['setting' => $Setting]);
         $ret = $this->SendDirect($KodiData);
@@ -101,26 +96,10 @@ class KodiDeviceSettings extends KodiBase
     }
     public function SetSettingValueBoolean(string $Setting, bool $Value)
     {
-        if (!is_string($Setting)) {
-            trigger_error('Setting must be string.', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_bool($Value)) {
-            trigger_error('Value must be bool.', E_USER_NOTICE);
-            return false;
-        }
         return $this->SetSettingValue($Setting, $Value);
     }
     public function SetSettingValueInteger(string $Setting, int $Value)
     {
-        if (!is_string($Setting)) {
-            trigger_error('Setting must be string.', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_int($Value)) {
-            trigger_error('Value must be integer.', E_USER_NOTICE);
-            return false;
-        }
         return $this->SetSettingValue($Setting, $Value);
     }
 
@@ -134,14 +113,6 @@ class KodiDeviceSettings extends KodiBase
      */
     public function SetSettingValueString(string $Setting, string $Value)
     {
-        if (!is_string($Setting)) {
-            trigger_error('Setting must be string.', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($Value)) {
-            trigger_error('Value must be string.', E_USER_NOTICE);
-            return false;
-        }
         return $this->SetSettingValue($Setting, $Value);
     }
     /**
@@ -169,10 +140,6 @@ class KodiDeviceSettings extends KodiBase
     }
     public function ResetSettingValue(string $Setting)
     {
-        if (!is_string($Setting)) {
-            trigger_error('Setting must be string.', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ResetSettingValue(['setting' => $Setting]);
         $ret = $this->SendDirect($KodiData);
@@ -226,7 +193,7 @@ class KodiDeviceSettings extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         return;
     }

@@ -161,14 +161,9 @@ class KodiDeviceFiles extends KodiBase
      */
     public function GetSources(string $Media)
     {
-        if (!is_string($Media)) {
-            trigger_error('Media must be string', E_USER_NOTICE);
-            return false;
-        }
-
         $Media = strtolower($Media);
         if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
-            trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
+            trigger_error($this->Translate('Media must be "video", "music", "pictures", "files" or "programs".'), E_USER_NOTICE);
             return false;
         }
 
@@ -195,18 +190,9 @@ class KodiDeviceFiles extends KodiBase
      */
     public function GetFileDetails(string $File, string $Media)
     {
-        if (!is_string($File)) {
-            trigger_error('File must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($Media)) {
-            trigger_error('Media must be string', E_USER_NOTICE);
-            return false;
-        }
-
         $Media = strtolower($Media);
         if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
-            trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
+            trigger_error($this->Translate('Media must be "video", "music", "pictures", "files" or "programs".'), E_USER_NOTICE);
             return false;
         }
 
@@ -228,10 +214,6 @@ class KodiDeviceFiles extends KodiBase
      */
     public function GetDirectory(string $Directory)
     {
-        if (!is_string($Directory)) {
-            trigger_error('Directory must be string', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace); // 'GetDirectory', ['directory' => $Directory]);
         $KodiData->GetDirectory(['directory' => $Directory]);
         $ret = $this->SendDirect($KodiData);
@@ -256,18 +238,9 @@ class KodiDeviceFiles extends KodiBase
      */
     public function GetDirectoryDetails(string $Directory, string $Media)
     {
-        if (!is_string($Directory)) {
-            trigger_error('Directory must be string', E_USER_NOTICE);
-            return false;
-        }
-        if (!is_string($Media)) {
-            trigger_error('Media must be string', E_USER_NOTICE);
-            return false;
-        }
-
         $Media = strtolower($Media);
         if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
-            trigger_error('Media must be "video", "music", "pictures", "files" or "programs".', E_USER_NOTICE);
+            trigger_error($this->Translate('Media must be "video", "music", "pictures", "files" or "programs".'), E_USER_NOTICE);
             return false;
         }
 
@@ -293,7 +266,7 @@ class KodiDeviceFiles extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         return;
     }

@@ -9,6 +9,7 @@
             "Error on read Addonlistconfig-Script": "Fehler beim lesen des Addonlistconfig-Script",
             "Bad Request": "Ungültige Anfrage",
             "Access denied": "Zugriff verweigert",
+            "Request addons": "Addons auslesen",
             "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
         }
     }

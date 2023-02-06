@@ -308,7 +308,7 @@ class KodiDeviceInput extends KodiBase
                 $remoteID = $this->RegisterVariableString('Remote', $this->Translate('Remote'), '~HTMLBox', 1);
                 /* @var $remote string */
                 include 'generateRemote' . ($this->ReadPropertyInteger('RemoteId')) . '.php';
-                SetValueString($remoteID, $remote);
+                $this->SetValue('Remote', $remote);
             }
         } else {
             if (IPS_GetKernelRunlevel() == KR_READY) {
@@ -366,7 +366,14 @@ class KodiDeviceInput extends KodiBase
 
         parent::ApplyChanges();
     }
-
+    public function GetConfigurationForm()
+    {
+        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        $Form['elements'][1]['visible'] = $this->ReadPropertyBoolean('showSVGRemote');
+        $this->SendDebug('FORM', json_encode($Form), 0);
+        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        return json_encode($Form);
+    }
     ################## ActionHandler
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
@@ -433,8 +440,11 @@ class KodiDeviceInput extends KodiBase
                 }
                 break;
             case 'inputtext':
-                $ret = $this->SendText($Value, true);
+                $ret = $this->SendText((string) $Value, true);
                 break;
+            case 'showSVGRemote':
+                $this->UpdateFormField('RemoteId', 'visible', (bool) $Value);
+                return;
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
                 return;
@@ -641,10 +651,6 @@ class KodiDeviceInput extends KodiBase
      */
     public function ExecuteAction(string $Action)
     {
-        if (!is_string($Action)) {
-            trigger_error('Action must be string', E_USER_NOTICE);
-            return false;
-        }
         if (!in_array($Action, self::$ExecuteAction)) {
             trigger_error('Unknown action.', E_USER_NOTICE);
             return false;
@@ -668,10 +674,6 @@ class KodiDeviceInput extends KodiBase
      */
     public function SendText(string $Text, bool $Done)
     {
-        if (!is_string($Text)) {
-            trigger_error('Text must be string', E_USER_NOTICE);
-            return false;
-        }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SendText(['text' => $Text, 'done' => $Done]);
         $ret = $this->SendDirect($KodiData);
@@ -707,7 +709,7 @@ class KodiDeviceInput extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode($Method, $KodiPayload)
+    protected function Decode(string $Method, $KodiPayload)
     {
         switch ($Method) {
             case 'OnInputRequested':
