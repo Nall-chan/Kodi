@@ -205,9 +205,27 @@ class KodiDeviceSettings extends KodiBase
         if ($Settings === false) {
             return false;
         }
+        $Settings = array_filter($Settings, [$this, 'FilterSymconVariables']);
+
         array_walk($Settings, [$this, 'AddSymconVariables']);
 
         return array_values($Settings);
+    }
+    private function FilterSymconVariables(&$Setting)
+    {
+        switch ($Setting['type']) {
+            case 'string':
+                if (($Setting['control']['type'] == 'button') || ($Setting['control']['type'] == 'spinner')) {
+                    return false;
+                }
+                break;
+            case 'action':
+            case 'path':
+            case 'list':
+            case 'addon':
+            return false;
+        }
+        return true;
     }
     private function AddSymconVariables(&$Setting, $Key)
     {
@@ -220,6 +238,7 @@ class KodiDeviceSettings extends KodiBase
         $Data['Profile']['MaxValue'] = 0;
         $Data['Profile']['StepSize'] = 0;
         $Data['Profile']['Suffix'] = '';
+        $Suffix = '';
         switch ($Setting['type']) {
             case 'boolean':
                 $Creatable = true;
@@ -228,19 +247,41 @@ class KodiDeviceSettings extends KodiBase
             break;
             case 'integer':
                 if (array_key_exists('formatlabel', $Setting['control'])) {
-                    $Suffix = ' ' . explode(' ', $Setting['control']['formatlabel'])[1];
-                } else {
-                    $Suffix = '';
+                    $Parts = explode(chr(0x20), $Setting['control']['formatlabel']);
+                    if (count($Parts) == 1) {
+                        $Parts = explode(chr(0xa0), $Setting['control']['formatlabel']);
+                    }
+                    if (count($Parts) > 1) {
+                        $Suffix = ' ' . array_pop($Parts);
+                    }
                 }
                 switch ($Setting['control']['type']) {
+                    case 'slider':
+                        $Data['VarType'] = VARIABLETYPE_INTEGER;
+                        if ($Suffix == ' %') {
+                            $Data['Profile']['Name'] = '~Intensity.100';
+                        } else {
+                            $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
+                            $Data['Profile']['MinValue'] = $Setting['minimum'];
+                            $Data['Profile']['MaxValue'] = $Setting['maximum'];
+                            $Data['Profile']['StepSize'] = $Setting['step'];
+                            $Data['Profile']['Suffix'] = $Suffix;
+                        }
+                        $Creatable = true;
+                        break;
                     case 'spinner':
                         $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
                         $Data['VarType'] = VARIABLETYPE_INTEGER;
                         if (array_key_exists('options', $Setting)) {
+                            $MaxSize = 128;
                             foreach ($Setting['options'] as $Option) {
+                                $MaxSize--;
                                 $Data['Profile']['Associations'][] = [
                                     $Option['value'], $Option['label'], '', -1
                                 ];
+                                if ($MaxSize == 0) {
+                                    break;
+                                }
                             }
                         } else {
                             $Data['Profile']['MinValue'] = $Setting['minimum'];
@@ -254,9 +295,7 @@ class KodiDeviceSettings extends KodiBase
                                     $Setting['minimum'] + 1, '%d' . $Suffix, '', -1
                                 ];
                             } else {
-                                if ($Suffix != '') {
-                                    $Data['Profile']['Suffix'] = $Suffix;
-                                }
+                                $Data['Profile']['Suffix'] = $Suffix;
                             }
                         }
                         $Creatable = true;
@@ -274,10 +313,15 @@ class KodiDeviceSettings extends KodiBase
                         if (array_key_exists('options', $Setting)) {
                             $Data['VarType'] = VARIABLETYPE_INTEGER;
                             $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
+                            $MaxSize = 128;
                             foreach ($Setting['options'] as $Option) {
+                                $MaxSize--;
                                 $Data['Profile']['Associations'][] = [
                                     $Option['value'], $Option['label'], '', -1
                                 ];
+                                if ($MaxSize == 0) {
+                                    break;
+                                }
                             }
                         }
                         $Creatable = true;
@@ -295,6 +339,21 @@ class KodiDeviceSettings extends KodiBase
                     /* TODO
                     Erst mit String Assoziationen ab IPS 5.X
                      */
+                    $Data['VarType'] = VARIABLETYPE_STRING;
+                    if (array_key_exists('options', $Setting)) {
+                        $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
+                        $MaxSize = 128;
+                        foreach ($Setting['options'] as $Option) {
+                            $MaxSize--;
+                            $Data['Profile']['Associations'][] = [
+                                $Option['value'], $Option['label'], '', -1
+                            ];
+                            if ($MaxSize == 0) {
+                                break;
+                            }
+                        }
+                    }
+                    $Creatable = true;
                     break;
                 }
 
@@ -330,10 +389,10 @@ class KodiDeviceSettings extends KodiBase
     }
     private function CreateSettingsVariable(array $VariableData)
     {
-        $this->LogMessage(print_r($VariableData, true), KL_MESSAGE);
         if (($VariableData['Profile']['Name'] !== '') && ($VariableData['Profile']['Name'][0] !== '~')) {
             if (array_key_exists('Associations', $VariableData['Profile'])) {
-                $this->RegisterProfileIntegerEx(
+                $this->RegisterProfileEx(
+                    $VariableData['VarType'],
                     $VariableData['Profile']['Name'],
                 '',
                 '',
@@ -341,12 +400,14 @@ class KodiDeviceSettings extends KodiBase
                  $VariableData['Profile']['Associations']);
                 if ($VariableData['Profile']['MaxValue'] > count($VariableData['Profile']['Associations'])) {
                 }
-                IPS_SetVariableProfileValues(
+                if ($VariableData['VarType'] != VARIABLETYPE_STRING) {
+                    IPS_SetVariableProfileValues(
                      $VariableData['Profile']['Name'],
                      $VariableData['Profile']['MinValue'],
                      $VariableData['Profile']['MaxValue'],
                      $VariableData['Profile']['StepSize']
                      );
+                }
             } else {
                 $this->RegisterProfile(
                 $VariableData['VarType'],

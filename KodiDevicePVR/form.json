@@ -50,10 +50,12 @@
                 {
                     "name": "showTVChannellist",
                     "type": "CheckBox",
-                    "caption": "Show HTML-Box for TV channels"
+                    "caption": "Show HTML-Box for TV channels",
+                    "onChange": "IPS_RequestAction($id,'showTVChannellist',$showTVChannellist);"
                 },
                 {
                     "type": "RowLayout",
+                    "name": "TVRow1",
                     "items": [
                         {
                             "type": "Label",
@@ -68,6 +70,7 @@
                 },
                 {
                     "type": "RowLayout",
+                    "name": "TVRow2",
                     "items": [
                         {
                             "type": "Label",
@@ -82,6 +85,7 @@
                 },
                 {
                     "type": "RowLayout",
+                    "name": "TVRow3",
                     "items": [
                         {
                             "type": "Label",
@@ -104,10 +108,12 @@
                 {
                     "name": "showRadioChannellist",
                     "type": "CheckBox",
-                    "caption": "Show HTML-Box for radio channels"
+                    "caption": "Show HTML-Box for radio channels",
+                    "onChange": "IPS_RequestAction($id,'showRadioChannellist',$showRadioChannellist);"
                 },
                 {
                     "type": "RowLayout",
+                    "name": "RadioRow1",
                     "items": [
                         {
                             "type": "Label",
@@ -122,6 +128,7 @@
                 },
                 {
                     "type": "RowLayout",
+                    "name": "RadioRow2",
                     "items": [
                         {
                             "type": "Label",
@@ -136,6 +143,7 @@
                 },
                 {
                     "type": "RowLayout",
+                    "name": "RadioRow3",
                     "items": [
                         {
                             "type": "Label",
@@ -158,10 +166,12 @@
                 {
                     "name": "showRecordinglist",
                     "type": "CheckBox",
-                    "caption": "Show HTML-Box for recordings"
+                    "caption": "Show HTML-Box for recordings",
+                    "onChange": "IPS_RequestAction($id,'showRecordinglist',$showRecordinglist);"
                 },
                 {
                     "type": "RowLayout",
+                    "name": "RecordingRow1",
                     "items": [
                         {
                             "type": "Label",
@@ -176,6 +186,7 @@
                 },
                 {
                     "type": "RowLayout",
+                    "name": "RecordingRow2",
                     "items": [
                         {
                             "type": "Label",
@@ -190,6 +201,7 @@
                 },
                 {
                     "type": "RowLayout",
+                    "name": "RecordingRow3",
                     "items": [
                         {
                             "type": "Label",

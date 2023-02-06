@@ -358,7 +358,22 @@ class KodiDevicePVR extends KodiBase
 
         parent::ApplyChanges();
     }
-
+    public function GetConfigurationForm()
+    {
+        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        $Form['elements'][1]['items'][1]['visible'] = $this->ReadPropertyBoolean('showTVChannellist');
+        $Form['elements'][1]['items'][2]['visible'] = $this->ReadPropertyBoolean('showTVChannellist');
+        $Form['elements'][1]['items'][3]['visible'] = $this->ReadPropertyBoolean('showTVChannellist');
+        $Form['elements'][2]['items'][1]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
+        $Form['elements'][2]['items'][2]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
+        $Form['elements'][2]['items'][3]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
+        $Form['elements'][3]['items'][1]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
+        $Form['elements'][3]['items'][2]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
+        $Form['elements'][3]['items'][3]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
+        $this->SendDebug('FORM', json_encode($Form), 0);
+        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        return json_encode($Form);
+    }
     ################## ActionHandler
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
@@ -377,6 +392,21 @@ class KodiDevicePVR extends KodiBase
                 return $this->Scan();
             case 'record':
                 return $this->Record($Value, 'current');
+            case 'showTVChannellist':
+                $this->UpdateFormField('TVRow1', 'visible', (bool) $Value);
+                $this->UpdateFormField('TVRow2', 'visible', (bool) $Value);
+                $this->UpdateFormField('TVRow3', 'visible', (bool) $Value);
+                return;
+            case 'showRadioChannellist':
+                $this->UpdateFormField('RadioRow1', 'visible', (bool) $Value);
+                $this->UpdateFormField('RadioRow2', 'visible', (bool) $Value);
+                $this->UpdateFormField('RadioRow3', 'visible', (bool) $Value);
+                return;
+            case 'showRecordinglist':
+                $this->UpdateFormField('RecordingRow1', 'visible', (bool) $Value);
+                $this->UpdateFormField('RecordingRow2', 'visible', (bool) $Value);
+                $this->UpdateFormField('RecordingRow3', 'visible', (bool) $Value);
+                return;
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
