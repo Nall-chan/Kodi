@@ -4,29 +4,36 @@
             "type": "RowLayout",
             "items": [
                 {
-                    "name": "showScan",
-                    "type": "CheckBox",
-                    "caption": "Show Variable DB scanning"
+                    "type": "ColumnLayout",
+                    "items": [
+                        {
+                            "width": "400px",
+                            "name": "showScan",
+                            "type": "CheckBox",
+                            "caption": "Show Variable DB scanning"
+                        },
+                        {
+                            "name": "showClean",
+                            "type": "CheckBox",
+                            "caption": "Show Variable DB cleaning"
+                        }
+                    ]
                 },
                 {
-                    "name": "showDoScan",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for DB scan"
-                }
-            ]
-        },
-        {
-            "type": "RowLayout",
-            "items": [
-                {
-                    "name": "showClean",
-                    "type": "CheckBox",
-                    "caption": "Show Variable DB cleaning"
-                },
-                {
-                    "name": "showDoClean",
-                    "type": "CheckBox",
-                    "caption": "Show Action-Variable for DB clean"
+                    "type": "ColumnLayout",
+                    "items": [
+                        {
+                            "width": "400px",
+                            "name": "showDoScan",
+                            "type": "CheckBox",
+                            "caption": "Show Action-Variable for DB scan"
+                        },
+                        {
+                            "name": "showDoClean",
+                            "type": "CheckBox",
+                            "caption": "Show Action-Variable for DB clean"
+                        }
+                    ]
                 }
             ]
         }
