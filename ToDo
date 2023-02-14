@@ -9,8 +9,9 @@
 ✅Wiederholung: ~Repeat
 ✅Cover: Beliebiges Image
 ✅1: Konfig-Formen überarbeiten 
-🟩2: Konfigurator soll PVR nur anbieten, wenn Plugin aktiv ist
-🟩3: PopUp-Alert im Splitter wenn JSON-RPC per TCP und/oder WebServer nicht erreicht wird
-✅4: In der Settings-Instanz fehlen die String-Values
-🟩5: Diverse ToDo's durch neue RPC Version 
-🟩6: Aktionen fehlen
+✅2: PopUp-Alert im Splitter wenn JSON-RPC per TCP und/oder WebServer nicht erreicht wird
+✅3: In der Settings-Instanz fehlen die String-Values
+🟩4: Diverse ToDos durch neue RPC Version 
+🟩5: Aktionen fehlen
+✅6: Discovery erweitern und Meldung + Doku für Docker mit NAT einbauen
+✅7: Keine Fehlermeldung wenn Login Daten falsch waren

@@ -1,5 +1,18 @@
 {
-    "elements": [],
+    "elements": [
+        {
+            "type": "Label",
+            "caption": "Reload values of settings every"
+        },
+        {
+            "name": "RefreshState",
+            "type": "NumberSpinner",
+            "caption": "Interval",
+            "minimum": 0,
+            "width": "150px",
+            "suffix": "seconds"
+        }
+    ],
     "actions": [
         {
             "caption": "List of possible and controllable settings:",

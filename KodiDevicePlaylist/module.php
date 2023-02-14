@@ -968,7 +968,6 @@ class KodiDevicePlaylist extends KodiBase
                 IPS_SetVariableProfileValues($Name, (count($Data) == 0 ? 0 : 1), count($Data), 1);
             }
         }
-
         $CurrentIndex = $this->GetValue('position');
         if (count($Data) == 0) {
             $this->SetValue('CurrentPlaylist', '');

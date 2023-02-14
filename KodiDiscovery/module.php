@@ -27,6 +27,22 @@ require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
 class KodiDiscovery extends ipsmodule
 {
     use \KodiBase\DebugHelper;
+
+    /**
+     * The maximum number of seconds that will be allowed for the discovery request.
+     */
+    const WS_DISCOVERY_TIMEOUT = 3;
+
+    /**
+     * The multicast address to use in the socket for the discovery request.
+     */
+    const WS_DISCOVERY_MULTICAST_ADDRESS = '239.255.255.250';
+
+    /**
+     * The port that will be used in the socket for the discovery request.
+     */
+    const WS_DISCOVERY_MULTICAST_PORT = 1900;
+
     /**
      * Interne Funktion des SDK.
      */
@@ -48,15 +64,22 @@ class KodiDiscovery extends ipsmodule
      */
     public function GetConfigurationForm()
     {
-        $Devices = $this->DiscoverDevices();
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        if (IPS_GetOption('NATSupport') && strpos(IPS_GetKernelPlatform(), 'Docker')) {
+            // not supported. Docker cannot forward Multicast :(
+            $Form['actions'][2]['popup']['items'][1]['caption'] = $this->Translate("The combination of Docker and NAT is not supported because Docker does not support multicast.\r\nPlease run the container in the host network.\r\nOr create and configure the required Kodi Configurator instance manually.");
+            $Form['actions'][2]['visible'] = true;
+            $this->SendDebug('FORM', json_encode($Form), 0);
+            $this->SendDebug('FORM', json_last_error_msg(), 0);
+            return json_encode($Form);
+        }
+
+        $Devices = $this->DiscoverDevices();
         $IPSDevices = $this->GetIPSInstances();
-
         $Values = [];
-
         foreach ($Devices as $IPAddress => $Device) {
             $AddValue = [
-                'IPAddress'  => $IPAddress,
+                'IPAddress'  => $Device['Host'],
                 'devicename' => $Device['devicename'],
                 'name'       => $Device['devicename'],
                 'version'    => $Device['version'],
@@ -65,9 +88,6 @@ class KodiDiscovery extends ipsmodule
             $InstanceID = array_search($IPAddress, $IPSDevices);
             if ($InstanceID === false) {
                 $InstanceID = array_search(strtolower($Device['Host']), $IPSDevices);
-                if ($InstanceID !== false) {
-                    $AddValue['IPAddress'] = $Device['Host'];
-                }
             }
             if ($InstanceID !== false) {
                 unset($IPSDevices[$InstanceID]);
@@ -88,7 +108,7 @@ class KodiDiscovery extends ipsmodule
                 [
                     'moduleID'      => '{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}',
                     'configuration' => [
-                        'Host' => $IPAddress
+                        'Host' => $Device['Host']
                     ]
                 ]
             ];
@@ -105,6 +125,9 @@ class KodiDiscovery extends ipsmodule
             ];
         }
         $Form['actions'][1]['values'] = $Values;
+        if (count($Devices) == 0) {
+            $Form['actions'][2]['visible'] = true;
+        }
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
@@ -119,7 +142,7 @@ class KodiDiscovery extends ipsmodule
             if ($Splitter > 0) {
                 $IO = IPS_GetInstance($Splitter)['ConnectionID'];
                 if ($IO > 0) {
-                    $Devices[$InstanceID] = IPS_GetProperty($IO, 'Host');
+                    $Devices[$InstanceID] = strtolower(IPS_GetProperty($IO, 'Host'));
                 }
             }
         }
@@ -142,14 +165,19 @@ class KodiDiscovery extends ipsmodule
 
     private function DiscoverDevices(): array
     {
-        $this->LogMessage($this->Translate('Background discovery of Kodi devices'), KL_NOTIFY);
+        $DeviceData = [];
+        $Kodi = [];
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         if (!$socket) {
-            return [];
+            return $Kodi;
         }
+
         socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ['sec' => 2, 'usec' => 100000]);
         socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
-        socket_bind($socket, '0.0.0.0', 0);
+        socket_set_option($socket, IPPROTO_IP, IP_MULTICAST_TTL, 4);
+        socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, 1);
+        socket_bind($socket, '0', 1901);
+        $discoveryTimeout = time() + self::WS_DISCOVERY_TIMEOUT;
         $message = [
             'M-SEARCH * HTTP/1.1',
             'ST: upnp:rootdevice',
@@ -160,25 +188,19 @@ class KodiDiscovery extends ipsmodule
         ];
         $SendData = implode("\r\n", $message) . "\r\n\r\n";
         $this->SendDebug('Search', $SendData, 0);
-        if (@socket_sendto($socket, $SendData, strlen($SendData), 0, '239.255.255.250', 1900) === false) {
-            return [];
+        if (@socket_sendto($socket, $SendData, strlen($SendData), 0, self::WS_DISCOVERY_MULTICAST_ADDRESS, self::WS_DISCOVERY_MULTICAST_PORT) === false) {
+            return $Kodi;
         }
         usleep(100000);
-        $i = 50;
-        $buf = '';
+        $response = '';
         $IPAddress = '';
         $Port = 0;
-        $DeviceData = [];
-        while ($i) {
-            $ret = @socket_recvfrom($socket, $buf, 2048, 0, $IPAddress, $Port);
-            if ($ret === false) {
-                break;
-            }
-            if ($ret === 0) {
-                $i--;
+        do {
+            if (0 == @socket_recvfrom($socket, $response, 2048, 0, $IPAddress, $Port)) {
                 continue;
             }
-            $Data = $this->parseHeader($buf);
+            $this->SendDebug('Receive (' . $IPAddress . ')', $response, 0);
+            $Data = $this->parseHeader($response);
             if (!array_key_exists('SERVER', $Data)) {
                 continue;
             }
@@ -188,9 +210,9 @@ class KodiDiscovery extends ipsmodule
 
             $this->SendDebug($IPAddress, $Data, 0);
             $DeviceData[$IPAddress] = $Data['LOCATION'];
-        }
+        } while (time() < $discoveryTimeout);
         socket_close($socket);
-        $Kodi = [];
+
         foreach ($DeviceData as $IPAddress => $Url) {
             $XMLData = @Sys_GetURLContent($Url);
             $this->SendDebug('XML', $XMLData, 0);
@@ -212,7 +234,7 @@ class KodiDiscovery extends ipsmodule
                 'version'    => explode(' ', (string) $Xml->device->modelNumber)[0],
                 'WebPort'    => $WebPort,
                 'RPCPort'    => 9090,
-                'Host'       => gethostbyaddr($IPAddress)
+                'Host'       => strtolower(gethostbyaddr($IPAddress))
             ];
         }
         $this->SendDebug('Found', $Kodi, 0);

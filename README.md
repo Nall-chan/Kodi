@@ -46,15 +46,10 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
  Ermöglicht das Steuern und das empfangen von Statusänderungen, von der Mediacenter-Software Kodi über das Netzwerk.
  Direkte Bedienung im WebFront möglich.
  Abbilden fast der gesamten Kodi-API in vollen Funktionsumfangs in PHP-Befehlen für eigene Scripte in IPS.
- Folgende Namespaces der API wurden aktuell nicht berücksichtigt, sollte hier Bedarf bestehen, so können Diese noch nachgepflegt werden:
-- Profiles  
-- Settings  
-- Textures  
-- XBMC  
 
 ## 2. Voraussetzungen
 
- - IPS ab Version 6.1
+ - IPS ab Version 6.4
  - Kodi installation auf einem unterstützen System
 
 ## 3. Installation
@@ -79,20 +74,27 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
 ## 5. Einrichten der Instanzen in IPS
 
+  **Hinweis:**  
+  Damit Geräte über die Discovery-Instanz gefunden werden können, müssen bei in gerouteten Netzen und bei NAT Systemen Multicast-Pakete korrekt weitergeleitet werden.  
+
+  <span style="color:red">**Discovery funktioniert nicht in einem Docker Container welcher per NAT angebunden ist. Diese Konstellation wird aufgrund der fehlenden Multicast Fähigkeiten von Docker nicht unterstützt. In diesem Fall muss der Kodi Konfigurator manuell angelegt und konfiguriert werden.**</span>  
+  Für das Discovery werden Pakete über die Multicast-Adresse `239.255.255.250` auf Port `1900` gesendet und UDP Pakete auf Port `1901` empfangen.  
+  
+---
+
   Es wird empfohlen die Einrichtung mit der Instanz Kodi-Discovery durchzuführen.  
 
-  - Im Objektbaum die Kategorie 'Discovery Instanzen' öffnen.  
+  - Im Objektbaum die Kategorie 'Discovery Instanzen' öffnen. 
   - Auf die Instanz 'Kodi Discovery' doppelt klicken. ![Discovery öffnen](imgs/Discovery1.png)  
-  - Im folgenden Dialog sollten alle im lokalen Netzwerk verfügbaren Kodi-Systeme aufgelistet werden (*).  ![Discovery](imgs/Discovery.png)  
+  - Im folgenden Dialog sollten alle im lokalen Netzwerk verfügbaren Kodi-Systeme aufgelistet werden. ![Discovery](imgs/Discovery.png)  
   - Im Dialog das gewünschte System auswählen und den Button 'Erstellen' betätigen.
   - Anschließend ändert sich der Button zu 'Konfigurieren' und muss erneut betätigt werden.  
-  - Im sich öffnenden Konfigurator alle gewünschten Funktionen wie zuvor erzeugen.  ![Instanzen erzeugen](imgs/Konfigurator.png)  
+  - Im sich öffnenden Konfigurator alle gewünschten Funktionen wie zuvor erzeugen.
+  - ![Instanzen erzeugen](imgs/Konfigurator.png)
   - Über den Button 'Gateway konfigurieren' kann die optionale HTTP-Authentifizierung sowie ein abweichender JSON-RPC Port konfiguriert werden.  
   - In den jeweiligen Instanzen sind dann noch weitere Einstellungen nach eigenen Vorlieben einzustellen.  
 
-**(*)Hinweis:**  
- Bei bestimmten Host-Systemen wie z.B. Android, Android TV wird das auffinden des Systems eventuell nicht funktionieren.  
- Dann bitte mit dem anlegen von einem Konfigurator anfangen.  
+ 
 
 
 ## 6. Funktionen der Instanzen
@@ -1905,11 +1907,11 @@ keine
 
  Eigenschaften von KodiDevicePlayer:  
 
-| Eigenschaft |   Typ   | Standardwert |                             Funktion                             |
-| :---------: | :-----: | :----------: | :--------------------------------------------------------------: |
-|  PlayerID   | integer |      0       |          Playermodus: 0 = Audio, 1 = Video, 2 = Bilder           |
-|  CoverSize  | integer |     300      | Die Höhe vom Cover in Pixel auf welche das 'Cover' skaliert wird |
-|  CoverTyp   | string  |    thumb     |         Varianten: 'thumb', 'artist', 'poster', 'banner'         |
+| Eigenschaft |   Typ   | Standardwert |                              Funktion                               |
+| :---------: | :-----: | :----------: | :-----------------------------------------------------------------: |
+|  PlayerID   | integer |      0       |            Playermodus: 0 = Audio, 1 = Video, 2 = Bilder            |
+|  CoverSize  | integer |     300      |  Die Höhe vom Cover in Pixel auf welche das 'Cover' skaliert wird   |
+|  CoverTyp   | string  |    thumb     | Varianten: 'thumb', 'album', 'artist', 'fanart', 'poster', 'banner' |
 
  Eigenschaften von KodiDevicePlaylist:  
 
@@ -1921,7 +1923,9 @@ keine
 
  Eigenschaften von KodiDeviceSettings:  
 
-keine  
+| Eigenschaft  |   Typ   | Standardwert |                Funktion                |
+| :----------: | :-----: | :----------: | :------------------------------------: |
+| RequestState | integer |      60      | Interval der Werte-Abfrage in Sekunden |
 
  Eigenschaften von KodiDeviceSystem:  
 
@@ -1959,18 +1963,18 @@ Eigenschaften von KodiSplitter:
 ### 3. Changelog
 
 Version 3.00:
- - ÄNDERUNG: Positionsvariable (seek) ist jetzt float, die VariableID hat sich beim Update geändert!
+ - <span style='color:red'><b>ÄNDERUNG: Positionsvariable (seek) ist jetzt float, die VariableID ändert sich beim Update!</b></span>
  - Fix: Fehlermeldungen beim anspringen einer Position (seek).  
  - Fix: Position des aktuellen Titel war in der Playlist falsch, wenn Shuffle aktiviert/deaktiviert wurde.  
  - Fix: PVR Instanz hat versucht Daten abzufragen, auch wenn kein PVR Addon aktiv war.  
- - Neu: Konfigurator bietet keine PVR Instanz an, wenn kein PVR-Addon erkannt wurde.  
  - Neu: Statusvariablen nutzen die neuen Profile von Symcon.  
  - Neu: Eingebautes WOL und alternativ eigene Aktion um Hardware einzuschalten.  
  - Neu: Diverse Konfigurationsformulare überarbeitet und mit Dynamik versehen.  
- - Neu: Aktionen für TODO
- 
+ - Neu: Settings Instanz unterstützt mehr Typen und somit mehr Statusvariablen.  
+ - Neu: Discovery Instanz zeigt Hinweis bei Nutzung von Docker + NAT an.  
+ - Fix: Fehlermeldung wenn Login Daten im Splitter nicht korrekt sind.  
 
-Version 2.98:
+ Version 2.98:
   - Fix: KODIVIDEOLIB_GetMovieDetails war defekt.  
   - Fix: Verhalten des Splitters bei Verbindungsauf/abbau und Konfigurationsänderungen verbessert.  
 

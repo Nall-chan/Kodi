@@ -729,10 +729,12 @@ class KodiDevicePVR extends KodiBase
     protected function IOChangeState($State)
     {
         $this->SetTimerInterval('RefreshLists', 0);
-        if (!$this->PVRAvaiable()) {
-            $this->SetStatus(IS_EBASE + 1);
-            return;
+        if ($State == IS_ACTIVE) {
+            if (!$this->PVRAvaiable()) {
+                $State = IS_EBASE + 1;
+            }
         }
+        $this->SetStatus($State);
         parent::IOChangeState($State);
         if ($State == IS_ACTIVE) {
             $this->RefreshTVChannellist();

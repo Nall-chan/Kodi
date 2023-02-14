@@ -1,7 +1,10 @@
 {
     "translations": {
         "de": {
+            "Reload values of settings every": "Lade die Werte der Setting alle",
             "List of possible and controllable settings:": "Liste von möglichen und steuerbaren Einstellungen:",
+            "seconds": "Sekunden",
+            "Interval": "Intervall",
             "Label": "Bezeichnung",
             "Type of setting": "Typ der Einstellung",
             "Help": "Hilfe",

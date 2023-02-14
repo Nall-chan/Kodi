@@ -54,7 +54,31 @@ class KodiDeviceSettings extends KodiBase
      *  @var array
      */
     protected static $ItemListFull = [];
-
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    public function Create()
+    {
+        parent::Create();
+        $this->RegisterPropertyInteger('RefreshState', 60);
+        $this->RegisterTimer('RequestState', 0, 'IPS_RequestAction(' . $this->InstanceID . ', \'RequestState\', true);');
+    }
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    public function ApplyChanges()
+    {
+        parent::ApplyChanges();
+        if ($this->HasActiveParent()) {
+            $this->SetTimerInterval('RequestState', $this->ReadPropertyInteger('RefreshState') * 1000);
+        } else {
+            $this->SetTimerInterval('RequestState', 0);
+        }
+    }
     ################## PUBLIC
     public function RequestAction($Ident, $Value)
     {
@@ -66,6 +90,10 @@ class KodiDeviceSettings extends KodiBase
         }
         if ($Ident == 'ReloadForm') {
             return $this->ReloadForm();
+        }
+        if ($Ident == 'RequestState') {
+            $this->GetSettings();
+            return;
         }
         if (@$this->GetIDForIdent($Ident) > 0) {
             return $this->SetSettingValue(str_replace('_', '.', $Ident), $Value);
@@ -167,6 +195,18 @@ class KodiDeviceSettings extends KodiBase
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
+    }
+    /**
+     * Wird ausgeführt wenn sich der Status vom Parent ändert.
+     * @access protected
+     */
+    protected function IOChangeState($State)
+    {
+        $this->SetTimerInterval('RequestState', 0);
+        parent::IOChangeState($State);
+        if ($State == IS_ACTIVE) {
+            $this->SetTimerInterval('RequestState', $this->ReadPropertyInteger('RefreshState') * 1000);
+        }
     }
     protected function SetSettingValue(string $Setting, $Value)
     {

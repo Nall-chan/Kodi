@@ -38,6 +38,25 @@
             "values": []
         },
         {
+            "name": "ErrorPopup",
+            "type": "PopupAlert",
+            "visible": false,
+            "popup": {
+                "items": [
+                    {
+                        "name": "ErrorTitle",
+                        "type": "Label",
+                        "caption": "No Devices found!"
+                    },
+                    {
+                        "name": "ErrorText",
+                        "type": "Label",
+                        "caption": "No devices were found.\r\nTo recognize devices, incoming multicast on port 1901 (UDP) must be forwarded to IPS.\r\nPlease configure the firewall or routing accordingly."
+                    }
+                ]
+            }
+        },
+        {
             "type": "Label",
             "caption": "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:"
         },

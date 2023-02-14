@@ -528,7 +528,7 @@ sleep(10).then(() => {
             trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage() . ' in ' . get_called_class(), E_USER_NOTICE);
         } catch (Exception $ex) {
             $this->SendDebug('Receive Direct', $ex->getMessage(), 0);
-            trigger_error($ex->getMessage(), $ex->getCode());
+            trigger_error($ex->getMessage() . $ex->getTraceAsString(), $ex->getCode());
         }
         return null;
     }

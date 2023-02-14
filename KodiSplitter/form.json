@@ -3,67 +3,131 @@
         {
             "name": "Open",
             "type": "CheckBox",
-            "caption": "Open"
-        },
-        {
-            "type": "Label",
-            "caption": "Enter Address of Kodi in the parent Client-Socket."
+            "caption": "Active"
         },
         {
             "name": "Port",
             "type": "NumberSpinner",
+            "width": "300px",
             "caption": "JSON-RPC TCP-Port"
-        },
-        {
-            "type": "Label",
-            "caption": "Kodi-Webserver is needed for image download."
-        },
-        {
-            "name": "Webport",
-            "type": "NumberSpinner",
-            "caption": "Webserver-Port"
-        },
-        {
-            "type": "Label",
-            "caption": "Optional HTTP Basic-Authentication:"
-        },
-        {
-            "name": "BasisAuth",
-            "type": "CheckBox",
-            "caption": "Active"
         },
         {
             "type": "RowLayout",
             "items": [
                 {
-                    "name": "Username",
-                    "type": "ValidationTextBox",
-                    "caption": "Username"
+                    "type": "Label",
+                    "width": "300px",
+                    "caption": "Enter Address of Kodi in the parent Client-Socket."
                 },
                 {
-                    "name": "Password",
-                    "type": "PasswordTextBox",
-                    "caption": "Password"
+                    "type": "OpenObjectButton",
+                    "caption": "Open Client-Socket",
+                    "objectID": 0
                 }
             ]
         },
         {
-            "type": "Label",
-            "caption": "Advanced power watchdog with ping request"
-        },
-        {
             "type": "RowLayout",
             "items": [
                 {
-                    "name": "Watchdog",
-                    "type": "CheckBox",
-                    "caption": "Enabled"
+                    "name": "Webport",
+                    "type": "NumberSpinner",
+                    "width": "300px",
+                    "caption": "Webserver-Port"
                 },
                 {
-                    "name": "Interval",
-                    "type": "NumberSpinner",
-                    "caption": "Interval",
-                    "suffix": "seconds"
+                    "type": "Label",
+                    "caption": "Kodi-Webserver is needed for image download."
+                }
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Optional HTTP Basic-Authentication",
+            "items": [
+                {
+                    "name": "BasisAuth",
+                    "type": "CheckBox",
+                    "caption": "Active",
+                    "onChange": "IPS_RequestAction($id,'BasisAuth',$BasisAuth);"
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "name": "Username",
+                            "type": "ValidationTextBox",
+                            "width": "250px",
+                            "caption": "Username"
+                        },
+                        {
+                            "name": "Password",
+                            "type": "PasswordTextBox",
+                            "width": "250px",
+                            "caption": "Password"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Advanced power-on watchdog",
+            "items": [
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "name": "Watchdog",
+                            "type": "CheckBox",
+                            "caption": "Check every",
+                            "onChange": "IPS_RequestAction($id,'Watchdog',$Watchdog);"
+                        },
+                        {
+                            "name": "Interval",
+                            "type": "NumberSpinner",
+                            "caption": "Interval",
+                            "width": "150px",
+                            "suffix": "seconds"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "name": "ConditionType",
+                            "type": "Select",
+                            "caption": "Condition",
+                            "width": "275px",
+                            "onChange": "IPS_RequestAction($id,'ConditionType',$ConditionType);",
+                            "options": [
+                                {
+                                    "caption": "Network ping",
+                                    "value": 0
+                                },
+                                {
+                                    "caption": "Advanced condition",
+                                    "value": 1
+                                }
+                            ]
+                        },
+                        {
+                            "name": "ConditionPopup",
+                            "type": "PopupButton",
+                            "visible": false,
+                            "caption": "Advanced condition",
+                            "popup": {
+                                "caption": "Select condition",
+                                "items": [
+                                    {
+                                        "type": "SelectCondition",
+                                        "name": "WatchdogCondition"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -101,14 +165,9 @@
             "caption": "Interface closed."
         },
         {
-            "code": 202,
-            "icon": "error",
-            "caption": "Host or port is empty."
-        },
-        {
             "code": 203,
             "icon": "error",
-            "caption": "Could not connect RPC-Server."
+            "caption": "Could not connect to JSON-RPC TCP-Server."
         },
         {
             "code": 204,
