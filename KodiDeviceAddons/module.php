@@ -26,32 +26,20 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       3.00
  * @example <b>Ohne</b>
+ *
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
+ * @property array $AddOnItemList Alle Properties eines Item
  */
 class KodiDeviceAddons extends KodiBase
 {
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     *  @var string
-     * @value 'Addons'
-     */
+    public const PropertyShowAddonlist = 'showAddonlist';
+    public const PropertyThumbSize = 'ThumbSize';
+    public const ActionVisibleFormElementsAddon = 'showAddonlist';
+    public const Hook = '/hook/KodiAddonlist';
+
     protected static $Namespace = 'Addons';
-
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     *  @var array
-     */
     protected static $Properties = [];
-
-    /**
-     * Alle Properties eines Item
-     *
-     * @access private
-     *  @var array
-     */
     protected static $AddOnItemList = [
         'name',
         'version',
@@ -74,17 +62,19 @@ class KodiDeviceAddons extends KodiBase
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
-        $this->RegisterPropertyBoolean('showAddonlist', true);
+        $this->RegisterPropertyBoolean(self::PropertyShowAddonlist, true);
+        $this->RegisterPropertyInteger(self::PropertyThumbSize, 100);
+
+        // Todo 7.0 -> Style per Konfig-Formular
         $ID = @$this->GetIDForIdent('AddonlistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
             IPS_SetHidden($ID, true);
         }
         $this->RegisterPropertyInteger('Addonlistconfig', $ID);
-        $this->RegisterPropertyInteger('ThumbSize', 100);
     }
 
     /**
@@ -92,13 +82,14 @@ class KodiDeviceAddons extends KodiBase
      *
      * @access public
      */
-    public function Destroy()
+    public function Destroy(): void
     {
         if (IPS_GetKernelRunlevel() != KR_READY) {
-            return parent::Destroy();
+            parent::Destroy();
+            return;
         }
         if (!IPS_InstanceExists($this->InstanceID)) {
-            $this->UnregisterHook('/hook/KodiAddonlist' . $this->InstanceID);
+            $this->UnregisterHook(self::Hook . $this->InstanceID);
         }
 
         parent::Destroy();
@@ -109,13 +100,12 @@ class KodiDeviceAddons extends KodiBase
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
-        $this->UnregisterScript('WebHookAddonlist');
-        if ($this->ReadPropertyBoolean('showAddonlist')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowAddonlist)) {
             $this->RegisterVariableString('Addonlist', 'Addons', '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook('/hook/KodiAddonlist' . $this->InstanceID);
+                $this->RegisterHook(self::Hook . $this->InstanceID);
             }
 
             $ID = @$this->GetIDForIdent('AddonlistDesign');
@@ -126,7 +116,7 @@ class KodiDeviceAddons extends KodiBase
         } else {
             $this->UnregisterVariable('Addonlist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook('/hook/KodiAddonlist' . $this->InstanceID);
+                $this->UnregisterHook(self::Hook . $this->InstanceID);
             }
         }
         $ScriptID = $this->ReadPropertyInteger('Addonlistconfig');
@@ -135,11 +125,11 @@ class KodiDeviceAddons extends KodiBase
         }
         parent::ApplyChanges();
     }
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $Form['elements'][1]['visible'] = $this->ReadPropertyBoolean('showAddonlist');
-        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean('showAddonlist');
+        $Form['elements'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowAddonlist);
+        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowAddonlist);
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
@@ -152,18 +142,19 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
     {
-        if (parent::RequestAction($Ident, $Value)) {
-            return true;
+        parent::RequestAction($Ident, $Value, $done);
+        if ($done) {
+            return;
         }
         switch ($Ident) {
-            case 'showAddonlist':
+            case self::ActionVisibleFormElementsAddon:
                 $this->UpdateFormField('HTMLRow', 'visible', (bool) $Value);
                 $this->UpdateFormField('ThumbRow', 'visible', (bool) $Value);
                 return;
             default:
-                return trigger_error('Invalid Ident.', E_USER_NOTICE);
+                trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
     }
 
@@ -175,7 +166,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident)
+    public function RequestState(string $Ident): void
     {
         $this->RefreshAddonlist();
     }
@@ -186,7 +177,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $AddonId Das zu aktivirende / deaktivierende Addon.
      * @return bool true bei Erfolg oder false bei Fehler.
      */
-    public function EnableAddon(string $AddonId, bool $Value)
+    public function EnableAddon(string $AddonId, bool $Value): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
@@ -205,7 +196,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $AddonId Das zu startenden Addon.
      * @return bool true bei Erfolg oder false bei Fehler.
      */
-    public function ExecuteAddon(string $AddonId)
+    public function ExecuteAddon(string $AddonId): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ExecuteAddon(['addonid' => $AddonId]);
@@ -223,7 +214,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $AddonId Das zu startenden Addon.
      * @return bool true bei Erfolg oder false bei Fehler.
      */
-    public function ExecuteAddonWait(string $AddonId)
+    public function ExecuteAddonWait(string $AddonId): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ExecuteAddon(['addonid' => $AddonId, 'wait' => true]);
@@ -242,7 +233,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Params Die zu übergebenden Parameter an das AddOn als JSON-String.
      * @return bool true bei Erfolg oder false bei Fehler.
      */
-    public function ExecuteAddonEx(string $AddonId, string $Params)
+    public function ExecuteAddonEx(string $AddonId, string $Params): bool
     {
         $param = json_decode($Params, true);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -262,7 +253,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Params Die zu übergebenden Parameter an das AddOn als JSON-String.
      * @return bool true bei Erfolg oder false bei Fehler.
      */
-    public function ExecuteAddonExWait(string $AddonId, string $Params)
+    public function ExecuteAddonExWait(string $AddonId, string $Params): bool
     {
         $param = json_decode($Params, true);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -281,7 +272,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $AddonId Addon welches gelesen werden soll.
      * @return array|bool Array mit den Eigenschaften des Addon oder false bei Fehler.
      */
-    public function GetAddonDetails(string $AddonId)
+    public function GetAddonDetails(string $AddonId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetAddonDetails(['addonid' => $AddonId, 'properties' => static::$AddOnItemList]);
@@ -298,7 +289,7 @@ class KodiDeviceAddons extends KodiBase
      * @access public
      * @return array|bool Array mit den Eigenschaften der Addons oder false bei Fehler.
      */
-    public function GetAddons()
+    public function GetAddons(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetAddons(['properties' => static::$AddOnItemList]);
@@ -321,7 +312,7 @@ class KodiDeviceAddons extends KodiBase
      * @param bool $Value True zum aktivieren, false zum deaktivieren des Addon.
      * @return bool true bei Erfolg oder false bei Fehler.
      */
-    public function SetAddonEnabled(string $AddonId, bool $Value)
+    public function SetAddonEnabled(string $AddonId, bool $Value): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
@@ -341,9 +332,8 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode(string $Method, $KodiPayload)
+    protected function Decode(string $Method, mixed $KodiPayload): void
     {
-        return;
     }
 
     /**
@@ -352,7 +342,7 @@ class KodiDeviceAddons extends KodiBase
      * @param array $Addon Array aller Addons
      * @return boolean True für behalten, False für verwerfen.
      */
-    protected function FilterAddons($Addon)
+    protected function FilterAddons(array $Addon): bool
     {
         if (($Addon['type'] == 'xbmc.python.pluginsource') || ($Addon['type'] == 'xbmc.python.script')) {
             return true;
@@ -367,7 +357,7 @@ class KodiDeviceAddons extends KodiBase
      * @access protected
      * @global array $_GET
      */
-    protected function ProcessHookdata()
+    protected function ProcessHookdata(): void
     {
         if ((!isset($_GET['Addonid'])) || (!isset($_GET['Action'])) || (!isset($_GET['Secret']))) {
             echo $this->Translate('Bad Request');
@@ -406,9 +396,9 @@ class KodiDeviceAddons extends KodiBase
      *
      * @access private
      */
-    private function RefreshAddonlist()
+    private function RefreshAddonlist(): void
     {
-        if (!$this->ReadPropertyBoolean('showAddonlist')) {
+        if (!$this->ReadPropertyBoolean(self::PropertyShowAddonlist)) {
             return;
         }
         $ScriptID = $this->ReadPropertyInteger('Addonlistconfig');
@@ -449,7 +439,7 @@ class KodiDeviceAddons extends KodiBase
                 }
                 if (array_key_exists('Thumbnail', $Config['Spalten'])) {
                     if ($Line['Thumbnail'] != '') {
-                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger('ThumbSize'), 0);
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyThumbSize), 0);
                         if ($CoverRAW === false) {
                             $Line['Thumbnail'] = '';
                         } else {
@@ -458,7 +448,7 @@ class KodiDeviceAddons extends KodiBase
                     }
                 }
                 if ((array_key_exists('Fanart', $Config['Spalten'])) && ($Line['Fanart'] != '')) {
-                    $CoverRAW = $this->GetThumbnail($Line['Fanart'], $this->ReadPropertyInteger('ThumbSize'), 0);
+                    $CoverRAW = $this->GetThumbnail($Line['Fanart'], $this->ReadPropertyInteger(self::PropertyThumbSize), 0);
                     if ($CoverRAW === false) {
                         $Line['Fanart'] = '';
                     } else {
@@ -497,7 +487,7 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Action Die Aktion welche der Webhook auslösen soll.
      * @return string JS-Code
      */
-    private function GetWebHookLink(string $Addonid, string $Action, string $NewSecret)
+    private function GetWebHookLink(string $Addonid, string $Action, string $NewSecret): string
     {
         //return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
         $LineSecret = rawurlencode(base64_encode(sha1($NewSecret . '0' . $Addonid, true)));
@@ -510,7 +500,7 @@ class KodiDeviceAddons extends KodiBase
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
      */
-    private function CreateAddonlistConfigScript()
+    private function CreateAddonlistConfigScript(): string
     {
         $Script = '<?
 ### Konfig ab Zeile 10 !!!

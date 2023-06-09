@@ -26,24 +26,19 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       3.00
  * @example <b>Ohne</b>
+ *
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
  */
 class KodiDeviceGUI extends KodiBase
 {
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     *  @var string
-     * @value 'Application'
-     */
-    protected static $Namespace = 'GUI';
+    public const PropertyShowCurrentWindow = 'showCurrentWindow';
+    public const PropertyShowCurrentControl = 'showCurrentControl';
+    public const PropertyShowSkin = 'showSkin';
+    public const PropertyShowFullscreen = 'showFullscreen';
+    public const PropertyShowScreensaver = 'showScreensaver';
 
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     *  @var array
-     */
+    protected static $Namespace = 'GUI';
     protected static $Properties = [
         'currentwindow',
         'currentcontrol',
@@ -57,14 +52,14 @@ class KodiDeviceGUI extends KodiBase
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
-        $this->RegisterPropertyBoolean('showCurrentWindow', true);
-        $this->RegisterPropertyBoolean('showCurrentControl', true);
-        $this->RegisterPropertyBoolean('showSkin', true);
-        $this->RegisterPropertyBoolean('showFullscreen', true);
-        $this->RegisterPropertyBoolean('showScreensaver', true);
+        $this->RegisterPropertyBoolean(self::PropertyShowCurrentWindow, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowCurrentControl, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowSkin, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowFullscreen, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowScreensaver, true);
     }
 
     /**
@@ -72,9 +67,9 @@ class KodiDeviceGUI extends KodiBase
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
-        if ($this->ReadPropertyBoolean('showCurrentWindow')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowCurrentWindow)) {
             $this->RegisterVariableString('currentwindow', $this->Translate('Current window'), '', 0);
             $this->RegisterVariableInteger('_currentwindowid', $this->Translate('Current window (id)'), '', 0);
         } else {
@@ -82,13 +77,13 @@ class KodiDeviceGUI extends KodiBase
             $this->UnregisterVariable('_currentwindowid');
         }
 
-        if ($this->ReadPropertyBoolean('showCurrentControl')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowCurrentControl)) {
             $this->RegisterVariableString('currentcontrol', $this->Translate('Current control'), '', 1);
         } else {
             $this->UnregisterVariable('currentcontrol');
         }
 
-        if ($this->ReadPropertyBoolean('showSkin')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowSkin)) {
             $this->RegisterVariableString('skin', $this->Translate('Current skin'), '', 2);
             $this->RegisterVariableString('_skinid', $this->Translate('Current skin (id)'), '', 2);
         } else {
@@ -96,14 +91,14 @@ class KodiDeviceGUI extends KodiBase
             $this->UnregisterVariable('_skinid');
         }
 
-        if ($this->ReadPropertyBoolean('showFullscreen')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowFullscreen)) {
             $this->RegisterVariableBoolean('fullscreen', $this->Translate('Full screen'), '~Switch', 3);
             $this->EnableAction('fullscreen');
         } else {
             $this->UnregisterVariable('fullscreen');
         }
 
-        if ($this->ReadPropertyBoolean('showScreensaver')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowScreensaver)) {
             $this->RegisterVariableBoolean('screensaver', $this->Translate('Screensaver'), '~Switch', 4);
         } else {
             $this->UnregisterVariable('screensaver');
@@ -120,14 +115,16 @@ class KodiDeviceGUI extends KodiBase
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
     {
-        if (parent::RequestAction($Ident, $Value)) {
-            return true;
+        parent::RequestAction($Ident, $Value, $done);
+        if ($done) {
+            return;
         }
         switch ($Ident) {
             case 'fullscreen':
-                return $this->SetFullscreen((bool) $Value);
+                $this->SetFullscreen((bool) $Value);
+                return;
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
                 break;
@@ -143,7 +140,7 @@ class KodiDeviceGUI extends KodiBase
      * @param bool $Value True für Vollbild aktiv, False bei inaktiv.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function SetFullscreen(bool $Value)
+    public function SetFullscreen(bool $Value): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetFullscreen(['fullscreen' => $Value]);
@@ -170,7 +167,7 @@ class KodiDeviceGUI extends KodiBase
      * @param int $Timeout
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function ShowNotification(string $Title, string $Message, string $Image, int $Timeout)
+    public function ShowNotification(string $Title, string $Message, string $Image, int $Timeout): bool
     {
         $Data = ['title' => $Title, 'message' => $Message];
 
@@ -198,7 +195,7 @@ class KodiDeviceGUI extends KodiBase
      * @param string $Window Das zu aktivierende Fenster
      * @return bool true bei Erfolg, sonst false.
      */
-    public function ActivateWindow(string $Window)
+    public function ActivateWindow(string $Window): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ActivateWindow(['window' => $Window]);
@@ -216,9 +213,9 @@ class KodiDeviceGUI extends KodiBase
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident)
+    public function RequestState(string $Ident): void
     {
-        return parent::RequestState($Ident);
+        parent::RequestState($Ident);
     }
 
     ################## PRIVATE
@@ -229,7 +226,7 @@ class KodiDeviceGUI extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode(string $Method, $KodiPayload)
+    protected function Decode(string $Method, mixed $KodiPayload): void
     {
         switch ($Method) {
             case 'GetProperties':

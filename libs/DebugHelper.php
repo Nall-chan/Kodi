@@ -30,7 +30,7 @@ trait DebugHelper
      * @param \Kodi_RPC_Data|\KodiRPCException|mixed $Data Daten für die Ausgabe.
      * @return int $Format Ausgabeformat für Strings.
      */
-    protected function SendDebug($Message, $Data, $Format)
+    protected function SendDebug(string $Message, mixed $Data, int $Format): bool
     {
         if (is_a($Data, 'Kodi_RPC_Data')) {
             parent::SendDebug($Message . ' Method', $Data->Namespace . '.' . $Data->Method, 0);
@@ -49,17 +49,17 @@ trait DebugHelper
             $this->SendDebug($Message, $Data->getMessage(), 0);
         } elseif (is_array($Data)) {
             if (count($Data) > 25) {
-                $this->SendDebug($Message, array_slice($Data, 0, 20), 0);
+                $this->SendDebug($Message, array_slice($Data, 0, 20), $Format);
                 $this->SendDebug($Message . ':CUT', '-------------CUT-----------------', 0);
-                $this->SendDebug($Message, array_slice($Data, -5, null, true), 0);
+                $this->SendDebug($Message, array_slice($Data, -5, null, true), $Format);
             } else {
                 foreach ($Data as $Key => $DebugData) {
-                    $this->SendDebug($Message . ':' . $Key, $DebugData, 0);
+                    $this->SendDebug($Message . ':' . $Key, $DebugData, $Format);
                 }
             }
         } elseif (is_object($Data)) {
             foreach ($Data as $Key => $DebugData) {
-                $this->SendDebug($Message . '->' . $Key, $DebugData, 0);
+                $this->SendDebug($Message . '->' . $Key, $DebugData, $Format);
             }
         } elseif (is_bool($Data)) {
             parent::SendDebug($Message, ($Data ? 'TRUE' : 'FALSE'), 0);
@@ -70,5 +70,6 @@ trait DebugHelper
                 $this->LogMessage($Message . ':' . (string) $Data, KL_DEBUG);
             }
         }
+        return true;
     }
 }

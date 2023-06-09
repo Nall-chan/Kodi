@@ -42,7 +42,7 @@ class KodiRPCException extends Exception
  *
  * @method null ExecuteAddon
  * @method null GetAddons
- * @method null GetAddonDetails
+ * @method array GetAddonDetails(array $Params)
  * @method null SetAddonEnabled
  *
  * @method null SetVolume(array $Params (int "volume" Neue Lautstärke)) Setzen der Lautstärke.
@@ -53,7 +53,7 @@ class KodiRPCException extends Exception
  * @method null Export(array $Params (array "options" (string "path" Ziel-Verzeichnis für den Export) (bool "overwrite" Vorhandene Daten überschreiben.) (bool "images" Bilder mit exportieren.)) Exportiert die Audio Datenbank.
  * @method null GetAlbumDetails(array $Params (string "albumid" AlbumID) (array "properties" Zu lesende Album-Eigenschaften) Liest die Eigenschaften eines Album aus.
  * @method null GetAlbums(null) Liest einen Teil der Eigenschaften aller Alben aus.
- * @method null GetArtistDetails (array $Params (string "artistid" ArtistID) (array "properties" Zu lesende Künstler-Eigenschaften) Liest die Eigenschaften eines Künstler aus.
+ * @method array GetArtistDetails (array $Params (string "artistid" ArtistID) (array "properties" Zu lesende Künstler-Eigenschaften) Liest die Eigenschaften eines Künstler aus.
  * @method null GetArtists(null) Liest einen Teil der Eigenschaften aller Künstler aus.
  * @method null GetGenres(null) Liest einen Teil der Eigenschaften aller Genres aus.
  * @method null GetRecentlyAddedAlbums(null) Liest die Eigenschaften der zuletzt hinzugefügten Alben aus.
@@ -142,10 +142,6 @@ class KodiRPCException extends Exception
  * @method null GetSeasons (array $Params (string "tvshowid" TVShowID) (array "properties" Zu lesende Season Eigenschaften) Liest die Eigenschaften einer Season aus.
  * @method null GetTVShowDetails (array $Params (string "tvshowid" TVShowID) (array "properties" Zu lesende TV-Serien Eigenschaften) Liest die Eigenschaften einer TV-Serie.
  * @method null GetTVShows (null) Liest die Eigenschaften alle TV-Serien.
- * @property-read int $Id Id des RPC-Objektes
- * @property-read int $Typ Typ des RPC-Objektes
- * @property-read string $Namespace Namespace der RPC-Methode
- * @property-read string $Method RPC-Funktion
  */
 class Kodi_RPC_Data extends stdClass
 {
@@ -158,49 +154,49 @@ class Kodi_RPC_Data extends stdClass
      * @access private
      * @var enum [ Kodi_RPC_Data::EventTyp, Kodi_RPC_Data::ParamTyp, Kodi_RPC_Data::ResultTyp]
      */
-    private $Typ;
+    private ?int $Typ;
 
     /**
      * RPC-Namespace
      * @access private
      * @var string
      */
-    private $Namespace;
+    private ?string $Namespace;
 
     /**
      * Name der Methode
      * @access private
      * @var string
      */
-    private $Method;
+    private ?string $Method;
 
     /**
      * Enthält Fehlermeldungen der Methode
      * @access private
      * @var object
      */
-    private $Error;
+    private mixed $Error;
 
     /**
      * Parameter der Methode
      * @access private
      * @var object
      */
-    private $Params;
+    private mixed $Params;
 
     /**
      * Antwort der Methode
      * @access private
      * @var object
      */
-    private $Result;
+    private mixed $Result;
 
     /**
      * Id des RPC-Objektes
      * @access private
      * @var int
      */
-    private $Id;
+    private ?int $Id;
 
     /**
      * Erstellt ein Kodi_RPC_Data Objekt.
@@ -214,6 +210,14 @@ class Kodi_RPC_Data extends stdClass
      */
     public function __construct($Namespace = null, $Method = null, $Params = null, $Id = null)
     {
+        $this->Typ = null;
+        $this->Namespace = null;
+        $this->Method = null;
+        $this->Error = null;
+        $this->Params = null;
+        $this->Result = null;
+        $this->Id = null;
+
         if (!is_null($Namespace)) {
             $this->Namespace = $Namespace;
         }
@@ -230,7 +234,7 @@ class Kodi_RPC_Data extends stdClass
             $this->Params = (object) $Params;
         }
         if (is_null($Id)) {
-            $this->Id = round(explode(' ', microtime())[0] * 10000);
+            $this->Id = (int) round(explode(' ', microtime())[0] * 10000);
         } else {
             if ($Id > 0) {
                 $this->Id = $Id;
@@ -246,7 +250,7 @@ class Kodi_RPC_Data extends stdClass
      * @param string $name PropertyName
      * @return mixed Value of Name
      */
-    public function __get($name)
+    public function __get(string $name): mixed
     {
         return $this->{$name};
     }
@@ -259,7 +263,7 @@ class Kodi_RPC_Data extends stdClass
      * @param string $name Auszuführende RPC-Methode
      * @param object|array $arguments Parameter der RPC-Methode.
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments): void
     {
         $this->Method = $name;
         $this->Typ = self::$MethodTyp;
@@ -273,7 +277,7 @@ class Kodi_RPC_Data extends stdClass
                 $this->Params = $arguments[0];
             }
         }
-        $this->Id = round(explode(' ', microtime())[0] * 10000);
+        $this->Id = (int) round(explode(' ', microtime())[0] * 10000);
     }
 
     /**
@@ -283,7 +287,7 @@ class Kodi_RPC_Data extends stdClass
      * @access public
      * @return array|object|mixed|KodiRPCException Enthält die Antwort des RPC-Server. Im Fehlerfall wird ein Objekt vom Typ KodiRPCException zurückgegeben.
      */
-    public function GetResult()
+    public function GetResult(): mixed
     {
         if (!is_null($this->Error)) {
             return $this->GetErrorObject();
@@ -300,7 +304,7 @@ class Kodi_RPC_Data extends stdClass
      * @access public
      * @return object|mixed  Enthält die Daten eines RPC-Event des RPC-Server.
      */
-    public function GetEvent()
+    public function GetEvent(): mixed
     {
         if (property_exists($this->Params, 'data')) {
             return $this->Params->data;
@@ -315,13 +319,13 @@ class Kodi_RPC_Data extends stdClass
      * @access public
      * @param object $Data Muss ein Objekt sein, welche vom Kodi-Splitter erzeugt wurde.
      */
-    public function CreateFromGenericObject($Data)
+    public function CreateFromGenericObject(object $Data): void
     {
         if (property_exists($Data, 'Error')) {
             $this->Error = $Data->Error;
         }
         if (property_exists($Data, 'Result')) {
-            $this->Result = $this->DecodeUTF8($Data->Result);
+            $this->Result = $Data->Result;
         }
         if (property_exists($Data, 'Namespace')) {
             $this->Namespace = $Data->Namespace;
@@ -333,7 +337,7 @@ class Kodi_RPC_Data extends stdClass
             $this->Typ = self::$ResultTyp;
         }
         if (property_exists($Data, 'Params')) {
-            $this->Params = $this->DecodeUTF8($Data->Params);
+            $this->Params = $Data->Params;
         }
 
         if (property_exists($Data, 'Id')) {
@@ -354,7 +358,7 @@ class Kodi_RPC_Data extends stdClass
      * @param string $GUID Die Interface-GUID welche mit in den JSON-String integriert werden soll.
      * @return string JSON-kodierter String für IPS-Dateninterface.
      */
-    public function ToJSONString($GUID)
+    public function ToJSONString(string $GUID): string
     {
         $SendData = new stdClass();
         $SendData->DataID = $GUID;
@@ -368,13 +372,13 @@ class Kodi_RPC_Data extends stdClass
             $SendData->Method = $this->Method;
         }
         if (!is_null($this->Params)) {
-            $SendData->Params = $this->EncodeUTF8($this->Params);
+            $SendData->Params = $this->Params;
         }
         if (!is_null($this->Error)) {
             $SendData->Error = $this->Error;
         }
         if (!is_null($this->Result)) {
-            $SendData->Result = $this->EncodeUTF8($this->Result);
+            $SendData->Result = $this->Result;
         }
         if (!is_null($this->Typ)) {
             $SendData->Typ = $this->Typ;
@@ -388,7 +392,7 @@ class Kodi_RPC_Data extends stdClass
      * @access public
      * @param string $Data Ein JSON-kodierter RPC-String vom RPC-Server.
      */
-    public function CreateFromJSONString($Data)
+    public function CreateFromJSONString(string $Data): bool
     {
         $Json = json_decode($Data);
         if (is_null($Json)) {
@@ -403,10 +407,10 @@ class Kodi_RPC_Data extends stdClass
             $this->Method = implode('.', $part);
         }
         if (property_exists($Json, 'params')) {
-            $this->Params = $this->DecodeUTF8($Json->params);
+            $this->Params = $Json->params;
         }
         if (property_exists($Json, 'result')) {
-            $this->Result = $this->DecodeUTF8($Json->result);
+            $this->Result = $Json->result;
             $this->Typ = self::$ResultTyp;
         }
         if (property_exists($Json, 'id')) {
@@ -425,7 +429,7 @@ class Kodi_RPC_Data extends stdClass
      * @param string $GUID Die Interface-GUID welche mit in den JSON-String integriert werden soll.
      * @return string JSON-kodierter String für IPS-Dateninterface.
      */
-    public function ToRPCJSONString($GUID)
+    public function ToRPCJSONString(string $GUID): string
     {
         $RPC = new stdClass();
         $RPC->jsonrpc = '2.0';
@@ -436,7 +440,7 @@ class Kodi_RPC_Data extends stdClass
         $RPC->id = $this->Id;
         $SendData = new stdClass();
         $SendData->DataID = $GUID;
-        $SendData->Buffer = utf8_encode(json_encode($RPC));
+        $SendData->Buffer = bin2hex(json_encode($RPC));
         return json_encode($SendData);
     }
 
@@ -446,7 +450,7 @@ class Kodi_RPC_Data extends stdClass
      * @access public
      * @return string JSON-kodierter String.
      */
-    public function ToRawRPCJSONString()
+    public function ToRawRPCJSONString(): string
     {
         $RPC = new stdClass();
         $RPC->jsonrpc = '2.0';
@@ -465,10 +469,9 @@ class Kodi_RPC_Data extends stdClass
      * @param object $Item Das Objekt welches zu einem Array konvertiert wird.
      * @return array Das konvertierte Objekt als Array.
      */
-    public function ToArray($Item)
+    public function ToArray(mixed $Item): array
     {
-        //return $this->DecodeUTF8(json_decode(json_encode($this->EncodeUTF8($Item)), true));
-        return json_decode(json_encode($this->EncodeUTF8($Item)), true);
+        return json_decode(json_encode($Item), true);
     }
 
     /**
@@ -477,7 +480,7 @@ class Kodi_RPC_Data extends stdClass
      * @access private
      * @return KodiRPCException  Enthält die Daten der Fehlermeldung des RPC-Server.
      */
-    private function GetErrorObject()
+    private function GetErrorObject(): KodiRPCException
     {
         if (property_exists($this->Error, 'data')) {
             if (property_exists($this->Error->data, 'stack')) {
@@ -492,53 +495,6 @@ class Kodi_RPC_Data extends stdClass
         } else {
             return new KodiRPCException((string) $this->Error->message, (int) $this->Error->code);
         }
-    }
-
-    /**
-     * Führt eine UTF8-Dekodierung für einen String oder ein Objekt durch (rekursiv)
-     *
-     * @access private
-     * @param string|object $item Zu dekodierenden Daten.
-     * @return string|object Dekodierte Daten.
-     */
-    private function DecodeUTF8($item)
-    {
-        if (is_string($item)) {
-            $item = utf8_decode($item);
-        } elseif (is_object($item)) {
-            foreach ($item as $property => $value) {
-                $item->{$property} = $this->DecodeUTF8($value);
-            }
-        } elseif (is_array($item)) {
-            foreach ($item as $property => $value) {
-                $item[$property] = $this->DecodeUTF8($value);
-            }
-        }
-
-        return $item;
-    }
-
-    /**
-     * Führt eine UTF8-Kodierung für einen String oder ein Objekt durch (rekursiv)
-     *
-     * @access private
-     * @param string|object $item Zu kodierenden Daten.
-     * @return string|object Enkodierte Daten.
-     */
-    private function EncodeUTF8($item)
-    {
-        if (is_string($item)) {
-            $item = utf8_encode($item);
-        } elseif (is_object($item)) {
-            foreach ($item as $property => $value) {
-                $item->{$property} = $this->EncodeUTF8($value);
-            }
-        } elseif (is_array($item)) {
-            foreach ($item as $property => $value) {
-                $item[$property] = $this->EncodeUTF8($value);
-            }
-        }
-        return $item;
     }
 }
 

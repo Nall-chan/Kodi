@@ -27,32 +27,16 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @version       3.00
  * @example <b>Ohne</b>
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Album/Artist etc... Ergebnis als HTML-Tabelle.
+ *
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
+ * @property array $ItemListFull Alle Properties eines Item
+ * @property array $ItemListSmall Kleiner Teil der Properties eines Item
  */
 class KodiDeviceFiles extends KodiBase
 {
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     *  @var string
-     * @value 'Files'
-     */
     protected static $Namespace = 'Files';
-
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     *  @var array
-     */
     protected static $Properties = [];
-
-    /**
-     * Alle Properties eines Item
-     *
-     * @access private
-     *  @var array
-     */
     protected static $ItemListFull = [
         'title',
         'artist',
@@ -121,14 +105,8 @@ class KodiDeviceFiles extends KodiBase
         'dateadded',
         'size',
         'lastmodified',
-        'mimetype'];
-
-    /**
-     * Kleiner Teil der Properties eines Item
-     *
-     * @access private
-     *  @var array
-     */
+        'mimetype'
+    ];
     protected static $ItemListSmall = [
         'title',
         'artist',
@@ -159,7 +137,7 @@ class KodiDeviceFiles extends KodiBase
      *   enum["video"=Video, "music"=Musik, "pictures"=Bilder, "files"=Dateien, "programs"=Programme]
      * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
-    public function GetSources(string $Media)
+    public function GetSources(string $Media): false|array
     {
         $Media = strtolower($Media);
         if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
@@ -188,7 +166,7 @@ class KodiDeviceFiles extends KodiBase
      *   enum["video"=Video, "music"=Musik, "pictures"=Bilder, "files"=Dateien, "programs"=Programme]
      * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
-    public function GetFileDetails(string $File, string $Media)
+    public function GetFileDetails(string $File, string $Media): false|array
     {
         $Media = strtolower($Media);
         if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
@@ -212,7 +190,7 @@ class KodiDeviceFiles extends KodiBase
      * @param string $Directory Verzeichnis welches durchsucht werden soll.
      * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
-    public function GetDirectory(string $Directory)
+    public function GetDirectory(string $Directory): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace); // 'GetDirectory', ['directory' => $Directory]);
         $KodiData->GetDirectory(['directory' => $Directory]);
@@ -236,7 +214,7 @@ class KodiDeviceFiles extends KodiBase
      *   enum["video"=Video, "music"=Musik, "pictures"=Bilder, "files"=Dateien, "programs"=Programme]
      * @return array|bool Array mit den Quellen oder false bei Fehler.
      */
-    public function GetDirectoryDetails(string $Directory, string $Media)
+    public function GetDirectoryDetails(string $Directory, string $Media): false|array
     {
         $Media = strtolower($Media);
         if (!in_array($Media, ['video', 'music', 'pictures', 'files', 'programs'])) {
@@ -266,9 +244,8 @@ class KodiDeviceFiles extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode(string $Method, $KodiPayload)
+    protected function Decode(string $Method, mixed $KodiPayload): void
     {
-        return;
     }
 }
 

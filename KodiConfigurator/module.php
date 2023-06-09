@@ -26,7 +26,7 @@ declare(strict_types=1);
  * @version       3.00
  * @example <b>Ohne</b>
  */
-class KodiConfigurator extends IPSModule
+class KodiConfigurator extends IPSModuleStrict
 {
     /**
      * Zuordnung der möglichen Kodi-Instanzen zu den GUID
@@ -77,7 +77,7 @@ class KodiConfigurator extends IPSModule
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
         $this->RequireParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
@@ -88,7 +88,7 @@ class KodiConfigurator extends IPSModule
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         parent::ApplyChanges();
     }
@@ -99,8 +99,12 @@ class KodiConfigurator extends IPSModule
      *
      * @access public
      */
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
+        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        if ($this->GetStatus() == IS_CREATING) {
+            return json_encode($Form);
+        }
         $SplitterID = $this->GetSplitter();
 
         if ($SplitterID === false) {
@@ -114,7 +118,7 @@ class KodiConfigurator extends IPSModule
                 ]
             ];
         }
-        $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+
         if (IPS_GetInstance($SplitterID)['InstanceStatus'] != IS_ACTIVE) {
             $Form['actions'][] = [
                 'type'  => 'PopupAlert',
@@ -200,7 +204,7 @@ class KodiConfigurator extends IPSModule
      * @access private
      * @return bool|int FALSE wenn kein Splitter vorhanden, sonst die ID des Splitter.
      */
-    private function GetSplitter()
+    private function GetSplitter(): int
     {
         $SplitterID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
         if ($SplitterID == 0) {
@@ -217,7 +221,7 @@ class KodiConfigurator extends IPSModule
      * @param string $ModuleID GUID der Instanz welche gesucht wird
      * @return bool|int FALSE wenn keine Instanz gefunden, sonst die ID der Instanz.
      */
-    private function SearchInstance(int $SplitterID, string $ModuleID)
+    private function SearchInstance(int $SplitterID, string $ModuleID): false|int
     {
         $InstanceIDs = IPS_GetInstanceListByModuleID($ModuleID);
         foreach ($InstanceIDs as $InstanceID) {
@@ -237,7 +241,7 @@ class KodiConfigurator extends IPSModule
      * @param int $Typ Medientyp
      * @return bool|int FALSE wenn keine Instanz gefunden, sonst die ID der Instanz.
      */
-    private function SearchPlayerInstance(int $SplitterID, string $ModuleID, int $Typ)
+    private function SearchPlayerInstance(int $SplitterID, string $ModuleID, int $Typ): false|int
     {
         $InstanceIDs = IPS_GetInstanceListByModuleID($ModuleID);
         foreach ($InstanceIDs as $InstanceID) {
@@ -259,7 +263,7 @@ class KodiConfigurator extends IPSModule
      * @param int $Typ Medientyp
      * @return bool|int FALSE wenn keine Instanz gefunden, sonst die ID der Instanz.
      */
-    private function SearchPlaylistInstance(int $SplitterID, string $ModuleID, int $Typ)
+    private function SearchPlaylistInstance(int $SplitterID, string $ModuleID, int $Typ): false|int
     {
         $InstanceIDs = IPS_GetInstanceListByModuleID($ModuleID);
         foreach ($InstanceIDs as $InstanceID) {

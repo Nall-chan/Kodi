@@ -26,12 +26,24 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       3.00
  * @example <b>Ohne</b>
+ *
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
+ * @property array $Playertype Zuordnung der von Kodi gemeldeten Medientypen zu den PlaylistIDs
+ * @property array $ItemList Alle Properties eines Item
+ * @property array $ItemListSmall Kleiner Teil der Properties eines Item
+ *
  * @property int $LastAddonItem
  * @property array $Multi_Playlist
  * @property int $PlaylistId
+ * @property int $PlayerId
  */
 class KodiDevicePlaylist extends KodiBase
 {
+    public const PropertyPlaylistID = 'PlaylistID';
+    public const PropertyShowPlaylist = 'showPlaylist';
+    public const ActionVisibleFormElementsPlaylist = 'showPlaylist';
+    public const Hook = '/hook/KodiPlaylist';
     /**
      * PlaylistID für Audio
      *
@@ -39,7 +51,7 @@ class KodiDevicePlaylist extends KodiBase
      * @static int
      * @value 0
      */
-    const Audio = 0;
+    public const Audio = 0;
 
     /**
      * PlaylistID für Video
@@ -48,7 +60,7 @@ class KodiDevicePlaylist extends KodiBase
      * @static int
      * @value 1
      */
-    const Video = 1;
+    public const Video = 1;
 
     /**
      * PlaylistID für Bilder
@@ -57,31 +69,10 @@ class KodiDevicePlaylist extends KodiBase
      * @static int
      * @value 2
      */
-    const Pictures = 2;
+    public const Pictures = 2;
 
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     *  @var string
-     * @value 'Application'
-     */
     protected static $Namespace = ['Playlist', 'Player'];
-
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     * @var array
-     */
     protected static $Properties = [];
-
-    /**
-     * Zuordnung der von Kodi gemeldeten Medientypen zu den PlaylistIDs
-     *
-     * @access private
-     *  @var array Key ist der Medientyp, Value die PlaylistID
-     */
     protected static $Playertype = [
         'song'     => 0,
         'audio'    => 0,
@@ -93,13 +84,6 @@ class KodiDevicePlaylist extends KodiBase
         'picture'  => 2,
         'pictures' => 2
     ];
-
-    /**
-     * Alle Properties eines Item
-     *
-     * @access private
-     *  @var array
-     */
     protected static $ItemList = [
         'title',
         'artist',
@@ -172,14 +156,8 @@ class KodiDevicePlaylist extends KodiBase
         'locked',
         'channelnumber',
         'starttime',
-        'endtime'];
-
-    /**
-     * Kleiner Teil der Properties eines Item
-     *
-     * @access private
-     *  @var array
-     */
+        'endtime'
+    ];
     protected static $ItemListSmall = [
         'title',
         'artist',
@@ -205,18 +183,20 @@ class KodiDevicePlaylist extends KodiBase
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
-        $this->RegisterPropertyInteger('PlaylistID', 0);
-        $this->RegisterPropertyBoolean('showPlaylist', true);
+        $this->PlaylistId = 0;
+        $this->RegisterPropertyInteger(self::PropertyPlaylistID, 0);
+        $this->RegisterPropertyBoolean(self::PropertyShowPlaylist, true);
+
+        // Todo 7.0 -> Style per Konfig-Formular
         $ID = @$this->GetIDForIdent('PlaylistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
             IPS_SetHidden($ID, true);
         }
         $this->RegisterPropertyInteger('Playlistconfig', $ID);
-        $this->PlaylistId = 0;
     }
 
     /**
@@ -224,10 +204,10 @@ class KodiDevicePlaylist extends KodiBase
      *
      * @access public
      */
-    public function Destroy()
+    public function Destroy(): void
     {
         if (!IPS_InstanceExists($this->InstanceID)) {
-            $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
+            $this->UnregisterHook(self::Hook . $this->InstanceID);
             $this->UnregisterProfile('Tracklist.' . $this->InstanceID . '.Kodi');
         }
         parent::Destroy();
@@ -238,14 +218,14 @@ class KodiDevicePlaylist extends KodiBase
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $this->UnregisterScript('WebHookPlaylist');
-        $this->PlaylistId = $this->ReadPropertyInteger('PlaylistID');
-        if ($this->ReadPropertyBoolean('showPlaylist')) {
+        $this->PlaylistId = $this->ReadPropertyInteger(self::PropertyPlaylistID);
+        if ($this->ReadPropertyBoolean(self::PropertyShowPlaylist)) {
             $this->RegisterVariableString('Playlist', 'Playlist', '~HTMLBox', 2);
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook('/hook/KodiPlaylist' . $this->InstanceID);
+                $this->RegisterHook(self::Hook . $this->InstanceID);
             }
 
             $ID = @$this->GetIDForIdent('PlaylistDesign');
@@ -256,7 +236,7 @@ class KodiDevicePlaylist extends KodiBase
         } else {
             $this->UnregisterVariable('Playlist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook('/hook/KodiPlaylist' . $this->InstanceID);
+                $this->UnregisterHook(self::Hook . $this->InstanceID);
             }
         }
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
@@ -274,10 +254,10 @@ class KodiDevicePlaylist extends KodiBase
 
         parent::ApplyChanges();
     }
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean('showPlaylist');
+        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowPlaylist);
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
@@ -290,25 +270,29 @@ class KodiDevicePlaylist extends KodiBase
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
     {
-        if (parent::RequestAction($Ident, $Value)) {
-            return true;
+        parent::RequestAction($Ident, $Value, $done);
+        if ($done) {
+            return;
         }
         switch ($Ident) {
-            case 'showPlaylist':
+            case self::ActionVisibleFormElementsPlaylist:
                 $this->UpdateFormField('HTMLRow', 'visible', (bool) $Value);
                 return;
             case 'position':
-                return $this->GoTo($Value - 1);
+                $this->GoTo($Value - 1);
+                return;
             case 'CurrentPlaylist':
-                return $this->GoTo(json_decode($Value, true)['current']);
+                $this->GoTo(json_decode($Value, true)['current']);
+                return;
             default:
-                return trigger_error('Invalid Ident.', E_USER_NOTICE);
+                trigger_error('Invalid Ident.', E_USER_NOTICE);
+                return;
         }
     }
 
-    public function GoTo(int $Index)
+    public function GoTo(int $Index): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
         $KodiData->GoTo(['playerid' => $this->PlaylistId, 'to' => $Index]);
@@ -319,7 +303,8 @@ class KodiDevicePlaylist extends KodiBase
         if ($ret === 'OK') {
             return true;
         }
-        return trigger_error($this->Translate('Error on jump to track.'), E_USER_NOTICE);
+        trigger_error($this->Translate('Error on jump to track.'), E_USER_NOTICE);
+        return false;
     }
     ################## PUBLIC
     /**
@@ -329,7 +314,7 @@ class KodiDevicePlaylist extends KodiBase
      * @access public
      * @return array Das Array mit den Eigenschaften des Item, im Fehlerfall ein leeren Array.
      */
-    public function Get()
+    public function Get(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', ['playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall]);
         $ret = $this->SendDirect($KodiData);
@@ -350,7 +335,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Index Index des Items welche gelesen werden soll.
      * @return array Das Array mit den Eigenschaften des Item, im Fehlerfall ein leeren Array.
      */
-    public function GetItem(int $Index)
+    public function GetItem(int $Index): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetItems', ['playlistid' => $this->PlaylistId, 'properties' => self::$ItemListSmall, 'limits' => ['start' => $Index, 'end' => $Index + 1]]);
         $ret = $this->SendDirect($KodiData);
@@ -371,7 +356,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $AlbumId ID des Album.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function AddAlbum(int $AlbumId)
+    public function AddAlbum(int $AlbumId): bool
     {
         return $this->Add('albumid', $AlbumId);
     }
@@ -384,7 +369,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $ArtistId ID des Artist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function AddArtist(int $ArtistId)
+    public function AddArtist(int $ArtistId): bool
     {
         return $this->Add('artistid', $ArtistId);
     }
@@ -397,7 +382,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function AddDirectory(string $Directory)
+    public function AddDirectory(string $Directory): bool
     {
         return $this->Add('directory', $Directory);
     }
@@ -410,7 +395,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param string $Directory Pfad welcher hinzugefügt werden soll.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function AddDirectoryRecursive(string $Directory)
+    public function AddDirectoryRecursive(string $Directory): bool
     {
         return $this->Add('Directory', $Directory, ['recursive' => true]);
     }
@@ -423,7 +408,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $EpisodeId ID der Episode.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function AddEpisode(int $EpisodeId)
+    public function AddEpisode(int $EpisodeId): bool
     {
         return $this->Add('episodeid', $EpisodeId);
     }
@@ -436,7 +421,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param string $File Pfad zu einer Datei.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function AddFile(string $File)
+    public function AddFile(string $File): bool
     {
         return $this->Add('file', $File);
     }
@@ -449,7 +434,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $GenreId ID des Genres.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function AddGenre(int $GenreId)
+    public function AddGenre(int $GenreId): bool
     {
         return $this->Add('genreid', $GenreId);
     }
@@ -462,7 +447,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $MovieId ID des Filmes.
      * @return bool True bei Erfolg. Sonst false.
      */
-    public function AddMovie(int $MovieId)
+    public function AddMovie(int $MovieId): bool
     {
         return $this->Add('movieid', $MovieId);
     }
@@ -475,7 +460,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $MusicvideoId ID des Musikvideos.
      * @return bool True bei Erfolg. Sonst false.
      */
-    public function AddMusicVideo(int $MusicvideoId)
+    public function AddMusicVideo(int $MusicvideoId): bool
     {
         return $this->Add('musicvideoid', $MusicvideoId);
     }
@@ -488,7 +473,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $SongId ID des Songs.
      * @return bool True bei Erfolg. Sonst false.
      */
-    public function AddSong(int $SongId)
+    public function AddSong(int $SongId): bool
     {
         return $this->Add('songid', $SongId);
     }
@@ -500,7 +485,7 @@ class KodiDevicePlaylist extends KodiBase
      * @access public
      * @return bool True bei Erfolg. Sonst false.
      */
-    public function Clear()
+    public function Clear(): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
         $KodiData->Clear(['playlistid' => $this->PlaylistId]);
@@ -525,7 +510,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertAlbum(int $AlbumId, int $Position)
+    public function InsertAlbum(int $AlbumId, int $Position): bool
     {
         return $this->Insert($Position, 'albumid', $AlbumId);
     }
@@ -540,7 +525,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertArtist(int $ArtistId, int $Position)
+    public function InsertArtist(int $ArtistId, int $Position): bool
     {
         return $this->Insert($Position, 'artistid', $ArtistId);
     }
@@ -555,7 +540,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertDirectory(string $Directory, int $Position)
+    public function InsertDirectory(string $Directory, int $Position): bool
     {
         return $this->Insert($Position, 'directory', $Directory);
     }
@@ -570,7 +555,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertDirectoryRecursive(string $Directory, int $Position)
+    public function InsertDirectoryRecursive(string $Directory, int $Position): bool
     {
         return $this->Insert($Position, 'Directory', $Directory, ['recursive' => true]);
     }
@@ -585,7 +570,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertEpisode(int $EpisodeId, int $Position)
+    public function InsertEpisode(int $EpisodeId, int $Position): bool
     {
         return $this->Insert($Position, 'episodeid', $EpisodeId);
     }
@@ -600,7 +585,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertFile(string $File, int $Position)
+    public function InsertFile(string $File, int $Position): bool
     {
         return $this->Insert($Position, 'file', $File);
     }
@@ -615,7 +600,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertGenre(int $GenreId, int $Position)
+    public function InsertGenre(int $GenreId, int $Position): bool
     {
         return $this->Insert($Position, 'genreid', $GenreId);
     }
@@ -630,7 +615,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertMovie(int $MovieId, int $Position)
+    public function InsertMovie(int $MovieId, int $Position): bool
     {
         return $this->Insert($Position, 'movieid', $MovieId);
     }
@@ -645,7 +630,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertMusicVideo(int $MusicvideoId, int $Position)
+    public function InsertMusicVideo(int $MusicvideoId, int $Position): bool
     {
         return $this->Insert($Position, 'musicvideoid', $MusicvideoId);
     }
@@ -660,7 +645,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Startposition des Album in der Playlist.
      * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
      */
-    public function InsertSong(int $SongId, int $Position)
+    public function InsertSong(int $SongId, int $Position): bool
     {
         return $this->Insert($Position, 'songid', $SongId);
     }
@@ -674,7 +659,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position Eintrag welcher entfernt wird.
      * @return bool True bei Erfolg. Sonst false.
      */
-    public function Remove(int $Position)
+    public function Remove(int $Position): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Remove', ['playlistid' => $this->PlaylistId, 'position' => $Position]);
         $ret = $this->SendDirect($KodiData);
@@ -696,7 +681,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Position1 | $Position2 Positionen der Einträge welche untereinander getauscht werden.
      * @return bool True bei Erfolg. Sonst false.
      */
-    public function Swap(int $Position1, int $Position2)
+    public function Swap(int $Position1, int $Position2): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Swap', ['playlistid' => $this->PlaylistId, 'position1' => $Position1, 'position2' => $Position2]);
         $ret = $this->SendDirect($KodiData);
@@ -717,7 +702,7 @@ class KodiDevicePlaylist extends KodiBase
      * @access protected
      * @global array $_GET
      */
-    protected function ProcessHookdata()
+    protected function ProcessHookdata(): void
     {
         if ((!isset($_GET['Index'])) || (!isset($_GET['Secret']))) {
             echo $this->Translate('Bad Request');
@@ -728,7 +713,7 @@ class KodiDevicePlaylist extends KodiBase
             echo $this->Translate('Access denied');
             return;
         }
-        if ($this->RequestAction('position', $_GET['Index']) === true) {
+        if ($this->GoTo($_GET['Index'] - 1) === true) {
             echo 'OK';
         }
     }
@@ -740,7 +725,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode(string $Method, $KodiPayload)
+    protected function Decode(string $Method, mixed $KodiPayload): void
     {
         //prüfen ob Player oder Playlist
         //Player nur bei neuer Position
@@ -755,17 +740,17 @@ class KodiDevicePlaylist extends KodiBase
         } else {
             if (property_exists($KodiPayload, 'type')) {
                 if (self::$Playertype[(string) $KodiPayload->type] != $this->PlayerId) {
-                    return false;
+                    return;
                 }
             } else {
                 if (property_exists($KodiPayload, 'item')) {
                     if (property_exists($KodiPayload->item, 'channeltype')) {
                         if (self::$Playertype[(string) $KodiPayload->item->channeltype] != $this->PlaylistId) {
-                            return false;
+                            return;
                         }
                     } else {
                         if (self::$Playertype[(string) $KodiPayload->item->type] != $this->PlaylistId) {
-                            return false;
+                            return;
                         }
                     }
                 }
@@ -933,7 +918,7 @@ class KodiDevicePlaylist extends KodiBase
      * @param int $Index Der Index des Items.
      * @param array $item Das einzufügende Item.
      */
-    private function AddItemToPlayList(int $Index, array $item)
+    private function AddItemToPlayList(int $Index, array $item): void
     {
         $Liste = $this->Multi_Playlist;
         if (count($item) == 0) {
@@ -950,7 +935,7 @@ class KodiDevicePlaylist extends KodiBase
      * @access private
      * @param bool $Empty Bei TRUE wird eine leere Tabelle erzeugt.
      */
-    private function RefreshPlaylist($Empty = false)
+    private function RefreshPlaylist($Empty = false): void
     {
         $Data = [];
         if (!$Empty) {
@@ -986,7 +971,7 @@ class KodiDevicePlaylist extends KodiBase
             ]));
         }
 
-        if (!$this->ReadPropertyBoolean('showPlaylist')) {
+        if (!$this->ReadPropertyBoolean(self::PropertyShowPlaylist)) {
             return;
         }
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
@@ -1067,7 +1052,7 @@ class KodiDevicePlaylist extends KodiBase
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
      */
-    private function CreatePlaylistConfigScript()
+    private function CreatePlaylistConfigScript(): string
     {
         $Script = '<?php
 ### Konfig ab Zeile 10 !!!
@@ -1254,7 +1239,7 @@ echo serialize($Config);
      * @param array $Ext Array welches mit übergeben werden soll (optional).
      * @return bool True bei Erfolg. Sonst false.
      */
-    private function Add(string $ItemTyp, $ItemValue, $Ext = [])
+    private function Add(string $ItemTyp, $ItemValue, $Ext = []): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
         $KodiData->Add(array_merge(['playlistid' => $this->PlaylistId, 'item' => [$ItemTyp => $ItemValue]], $Ext));
@@ -1279,7 +1264,7 @@ echo serialize($Config);
      * @param array $Ext Array welches mit übergeben werden soll (optional).
      * @return bool True bei Erfolg. Sonst false.
      */
-    private function Insert(int $Position, string $ItemTyp, $ItemValue, $Ext = [])
+    private function Insert(int $Position, string $ItemTyp, $ItemValue, $Ext = []): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Insert', array_merge(['playlistid' => $this->PlaylistId, 'position' => $Position, 'item' => [$ItemTyp => $ItemValue]], $Ext));
         $ret = $this->SendDirect($KodiData);

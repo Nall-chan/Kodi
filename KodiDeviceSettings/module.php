@@ -27,80 +27,111 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @version       3.00
  * @todo Settings.SetSkinSettingValue ab v10
  * @example <b>Ohne</b>
+ *
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
+ * @property array $ItemListFull Alle Properties eines Item
+ * @method void RegisterAttributeArray(string $name, array $Value, int $Size = 0)
+ * @method void RegisterProfileEx(int $VarTyp, string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations, float $MaxValue = -1, float $StepSize = 0, int $Digits = 0)
+ * @method void RegisterProfile(int $VarTyp, string $Name, string $Icon, string $Prefix, string $Suffix, float $MinValue, float $MaxValue, float $StepSize, int $Digits = 0)
+ * @method void RegisterAttributeArray(string $name, mixed $Value, int $Size = 0)
+ * @method array ReadAttributeArray(string $name)
+ * @method void WriteAttributeArray(string $name, mixed $value)
  */
 class KodiDeviceSettings extends KodiBase
 {
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     * @var string
-     * @value 'Settings'
-     */
+    public const AttributeProfileList = 'VarIdToProfileName';
+    public const TimerName = 'RequestState';
+    public const PropertyRefreshState = 'RefreshState';
+    public const ActionReloadForm = 'ReloadForm';
+    public const ActionCreateVariable = 'CreateVariable';
+
     protected static $Namespace = 'Settings';
-
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     *  @var array
-     */
     protected static $Properties = [];
-
-    /**
-     * Alle Properties eines Item
-     *
-     * @access private
-     *  @var array
-     */
     protected static $ItemListFull = [];
+
     /**
      * Interne Funktion des SDK.
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
-        $this->RegisterPropertyInteger('RefreshState', 60);
-        $this->RegisterTimer('RequestState', 0, 'IPS_RequestAction(' . $this->InstanceID . ', \'RequestState\', true);');
+        $this->RegisterAttributeArray(self::AttributeProfileList, [], 5);
+        $this->RegisterPropertyInteger(self::PropertyRefreshState, 60);
+        $this->RegisterTimer(self::TimerName, 0, 'IPS_RequestAction(' . $this->InstanceID . ', \'' . self::TimerName . '\', true);');
     }
+
     /**
      * Interne Funktion des SDK.
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         parent::ApplyChanges();
         if ($this->HasActiveParent()) {
-            $this->SetTimerInterval('RequestState', $this->ReadPropertyInteger('RefreshState') * 1000);
+            $this->SetTimerInterval(self::TimerName, $this->ReadPropertyInteger(self::PropertyRefreshState) * 1000);
         } else {
-            $this->SetTimerInterval('RequestState', 0);
+            $this->SetTimerInterval(self::TimerName, 0);
         }
     }
-    ################## PUBLIC
-    public function RequestAction($Ident, $Value)
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
-        if (parent::RequestAction($Ident, $Value)) {
+        parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
+
+        switch ($Message) {
+            case IPS_KERNELSTARTED:
+                foreach (array_keys($this->ReadAttributeArray(self::AttributeProfileList)) as $VarId) {
+                    $this->RegisterMessage($VarId, VM_DELETE);
+                }
+                break;
+            case VM_DELETE:
+                $VarIdToProfile = $this->ReadAttributeArray(self::AttributeProfileList);
+                if (!array_key_exists($SenderID, $VarIdToProfile)) {
+                    return;
+                }
+                if (strpos($VarIdToProfile[$SenderID], self::ProfilePrefix) !== 0) {
+                    return;
+                }
+                $this->UnregisterProfile($VarIdToProfile[$SenderID]);
+                break;
+        }
+    }
+
+    ################## PUBLIC
+    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
+    {
+        parent::RequestAction($Ident, $Value, $done);
+        if ($done) {
             return;
         }
-        if ($Ident == 'CreateVariable') {
-            return $this->CreateSettingsVariable(json_decode($Value, true));
+        if ($Ident == self::ActionCreateVariable) {
+            $this->CreateSettingsVariable(json_decode($Value, true));
+            return;
         }
-        if ($Ident == 'ReloadForm') {
-            return $this->ReloadForm();
+        if ($Ident == self::ActionReloadForm) {
+            $this->ReloadForm();
+            return;
         }
-        if ($Ident == 'RequestState') {
+        if ($Ident == self::TimerName) {
             $this->GetSettings();
             return;
         }
         if (@$this->GetIDForIdent($Ident) > 0) {
-            return $this->SetSettingValue(str_replace('_', '.', $Ident), $Value);
+            $this->SetSettingValue(str_replace('_', '.', $Ident), $Value);
+            return;
         }
 
         trigger_error($this->Translate('Invalid ident.'), E_USER_NOTICE);
     }
+
     /**
      * IPS-Instanz-Funktion 'KODISETTINGS_GetSettingValue'. Liefert einen Wert einer Einstellung.
      *
@@ -108,7 +139,7 @@ class KodiDeviceSettings extends KodiBase
      * @param string $Setting Der Name der zu lesenden Einstellung.
      * @return array|bool Wert der Einstellung oder NULL bei Fehler.
      */
-    public function GetSettingValue(string $Setting)
+    public function GetSettingValue(string $Setting): mixed
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSettingValue(['setting' => $Setting]);
@@ -122,11 +153,13 @@ class KodiDeviceSettings extends KodiBase
         }
         return $ret->value;
     }
-    public function SetSettingValueBoolean(string $Setting, bool $Value)
+
+    public function SetSettingValueBoolean(string $Setting, bool $Value): bool
     {
         return $this->SetSettingValue($Setting, $Value);
     }
-    public function SetSettingValueInteger(string $Setting, int $Value)
+
+    public function SetSettingValueInteger(string $Setting, int $Value): bool
     {
         return $this->SetSettingValue($Setting, $Value);
     }
@@ -139,7 +172,7 @@ class KodiDeviceSettings extends KodiBase
      * @param string $Value Der Wert der zu schreibenden Einstellung.
      * @return bool True bei Erfolg, false bei Fehler.
      */
-    public function SetSettingValueString(string $Setting, string $Value)
+    public function SetSettingValueString(string $Setting, string $Value): bool
     {
         return $this->SetSettingValue($Setting, $Value);
     }
@@ -149,7 +182,7 @@ class KodiDeviceSettings extends KodiBase
      * @access public
      * @return array|bool Array mit allen Einstellungen oder false bei Fehler.
      */
-    public function GetSettings()
+    public function GetSettings(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSettings();
@@ -166,19 +199,22 @@ class KodiDeviceSettings extends KodiBase
         }
         return $Settings;
     }
-    public function ResetSettingValue(string $Setting)
+    public function ResetSettingValue(string $Setting): mixed
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->ResetSettingValue(['setting' => $Setting]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
-            return null;
+            return false;
         }
         return $ret;
     }
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        if ($this->GetStatus() == IS_CREATING) {
+            return json_encode($Form);
+        }
         $SettingsList = [];
         if ($this->HasActiveParent()) {
             $Settings = $this->GetControllableSettings();
@@ -200,15 +236,15 @@ class KodiDeviceSettings extends KodiBase
      * Wird ausgeführt wenn sich der Status vom Parent ändert.
      * @access protected
      */
-    protected function IOChangeState($State)
+    protected function IOChangeState(int $State): void
     {
-        $this->SetTimerInterval('RequestState', 0);
+        $this->SetTimerInterval(self::TimerName, 0);
         parent::IOChangeState($State);
         if ($State == IS_ACTIVE) {
-            $this->SetTimerInterval('RequestState', $this->ReadPropertyInteger('RefreshState') * 1000);
+            $this->SetTimerInterval(self::TimerName, $this->ReadPropertyInteger(self::PropertyRefreshState) * 1000);
         }
     }
-    protected function SetSettingValue(string $Setting, $Value)
+    protected function SetSettingValue(string $Setting, $Value): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetSettingValue(['setting' => $Setting, 'value'=>$Value]);
@@ -233,13 +269,13 @@ class KodiDeviceSettings extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode(string $Method, $KodiPayload)
+    protected function Decode(string $Method, mixed $KodiPayload): void
     {
         return;
     }
 
     ################## PRIVATE
-    private function GetControllableSettings()
+    private function GetControllableSettings(): array
     {
         $Settings = @$this->GetSettings();
         if ($Settings === false) {
@@ -251,7 +287,8 @@ class KodiDeviceSettings extends KodiBase
 
         return array_values($Settings);
     }
-    private function FilterSymconVariables(&$Setting)
+
+    private function FilterSymconVariables(&$Setting): bool
     {
         switch ($Setting['type']) {
             case 'string':
@@ -263,11 +300,12 @@ class KodiDeviceSettings extends KodiBase
             case 'path':
             case 'list':
             case 'addon':
-            return false;
+                return false;
         }
         return true;
     }
-    private function AddSymconVariables(&$Setting, $Key)
+
+    private function AddSymconVariables(&$Setting, $Key): void
     {
         $Creatable = false;
         $Data = [];
@@ -284,7 +322,7 @@ class KodiDeviceSettings extends KodiBase
                 $Creatable = true;
                 $Data['VarType'] = VARIABLETYPE_BOOLEAN;
                 $Data['Profile']['Name'] = '~Switch';
-            break;
+                break;
             case 'integer':
                 if (array_key_exists('formatlabel', $Setting['control'])) {
                     $Parts = explode(chr(0x20), $Setting['control']['formatlabel']);
@@ -301,7 +339,7 @@ class KodiDeviceSettings extends KodiBase
                         if ($Suffix == ' %') {
                             $Data['Profile']['Name'] = '~Intensity.100';
                         } else {
-                            $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
+                            $Data['Profile']['Name'] = self::ProfilePrefix . $this->InstanceID . '.' . $Setting['id'];
                             $Data['Profile']['MinValue'] = $Setting['minimum'];
                             $Data['Profile']['MaxValue'] = $Setting['maximum'];
                             $Data['Profile']['StepSize'] = $Setting['step'];
@@ -310,7 +348,7 @@ class KodiDeviceSettings extends KodiBase
                         $Creatable = true;
                         break;
                     case 'spinner':
-                        $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
+                        $Data['Profile']['Name'] = self::ProfilePrefix . $this->InstanceID . '.' . $Setting['id'];
                         $Data['VarType'] = VARIABLETYPE_INTEGER;
                         if (array_key_exists('options', $Setting)) {
                             $MaxSize = 128;
@@ -339,20 +377,20 @@ class KodiDeviceSettings extends KodiBase
                             }
                         }
                         $Creatable = true;
-                    break;
+                        break;
                     case 'edit':
                         $Data['VarType'] = VARIABLETYPE_INTEGER;
-                        $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
+                        $Data['Profile']['Name'] = self::ProfilePrefix . $this->InstanceID . '.' . $Setting['id'];
                         $Data['Profile']['MinValue'] = $Setting['minimum'];
                         $Data['Profile']['MaxValue'] = $Setting['maximum'];
                         $Data['Profile']['StepSize'] = $Setting['step'];
                         $Creatable = true;
-                    break;
+                        break;
                     case 'list':
                         $Data['VarType'] = VARIABLETYPE_INTEGER;
                         if (array_key_exists('options', $Setting)) {
                             $Data['VarType'] = VARIABLETYPE_INTEGER;
-                            $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
+                            $Data['Profile']['Name'] = self::ProfilePrefix . $this->InstanceID . '.' . $Setting['id'];
                             $MaxSize = 128;
                             foreach ($Setting['options'] as $Option) {
                                 $MaxSize--;
@@ -365,39 +403,38 @@ class KodiDeviceSettings extends KodiBase
                             }
                         }
                         $Creatable = true;
-                    break;
-
+                        break;
                 }
-            break;
+                break;
             case 'string':
                 switch ($Setting['control']['type']) {
                     case 'edit':
                         $Data['VarType'] = VARIABLETYPE_STRING;
                         $Creatable = true;
-                    break;
+                        break;
                     case 'list':
-                    /* TODO
-                    Erst mit String Assoziationen ab IPS 5.X
-                     */
-                    $Data['VarType'] = VARIABLETYPE_STRING;
-                    if (array_key_exists('options', $Setting)) {
-                        $Data['Profile']['Name'] = 'Kodi.' . $this->InstanceID . '.' . $Setting['id'];
-                        $MaxSize = 128;
-                        foreach ($Setting['options'] as $Option) {
-                            $MaxSize--;
-                            $Data['Profile']['Associations'][] = [
-                                $Option['value'], $Option['label'], '', -1
-                            ];
-                            if ($MaxSize == 0) {
-                                break;
+                        /* TODO
+                        Erst mit String Assoziationen ab IPS 5.X
+                         */
+                        $Data['VarType'] = VARIABLETYPE_STRING;
+                        if (array_key_exists('options', $Setting)) {
+                            $Data['Profile']['Name'] = self::ProfilePrefix . $this->InstanceID . '.' . $Setting['id'];
+                            $MaxSize = 128;
+                            foreach ($Setting['options'] as $Option) {
+                                $MaxSize--;
+                                $Data['Profile']['Associations'][] = [
+                                    $Option['value'], $Option['label'], '', -1
+                                ];
+                                if ($MaxSize == 0) {
+                                    break;
+                                }
                             }
                         }
-                    }
-                    $Creatable = true;
-                    break;
+                        $Creatable = true;
+                        break;
                 }
 
-            break;
+                break;
         }
 
         if ($Creatable) {
@@ -434,31 +471,33 @@ class KodiDeviceSettings extends KodiBase
                 $this->RegisterProfileEx(
                     $VariableData['VarType'],
                     $VariableData['Profile']['Name'],
-                '',
-                '',
-                $VariableData['Profile']['Suffix'],
-                 $VariableData['Profile']['Associations']);
+                    '',
+                    '',
+                    $VariableData['Profile']['Suffix'],
+                    $VariableData['Profile']['Associations']
+                );
+                /* ???
                 if ($VariableData['Profile']['MaxValue'] > count($VariableData['Profile']['Associations'])) {
-                }
+                }*/
                 if ($VariableData['VarType'] != VARIABLETYPE_STRING) {
                     IPS_SetVariableProfileValues(
-                     $VariableData['Profile']['Name'],
-                     $VariableData['Profile']['MinValue'],
-                     $VariableData['Profile']['MaxValue'],
-                     $VariableData['Profile']['StepSize']
-                     );
+                        $VariableData['Profile']['Name'],
+                        $VariableData['Profile']['MinValue'],
+                        $VariableData['Profile']['MaxValue'],
+                        $VariableData['Profile']['StepSize']
+                    );
                 }
             } else {
                 $this->RegisterProfile(
-                $VariableData['VarType'],
-                $VariableData['Profile']['Name'],
-                '',
-                '',
-                $VariableData['Profile']['Suffix'],
-                $VariableData['Profile']['MinValue'],
-                $VariableData['Profile']['MaxValue'],
-                $VariableData['Profile']['StepSize']
-            );
+                    $VariableData['VarType'],
+                    $VariableData['Profile']['Name'],
+                    '',
+                    '',
+                    $VariableData['Profile']['Suffix'],
+                    $VariableData['Profile']['MinValue'],
+                    $VariableData['Profile']['MaxValue'],
+                    $VariableData['Profile']['StepSize']
+                );
             }
         }
         $this->MaintainVariable(
@@ -469,6 +508,13 @@ class KodiDeviceSettings extends KodiBase
             0,
             true
         );
+        if (($VariableData['Profile']['Name'] !== '') && ($VariableData['Profile']['Name'][0] !== '~')) {
+            $VarIdToProfile = $this->ReadAttributeArray(self::AttributeProfileList);
+            $VarId = $this->GetIDForIdent($VariableData['Ident']);
+            $VarIdToProfile[$VarId] = $VariableData['Profile']['Name'];
+            $this->WriteAttributeArray(self::AttributeProfileList, $VarIdToProfile);
+            $this->RegisterMessage($VarId, VM_DELETE);
+        }
         $this->EnableAction($VariableData['Ident']);
         $this->ReloadForm();
     }

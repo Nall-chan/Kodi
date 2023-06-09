@@ -15,6 +15,7 @@ eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR_
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/ParentIOHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/VariableProfileHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/WebhookHelper.php') . '}');
+eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/AttributeArrayHelper.php') . '}');
 
 require_once __DIR__ . '/DebugHelper.php';  // diverse Klassen
 require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
@@ -32,48 +33,41 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * @example <b>Ohne</b>
  * @property int $ParentID
  * @property string $WebHookSecret
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
+ * @property array $ItemListFull Alle Properties eines Item
+ *
+ * @method void RegisterProfileIntegerEx(string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations, int $MaxValue = -1, float $StepSize = 0)
+ * @method void UnregisterProfile(string $Name)
+ * @method void RegisterProfileInteger(string $Name, string $Icon, string $Prefix, string $Suffix, int $MinValue, int $MaxValue, float $StepSize)
+ * @method void RegisterHook(string $WebHook)
+ * @method void UnregisterHook(string $WebHook)
+ * @method bool IORequestAction(string $Ident, mixed $Value)
  */
-abstract class KodiBase extends IPSModule
+abstract class KodiBase extends IPSModuleStrict
 {
     use \KodiBase\VariableProfileHelper,
         \KodiBase\WebhookHelper,
         \KodiBase\DebugHelper,
         \KodiBase\BufferHelper,
+        \KodiBase\AttributeArrayHelper,
         \KodiBase\InstanceStatus {
-        \KodiBase\InstanceStatus::MessageSink as IOMessageSink;
-        \KodiBase\InstanceStatus::RegisterParent as IORegisterParent;
-        \KodiBase\InstanceStatus::RequestAction as IORequestAction;
-    }
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     * @var string
-     */
+            \KodiBase\InstanceStatus::MessageSink as IOMessageSink;
+            \KodiBase\InstanceStatus::RegisterParent as IORegisterParent;
+            \KodiBase\InstanceStatus::RequestAction as IORequestAction;
+        }
+
+    public const ProfilePrefix = 'Kodi.';
+
     protected static $Namespace;
-
-    /**
-     * Nur einige Properties des RPC-Namespace
-     *
-     * @access private
-     * @var array
-     */
     protected static $PartialProperties;
-
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     * @var array
-     */
     protected static $Properties;
-
     /**
      * Interne Funktion des SDK.
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
         $this->ConnectParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
@@ -89,7 +83,7 @@ abstract class KodiBase extends IPSModule
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $this->RegisterMessage($this->InstanceID, FM_CONNECT);
         $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
@@ -129,7 +123,7 @@ abstract class KodiBase extends IPSModule
      *
      * @access public
      */
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
         $this->IOMessageSink($TimeStamp, $SenderID, $Message, $Data);
 
@@ -141,12 +135,12 @@ abstract class KodiBase extends IPSModule
         }
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
     {
+        $done = false;
         if ($this->IORequestAction($Ident, $Value)) {
-            return true;
+            $done = true;
         }
-        return false;
     }
 
     ################## PUBLIC
@@ -157,19 +151,21 @@ abstract class KodiBase extends IPSModule
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident)
+    public function RequestState(string $Ident): void
     {
         if ($Ident == 'ALL') {
-            return $this->RequestProperties(['properties' => static::$Properties]);
+            $this->RequestProperties(['properties' => static::$Properties]);
+            return;
         }
         if ($Ident == 'PARTIAL') {
-            return $this->RequestProperties(['properties' => static::$PartialProperties]);
+            $this->RequestProperties(['properties' => static::$PartialProperties]);
+            return;
         }
         if (!in_array($Ident, static::$Properties)) {
             trigger_error('Property not found.');
-            return false;
+            return;
         }
-        return $this->RequestProperties(['properties' => [$Ident]]);
+        $this->RequestProperties(['properties' => [$Ident]]);
     }
 
     ################## Datapoints
@@ -180,31 +176,30 @@ abstract class KodiBase extends IPSModule
      * @param string $JSONString Das Datenpaket als JSON formatierter String.
      * @return bool true bei erfolgreicher Datenannahme, sonst false.
      */
-    public function ReceiveData($JSONString)
+    public function ReceiveData(string $JSONString): string
     {
         $Data = json_decode($JSONString);
         $KodiData = new Kodi_RPC_Data();
         $KodiData->CreateFromGenericObject($Data);
         if ($KodiData->Typ != Kodi_RPC_Data::$EventTyp) {
-            return false;
+            return '';
         }
 
         $Event = $KodiData->GetEvent();
-        //$this->SendDebug('Event', $Event, 0);
 
         $this->Decode($KodiData->Method, $Event);
-        return false;
+        return '';
     }
 
     /**
      * Wird ausgeführt wenn der Kernel hochgefahren wurde.
      */
-    protected function KernelReady()
+    protected function KernelReady(): void
     {
         $this->ApplyChanges();
     }
 
-    protected function RegisterParent()
+    protected function RegisterParent(): void
     {
         $SplitterId = $this->IORegisterParent();
         if ($SplitterId > 0) {
@@ -221,7 +216,7 @@ abstract class KodiBase extends IPSModule
      * Wird ausgeführt wenn sich der Status vom Parent ändert.
      * @access protected
      */
-    protected function IOChangeState($State)
+    protected function IOChangeState(int $State): void
     {
         $this->SendDebug('ParentChangeState', $State, 0);
         if ($State == IS_ACTIVE) {
@@ -237,7 +232,7 @@ abstract class KodiBase extends IPSModule
      * @param array $Params Enthält den Index "properties", in welchen alle anzufragenden Eigenschaften als Array enthalten sind.
      * @return bool true bei erfolgreicher Ausführung und dekodierung, sonst false.
      */
-    protected function RequestProperties(array $Params)
+    protected function RequestProperties(array $Params): bool
     {
         if (count($Params['properties']) == 0) {
             return true;
@@ -260,7 +255,7 @@ abstract class KodiBase extends IPSModule
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    abstract protected function Decode(string $Method, $KodiPayload);
+    abstract protected function Decode(string $Method, mixed $KodiPayload): void;
     /**
      * Erzeugt ein lesbares Zeitformat.
      *
@@ -268,7 +263,7 @@ abstract class KodiBase extends IPSModule
      * @param object|int $Time Die zu formatierende Zeit als Kodi-Objekt oder als Sekunden.
      * @return string Gibt die formatierte Zeit zurück.
      */
-    protected function ConvertTime($Time)
+    protected function ConvertTime(int|object $Time): string
     {
         if (is_object($Time)) {
             $Time->minutes = str_pad((string) $Time->minutes, 2, '00', STR_PAD_LEFT);
@@ -294,7 +289,7 @@ abstract class KodiBase extends IPSModule
      * @param array $Config Die Konfiguration der Tabelle
      * @return string HTML-String
      */
-    protected function GetTableHeader(array $Config)
+    protected function GetTableHeader(array $Config): string
     {
         $html = '';
         // JS Rückkanal erzeugen
@@ -369,7 +364,7 @@ sleep(10).then(() => {
      * @access private
      * @return string HTML-String
      */
-    protected function GetTableFooter()
+    protected function GetTableFooter(): string
     {
         $html = '</tbody>' . PHP_EOL;
         $html .= '</table>' . PHP_EOL;
@@ -382,7 +377,7 @@ sleep(10).then(() => {
      * @access private
      * @param string $file Path zum Thumbnail im Kodi-Webserver
      */
-    protected function GetThumbnail(string $file, int $SizeWidth = 0, int $SizeHeight = 0)
+    protected function GetThumbnail(string $file, int $SizeWidth = 0, int $SizeHeight = 0): string|false
     {
         if ($this->ParentID == 0) {
             return false;
@@ -431,9 +426,9 @@ sleep(10).then(() => {
      *
      * @access protected
      * @param Kodi_RPC_Data $KodiData Zu versendende Daten.
-     * @return Kodi_RPC_Data Objekt mit der Antwort. NULL im Fehlerfall.
+     * @return null|array|object|mixed|KodiRPCException Objekt mit der Antwort. NULL im Fehlerfall.
      */
-    protected function Send(Kodi_RPC_Data $KodiData)
+    protected function Send(Kodi_RPC_Data $KodiData): mixed
     {
         try {
             $JSONData = $KodiData->ToJSONString('{0222A902-A6FA-4E94-94D3-D54AA4666321}');
@@ -460,9 +455,9 @@ sleep(10).then(() => {
      *
      * @access protected
      * @param Kodi_RPC_Data $KodiData Zu versendende Daten.
-     * @return Kodi_RPC_Data Objekt mit der Antwort. NULL im Fehlerfall.
+     * @return null|array|object|mixed|KodiRPCException Objekt mit der Antwort. NULL im Fehlerfall.
      */
-    protected function SendDirect(Kodi_RPC_Data $KodiData)
+    protected function SendDirect(Kodi_RPC_Data $KodiData): mixed
     {
         try {
             if (!$this->HasActiveParent()) {
@@ -541,7 +536,7 @@ sleep(10).then(() => {
      * @param bool $value Neuer Wert der Statusvariable.
      * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
-    protected function SetValueBoolean(string $Ident, bool $value)
+    protected function SetValueBoolean(string $Ident, bool $value): bool
     {
         $id = @$this->GetIDForIdent($Ident);
         if ($id === false) {
@@ -562,7 +557,7 @@ sleep(10).then(() => {
      * @param float $value Neuer Wert der Statusvariable.
      * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
-    protected function SetValueFloat(string $Ident, float $value)
+    protected function SetValueFloat(string $Ident, float $value): bool
     {
         $id = @$this->GetIDForIdent($Ident);
         if ($id === false) {
@@ -582,7 +577,7 @@ sleep(10).then(() => {
      * @param int $value Neuer Wert der Statusvariable.
      * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
-    protected function SetValueInteger(string $Ident, float $value)
+    protected function SetValueInteger(string $Ident, float $value): bool
     {
         $id = @$this->GetIDForIdent($Ident);
         if ($id === false) {
@@ -602,7 +597,7 @@ sleep(10).then(() => {
      * @param string $value Neuer Wert der Statusvariable.
      * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
-    protected function SetValueString(string $Ident, string $value)
+    protected function SetValueString(string $Ident, string $value): bool
     {
         $id = @$this->GetIDForIdent($Ident);
         if ($id === false) {
@@ -620,7 +615,7 @@ sleep(10).then(() => {
      * @access protected
      * @param string $Ident Der Ident des Script.
      */
-    protected function UnregisterScript(string $Ident)
+    protected function UnregisterScript(string $Ident): void
     {
         $sid = @$this->GetIDForIdent($Ident);
         if ($sid === false) {

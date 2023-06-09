@@ -26,37 +26,34 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       3.00
  * @example <b>Ohne</b>
+ *
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle.
  * @todo VideoLibrary.GetInProgressTVShows ab v8
  * @todo VideoLibrary.GetTags ab v8
  * @todo VideoLibrary.GetAvailableArt ab v10
  * @todo VideoLibrary.GetAvailableArtTypes ab v10
+ *
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
+ * @property array $EpisodeItemList Alle Properties von Episoden
+ * @property array $EpisodeItemListSmall Ein Teil der Properties von Episoden
+ * @property array $MovieItemList Alle Properties von Filmen
+ * @property array $SetItemList Alle Properties von Filmsets
+ * @property array $SeasonItemList Alle Properties von Seasons
+ * @property array $MusicVideoItemList Alle Properties von Musikvideos
+ * @property array $TvShowItemList Alle Properties von TV-Serien
+ * @property array $GenreItemList Alle Properties von Genres
+ *
  */
 class KodiDeviceVideoLibrary extends KodiBase
 {
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     *  @var string
-     * @value 'VideoLibrary'
-     */
+    public const PropertyShowDoScan = 'showDoScan';
+    public const PropertyShowDoClean = 'showDoClean';
+    public const PropertyShowScan = 'showScan';
+    public const PropertyShowClean = 'showClean';
+
     protected static $Namespace = 'VideoLibrary';
-
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     *  @var array
-     */
     protected static $Properties = [];
-
-    /**
-     * Alle Eigenschaften von Episoden.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $EpisodeItemList = [
         'title',
         'plot',
@@ -84,13 +81,6 @@ class KodiDeviceVideoLibrary extends KodiBase
         'uniqueid',
         'art'
     ];
-
-    /**
-     * Ein Teil der Eigenschaften von Episoden.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $EpisodeItemListSmall = [
         'title',
         'playcount',
@@ -103,13 +93,6 @@ class KodiDeviceVideoLibrary extends KodiBase
         'file',
         'tvshowid'
     ];
-
-    /**
-     * Alle Eigenschaften von Filmen.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $MovieItemList = [
         'title',
         'genre',
@@ -143,14 +126,8 @@ class KodiDeviceVideoLibrary extends KodiBase
         'setid',
         'dateadded',
         'tag',
-        'art'];
-
-    /**
-     * Alle Eigenschaften von Filmsets.
-     *
-     * @access private
-     *  @var array
-     */
+        'art'
+    ];
     protected static $SetItemList = [
         'title',
         'playcount',
@@ -158,13 +135,6 @@ class KodiDeviceVideoLibrary extends KodiBase
         'thumbnail',
         'art'
     ];
-
-    /**
-     * Alle Eigenschaften von Seasons.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $SeasonItemList = [
         'season',
         'showtitle',
@@ -176,13 +146,6 @@ class KodiDeviceVideoLibrary extends KodiBase
         'watchedepisodes',
         'art'
     ];
-
-    /**
-     * Alle Eigenschaften von Musikvideos.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $MusicVideoItemList = [
         'title',
         'playcount',
@@ -205,13 +168,6 @@ class KodiDeviceVideoLibrary extends KodiBase
         'tag',
         'art'
     ];
-
-    /**
-     * Alle Eigenschaften von TV-Serien.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $TvShowItemList = [
         'title',
         'genre',
@@ -239,13 +195,6 @@ class KodiDeviceVideoLibrary extends KodiBase
         'tag',
         'art'
     ];
-
-    /**
-     * Alle Eigenschaften von Genres.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $GenreItemList = [
         'thumbnail',
         'title'
@@ -256,13 +205,13 @@ class KodiDeviceVideoLibrary extends KodiBase
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
-        $this->RegisterPropertyBoolean('showDoScan', true);
-        $this->RegisterPropertyBoolean('showDoClean', true);
-        $this->RegisterPropertyBoolean('showScan', true);
-        $this->RegisterPropertyBoolean('showClean', true);
+        $this->RegisterPropertyBoolean(self::PropertyShowDoScan, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowDoClean, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowScan, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowClean, true);
     }
 
     /**
@@ -270,33 +219,33 @@ class KodiDeviceVideoLibrary extends KodiBase
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
             [0, $this->Translate('Execute'), '', -1]
         ]);
 
-        if ($this->ReadPropertyBoolean('showDoScan')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowDoScan)) {
             $this->RegisterVariableInteger('doscan', $this->Translate('Search for new / changed content'), 'Action.Kodi', 1);
             $this->EnableAction('doscan');
         } else {
             $this->UnregisterVariable('doscan');
         }
 
-        if ($this->ReadPropertyBoolean('showScan')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowScan)) {
             $this->RegisterVariableBoolean('scan', $this->Translate('Database search in progress'), '~Switch', 2);
         } else {
             $this->UnregisterVariable('scan');
         }
 
-        if ($this->ReadPropertyBoolean('showDoClean')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowDoClean)) {
             $this->RegisterVariableInteger('doclean', $this->Translate('Clean up the database'), 'Action.Kodi', 3);
             $this->EnableAction('doclean');
         } else {
             $this->UnregisterVariable('doclean');
         }
 
-        if ($this->ReadPropertyBoolean('showClean')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowClean)) {
             $this->RegisterVariableBoolean('clean', $this->Translate('Database cleanup in progress'), '~Switch', 4);
         } else {
             $this->UnregisterVariable('clean');
@@ -313,16 +262,19 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
     {
-        if (parent::RequestAction($Ident, $Value)) {
-            return true;
+        parent::RequestAction($Ident, $Value, $done);
+        if ($done) {
+            return;
         }
         switch ($Ident) {
             case 'doclean':
-                return $this->Clean();
+                $this->Clean();
+                return;
             case 'doscan':
-                return $this->Scan();
+                $this->Scan();
+                return;
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
@@ -335,7 +287,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Clean()
+    public function Clean(): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Clean();
@@ -359,7 +311,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param bool $includeImages Bilder mit exportieren.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Export(string $Path, bool $Overwrite, bool $includeImages)
+    public function Export(string $Path, bool $Overwrite, bool $includeImages): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Export(['options' => ['path' => $Path, 'overwrite' => $Overwrite, 'images' => $includeImages]]);
@@ -377,7 +329,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param  int $EpisodeId EpisodenID der zu lesenden Episode.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetEpisodeDetails(int $EpisodeId)
+    public function GetEpisodeDetails(int $EpisodeId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetEpisodeDetails(['episodeid' => $EpisodeId, 'properties' => static::$EpisodeItemList]);
@@ -394,7 +346,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetEpisodes()
+    public function GetEpisodes(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetEpisodes(['properties' => static::$EpisodeItemListSmall]);
@@ -416,7 +368,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      *   enum["movie"=Filme, "tvshow"=Serien, "musicvideo"=Musikvideos]
      *    * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetGenres(string $Type)
+    public function GetGenres(string $Type): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetGenres(['properties' => static::$GenreItemList, 'type' => $Type]);
@@ -437,7 +389,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param  int $MovieId MovieID des zu lesenden Films.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMovieDetails(int $MovieId)
+    public function GetMovieDetails(int $MovieId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovieDetails(['movieid' => $MovieId, 'properties' => static::$MovieItemList]);
@@ -454,7 +406,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMovies()
+    public function GetMovies(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovies(['properties' => static::$MovieItemList]);
@@ -475,7 +427,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param  int $SetId SetId des zu lesenden Film-Sets.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMovieSetDetails(int $SetId)
+    public function GetMovieSetDetails(int $SetId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovieSetDetails(['setid' => $SetId, 'properties' => static::$SetItemList]);
@@ -492,7 +444,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMovieSets()
+    public function GetMovieSets(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMovieSets(['properties' => static::$SetItemList]);
@@ -513,7 +465,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param  int $MusicVideoId MusicVideoId des zu lesenden Musikvideos.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMusicVideoDetails(int $MusicVideoId)
+    public function GetMusicVideoDetails(int $MusicVideoId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMusicVideoDetails(['musicvideoid' => $MusicVideoId, 'properties' => static::$MusicVideoItemList]);
@@ -530,7 +482,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetMusicVideos()
+    public function GetMusicVideos(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetMusicVideos(['properties' => static::$MusicVideoItemList]);
@@ -550,7 +502,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetRecentlyAddedEpisodes()
+    public function GetRecentlyAddedEpisodes(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyAddedEpisodes(['properties' => static::$EpisodeItemList]);
@@ -570,7 +522,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetRecentlyAddedMovies()
+    public function GetRecentlyAddedMovies(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyAddedMovies(['properties' => static::$MovieItemList]);
@@ -590,7 +542,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetRecentlyAddedMusicVideos()
+    public function GetRecentlyAddedMusicVideos(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyAddedMusicVideos(['properties' => static::$MusicVideoItemList]);
@@ -611,7 +563,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param  int $TvShowId TvShowId der zu lesenden Serie.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetSeasons(int $TvShowId)
+    public function GetSeasons(int $TvShowId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSeasons(['tvshowid' => $TvShowId, 'properties' => static::$SeasonItemList]);
@@ -629,7 +581,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @param  int $TvShowId TvShowId der zu lesenden TV-Serie.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetTVShowDetails(int $TvShowId)
+    public function GetTVShowDetails(int $TvShowId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetTVShowDetails(['tvshowid' => $TvShowId, 'properties' => static::$TvShowItemList]);
@@ -646,7 +598,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetTVShows()
+    public function GetTVShows(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetTVShows(['properties' => static::$TvShowItemList]);
@@ -666,7 +618,7 @@ class KodiDeviceVideoLibrary extends KodiBase
      * @access public
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Scan()
+    public function Scan(): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Scan();
@@ -682,7 +634,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     }
 
     ################## PRIVATE
-    protected function Decode(string $Method, $KodiPayload)
+    protected function Decode(string $Method, mixed $KodiPayload): void
     {
         switch ($Method) {
             case 'OnScanStarted':

@@ -26,6 +26,14 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       3.00
  * @example <b>Ohne</b>
+ *
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
+ * @property array $AlbumItemList Alle Eigenschaften von Alben
+ * @property array $AlbumItemListSmall  Ein Teil der Eigenschaften der Alben
+ * @property array $ArtistItemList Alle Eigenschaften von Künstlern
+ * @property array $GenreItemList  Alle Eigenschaften von Genres
+ * @property array $SongItemList  Alle Eigenschaften von Songs
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Album/Artist etc... Ergebnis als HTML-Tabelle.
  * @todo AudioLibrary.GetProperties ab v8
  * @todo AudioLibrary.GetAvailableArt ab V10
@@ -33,29 +41,13 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  */
 class KodiDeviceAudioLibrary extends KodiBase
 {
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     *  @var string
-     * @value 'AudioLibrary'
-     */
+    public const PropertyShowDoScan = 'showDoScan';
+    public const PropertyShowDoClean = 'showDoClean';
+    public const PropertyShowScan = 'showScan';
+    public const PropertyShowClean = 'showClean';
+
     protected static $Namespace = 'AudioLibrary';
-
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     *  @var array
-     */
     protected static $Properties = [];
-
-    /**
-     * Alle Eigenschaften eines Alben.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $AlbumItemList = [
         'theme',
         'description',
@@ -77,13 +69,6 @@ class KodiDeviceAudioLibrary extends KodiBase
         'fanart',
         'thumbnail'
     ];
-
-    /**
-     * Ein Teil der Eigenschaften der Alben.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $AlbumItemListSmall = [
         'playcount',
         'albumlabel',
@@ -94,13 +79,6 @@ class KodiDeviceAudioLibrary extends KodiBase
         'fanart',
         'thumbnail'
     ];
-
-    /**
-     * Alle Eigenschaften von Künstlern.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $ArtistItemList = [
         'born',
         'formed',
@@ -116,24 +94,10 @@ class KodiDeviceAudioLibrary extends KodiBase
         'fanart',
         'thumbnail'
     ];
-
-    /**
-     * Alle Eigenschaften von Genres.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $GenreItemList = [
         'thumbnail',
         'title'
     ];
-
-    /**
-     * Alle Eigenschaften von Songs.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $SongItemList = [
         'title',
         'artist',
@@ -168,13 +132,13 @@ class KodiDeviceAudioLibrary extends KodiBase
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
-        $this->RegisterPropertyBoolean('showDoScan', true);
-        $this->RegisterPropertyBoolean('showDoClean', true);
-        $this->RegisterPropertyBoolean('showScan', true);
-        $this->RegisterPropertyBoolean('showClean', true);
+        $this->RegisterPropertyBoolean(self::PropertyShowDoScan, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowDoClean, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowScan, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowClean, true);
     }
 
     /**
@@ -182,33 +146,33 @@ class KodiDeviceAudioLibrary extends KodiBase
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
             [0, $this->Translate('Execute'), '', -1]
         ]);
 
-        if ($this->ReadPropertyBoolean('showDoScan')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowDoScan)) {
             $this->RegisterVariableInteger('doscan', $this->Translate('Search for new / changed content'), 'Action.Kodi', 1);
             $this->EnableAction('doscan');
         } else {
             $this->UnregisterVariable('doscan');
         }
 
-        if ($this->ReadPropertyBoolean('showScan')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowScan)) {
             $this->RegisterVariableBoolean('scan', $this->Translate('Database search in progress'), '~Switch', 2);
         } else {
             $this->UnregisterVariable('scan');
         }
 
-        if ($this->ReadPropertyBoolean('showDoClean')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowDoClean)) {
             $this->RegisterVariableInteger('doclean', $this->Translate('Clean up the database'), 'Action.Kodi', 3);
             $this->EnableAction('doclean');
         } else {
             $this->UnregisterVariable('doclean');
         }
 
-        if ($this->ReadPropertyBoolean('showClean')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowClean)) {
             $this->RegisterVariableBoolean('clean', $this->Translate('Database cleanup in progress'), '~Switch', 4);
         } else {
             $this->UnregisterVariable('clean');
@@ -225,16 +189,19 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
     {
-        if (parent::RequestAction($Ident, $Value)) {
-            return true;
+        parent::RequestAction($Ident, $Value, $done);
+        if ($done) {
+            return;
         }
         switch ($Ident) {
             case 'doclean':
-                return $this->Clean();
+                $this->Clean();
+                return;
             case 'doscan':
-                return $this->Scan();
+                $this->Scan();
+                return;
             default:
                 trigger_error('Invalid Ident.', E_USER_NOTICE);
         }
@@ -247,7 +214,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Clean()
+    public function Clean(): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Clean();
@@ -271,7 +238,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @param bool $includeImages Bilder mit exportieren.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Export(string $Path, bool $Overwrite, bool $includeImages)
+    public function Export(string $Path, bool $Overwrite, bool $includeImages): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Export(['options' => ['path' => $Path, 'overwrite' => $Overwrite, 'images' => $includeImages]]);
@@ -289,7 +256,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @param  int $AlbumID AlbumID des zu lesenden Alben.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetAlbumDetails(int $AlbumID)
+    public function GetAlbumDetails(int $AlbumID): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetAlbumDetails(['albumid' => $AlbumID, 'properties' => static::$AlbumItemList]);
@@ -306,7 +273,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetAlbums()
+    public function GetAlbums(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetAlbums(['properties' => static::$AlbumItemListSmall]);
@@ -327,7 +294,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @param  int $ArtistID ArtistID des zu lesenden Künstlers.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetArtistDetails(int $ArtistID)
+    public function GetArtistDetails(int $ArtistID): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetArtistDetails(['artistid' => $ArtistID, 'properties' => static::$ArtistItemList]);
@@ -344,7 +311,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetArtists()
+    public function GetArtists(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetArtists(['properties' => static::$ArtistItemList]);
@@ -364,7 +331,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetGenres()
+    public function GetGenres(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetGenres(['properties' => static::$GenreItemList]);
@@ -384,7 +351,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetRecentlyAddedAlbums()
+    public function GetRecentlyAddedAlbums(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyAddedAlbums(['properties' => static::$AlbumItemList]);
@@ -404,7 +371,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetRecentlyAddedSongs()
+    public function GetRecentlyAddedSongs(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyAddedSongs(['properties' => static::$SongItemList]);
@@ -424,7 +391,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetRecentlyPlayedAlbums()
+    public function GetRecentlyPlayedAlbums(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyPlayedAlbums(['properties' => static::$AlbumItemList]);
@@ -444,7 +411,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetRecentlyPlayedSongs()
+    public function GetRecentlyPlayedSongs(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecentlyPlayedSongs(['properties' => static::$SongItemList]);
@@ -465,7 +432,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @param  int $SongID SongID des zu lesenden Songs.
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetSongDetails(int $SongID)
+    public function GetSongDetails(int $SongID): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSongDetails(['songid' => $SongID, 'properties' => static::$SongItemList]);
@@ -482,7 +449,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetSongs()
+    public function GetSongs(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetSongs(['properties' => static::$SongItemList]);
@@ -502,7 +469,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @access public
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Scan()
+    public function Scan(): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Scan();
@@ -524,7 +491,7 @@ class KodiDeviceAudioLibrary extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode(string $Method, $KodiPayload)
+    protected function Decode(string $Method, mixed $KodiPayload): void
     {
         switch ($Method) {
             case 'OnScanStarted':

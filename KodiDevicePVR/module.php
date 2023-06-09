@@ -26,43 +26,58 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       3.00
  * @example <b>Ohne</b>
+ *
  * @todo PVR.AddTimer ab v8
  * @todo PVR.ToggleTimer ab v8
  * @todo PVR.GetBroadcastIsPlayable ab v10
  * @todo PVR.PVR.GetClients ab v10
+ *
  * @property string $WebHookSecretTv
  * @property string $WebHookSecretRadio
  * @property string $WebHookSecretRecording
+ *
+ * @property string $Namespace RPC-Namespace
+ * @property array $Properties Alle Properties des RPC-Namespace
+ * @property array $ChannelItemList Alle Eigenschaften von Kanal-Items
+ * @property array $ChannelItemListFull Alle Eigenschaften von Kanal-Items
+ * @property array $BroadcastItemList Alle Eigenschaften von Sendung-Items
+ * @property array $RecordingItemList Alle Eigenschaften von Aufnahmen
+ * @property array $TimerItemList Alle Eigenschaften von Timer
  */
 class KodiDevicePVR extends KodiBase
 {
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     *  @var string
-     * @value 'PVR'
-     */
-    protected static $Namespace = 'PVR';
+    public const PropertyShowIsAvailable = 'showIsAvailable';
+    public const PropertyShowIsRecording = 'showIsRecording';
+    public const PropertyShowDoRecording = 'showDoRecording';
+    public const PropertyShowIsScanning = 'showIsScanning';
+    public const PropertyShowDoScanning = 'showDoScanning';
 
-    /**
-     * Alle Properties des RPC-Namespace
-     *
-     * @access private
-     *  @var array
-     */
+    public const PropertyShowTVChannellist = 'showTVChannellist';
+    public const PropertyShowMaxTVChannels = 'showMaxTVChannels';
+    public const PropertyTVThumbSize = 'TVThumbSize';
+
+    public const PropertyShowRadioChannellist = 'showRadioChannellist';
+    public const PropertyShowMaxRadioChannels = 'showMaxRadioChannels';
+    public const PropertyRadioThumbSize = 'RadioThumbSize';
+
+    public const PropertyShowRecordinglist = 'showRecordinglist';
+    public const PropertyShowMaxRecording = 'showMaxRecording';
+    public const PropertyRecordingThumbSize = 'RecordingThumbSize';
+
+    public const ActionVisibleFormElementsTVChannellist = 'showTVChannellist';
+    public const ActionVisibleFormElementsRadioChannellist = 'showRadioChannellist';
+    public const ActionVisibleFormElementsRecordinglist = 'showRecordinglist';
+
+    public const HookTV = '/hook/KodiTVChannellist';
+    public const HookRadio = '/hook/KodiRadioChannellist';
+    public const HookRecording = '/hook/KodiRecordinglist';
+
+    protected static $Namespace = 'PVR';
     protected static $Properties = [
         'available',
         'recording',
         'scanning'
     ];
-
-    /**
-     * Alle Eigenschaften von Kanal-Items.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $ChannelItemList = [
         'thumbnail',
         'channeltype',
@@ -71,13 +86,6 @@ class KodiDevicePVR extends KodiBase
         'channel',
         'lastplayed'
     ];
-
-    /**
-     * Alle Eigenschaften von Kanal-Items.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $ChannelItemListFull = [
         'thumbnail',
         'channeltype',
@@ -88,13 +96,6 @@ class KodiDevicePVR extends KodiBase
         'broadcastnow',
         'broadcastnext'
     ];
-
-    /**
-     * Alle Eigenschaften von Sendung-Items.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $BroadcastItemList = [
         'title',
         'plot',
@@ -116,13 +117,6 @@ class KodiDevicePVR extends KodiBase
         'thumbnail',
         'rating'
     ];
-
-    /**
-     * Alle Eigenschaften von Aufnahmen.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $RecordingItemList = [
         'title',
         'plot',
@@ -141,13 +135,6 @@ class KodiDevicePVR extends KodiBase
         'file',
         'directory'
     ];
-
-    /**
-     * Alle Eigenschaften von Timer.
-     *
-     * @access private
-     *  @var array
-     */
     protected static $TimerItemList = [
         'title',
         'summary',
@@ -173,46 +160,49 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
         $this->WebHookSecretTv = '';
         $this->WebHookSecretRadio = '';
         $this->WebHookSecretRecording = '';
-        $this->RegisterPropertyBoolean('showIsAvailable', true);
-        $this->RegisterPropertyBoolean('showIsRecording', true);
-        $this->RegisterPropertyBoolean('showDoRecording', true);
-        $this->RegisterPropertyBoolean('showIsScanning', true);
-        $this->RegisterPropertyBoolean('showDoScanning', true);
-        $this->RegisterPropertyBoolean('showTVChannellist', true);
-        $this->RegisterPropertyInteger('showMaxTVChannels', 20);
+        $this->RegisterPropertyBoolean(self::PropertyShowIsAvailable, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowIsRecording, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowDoRecording, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowIsScanning, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowDoScanning, true);
+        $this->RegisterPropertyBoolean(self::PropertyShowTVChannellist, true);
+        $this->RegisterPropertyInteger(self::PropertyShowMaxTVChannels, 20);
+        $this->RegisterPropertyInteger(self::PropertyTVThumbSize, 100);
+        $this->RegisterPropertyBoolean(self::PropertyShowRadioChannellist, true);
+        $this->RegisterPropertyInteger(self::PropertyShowMaxRadioChannels, 20);
+        $this->RegisterPropertyInteger(self::PropertyRadioThumbSize, 100);
+        $this->RegisterPropertyBoolean(self::PropertyShowRecordinglist, true);
+        $this->RegisterPropertyInteger(self::PropertyShowMaxRecording, 20);
+        $this->RegisterPropertyInteger(self::PropertyRecordingThumbSize, 100);
+        $this->RegisterTimer('RefreshLists', 0, 'KODIPVR_RefreshAll(' . $this->InstanceID . ');');
+
+        // Todo 7.0 -> Style per Konfig-Formular
         $ID = @$this->GetIDForIdent('TVChannellistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('TVChannellistDesign', 'TV Channellist Config', $this->CreateTVChannellistConfigScript(), -7);
             IPS_SetHidden($ID, true);
         }
         $this->RegisterPropertyInteger('TVChannellistconfig', $ID);
-        $this->RegisterPropertyInteger('TVThumbSize', 100);
-        $this->RegisterPropertyBoolean('showRadioChannellist', true);
-        $this->RegisterPropertyInteger('showMaxRadioChannels', 20);
+
         $ID = @$this->GetIDForIdent('RadioChannellistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('RadioChannellistDesign', 'Radio Channellist Config', $this->CreateRadioChannellistConfigScript(), -7);
             IPS_SetHidden($ID, true);
         }
         $this->RegisterPropertyInteger('RadioChannellistconfig', $ID);
-        $this->RegisterPropertyInteger('RadioThumbSize', 100);
 
-        $this->RegisterPropertyBoolean('showRecordinglist', true);
-        $this->RegisterPropertyInteger('showMaxRecording', 20);
         $ID = @$this->GetIDForIdent('RecordinglistDesign');
         if ($ID == false) {
             $ID = $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
             IPS_SetHidden($ID, true);
         }
         $this->RegisterPropertyInteger('Recordinglistconfig', $ID);
-        $this->RegisterPropertyInteger('RecordingThumbSize', 100);
-        $this->RegisterTimer('RefreshLists', 0, 'KODIPVR_RefreshAll(' . $this->InstanceID . ');');
     }
 
     /**
@@ -220,15 +210,16 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      */
-    public function Destroy()
+    public function Destroy(): void
     {
         if (IPS_GetKernelRunlevel() != KR_READY) {
-            return parent::Destroy();
+            parent::Destroy();
+            return;
         }
         if (!IPS_InstanceExists($this->InstanceID)) {
-            $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
-            $this->UnregisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
-            $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
+            $this->UnregisterHook(self::HookTV . $this->InstanceID);
+            $this->UnregisterHook(self::HookRadio . $this->InstanceID);
+            $this->UnregisterHook(self::HookRecording . $this->InstanceID);
         }
 
         parent::Destroy();
@@ -239,37 +230,37 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
             [0, $this->Translate('Execute'), '', -1]
         ]);
-        if ($this->ReadPropertyBoolean('showIsAvailable')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowIsAvailable)) {
             $this->RegisterVariableBoolean('available', $this->Translate('Available'), '', 1);
         } else {
             $this->UnregisterVariable('available');
         }
 
-        if ($this->ReadPropertyBoolean('showIsRecording')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowIsRecording)) {
             $this->RegisterVariableBoolean('recording', $this->Translate('Recording is in progress'), '', 3);
         } else {
             $this->UnregisterVariable('recording');
         }
 
-        if ($this->ReadPropertyBoolean('showDoRecording')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowDoRecording)) {
             $this->RegisterVariableBoolean('record', $this->Translate('Recording current channel'), '~Switch', 4);
             $this->EnableAction('record');
         } else {
             $this->UnregisterVariable('record');
         }
 
-        if ($this->ReadPropertyBoolean('showIsScanning')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowIsScanning)) {
             $this->RegisterVariableBoolean('scanning', $this->Translate('Channel search active'), '', 5);
         } else {
             $this->UnregisterVariable('scanning');
         }
 
-        if ($this->ReadPropertyBoolean('showDoScanning')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowDoScanning)) {
             $this->RegisterVariableInteger('scan', $this->Translate('Start channel search'), 'Action.Kodi', 6);
             $this->EnableAction('scan');
         } else {
@@ -280,10 +271,10 @@ class KodiDevicePVR extends KodiBase
         $this->UnregisterScript('WebHookRadioChannellist');
         $this->UnregisterScript('WebHookRecordinglist');
 
-        if ($this->ReadPropertyBoolean('showTVChannellist')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {
             $this->RegisterVariableString('TVChannellist', $this->Translate('TV channels'), '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
+                $this->RegisterHook(self::HookTV . $this->InstanceID);
             }
 
             $ID = @$this->GetIDForIdent('TVChannellistDesign');
@@ -294,14 +285,14 @@ class KodiDevicePVR extends KodiBase
         } else {
             $this->UnregisterVariable('TVChannellist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook('/hook/KodiTVChannellist' . $this->InstanceID);
+                $this->UnregisterHook(self::HookTV . $this->InstanceID);
             }
         }
 
-        if ($this->ReadPropertyBoolean('showRadioChannellist')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowRadioChannellist)) {
             $this->RegisterVariableString('RadioChannellist', $this->Translate('Radio channels'), '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
+                $this->RegisterHook(self::HookRadio . $this->InstanceID);
             }
 
             $ID = @$this->GetIDForIdent('RadioChannellistDesign');
@@ -312,14 +303,14 @@ class KodiDevicePVR extends KodiBase
         } else {
             $this->UnregisterVariable('RadioChannellist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook('/hook/KodiRadioChannellist' . $this->InstanceID);
+                $this->UnregisterHook(self::HookRadio . $this->InstanceID);
             }
         }
 
-        if ($this->ReadPropertyBoolean('showRecordinglist')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowRecordinglist)) {
             $this->RegisterVariableString('Recordinglist', $this->Translate('Recordings'), '~HTMLBox', 1);
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
+                $this->RegisterHook(self::HookRecording . $this->InstanceID);
             }
 
             $ID = @$this->GetIDForIdent('RecordinglistDesign');
@@ -330,11 +321,11 @@ class KodiDevicePVR extends KodiBase
         } else {
             $this->UnregisterVariable('Recordinglist');
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook('/hook/KodiRecordinglist' . $this->InstanceID);
+                $this->UnregisterHook(self::HookRecording . $this->InstanceID);
             }
         }
 
-        if ($this->ReadPropertyBoolean('showRecordinglist') || $this->ReadPropertyBoolean('showRadioChannellist') || $this->ReadPropertyBoolean('showTVChannellist')) {
+        if ($this->ReadPropertyBoolean(self::PropertyShowRecordinglist) || $this->ReadPropertyBoolean(self::PropertyShowRadioChannellist) || $this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {
             if ($this->HasActiveParent()) {
                 $this->SetTimerInterval('RefreshLists', 15 * 60 * 1000);
             } else {
@@ -358,18 +349,18 @@ class KodiDevicePVR extends KodiBase
 
         parent::ApplyChanges();
     }
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $Form['elements'][1]['items'][1]['visible'] = $this->ReadPropertyBoolean('showTVChannellist');
-        $Form['elements'][1]['items'][2]['visible'] = $this->ReadPropertyBoolean('showTVChannellist');
-        $Form['elements'][1]['items'][3]['visible'] = $this->ReadPropertyBoolean('showTVChannellist');
-        $Form['elements'][2]['items'][1]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
-        $Form['elements'][2]['items'][2]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
-        $Form['elements'][2]['items'][3]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
-        $Form['elements'][3]['items'][1]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
-        $Form['elements'][3]['items'][2]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
-        $Form['elements'][3]['items'][3]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
+        $Form['elements'][1]['items'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowTVChannellist);
+        $Form['elements'][1]['items'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowTVChannellist);
+        $Form['elements'][1]['items'][3]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowTVChannellist);
+        $Form['elements'][2]['items'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRadioChannellist);
+        $Form['elements'][2]['items'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRadioChannellist);
+        $Form['elements'][2]['items'][3]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRadioChannellist);
+        $Form['elements'][3]['items'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRecordinglist);
+        $Form['elements'][3]['items'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRecordinglist);
+        $Form['elements'][3]['items'][3]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRecordinglist);
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
@@ -382,27 +373,30 @@ class KodiDevicePVR extends KodiBase
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
-    public function RequestAction($Ident, $Value)
+    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
     {
-        if (parent::RequestAction($Ident, $Value)) {
-            return true;
+        parent::RequestAction($Ident, $Value, $done);
+        if ($done) {
+            return;
         }
         switch ($Ident) {
             case 'scan':
-                return $this->Scan();
+                $this->Scan();
+                return;
             case 'record':
-                return $this->Record($Value, 'current');
-            case 'showTVChannellist':
+                $this->Record($Value, 'current');
+                return;
+            case self::ActionVisibleFormElementsTVChannellist:
                 $this->UpdateFormField('TVRow1', 'visible', (bool) $Value);
                 $this->UpdateFormField('TVRow2', 'visible', (bool) $Value);
                 $this->UpdateFormField('TVRow3', 'visible', (bool) $Value);
                 return;
-            case 'showRadioChannellist':
+            case self::ActionVisibleFormElementsRadioChannellist:
                 $this->UpdateFormField('RadioRow1', 'visible', (bool) $Value);
                 $this->UpdateFormField('RadioRow2', 'visible', (bool) $Value);
                 $this->UpdateFormField('RadioRow3', 'visible', (bool) $Value);
                 return;
-            case 'showRecordinglist':
+            case self::ActionVisibleFormElementsRecordinglist:
                 $this->UpdateFormField('RecordingRow1', 'visible', (bool) $Value);
                 $this->UpdateFormField('RecordingRow2', 'visible', (bool) $Value);
                 $this->UpdateFormField('RecordingRow3', 'visible', (bool) $Value);
@@ -419,7 +413,7 @@ class KodiDevicePVR extends KodiBase
      * @access protected
      * @global array $_GET
      */
-    public function ProcessHookdata()
+    public function ProcessHookdata(): void
     {
         if ((!isset($_GET['ID'])) || (!isset($_GET['TYP'])) || (!isset($_GET['Secret']))) {
             echo $this->Translate('Bad Request');
@@ -442,7 +436,7 @@ class KodiDevicePVR extends KodiBase
                 break;
             default:
                 echo $this->Translate('Bad Request');
-            break;
+                break;
         }
         $ret = $this->Send($KodiData);
         echo $ret;
@@ -454,7 +448,7 @@ class KodiDevicePVR extends KodiBase
      * @access public
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Scan()
+    public function Scan(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Scan();
@@ -477,7 +471,7 @@ class KodiDevicePVR extends KodiBase
      * @param string $Channel Kanalname.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Record(bool $Record, string $Channel)
+    public function Record(bool $Record, string $Channel): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Record(['record' => $Record, 'channel' => $Channel]);
@@ -499,7 +493,7 @@ class KodiDevicePVR extends KodiBase
      * @param string $ChannelTyp [enum 'tv', 'radio'] Kanaltyp welcher gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetChannels(string $ChannelTyp)
+    public function GetChannels(string $ChannelTyp): false|array
     {
         if (!in_array($ChannelTyp, ['radio', 'tv'])) {
             trigger_error($this->Translate('ChannelTyp must be "tv" or "radio".'), E_USER_NOTICE);
@@ -525,7 +519,7 @@ class KodiDevicePVR extends KodiBase
      * @param int $ChannelId Kanal welcher gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetChannelDetails(int $ChannelId)
+    public function GetChannelDetails(int $ChannelId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetChannelDetails(['channelid' => $ChannelId, 'properties' => static::$ChannelItemListFull]);
@@ -543,7 +537,7 @@ class KodiDevicePVR extends KodiBase
      * @param string $ChannelTyp [enum 'tv', 'radio'] Kanaltyp welcher gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetChannelGroups(string $ChannelTyp)
+    public function GetChannelGroups(string $ChannelTyp): false|array
     {
         if (!in_array($ChannelTyp, ['radio', 'tv'])) {
             trigger_error($this->Translate('ChannelTyp must be "tv" or "radio".'), E_USER_NOTICE);
@@ -569,7 +563,7 @@ class KodiDevicePVR extends KodiBase
      * @param int $ChannelGroupId Kanal welcher gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetChannelGroupDetails(int $ChannelGroupId)
+    public function GetChannelGroupDetails(int $ChannelGroupId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetChannelGroupDetails(['channelgroupid' => $ChannelGroupId, 'properties' => static::$ChannelItemList]);
@@ -590,7 +584,7 @@ class KodiDevicePVR extends KodiBase
      * @param string $ChannelId  Kanal welcher gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetBroadcasts(int $ChannelId)
+    public function GetBroadcasts(int $ChannelId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetBroadcasts(['channelid' => $ChannelId, 'properties' => static::$BroadcastItemList]);
@@ -611,7 +605,7 @@ class KodiDevicePVR extends KodiBase
      * @param int $BroadcastId Sendung welche gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetBroadcastDetails(int $BroadcastId)
+    public function GetBroadcastDetails(int $BroadcastId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetBroadcastDetails(['broadcastid' => $BroadcastId]); //, 'properties' => static::$BroadcastItemList));
@@ -628,7 +622,7 @@ class KodiDevicePVR extends KodiBase
      * @access public
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetRecordings()
+    public function GetRecordings(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecordings(['properties' => static::$RecordingItemList]);
@@ -649,7 +643,7 @@ class KodiDevicePVR extends KodiBase
      * @param int $RecordingId Aufnahme welche gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetRecordingDetails(int $RecordingId)
+    public function GetRecordingDetails(int $RecordingId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecordingDetails(['recordingid' => $RecordingId, 'properties' => static::$RecordingItemList]);
@@ -666,7 +660,7 @@ class KodiDevicePVR extends KodiBase
      * @access public
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetTimers()
+    public function GetTimers(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetTimers(['properties' => static::$TimerItemList]);
@@ -687,7 +681,7 @@ class KodiDevicePVR extends KodiBase
      * @param int $TimerId Timers welcher gelesen werden soll.
      * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
      */
-    public function GetTimerDetails(int $TimerId)
+    public function GetTimerDetails(int $TimerId): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetTimerDetails(['timerid' => $TimerId, 'properties' => static::$TimerItemList]);
@@ -703,7 +697,7 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      */
-    public function RefreshAll()
+    public function RefreshAll(): void
     {
         $this->RefreshTVChannellist();
         $this->RefreshRadioChannellist();
@@ -717,16 +711,16 @@ class KodiDevicePVR extends KodiBase
      * @param string $Ident Enthält den Names des 'properties' welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident)
+    public function RequestState(string $Ident): void
     {
-        return parent::RequestState($Ident);
+        parent::RequestState($Ident);
     }
 
     /**
      * Wird ausgeführt wenn sich der Status vom Parent ändert.
      * @access protected
      */
-    protected function IOChangeState($State)
+    protected function IOChangeState(int $State): void
     {
         $this->SetTimerInterval('RefreshLists', 0);
         if ($State == IS_ACTIVE) {
@@ -740,7 +734,7 @@ class KodiDevicePVR extends KodiBase
             $this->RefreshTVChannellist();
             $this->RefreshRadioChannellist();
             $this->RefreshRecordinglist();
-            if ($this->ReadPropertyBoolean('showRecordinglist') || $this->ReadPropertyBoolean('showRadioChannellist') || $this->ReadPropertyBoolean('showTVChannellist')) {
+            if ($this->ReadPropertyBoolean(self::PropertyShowRecordinglist) || $this->ReadPropertyBoolean(self::PropertyShowRadioChannellist) || $this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {
                 $this->SetTimerInterval('RefreshLists', 15 * 60 * 1000);
             }
         }
@@ -752,7 +746,7 @@ class KodiDevicePVR extends KodiBase
      * @param string $Method RPC-Funktion ohne Namespace
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
-    protected function Decode(string $Method, $KodiPayload)
+    protected function Decode(string $Method, mixed $KodiPayload): void
     {
         switch ($Method) {
             case 'GetProperties':
@@ -772,11 +766,11 @@ class KodiDevicePVR extends KodiBase
      * @param array $Channel Array mit allen Kanälen.
      * @return boolean True für behalten, False für verwerfen.
      */
-    protected function FilterChannels($Channel)
+    protected function FilterChannels($Channel): bool
     {
         return !$Channel['hidden'];
     }
-    private function PVRAvaiable()
+    private function PVRAvaiable(): bool
     {
         $KodiData = new Kodi_RPC_Data('Addons');
         $KodiData->GetAddons(['type'=>'kodi.pvrclient', 'properties' => ['enabled']]);
@@ -800,9 +794,9 @@ class KodiDevicePVR extends KodiBase
      *
      * @access private
      */
-    private function RefreshTVChannellist()
+    private function RefreshTVChannellist(): void
     {
-        if (!$this->ReadPropertyBoolean('showTVChannellist')) {
+        if (!$this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {
             return;
         }
         $ScriptID = $this->ReadPropertyInteger('TVChannellistconfig');
@@ -819,7 +813,7 @@ class KodiDevicePVR extends KodiBase
             return;
         }
 
-        $Max = $this->ReadPropertyInteger('showMaxTVChannels');
+        $Max = $this->ReadPropertyInteger(self::PropertyShowMaxTVChannels);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetChannels(['channelgroupid' => 'alltv', 'properties' => static::$ChannelItemListFull, 'limits' => ['end' => $Max]]);
         $ret = $this->SendDirect($KodiData);
@@ -850,7 +844,7 @@ class KodiDevicePVR extends KodiBase
                 }
                 if (array_key_exists('Thumbnail', $Config['Spalten'])) {
                     if ($Line['Thumbnail'] != '') {
-                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger('TVThumbSize'), 0);
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyTVThumbSize), 0);
                         if ($CoverRAW === false) {
                             $Line['Thumbnail'] = '';
                         } else {
@@ -920,9 +914,9 @@ class KodiDevicePVR extends KodiBase
      *
      * @access private
      */
-    private function RefreshRadioChannellist()
+    private function RefreshRadioChannellist(): void
     {
-        if (!$this->ReadPropertyBoolean('showRadioChannellist')) {
+        if (!$this->ReadPropertyBoolean(self::PropertyShowRadioChannellist)) {
             return;
         }
         $ScriptID = $this->ReadPropertyInteger('RadioChannellistconfig');
@@ -939,7 +933,7 @@ class KodiDevicePVR extends KodiBase
             return;
         }
 
-        $Max = $this->ReadPropertyInteger('showMaxRadioChannels');
+        $Max = $this->ReadPropertyInteger(self::PropertyShowMaxRadioChannels);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetChannels(['channelgroupid' => 'allradio', 'properties' => static::$ChannelItemListFull, 'limits' => ['end' => $Max]]);
         $ret = $this->SendDirect($KodiData);
@@ -971,7 +965,7 @@ class KodiDevicePVR extends KodiBase
                 }
                 if (array_key_exists('Thumbnail', $Config['Spalten'])) {
                     if ($Line['Thumbnail'] != '') {
-                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger('RadioThumbSize'), 0);
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyRadioThumbSize), 0);
                         if ($CoverRAW === false) {
                             $Line['Thumbnail'] = '';
                         } else {
@@ -1041,9 +1035,9 @@ class KodiDevicePVR extends KodiBase
      *
      * @access private
      */
-    private function RefreshRecordinglist()
+    private function RefreshRecordinglist(): void
     {
-        if (!$this->ReadPropertyBoolean('showRecordinglist')) {
+        if (!$this->ReadPropertyBoolean(self::PropertyShowRecordinglist)) {
             return;
         }
         $ScriptID = $this->ReadPropertyInteger('Recordinglistconfig');
@@ -1060,7 +1054,7 @@ class KodiDevicePVR extends KodiBase
             return;
         }
 
-        $Max = $this->ReadPropertyInteger('showMaxRecording');
+        $Max = $this->ReadPropertyInteger(self::PropertyShowMaxRecording);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->GetRecordings(['properties' => static::$RecordingItemList, 'limits' => ['end' => $Max]]);
         $ret = $this->SendDirect($KodiData);
@@ -1091,7 +1085,7 @@ class KodiDevicePVR extends KodiBase
                 if (array_key_exists('Thumbnail', $Config['Spalten'])) {
                     if (array_key_exists('thumb', $Line['Art'])) {
                         if ($Line['Art']['thumb'] != '') {
-                            $CoverRAW = $this->GetThumbnail($Line['Art']['thumb'], $this->ReadPropertyInteger('RecordingThumbSize'), 0);
+                            $CoverRAW = $this->GetThumbnail($Line['Art']['thumb'], $this->ReadPropertyInteger(self::PropertyRecordingThumbSize), 0);
                             if ($CoverRAW === false) {
                                 $Line['Thumbnail'] = '';
                             } else {
@@ -1131,7 +1125,7 @@ class KodiDevicePVR extends KodiBase
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
      */
-    private function CreateTVChannellistConfigScript()
+    private function CreateTVChannellistConfigScript(): string
     {
         $Script = '<?php
 ### Konfig ab Zeile 10 !!!
@@ -1225,7 +1219,7 @@ echo serialize($Config);
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
      */
-    private function CreateRadioChannellistConfigScript()
+    private function CreateRadioChannellistConfigScript(): string
     {
         $Script = '<?php
 ### Konfig ab Zeile 10 !!!
@@ -1319,7 +1313,7 @@ echo serialize($Config);
      * @access private
      * @return string Ein PHP-Script welche als Grundlage für die User dient.
      */
-    private function CreateRecordlistConfigScript()
+    private function CreateRecordlistConfigScript(): string
     {
         $Script = '<?php
 ### Konfig ab Zeile 10 !!!

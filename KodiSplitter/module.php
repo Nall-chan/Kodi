@@ -30,29 +30,45 @@ require_once __DIR__ . '/../libs/KodiRPCClass.php';  // diverse Klassen
  * @copyright     2020 Michael Tröger
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  * @version       3.00
+ *
+ * @property int $ParentID
  * @property array $ReplyJSONData
  * @property string $BufferIN
  * @property string $Host
+ * @property string $Namespace RPC-Namespace
  * @property bool $StatusIsChanging
- * @example <b>Ohne</b>
+ * @method bool lock(string $ident)
+ * @method void unlock(string $ident)
  */
-class KodiSplitter extends IPSModule
+class KodiSplitter extends IPSModuleStrict
 {
     use \KodiSplitter\BufferHelper,
         \KodiSplitter\InstanceStatus,
         \KodiBase\DebugHelper,
         \KodiSplitter\Semaphore {
-        \KodiSplitter\InstanceStatus::MessageSink as IOMessageSink;
-        \KodiSplitter\InstanceStatus::RegisterParent as IORegisterParent;
-        \KodiSplitter\InstanceStatus::RequestAction as IORequestAction;
-    }
-    /**
-     * RPC-Namespace
-     *
-     * @access private
-     * @var string
-     * @value 'JSONRPC'
-     */
+            \KodiSplitter\InstanceStatus::MessageSink as IOMessageSink;
+            \KodiSplitter\InstanceStatus::RegisterParent as IORegisterParent;
+            \KodiSplitter\InstanceStatus::RequestAction as IORequestAction;
+        }
+
+    public const PropertyOpen = 'Open';
+    public const PropertyPort = 'Port';
+    public const PropertyWebport = 'Webport';
+    public const PropertyBasisAuth = 'BasisAuth';
+    public const PropertyUsername = 'Username';
+    public const PropertyPassword = 'Password';
+    public const PropertyWatchdog = 'Watchdog';
+    public const PropertyConditionType = 'ConditionType';
+    public const PropertyInterval = 'Interval';
+    public const PropertyWatchdogCondition = 'WatchdogCondition';
+
+    public const TimerKeepAlive = 'KeepAlive';
+    public const TimerWatchdog = 'Watchdog';
+
+    public const ActionVisibleFormElementsWatchdog = 'Watchdog';
+    public const ActionVisibleFormElementsBasisAuth = 'BasisAuth';
+    public const ActionVisibleFormElementsConditionType = 'ConditionType';
+
     protected static $Namespace = 'JSONRPC';
 
     /**
@@ -60,22 +76,22 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      */
-    public function Create()
+    public function Create(): void
     {
         parent::Create();
         $this->RequireParent('{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}');
-        $this->RegisterPropertyBoolean('Open', false);
-        $this->RegisterPropertyInteger('Port', 9090);
-        $this->RegisterPropertyInteger('Webport', 80);
-        $this->RegisterPropertyBoolean('BasisAuth', false);
-        $this->RegisterPropertyString('Username', '');
-        $this->RegisterPropertyString('Password', '');
-        $this->RegisterPropertyBoolean('Watchdog', false);
-        $this->RegisterPropertyInteger('ConditionType', 0);
-        $this->RegisterPropertyInteger('Interval', 5);
-        $this->RegisterPropertyString('WatchdogCondition', '');
-        $this->RegisterTimer('KeepAlive', 0, 'KODIRPC_KeepAlive($_IPS[\'TARGET\']);');
-        $this->RegisterTimer('Watchdog', 0, 'KODIRPC_Watchdog($_IPS[\'TARGET\']);');
+        $this->RegisterPropertyBoolean(self::PropertyOpen, false);
+        $this->RegisterPropertyInteger(self::PropertyPort, 9090);
+        $this->RegisterPropertyInteger(self::PropertyWebport, 80);
+        $this->RegisterPropertyBoolean(self::PropertyBasisAuth, false);
+        $this->RegisterPropertyString(self::PropertyUsername, '');
+        $this->RegisterPropertyString(self::PropertyPassword, '');
+        $this->RegisterPropertyBoolean(self::PropertyWatchdog, false);
+        $this->RegisterPropertyInteger(self::PropertyConditionType, 0);
+        $this->RegisterPropertyInteger(self::PropertyInterval, 5);
+        $this->RegisterPropertyString(self::PropertyWatchdogCondition, '');
+        $this->RegisterTimer(self::TimerKeepAlive, 0, 'KODIRPC_KeepAlive($_IPS[\'TARGET\']);');
+        $this->RegisterTimer(self::TimerWatchdog, 0, 'KODIRPC_Watchdog($_IPS[\'TARGET\']);');
         $this->ParentID = 0;
         $this->ReplyJSONData = [];
         $this->BufferIN = '';
@@ -88,7 +104,7 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      */
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
         $this->RegisterMessage($this->InstanceID, FM_CONNECT);
         $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
@@ -111,10 +127,10 @@ class KodiSplitter extends IPSModule
         $ParentID = $this->RegisterParent();
 
         // Nie öffnen
-        if (!$this->ReadPropertyBoolean('Open')) {
+        if (!$this->ReadPropertyBoolean(self::PropertyOpen)) {
             $this->StatusIsChanging = false;
             if ($ParentID > 0) {
-                IPS_SetProperty($ParentID, 'Open', false);
+                IPS_SetProperty($ParentID, self::PropertyOpen, false);
                 @IPS_ApplyChanges($ParentID);
             } else {
                 $this->IOChangeState(IS_INACTIVE);
@@ -142,18 +158,18 @@ class KodiSplitter extends IPSModule
             }
         }
         if (!$Open) {
-            IPS_SetProperty($ParentID, 'Open', false);
+            IPS_SetProperty($ParentID, self::PropertyOpen, false);
             @IPS_ApplyChanges($ParentID);
             $this->SetWatchdogTimer(true);
             return;
         }
 
-        if (IPS_GetProperty($ParentID, 'Port') != $this->ReadPropertyInteger('Port')) {
-            IPS_SetProperty($ParentID, 'Port', $this->ReadPropertyInteger('Port'));
+        if (IPS_GetProperty($ParentID, self::PropertyPort) != $this->ReadPropertyInteger(self::PropertyPort)) {
+            IPS_SetProperty($ParentID, self::PropertyPort, $this->ReadPropertyInteger(self::PropertyPort));
         }
 
-        if (IPS_GetProperty($ParentID, 'Open') != true) {
-            IPS_SetProperty($ParentID, 'Open', true);
+        if (IPS_GetProperty($ParentID, self::PropertyOpen) != true) {
+            IPS_SetProperty($ParentID, self::PropertyOpen, true);
         }
 
         @IPS_ApplyChanges($ParentID);
@@ -165,7 +181,7 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      */
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
         $this->IOMessageSink($TimeStamp, $SenderID, $Message, $Data);
         switch ($Message) {
@@ -186,7 +202,7 @@ class KodiSplitter extends IPSModule
                             $this->LogMessage('Connected to Kodi', KL_NOTIFY);
                             $this->ReadJSONRPCVersion();
                             $this->SetWatchdogTimer(false);
-                            $this->SetTimerInterval('KeepAlive', 180 * 1000);
+                            $this->SetTimerInterval(self::TimerKeepAlive, 180 * 1000);
                             $this->SendPowerEvent(true);
                             break;
                         case IS_EBASE + 3: //ERROR RCP-Server
@@ -194,7 +210,7 @@ class KodiSplitter extends IPSModule
                         case IS_INACTIVE:
                             $this->SendDebug('IM_CHANGESTATUS', 'not active', 0);
                             $this->SetWatchdogTimer(true);
-                            $this->SetTimerInterval('KeepAlive', 0);
+                            $this->SetTimerInterval(self::TimerKeepAlive, 0);
                             $this->SendPowerEvent(false);
                             break;
                     }
@@ -204,49 +220,42 @@ class KodiSplitter extends IPSModule
                 break;
         }
     }
-    public function GetConfigurationForm()
+
+    public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $Form['elements'][4]['expanded'] = $this->ReadPropertyBoolean('BasisAuth');
-        $Form['elements'][5]['expanded'] = $this->ReadPropertyBoolean('Watchdog');
-        $Form['elements'][5]['items'][0]['items'][1]['visible'] = $this->ReadPropertyBoolean('Watchdog');
-        $Form['elements'][5]['items'][1]['items'][0]['visible'] = $this->ReadPropertyBoolean('Watchdog');
-        if ($this->ReadPropertyBoolean('Watchdog')) {
-            $Form['elements'][5]['items'][1]['items'][1]['visible'] = ($this->ReadPropertyInteger('ConditionType') == 1);
+        $Form['elements'][4]['expanded'] = $this->ReadPropertyBoolean(self::PropertyBasisAuth);
+        $Form['elements'][5]['expanded'] = $this->ReadPropertyBoolean(self::PropertyWatchdog);
+        $Form['elements'][5]['items'][0]['items'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyWatchdog);
+        $Form['elements'][5]['items'][1]['items'][0]['visible'] = $this->ReadPropertyBoolean(self::PropertyWatchdog);
+        if ($this->ReadPropertyBoolean(self::PropertyWatchdog)) {
+            $Form['elements'][5]['items'][1]['items'][1]['visible'] = ($this->ReadPropertyInteger(self::PropertyConditionType) == 1);
         }
-        /*$Form['elements'][1]['items'][2]['visible'] = $this->ReadPropertyBoolean('showTVChannellist');
-        $Form['elements'][1]['items'][3]['visible'] = $this->ReadPropertyBoolean('showTVChannellist');
-        $Form['elements'][2]['items'][1]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
-        $Form['elements'][2]['items'][2]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
-        $Form['elements'][2]['items'][3]['visible'] = $this->ReadPropertyBoolean('showRadioChannellist');
-        $Form['elements'][3]['items'][1]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
-        $Form['elements'][3]['items'][2]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
-        $Form['elements'][3]['items'][3]['visible'] = $this->ReadPropertyBoolean('showRecordinglist');
-         */
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
     }
-    public function RequestAction($Ident, $Value)
+
+    public function RequestAction(string $Ident, mixed $Value): void
     {
         if ($this->IORequestAction($Ident, $Value)) {
-            return true;
+            return;
         }
         switch ($Ident) {
-            case 'BasisAuth':
+            case self::ActionVisibleFormElementsBasisAuth:
                 $this->UpdateFormField('Username', 'enabled', (bool) $Value);
                 $this->UpdateFormField('Password', 'enabled', (bool) $Value);
                 break;
-            case 'Watchdog':
+            case self::ActionVisibleFormElementsWatchdog:
                 $this->UpdateFormField('Watchdog', 'caption', (bool) $Value ? 'Check every' : 'Check never');
                 $this->UpdateFormField('Interval', 'visible', (bool) $Value);
                 $this->UpdateFormField('ConditionType', 'visible', (bool) $Value);
-                $this->UpdateFormField('ConditionPopup', 'visible', $this->ReadPropertyInteger('ConditionType') == 1);
+                $this->UpdateFormField('ConditionPopup', 'visible', $this->ReadPropertyInteger(self::PropertyConditionType) == 1);
                 break;
-            case 'ConditionType':
+            case self::ActionVisibleFormElementsConditionType:
                 $this->UpdateFormField('ConditionPopup', 'visible', $Value == 1);
                 break;
-            }
+        }
     }
 
     /**
@@ -254,13 +263,13 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      */
-    public function GetConfigurationForParent()
+    public function GetConfigurationForParent(): string
     {
-        $Config['Open'] = false;
-        if ($this->ReadPropertyBoolean('Open')) {
-            $Config['Open'] = ($this->GetStatus() == IS_ACTIVE);
+        $Config[self::PropertyOpen] = false;
+        if ($this->ReadPropertyBoolean(self::PropertyOpen)) {
+            $Config[self::PropertyOpen] = ($this->GetStatus() == IS_ACTIVE);
         }
-        $Config['Port'] = $this->ReadPropertyInteger('Port');
+        $Config[self::PropertyPort] = $this->ReadPropertyInteger(self::PropertyPort);
         return json_encode($Config);
     }
 
@@ -270,9 +279,9 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      * @param string $path Pfad des Bildes.
-     * @result string Bildinhalt als Bytestring.
+     * @return string Bildinhalt als Bytestring.
      */
-    public function GetImage(string $path)
+    public function GetImage(string $path): string|false
     {
         $CoverRAW = $this->DoWebserverRequest('/image/' . rawurlencode($path));
 
@@ -287,9 +296,9 @@ class KodiSplitter extends IPSModule
      * Sendet einen RPC-Ping an Kodi und prüft die erreichbarkeit.
      *
      * @access public
-     * @result bool true wenn Kodi erreichbar, sonst false.
+     * @return bool true wenn Kodi erreichbar, sonst false.
      */
-    public function KeepAlive()
+    public function KeepAlive(): bool
     {
         $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
         $ret = @$this->Send($KodiData);
@@ -308,10 +317,10 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      */
-    public function Watchdog()
+    public function Watchdog(): void
     {
-        $this->SendDebug('Watchdog', 'run', 0);
-        if (!$this->ReadPropertyBoolean('Open')) {
+        $this->SendDebug(__FUNCTION__, 'run', 0);
+        if (!$this->ReadPropertyBoolean(self::PropertyOpen)) {
             return;
         }
         if ($this->Host != '') {
@@ -324,7 +333,7 @@ class KodiSplitter extends IPSModule
             if (!$this->CheckPort()) {
                 return;
             }
-            IPS_SetProperty($this->ParentID, 'Open', true);
+            IPS_SetProperty($this->ParentID, self::PropertyOpen, true);
             @IPS_ApplyChanges($this->ParentID);
         }
     }
@@ -335,30 +344,18 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      * @param string $JSONString Ein Kodi_RPC_Data-Objekt welches als JSONString kodiert ist.
-     * @result bool true wenn Daten gesendet werden konnten, sonst false.
+     * @return bool true wenn Daten gesendet werden konnten, sonst false.
      */
-    public function ForwardData($JSONString)
+    public function ForwardData(string $JSONString): string
     {
-//        $this->SendDebug('Forward', $JSONString, 0);
-
         $Data = json_decode($JSONString);
-//        if ($Data->DataID <> '{0222A902-A6FA-4E94-94D3-D54AA4666321}')
-//            return false;
         $KodiData = new Kodi_RPC_Data();
         $KodiData->CreateFromGenericObject($Data);
-//        try
-//        {
         $ret = $this->Send($KodiData);
-        //          $this->SendDebug('Result', $answer, 0);
         if (!is_null($ret)) {
             return serialize($ret);
         }
-//        }
-//        catch (Exception $ex)
-//        {
-//            trigger_error($ex->getMessage(), $ex->getCode());
-//        }
-        return false;
+        return '';
     }
 
     ################## DATAPOINTS PARENT
@@ -367,15 +364,15 @@ class KodiSplitter extends IPSModule
      *
      * @access public
      * @param string $JSONString Das empfangene JSON-kodierte Objekt vom Parent.
-     * @result bool True wenn Daten verarbeitet wurden, sonst false.
+     * @return bool True wenn Daten verarbeitet wurden, sonst false.
      */
-    public function ReceiveData($JSONString)
+    public function ReceiveData(string $JSONString): string
     {
         $data = json_decode($JSONString);
 
         // DatenStream zusammenfügen
         $head = $this->BufferIN;
-        $Data = $head . utf8_decode($data->Buffer);
+        $Data = $head . hex2bin($data->Buffer);
 
         // Stream in einzelne Pakete schneiden
         $Count = 0;
@@ -419,17 +416,13 @@ class KodiSplitter extends IPSModule
                     continue;
                 }
                 $this->SendDebug('Receive Event', $KodiData, 0);
-//                if (($KodiData->Namespace == 'System') and ( $KodiData->Method == 'OnQuit'))
-//                    $this->Decode($KodiData->Method, $KodiData->GetEvent());
                 $this->SendDataToDevice($KodiData);
-//                if (self::$Namespace == $KodiData->Namespace)
-//                    $this->Decode($KodiData->Method, $KodiData->GetEvent());
             }
         }
-        return true;
+        return '';
     }
 
-    protected function RegisterParent()
+    protected function RegisterParent(): int
     {
         $ParentID = $this->IORegisterParent();
         if ($ParentID > 0) {
@@ -444,7 +437,7 @@ class KodiSplitter extends IPSModule
     /**
      * Wird ausgeführt wenn der Kernel hochgefahren wurde.
      */
-    protected function KernelReady()
+    protected function KernelReady(): void
     {
         $this->UnregisterMessage(0, IPS_KERNELSTARTED);
         $this->ApplyChanges();
@@ -454,7 +447,7 @@ class KodiSplitter extends IPSModule
      * Wird ausgeführt wenn sich der Status vom Parent ändert.
      * @access protected
      */
-    protected function IOChangeState($State)
+    protected function IOChangeState(int $State): void
     {
         if ($this->StatusIsChanging) {
             $this->SendDebug('IOChangeState', 'StatusIsChanging already locked', 0);
@@ -462,7 +455,7 @@ class KodiSplitter extends IPSModule
         }
         $this->StatusIsChanging = true;
         $this->SendDebug('IOChangeState', 'StatusIsChanging now locked', 0);
-        if (!$this->ReadPropertyBoolean('Open')) {
+        if (!$this->ReadPropertyBoolean(self::PropertyOpen)) {
             if ($this->GetStatus() != IS_INACTIVE) {
                 $this->SetStatus(IS_INACTIVE);
             }
@@ -493,7 +486,7 @@ class KodiSplitter extends IPSModule
                 } break;
             default:
                 if ($this->ParentID > 0) {
-                    IPS_SetProperty($this->ParentID, 'Open', false);
+                    IPS_SetProperty($this->ParentID, self::PropertyOpen, false);
                     @IPS_ApplyChanges($this->ParentID);
                 }
                 break;
@@ -507,12 +500,12 @@ class KodiSplitter extends IPSModule
      *
      * @access protected
      * @param Kodi_RPC_Data $KodiData Das Objekt welches versendet werden soll.
-     * @result mixed Enthält die Antwort auf das Versendete Objekt oder NULL im Fehlerfall.
+     * @return mixed Enthält die Antwort auf das Versendete Objekt oder NULL im Fehlerfall.
      */
-    protected function Send(Kodi_RPC_Data $KodiData)
+    protected function Send(Kodi_RPC_Data $KodiData): mixed
     {
         try {
-            if ($this->ReadPropertyBoolean('Open') === false) {
+            if ($this->ReadPropertyBoolean(self::PropertyOpen) === false) {
                 throw new Exception('Instance inactive.', E_USER_NOTICE);
             }
 
@@ -521,10 +514,11 @@ class KodiSplitter extends IPSModule
             }
             $this->SendDebug('Send', $KodiData, 0);
             $this->SendQueuePush((int) $KodiData->Id);
-            $this->SendDataToParent($KodiData);
+            $JsonString = $KodiData->ToRPCJSONString('{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}');
+            $this->SendDataToParent($JsonString);
             $ReplyKodiData = $this->WaitForResponse((int) $KodiData->Id);
 
-            if ($ReplyKodiData === false) {
+            if (is_null($ReplyKodiData)) {
                 throw new Exception('No answer from Kodi', E_USER_NOTICE);
             }
 
@@ -536,28 +530,12 @@ class KodiSplitter extends IPSModule
             return $ret;
         } catch (KodiRPCException $ex) {
             $this->SendDebug('Receive', $ex, 0);
-            //trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage(), E_USER_NOTICE);
             echo $ex->getMessage();
         } catch (Exception $ex) {
             $this->SendDebug('Receive', $ex->getMessage(), 0);
-            //trigger_error($ex->getMessage(), $ex->getCode());
             echo $ex->getMessage();
         }
         return null;
-    }
-
-    /**
-     * Sendet ein Kodi_RPC-Objekt an den Parent.
-     *
-     * @access protected
-     * @param Kodi_RPC_Data $Data Das Objekt welches versendet werden soll.
-     * @result bool true
-     */
-    protected function SendDataToParent($Data)
-    {
-        $JsonString = $Data->ToRPCJSONString('{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}');
-        parent::SendDataToParent($JsonString);
-        return true;
     }
 
     ################## PRIVATE
@@ -569,9 +547,9 @@ class KodiSplitter extends IPSModule
             $this->LogMessage('Kodi RPC-Version: ' . $ret->version->major . '.' . $ret->version->minor . '.' . $ret->version->patch, KL_NOTIFY);
         }
     }
-    private function CheckPort()
+    private function CheckPort(): bool
     {
-        $Socket = @stream_socket_client('tcp://' . $this->Host . ':' . $this->ReadPropertyInteger('Port'), $errno, $errstr, 2);
+        $Socket = @stream_socket_client('tcp://' . $this->Host . ':' . $this->ReadPropertyInteger(self::PropertyPort), $errno, $errstr, 2);
         if (!$Socket) {
             $this->SendDebug('CheckPort', false, 0);
             return false;
@@ -607,7 +585,7 @@ class KodiSplitter extends IPSModule
      *
      * @return boolean True bei Erfolg, sonst false.
      */
-    private function CheckWebserver()
+    private function CheckWebserver(): bool
     {
         $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
         $JSON = $KodiData->ToRawRPCJSONString();
@@ -636,15 +614,15 @@ class KodiSplitter extends IPSModule
      * Führt eine Anfrage an den Kodi-Webserver aus.
      *
      * @param string $URI URI welche angefragt wird.
-     * @return boolean|string Inhalt der Antwort, False bei Fehler.
+     * @return false|string Inhalt der Antwort, False bei Fehler.
      */
-    private function DoWebserverRequest(string $URI, int &$http_code = 0)
+    private function DoWebserverRequest(string $URI, int &$http_code = 0): false|string
     {
         $Host = $this->Host;
-        $Port = $this->ReadPropertyInteger('Webport');
-        $UseBasisAuth = $this->ReadPropertyBoolean('BasisAuth');
-        $User = $this->ReadPropertyString('Username');
-        $Pass = $this->ReadPropertyString('Password');
+        $Port = $this->ReadPropertyInteger(self::PropertyWebport);
+        $UseBasisAuth = $this->ReadPropertyBoolean(self::PropertyBasisAuth);
+        $User = $this->ReadPropertyString(self::PropertyUsername);
+        $Pass = $this->ReadPropertyString(self::PropertyPassword);
         $URL = 'http://' . $Host . ':' . $Port . $URI;
         $ch = curl_init();
         $timeout = 1; // 0 wenn kein Timeout
@@ -679,21 +657,21 @@ class KodiSplitter extends IPSModule
      *
      * @param bool $Active True für aktiv, false für desaktiv.
      */
-    private function SetWatchdogTimer(bool $Active)
+    private function SetWatchdogTimer(bool $Active): void
     {
-        if ($this->ReadPropertyBoolean('Open')) {
-            if ($this->ReadPropertyBoolean('Watchdog')) {
-                $Interval = $this->ReadPropertyInteger('Interval');
+        if ($this->ReadPropertyBoolean(self::PropertyOpen)) {
+            if ($this->ReadPropertyBoolean(self::PropertyWatchdog)) {
+                $Interval = $this->ReadPropertyInteger(self::PropertyInterval);
                 $Interval = ($Interval < 5) ? 0 : $Interval;
                 if ($Active) {
-                    $this->SetTimerInterval('Watchdog', $Interval * 1000);
-                    $this->SendDebug('Watchdog', 'active', 0);
+                    $this->SetTimerInterval(self::TimerWatchdog, $Interval * 1000);
+                    $this->SendDebug(self::TimerWatchdog, 'active', 0);
                     return;
                 }
             }
         }
-        $this->SetTimerInterval('Watchdog', 0);
-        $this->SendDebug('Watchdog', 'inactive', 0);
+        $this->SetTimerInterval(self::TimerWatchdog, 0);
+        $this->SendDebug(self::TimerWatchdog, 'inactive', 0);
     }
 
     /**
@@ -703,7 +681,7 @@ class KodiSplitter extends IPSModule
      * @access private
      * @param bool $value true für an, false für aus.
      */
-    private function SendPowerEvent($value)
+    private function SendPowerEvent(bool $value): void
     {
         $KodiData = new Kodi_RPC_Data('System', 'Power', ['data' => $value], 0);
         $this->SendDataToDevice($KodiData);
@@ -717,19 +695,19 @@ class KodiSplitter extends IPSModule
 
     private function CheckCondition(): bool
     {
-        if (!$this->ReadPropertyBoolean('Watchdog')) {
+        if (!$this->ReadPropertyBoolean(self::PropertyWatchdog)) {
             return true;
         }
-        switch ($this->ReadPropertyInteger('ConditionType')) {
+        switch ($this->ReadPropertyInteger(self::PropertyConditionType)) {
             case 0:
                 $Result = @Sys_Ping($this->Host, 500);
                 $this->SendDebug('Pinging', $Result, 0);
                 return $Result;
             case 1:
-                $Result = IPS_IsConditionPassing($this->ReadPropertyString('WatchdogCondition'));
+                $Result = IPS_IsConditionPassing($this->ReadPropertyString(self::PropertyWatchdogCondition));
                 $this->SendDebug('CheckCondition', $Result, 0);
                 return $Result;
-            }
+        }
         return false;
     }
 
@@ -739,10 +717,9 @@ class KodiSplitter extends IPSModule
      * @access private
      * @param Kodi_RPC_Data $KodiData Ein Kodi_RPC_Data-Objekt.
      */
-    private function SendDataToDevice(Kodi_RPC_Data $KodiData)
+    private function SendDataToDevice(Kodi_RPC_Data $KodiData): void
     {
         $Data = $KodiData->ToJSONString('{73249F91-710A-4D24-B1F1-A72F216C2BDC}');
-        //$this->SendDebug('IPS_SendDataToChildren', $Data, 0);
         $this->SendDataToChildren($Data);
     }
 
@@ -751,14 +728,14 @@ class KodiSplitter extends IPSModule
      *
      * @access private
      * @param int $Id Die RPC-ID auf die gewartet wird.
-     * @result mixed Enthält ein Kodi_RPC_Data-Objekt mit der Antwort, oder false bei einem Timeout.
+     * @return mixed Enthält ein Kodi_RPC_Data-Objekt mit der Antwort, oder false bei einem Timeout.
      */
-    private function WaitForResponse(int $Id)
+    private function WaitForResponse(int $Id): ?Kodi_RPC_Data
     {
         for ($i = 0; $i < 1000; $i++) {
             $ret = $this->ReplyJSONData;
             if (!array_key_exists($Id, $ret)) {
-                return false;
+                return null;
             }
             if ($ret[$Id] != '') {
                 return $this->SendQueuePop($Id);
@@ -766,7 +743,7 @@ class KodiSplitter extends IPSModule
             IPS_Sleep(5);
         }
         $this->SendQueueRemove($Id);
-        return false;
+        return null;
     }
 
     ################## SENDQUEUE
@@ -776,7 +753,7 @@ class KodiSplitter extends IPSModule
      * @access private
      * @param int $Id die RPC-ID des versendeten RPC-Objektes.
      */
-    private function SendQueuePush(int $Id)
+    private function SendQueuePush(int $Id): void
     {
         if (!$this->lock('ReplyJSONData')) {
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
@@ -794,7 +771,7 @@ class KodiSplitter extends IPSModule
      * @param int $Id die RPC-ID des empfangenen Objektes.
      * @param Kodi_RPC_Data $KodiData Das empfangene RPC-Result.
      */
-    private function SendQueueUpdate(int $Id, Kodi_RPC_Data $KodiData)
+    private function SendQueueUpdate(int $Id, Kodi_RPC_Data $KodiData): void
     {
         if (!$this->lock('ReplyJSONData')) {
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
@@ -812,7 +789,7 @@ class KodiSplitter extends IPSModule
      * @param int $Id die RPC-ID des empfangenen Objektes.
      * @return Kodi_RPC_Data Das empfangene RPC-Result.
      */
-    private function SendQueuePop(int $Id)
+    private function SendQueuePop(int $Id): Kodi_RPC_Data
     {
         $data = $this->ReplyJSONData;
         $Result = new Kodi_RPC_Data();
@@ -828,7 +805,7 @@ class KodiSplitter extends IPSModule
      * @access private
      * @param int $Id Die RPC-ID des zu löschenden Objektes.
      */
-    private function SendQueueRemove(int $Id)
+    private function SendQueueRemove(int $Id): void
     {
         if (!$this->lock('ReplyJSONData')) {
             throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
