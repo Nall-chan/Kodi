@@ -901,8 +901,8 @@ class KodiDevicePVR extends KodiBase
                 }
                 $HTMLData .= '</tr>' . PHP_EOL;
                 $pos++;
-//                if ($pos == $max)
-//                    break;
+                //                if ($pos == $max)
+                //                    break;
             }
         }
         $HTMLData .= $this->GetTableFooter();
@@ -1022,8 +1022,8 @@ class KodiDevicePVR extends KodiBase
                 }
                 $HTMLData .= '</tr>' . PHP_EOL;
                 $pos++;
-//                if ($pos == $max)
-//                    break;
+                //                if ($pos == $max)
+                //                    break;
             }
         }
         $HTMLData .= $this->GetTableFooter();
@@ -1111,8 +1111,8 @@ class KodiDevicePVR extends KodiBase
                 }
                 $HTMLData .= '</tr>' . PHP_EOL;
                 $pos++;
-//                if ($pos == $max)
-//                    break;
+                //                if ($pos == $max)
+                //                    break;
             }
         }
         $HTMLData .= $this->GetTableFooter();

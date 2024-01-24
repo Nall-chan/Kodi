@@ -756,13 +756,13 @@ class KodiDevicePlaylist extends KodiBase
                 }
             }
         }
-//        elseif (property_exists($KodiPayload, 'item'))
-//        {
-//            if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlaylistId)
-//                return false;
-//        }
-//        else
-//            return false;
+        //        elseif (property_exists($KodiPayload, 'item'))
+        //        {
+        //            if (self::$Playertype[(string) $KodiPayload->item->type] <> $this->PlaylistId)
+        //                return false;
+        //        }
+        //        else
+        //            return false;
 
         $this->SendDebug($Method, $KodiPayload, 0);
 
@@ -884,11 +884,11 @@ class KodiDevicePlaylist extends KodiBase
                     $this->AddItemToPlayList($Index + $LastAddonItem, $item);
                 }
                 $this->LastAddonItem = $Index + $LastAddonItem;
-//                if ($ret->limits->total == $KodiPayload->position + 1)
-//                {
+                //                if ($ret->limits->total == $KodiPayload->position + 1)
+                //                {
                 $this->SendDebug('REFRESH_HTML', 'REFRESH_HTML', 0);
                 $this->RefreshPlaylist(); //Liste neu bauen
-//                }
+                //                }
                 break;
             case 'OnRemove':
                 // function welche ein Item aus dem Buff entfernt
