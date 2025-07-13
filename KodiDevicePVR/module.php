@@ -210,26 +210,6 @@ class KodiDevicePVR extends KodiBase
      *
      * @access public
      */
-    public function Destroy(): void
-    {
-        if (IPS_GetKernelRunlevel() != KR_READY) {
-            parent::Destroy();
-            return;
-        }
-        if (!IPS_InstanceExists($this->InstanceID)) {
-            $this->UnregisterHook(self::HookTV . $this->InstanceID);
-            $this->UnregisterHook(self::HookRadio . $this->InstanceID);
-            $this->UnregisterHook(self::HookRecording . $this->InstanceID);
-        }
-
-        parent::Destroy();
-    }
-
-    /**
-     * Interne Funktion des SDK.
-     *
-     * @access public
-     */
     public function ApplyChanges(): void
     {
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
@@ -284,9 +264,6 @@ class KodiDevicePVR extends KodiBase
             }
         } else {
             $this->UnregisterVariable('TVChannellist');
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook(self::HookTV . $this->InstanceID);
-            }
         }
 
         if ($this->ReadPropertyBoolean(self::PropertyShowRadioChannellist)) {
@@ -302,9 +279,6 @@ class KodiDevicePVR extends KodiBase
             }
         } else {
             $this->UnregisterVariable('RadioChannellist');
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook(self::HookRadio . $this->InstanceID);
-            }
         }
 
         if ($this->ReadPropertyBoolean(self::PropertyShowRecordinglist)) {
@@ -320,9 +294,6 @@ class KodiDevicePVR extends KodiBase
             }
         } else {
             $this->UnregisterVariable('Recordinglist');
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook(self::HookRecording . $this->InstanceID);
-            }
         }
 
         if ($this->ReadPropertyBoolean(self::PropertyShowRecordinglist) || $this->ReadPropertyBoolean(self::PropertyShowRadioChannellist) || $this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {

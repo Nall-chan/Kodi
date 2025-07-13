@@ -207,7 +207,6 @@ class KodiDevicePlaylist extends KodiBase
     public function Destroy(): void
     {
         if (!IPS_InstanceExists($this->InstanceID)) {
-            $this->UnregisterHook(self::Hook . $this->InstanceID);
             $this->UnregisterProfile('Tracklist.' . $this->InstanceID . '.Kodi');
         }
         parent::Destroy();
@@ -235,9 +234,6 @@ class KodiDevicePlaylist extends KodiBase
             }
         } else {
             $this->UnregisterVariable('Playlist');
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook(self::Hook . $this->InstanceID);
-            }
         }
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
         if ($ScriptID > 0) {

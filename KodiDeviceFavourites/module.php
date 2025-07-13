@@ -72,23 +72,6 @@ class KodiDeviceFavourites extends KodiBase
      *
      * @access public
      */
-    public function Destroy(): void
-    {
-        if (IPS_GetKernelRunlevel() != KR_READY) {
-            parent::Destroy();
-            return;
-        }
-        if (!IPS_InstanceExists($this->InstanceID)) {
-            $this->UnregisterHook(self::Hook . $this->InstanceID);
-        }
-        parent::Destroy();
-    }
-
-    /**
-     * Interne Funktion des SDK.
-     *
-     * @access public
-     */
     public function ApplyChanges(): void
     {
         $this->UnregisterScript('WebHookFavlist');
@@ -106,9 +89,6 @@ class KodiDeviceFavourites extends KodiBase
             }
         } else {
             $this->UnregisterVariable('Favlist');
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook(self::Hook . $this->InstanceID);
-            }
         }
         $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
         if ($ScriptID > 0) {

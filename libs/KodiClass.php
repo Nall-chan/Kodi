@@ -14,7 +14,6 @@ declare(strict_types=1);
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/ParentIOHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/VariableProfileHelper.php') . '}');
-eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/WebhookHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/AttributeArrayHelper.php') . '}');
 
 require_once __DIR__ . '/DebugHelper.php';  // diverse Klassen
@@ -40,14 +39,12 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * @method void RegisterProfileIntegerEx(string $Name, string $Icon, string $Prefix, string $Suffix, array $Associations, int $MaxValue = -1, float $StepSize = 0)
  * @method void UnregisterProfile(string $Name)
  * @method void RegisterProfileInteger(string $Name, string $Icon, string $Prefix, string $Suffix, int $MinValue, int $MaxValue, float $StepSize)
- * @method void RegisterHook(string $WebHook)
- * @method void UnregisterHook(string $WebHook)
+ * @method bool RegisterHook(string $WebHook)
  * @method bool IORequestAction(string $Ident, mixed $Value)
  */
 abstract class KodiBase extends IPSModuleStrict
 {
     use \KodiBase\VariableProfileHelper,
-        \KodiBase\WebhookHelper,
         \KodiBase\DebugHelper,
         \KodiBase\BufferHelper,
         \KodiBase\AttributeArrayHelper,

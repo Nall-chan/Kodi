@@ -272,24 +272,6 @@ class KodiDeviceInput extends KodiBase
      *
      * @access public
      */
-    public function Destroy(): void
-    {
-        if (IPS_GetKernelRunlevel() != KR_READY) {
-            parent::Destroy();
-            return;
-        }
-        if (!IPS_InstanceExists($this->InstanceID)) {
-            $this->UnregisterHook(self::Hook . $this->InstanceID);
-        }
-
-        parent::Destroy();
-    }
-
-    /**
-     * Interne Funktion des SDK.
-     *
-     * @access public
-     */
     public function ApplyChanges(): void
     {
         $this->UnregisterScript('WebHookRemote');
@@ -305,9 +287,6 @@ class KodiDeviceInput extends KodiBase
                 $this->SetValue('Remote', $remote);
             }
         } else {
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook(self::Hook . $this->InstanceID);
-            }
             $this->UnregisterVariable('Remote');
         }
 

@@ -82,24 +82,6 @@ class KodiDeviceAddons extends KodiBase
      *
      * @access public
      */
-    public function Destroy(): void
-    {
-        if (IPS_GetKernelRunlevel() != KR_READY) {
-            parent::Destroy();
-            return;
-        }
-        if (!IPS_InstanceExists($this->InstanceID)) {
-            $this->UnregisterHook(self::Hook . $this->InstanceID);
-        }
-
-        parent::Destroy();
-    }
-
-    /**
-     * Interne Funktion des SDK.
-     *
-     * @access public
-     */
     public function ApplyChanges(): void
     {
         if ($this->ReadPropertyBoolean(self::PropertyShowAddonlist)) {
@@ -115,9 +97,6 @@ class KodiDeviceAddons extends KodiBase
             }
         } else {
             $this->UnregisterVariable('Addonlist');
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UnregisterHook(self::Hook . $this->InstanceID);
-            }
         }
         $ScriptID = $this->ReadPropertyInteger('Addonlistconfig');
         if ($ScriptID > 0) {
