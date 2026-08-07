@@ -8,11 +8,12 @@ namespace KodiBase;
  * @addtogroup generic
  * @{
  *
- * @package       generic
+ * @project       KodiBase
  * @file          DebugHelper.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
+ * @package       generic
+ * @author        Michael Tröger <nall4chan@gmail.com>
+ * @copyright     2026 Michael Tröger
+ * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
  * @version       5.0
  */
 

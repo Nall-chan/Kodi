@@ -1,7 +1,7 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
 [![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
-[![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#12-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
 [![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
@@ -2028,6 +2028,11 @@ Eigenschaften von KodiSplitter:
 
 ### 3. Changelog
 
+Version 3.02:
+ - Fix: WOL-Port in `KodiDeviceSystem` korrigiert.  
+ - Fix: Absturz der Discovery-Instanz verhindert, wenn keine mDNS-Instanz vorhanden ist.  
+ - Fix: Docker-Erkennung in der Discovery-Instanz korrigiert.  
+
 Version 3.00:
  - <span style='color:red'><b>ÄNDERUNG: Positionsvariable (seek) ist jetzt float, die VariableID ändert sich beim Update!</b></span>
  - Fix: Fehlermeldungen beim anspringen einer Position (seek).  
@@ -2138,7 +2143,6 @@ Version 2.01:
 
   Wunschliste:  
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share)  
-
 
 ## 12. Lizenz  
 

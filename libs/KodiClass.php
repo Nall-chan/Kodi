@@ -14,12 +14,14 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * Basisklasse für alle Kodi IPS-Instanzklassen.
  * Erweitert IPSModule.
  *
+ * @project       KodiBase
+ * @file          KodiClass.php
  * @abstract
  * @package       Kodi
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
+ * @author        Michael Tröger <nall4chan@gmail.com>
+ * @copyright     2026 Michael Tröger
+ * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
+ * @version       3.02
  * @example <b>Ohne</b>
  * @property int $ParentID
  * @property string $WebHookSecret

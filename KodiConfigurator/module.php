@@ -6,11 +6,13 @@ declare(strict_types=1);
  * KodiConfigurator Klasse für die einfache Erstellungvon IPS-Instanzen in IPS.
  * Erweitert IPSModule.
  *
+ * @project       KodiConfigurator
+ * @file          module.php
  * @package       Kodi
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
+ * @author        Michael Tröger <nall4chan@gmail.com>
+ * @copyright     2026 Michael Tröger
+ * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
+ * @version       3.02
  * @example <b>Ohne</b>
  */
 class KodiConfigurator extends IPSModuleStrict

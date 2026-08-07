@@ -7,10 +7,12 @@ require_once __DIR__ . '/../libs/DebugHelper.php';  // diverse Klassen
 /**
  * KodiDiscovery Klasse implementiert
  *
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
+ * @project       KodiDiscovery
+ * @file          module.php
+ * @author        Michael Tröger <nall4chan@gmail.com>
+ * @copyright     2026 Michael Tröger
+ * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
+ * @version       3.02
  * @example <b>Ohne</b>
  */
 class KodiDiscovery extends IPSModuleStrict
