@@ -1,16 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/** @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- * @example <b>Ohne</b>
- */
+
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/ParentIOHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR__ . '/../libs/helper/VariableProfileHelper.php') . '}');
@@ -32,7 +23,7 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * @example <b>Ohne</b>
  * @property int $ParentID
  * @property string $WebHookSecret
- * @property string $Namespace RPC-Namespace
+ * @property array|string $Namespace RPC-Namespace
  * @property array $Properties Alle Properties des RPC-Namespace
  * @property array $ItemListFull Alle Properties eines Item
  *
@@ -40,6 +31,7 @@ require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
  * @method void UnregisterProfile(string $Name)
  * @method void RegisterProfileInteger(string $Name, string $Icon, string $Prefix, string $Suffix, int $MinValue, int $MaxValue, float $StepSize)
  * @method bool RegisterHook(string $WebHook)
+ * @method bool UnregisterHook(string $WebHook)
  * @method bool IORequestAction(string $Ident, mixed $Value)
  */
 abstract class KodiBase extends IPSModuleStrict
@@ -67,12 +59,21 @@ abstract class KodiBase extends IPSModuleStrict
     public function Create(): void
     {
         parent::Create();
-        $this->ConnectParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
         $this->ParentID = 0;
         $this->WebHookSecret = '';
         if (IPS_GetKernelRunlevel() != KR_READY) {
             $this->RegisterMessage(0, IPS_KERNELSTARTED);
         }
+    }
+
+    /**
+     * GetCompatibleParents
+     *
+     * @return string
+     */
+    public function GetCompatibleParents(): string
+    {
+        return '{"type": "connect", "moduleIDs": ["{D2F106B5-4473-4C19-A48F-812E8BAA316C}"]}';
     }
 
     /**
@@ -277,6 +278,7 @@ abstract class KodiBase extends IPSModuleStrict
                 return date('i:s', $Time);
             }
         }
+        return (string) $Time;
     }
 
     /**
@@ -500,7 +502,6 @@ sleep(10).then(() => {
 
             $this->SendDebug('Send Direct', $Data, 0);
             $result = curl_exec($ch);
-            curl_close($ch);
 
             if ($result === false) {
                 throw new Exception('Kodi unreachable', E_USER_NOTICE);
@@ -517,10 +518,10 @@ sleep(10).then(() => {
             return $ret;
         } catch (KodiRPCException $ex) {
             $this->SendDebug('Receive Direct', $ex, 0);
-            trigger_error('Error (' . $ex->getCode() . '): ' . $ex->getMessage() . ' in ' . get_called_class(), E_USER_NOTICE);
+            trigger_error('Error (' . $ex->getCode() . ')' . "\r\n" . $ex->getMessage() . ' in ' . get_called_class(), E_USER_NOTICE);
         } catch (Exception $ex) {
             $this->SendDebug('Receive Direct', $ex->getMessage(), 0);
-            trigger_error($ex->getMessage() . $ex->getTraceAsString(), $ex->getCode());
+            trigger_error($ex->getMessage() . "\r\n" . $ex->getTraceAsString(), $ex->getCode());
         }
         return null;
     }
@@ -574,7 +575,7 @@ sleep(10).then(() => {
      * @param int $value Neuer Wert der Statusvariable.
      * @return bool true wenn der neue Wert vom alten abweicht, sonst false.
      */
-    protected function SetValueInteger(string $Ident, float $value): bool
+    protected function SetValueInteger(string $Ident, int $value): bool
     {
         $id = @$this->GetIDForIdent($Ident);
         if ($id === false) {
@@ -624,5 +625,3 @@ sleep(10).then(() => {
         IPS_DeleteScript($sid, true);
     }
 }
-
-/** @} */

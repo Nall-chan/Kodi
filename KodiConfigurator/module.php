@@ -2,19 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
-
 /**
  * KodiConfigurator Klasse für die einfache Erstellungvon IPS-Instanzen in IPS.
  * Erweitert IPSModule.
@@ -73,20 +60,29 @@ class KodiConfigurator extends IPSModuleStrict
     ];
 
     /**
-     * Interne Funktion des SDK.
+     * Create
      *
-     * @access public
+     * @return void
      */
     public function Create(): void
     {
         parent::Create();
-        $this->RequireParent('{D2F106B5-4473-4C19-A48F-812E8BAA316C}');
     }
 
     /**
-     * Interne Funktion des SDK.
+     * GetCompatibleParents
      *
-     * @access public
+     * @return string
+     */
+    public function GetCompatibleParents(): string
+    {
+        return '{"type": "require", "moduleIDs": ["{D2F106B5-4473-4C19-A48F-812E8BAA316C}"]}';
+    }
+
+    /**
+     * ApplyChanges
+     *
+     * @return void
      */
     public function ApplyChanges(): void
     {
@@ -107,7 +103,7 @@ class KodiConfigurator extends IPSModuleStrict
         }
         $SplitterID = $this->GetSplitter();
 
-        if ($SplitterID === false) {
+        if ($SplitterID === 0) {
             $Form['actions'][] = [
                 'type'  => 'PopupAlert',
                 'popup' => [
@@ -202,14 +198,11 @@ class KodiConfigurator extends IPSModuleStrict
      * Liefert den aktuell verbundenen Splitter.
      *
      * @access private
-     * @return bool|int FALSE wenn kein Splitter vorhanden, sonst die ID des Splitter.
+     * @return int 0 wenn kein Splitter vorhanden, sonst die ID des Splitter.
      */
     private function GetSplitter(): int
     {
         $SplitterID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
-        if ($SplitterID == 0) {
-            return false;
-        }
         return $SplitterID;
     }
 
@@ -276,5 +269,3 @@ class KodiConfigurator extends IPSModuleStrict
         return false;
     }
 }
-
-/** @} */

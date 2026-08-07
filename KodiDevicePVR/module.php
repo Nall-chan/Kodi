@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
@@ -68,9 +56,9 @@ class KodiDevicePVR extends KodiBase
     public const ActionVisibleFormElementsRadioChannellist = 'showRadioChannellist';
     public const ActionVisibleFormElementsRecordinglist = 'showRecordinglist';
 
-    public const HookTV = '/hook/KodiTVChannellist';
-    public const HookRadio = '/hook/KodiRadioChannellist';
-    public const HookRecording = '/hook/KodiRecordinglist';
+    public const HookTV = 'KodiTVChannellist';
+    public const HookRadio = 'KodiRadioChannellist';
+    public const HookRecording = 'KodiRecordinglist';
 
     protected static $Namespace = 'PVR';
     protected static $Properties = [
@@ -185,22 +173,22 @@ class KodiDevicePVR extends KodiBase
         // Todo 7.0 -> Style per Konfig-Formular
         $ID = @$this->GetIDForIdent('TVChannellistDesign');
         if ($ID == false) {
-            $ID = $this->RegisterScript('TVChannellistDesign', 'TV Channellist Config', $this->CreateTVChannellistConfigScript(), -7);
-            IPS_SetHidden($ID, true);
+            $this->RegisterScript('TVChannellistDesign', 'TV Channellist Config', $this->CreateTVChannellistConfigScript(), -7);
+            IPS_SetHidden($this->GetIDForIdent('TVChannellistDesign'), true);
         }
         $this->RegisterPropertyInteger('TVChannellistconfig', $ID);
 
         $ID = @$this->GetIDForIdent('RadioChannellistDesign');
         if ($ID == false) {
-            $ID = $this->RegisterScript('RadioChannellistDesign', 'Radio Channellist Config', $this->CreateRadioChannellistConfigScript(), -7);
-            IPS_SetHidden($ID, true);
+            $this->RegisterScript('RadioChannellistDesign', 'Radio Channellist Config', $this->CreateRadioChannellistConfigScript(), -7);
+            IPS_SetHidden($this->GetIDForIdent('RadioChannellistDesign'), true);
         }
         $this->RegisterPropertyInteger('RadioChannellistconfig', $ID);
 
         $ID = @$this->GetIDForIdent('RecordinglistDesign');
         if ($ID == false) {
-            $ID = $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
-            IPS_SetHidden($ID, true);
+            $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
+            IPS_SetHidden($this->GetIDForIdent('RecordinglistDesign'), true);
         }
         $this->RegisterPropertyInteger('Recordinglistconfig', $ID);
     }
@@ -253,47 +241,41 @@ class KodiDevicePVR extends KodiBase
 
         if ($this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {
             $this->RegisterVariableString('TVChannellist', $this->Translate('TV channels'), '~HTMLBox', 1);
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook(self::HookTV . $this->InstanceID);
-            }
-
+            $this->RegisterHook(self::HookTV . $this->InstanceID);
             $ID = @$this->GetIDForIdent('TVChannellistDesign');
             if ($ID == false) {
-                $ID = $this->RegisterScript('TVChannellistDesign', 'TVChannellist Config', $this->CreateTVChannellistConfigScript(), -7);
-                IPS_SetHidden($ID, true);
+                $this->RegisterScript('TVChannellistDesign', 'TVChannellist Config', $this->CreateTVChannellistConfigScript(), -7);
+                IPS_SetHidden($this->GetIDForIdent('TVChannellistDesign'), true);
             }
         } else {
             $this->UnregisterVariable('TVChannellist');
+            $this->UnregisterHook(self::HookTV . $this->InstanceID);
         }
 
         if ($this->ReadPropertyBoolean(self::PropertyShowRadioChannellist)) {
             $this->RegisterVariableString('RadioChannellist', $this->Translate('Radio channels'), '~HTMLBox', 1);
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook(self::HookRadio . $this->InstanceID);
-            }
-
+            $this->RegisterHook(self::HookRadio . $this->InstanceID);
             $ID = @$this->GetIDForIdent('RadioChannellistDesign');
             if ($ID == false) {
-                $ID = $this->RegisterScript('RadioChannellistDesign', 'RadioChannellist Config', $this->CreateRadioChannellistConfigScript(), -7);
-                IPS_SetHidden($ID, true);
+                $this->RegisterScript('RadioChannellistDesign', 'RadioChannellist Config', $this->CreateRadioChannellistConfigScript(), -7);
+                IPS_SetHidden($this->GetIDForIdent('RadioChannellistDesign'), true);
             }
         } else {
             $this->UnregisterVariable('RadioChannellist');
+            $this->UnregisterHook(self::HookRadio . $this->InstanceID);
         }
 
         if ($this->ReadPropertyBoolean(self::PropertyShowRecordinglist)) {
             $this->RegisterVariableString('Recordinglist', $this->Translate('Recordings'), '~HTMLBox', 1);
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook(self::HookRecording . $this->InstanceID);
-            }
-
+            $this->RegisterHook(self::HookRecording . $this->InstanceID);
             $ID = @$this->GetIDForIdent('RecordinglistDesign');
             if ($ID == false) {
-                $ID = $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
-                IPS_SetHidden($ID, true);
+                $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
+                IPS_SetHidden($this->GetIDForIdent('RecordinglistDesign'), true);
             }
         } else {
             $this->UnregisterVariable('Recordinglist');
+            $this->UnregisterHook(self::HookRecording . $this->InstanceID);
         }
 
         if ($this->ReadPropertyBoolean(self::PropertyShowRecordinglist) || $this->ReadPropertyBoolean(self::PropertyShowRadioChannellist) || $this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {
@@ -1380,5 +1362,3 @@ echo serialize($Config);
         return $Script;
     }
 }
-
-/** @} */

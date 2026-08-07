@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
@@ -42,7 +30,7 @@ class KodiDeviceInput extends KodiBase
     public const PropertyShowInputRequested = 'showInputRequested';
     public const PropertyShowTextInput = 'showTextInput';
     public const ActionVisibleFormElementsSVGRemoteProperties = 'showSVGRemote';
-    public const Hook = '/hook/KodiRemote';
+    public const Hook = 'KodiRemote';
 
     protected static $Namespace = 'Input';
     protected static $Properties = [];
@@ -277,17 +265,13 @@ class KodiDeviceInput extends KodiBase
         $this->UnregisterScript('WebHookRemote');
 
         if ($this->ReadPropertyBoolean(self::PropertyShowSVGRemote)) {
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook(self::Hook . $this->InstanceID);
-            }
-            if (@$this->GetIDForIdent('Remote') == false) {
-                $remoteID = $this->RegisterVariableString('Remote', $this->Translate('Remote'), '~HTMLBox', 1);
-                /* @var $remote string */
-                include 'generateRemote' . ($this->ReadPropertyInteger('RemoteId')) . '.php';
-                $this->SetValue('Remote', $remote);
-            }
+            $this->RegisterHook(self::Hook . $this->InstanceID);
+            $this->RegisterVariableString('Remote', $this->Translate('Remote'), '~HTMLBox', 1);
+            include 'generateRemote' . ($this->ReadPropertyInteger('RemoteId')) . '.php';
+            $this->SetValue('Remote', $remote);
         } else {
             $this->UnregisterVariable('Remote');
+            $this->UnregisterHook(self::Hook . $this->InstanceID);
         }
 
         if ($this->ReadPropertyBoolean(self::PropertyShowNavigationButtons)) {
@@ -696,5 +680,3 @@ class KodiDeviceInput extends KodiBase
         }
     }
 }
-
-/** @} */

@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
@@ -43,7 +31,7 @@ class KodiDevicePlaylist extends KodiBase
     public const PropertyPlaylistID = 'PlaylistID';
     public const PropertyShowPlaylist = 'showPlaylist';
     public const ActionVisibleFormElementsPlaylist = 'showPlaylist';
-    public const Hook = '/hook/KodiPlaylist';
+    public const Hook = 'KodiPlaylist';
     /**
      * PlaylistID für Audio
      *
@@ -74,15 +62,16 @@ class KodiDevicePlaylist extends KodiBase
     protected static $Namespace = ['Playlist', 'Player'];
     protected static $Properties = [];
     protected static $Playertype = [
-        'song'     => 0,
-        'audio'    => 0,
-        'radio'    => 0,
-        'video'    => 1,
-        'episode'  => 1,
-        'movie'    => 1,
-        'tv'       => 1,
-        'picture'  => 2,
-        'pictures' => 2
+        'unknown'   => -1,
+        'song'      => 0,
+        'audio'     => 0,
+        'radio'     => 0,
+        'video'     => 1,
+        'episode'   => 1,
+        'movie'     => 1,
+        'tv'        => 1,
+        'picture'   => 2,
+        'pictures'  => 2
     ];
     protected static $ItemList = [
         'title',
@@ -193,8 +182,8 @@ class KodiDevicePlaylist extends KodiBase
         // Todo 7.0 -> Style per Konfig-Formular
         $ID = @$this->GetIDForIdent('PlaylistDesign');
         if ($ID == false) {
-            $ID = $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
-            IPS_SetHidden($ID, true);
+            $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
+            IPS_SetHidden($this->GetIDForIdent('PlaylistDesign'), true);
         }
         $this->RegisterPropertyInteger('Playlistconfig', $ID);
     }
@@ -223,23 +212,20 @@ class KodiDevicePlaylist extends KodiBase
         $this->PlaylistId = $this->ReadPropertyInteger(self::PropertyPlaylistID);
         if ($this->ReadPropertyBoolean(self::PropertyShowPlaylist)) {
             $this->RegisterVariableString('Playlist', 'Playlist', '~HTMLBox', 2);
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook(self::Hook . $this->InstanceID);
-            }
-
+            $this->RegisterHook(self::Hook . $this->InstanceID);
             $ID = @$this->GetIDForIdent('PlaylistDesign');
             if ($ID == false) {
-                $ID = $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
-                IPS_SetHidden($ID, true);
+                $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
+                IPS_SetHidden($this->GetIDForIdent('PlaylistDesign'), true);
             }
         } else {
             $this->UnregisterVariable('Playlist');
+            $this->UnregisterHook(self::Hook . $this->InstanceID);
         }
         $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
         if ($ScriptID > 0) {
             $this->RegisterReference($ScriptID);
         }
-
         $this->RegisterProfileInteger('Tracklist.' . $this->InstanceID . '.Kodi', '', '', '', 1, 1, 1);
         $this->RegisterVariableInteger('position', $this->Translate('Playlist position'), 'Tracklist.' . $this->InstanceID . '.Kodi', 1);
         $this->EnableAction('position');
@@ -291,7 +277,8 @@ class KodiDevicePlaylist extends KodiBase
     public function GoTo(int $Index): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
-        $KodiData->GoTo(['playerid' => $this->PlaylistId, 'to' => $Index]);
+        $KodiData->Open(['item' => ['playlistid' => $this->PlaylistId, 'position' => $Index]], []);
+        //$KodiData->GoTo(['playerid' => $this->PlaylistId, 'to' => $Index]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -940,6 +927,7 @@ class KodiDevicePlaylist extends KodiBase
         if ($Data === false) {
             return;
         }
+        $this->SendDebug('RefreshPlaylist', $Data, 0);
         $Name = 'Tracklist.' . $this->InstanceID . '.Kodi';
         if (!IPS_VariableProfileExists($Name)) {
             IPS_CreateVariableProfile($Name, 1);
@@ -954,12 +942,43 @@ class KodiDevicePlaylist extends KodiBase
             $this->SetValue('CurrentPlaylist', '');
         } else {
             $playlistEntries = [];
-            foreach ($Data as ['title' => $Title, 'showtitle'=>$Showtitle, 'runtime'=>$Runtime]) {
-                $playlistEntries[] = [
-                    'artist'        => $Showtitle,
-                    'song'          => $Title,
-                    'duration'      => $Runtime
-                ];
+            if ($this->PlaylistId == self::Audio) {
+                foreach ($Data as $Line) {
+                    if (array_key_exists('displayartist', $Line)) {
+                        $artist = $Line['displayartist'];
+                    } else {
+                        if (array_key_exists('artist', $Line)) {
+                            if (is_array($Line['artist'])) {
+                                $artist = implode(', ', $Line['artist']);
+                            } else {
+                                $artist = $Line['artist'];
+                            }
+                        } else {
+                            if (array_key_exists('albumartist', $Line)) {
+                                if (is_array($Line['albumartist'])) {
+                                    $artist = implode(', ', $Line['albumartist']);
+                                } else {
+                                    $artist = $Line['albumartist'];
+                                }
+                            } else {
+                                $artist = '';
+                            }
+                        }
+                    }
+                    $playlistEntries[] = [
+                        'artist'        => $artist,
+                        'song'          => $Line['title'],
+                        'duration'      => $Line['duration']
+                    ];
+                }
+            } elseif ($this->PlaylistId == self::Video) {
+                foreach ($Data as ['title' => $Title, 'showtitle'=>$Showtitle, 'runtime'=>$Runtime]) {
+                    $playlistEntries[] = [
+                        'artist'        => $Showtitle,
+                        'song'          => $Title,
+                        'duration'      => $Runtime
+                    ];
+                }
             }
             $this->SetValue('CurrentPlaylist', json_encode([
                 'current' => $CurrentIndex - 1,
@@ -1256,11 +1275,11 @@ echo serialize($Config);
      * @access private
      * @param int $Position Position des Item in der Playlist.
      * @param string $ItemTyp Der Typ des Item.
-     * @param string $ItemValue Der Wert des Item.
+     * @param mixed $ItemValue Der Wert des Item.
      * @param array $Ext Array welches mit übergeben werden soll (optional).
      * @return bool True bei Erfolg. Sonst false.
      */
-    private function Insert(int $Position, string $ItemTyp, $ItemValue, $Ext = []): bool
+    private function Insert(int $Position, string $ItemTyp, mixed $ItemValue, $Ext = []): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Insert', array_merge(['playlistid' => $this->PlaylistId, 'position' => $Position, 'item' => [$ItemTyp => $ItemValue]], $Ext));
         $ret = $this->SendDirect($KodiData);
@@ -1274,5 +1293,3 @@ echo serialize($Config);
         return false;
     }
 }
-
-/** @} */

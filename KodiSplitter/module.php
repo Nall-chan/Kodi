@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/BufferHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/ParentIOHelper.php') . '}');
 eval('declare(strict_types=1);namespace KodiSplitter {?>' . file_get_contents(__DIR__ . '/../libs/helper/SemaphoreHelper.php') . '}');
@@ -72,14 +60,13 @@ class KodiSplitter extends IPSModuleStrict
     protected static $Namespace = 'JSONRPC';
 
     /**
-     * Interne Funktion des SDK.
+     * Create
      *
-     * @access public
+     * @return void
      */
     public function Create(): void
     {
         parent::Create();
-        $this->RequireParent('{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}');
         $this->RegisterPropertyBoolean(self::PropertyOpen, false);
         $this->RegisterPropertyInteger(self::PropertyPort, 9090);
         $this->RegisterPropertyInteger(self::PropertyWebport, 80);
@@ -100,12 +87,23 @@ class KodiSplitter extends IPSModuleStrict
     }
 
     /**
-     * Interne Funktion des SDK.
+     * GetCompatibleParents
      *
-     * @access public
+     * @return string
+     */
+    public function GetCompatibleParents(): string
+    {
+        return '{"type": "require", "moduleIDs": ["{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}"]}';
+    }
+
+    /**
+     * ApplyChanges
+     *
+     * @return void
      */
     public function ApplyChanges(): void
     {
+        $this->SetStatus(IS_INACTIVE);
         $this->RegisterMessage($this->InstanceID, FM_CONNECT);
         $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
         $this->RegisterMessage($this->InstanceID, IM_CHANGESTATUS);
@@ -120,7 +118,6 @@ class KodiSplitter extends IPSModuleStrict
 
         if (IPS_GetKernelRunlevel() != KR_READY) {
             $this->RegisterMessage(0, IPS_KERNELSTARTED);
-            $this->SetStatus(IS_INACTIVE);
             return;
         }
 
@@ -224,6 +221,7 @@ class KodiSplitter extends IPSModuleStrict
     public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        $Form['elements'][2]['items'][1]['objectID'] = $this->ParentID;
         $Form['elements'][4]['expanded'] = $this->ReadPropertyBoolean(self::PropertyBasisAuth);
         $Form['elements'][5]['expanded'] = $this->ReadPropertyBoolean(self::PropertyWatchdog);
         $Form['elements'][5]['items'][0]['items'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyWatchdog);
@@ -638,7 +636,6 @@ class KodiSplitter extends IPSModuleStrict
         $this->SendDebug('DoWebRequest', $URL, 0);
         $Result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
         if ($http_code >= 400) {
             $this->SendDebug('WebRequest Error', $http_code, 0);
             $Result = false;
@@ -816,5 +813,3 @@ class KodiSplitter extends IPSModuleStrict
         $this->unlock('ReplyJSONData');
     }
 }
-
-/** @} */

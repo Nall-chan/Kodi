@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
@@ -36,6 +24,7 @@ class KodiDeviceSystem extends KodiBase
     public const PropertyPowerOff = 'PowerOff';
     public const PropertyMACAddress = 'MACAddress';
     public const PropertyWOLAction = 'WOLAction';
+    public const PropertyPowerScript = 'PowerScript';
     public const ActionVisibleFormElementsPowerOnType = 'PowerOnType';
     protected static $Namespace = 'System';
     protected static $Properties = [
@@ -53,7 +42,7 @@ class KodiDeviceSystem extends KodiBase
     public function Create(): void
     {
         parent::Create();
-        $this->RegisterPropertyInteger('PowerScript', 1); // OLD
+        $this->RegisterPropertyInteger(self::PropertyPowerScript, 1); // OLD
         $this->RegisterPropertyInteger(self::PropertyPowerOnType, 1);
         $this->RegisterPropertyInteger(self::PropertyPowerOff, 0);
         $this->RegisterPropertyString(self::PropertyMACAddress, '');
@@ -69,21 +58,20 @@ class KodiDeviceSystem extends KodiBase
     {
         /** Update Config
          * @deprecated Wird zur 7.0 entfernt
-         * @property PowerScript in eine Aktion überführen
          */
-        if ($this->ReadPropertyInteger('PowerScript') > 1) {
+        if ($this->ReadPropertyInteger(self::PropertyPowerScript) > 1) {
             // dann Aktion erstellen
             $Action = [
                 'actionID'  => '{7938A5A2-0981-5FE0-BE6C-8AA610D654EB}',
                 'parameters'=> [
                     'ENVIRONMENT'=> 'Default',
                     'PARENT'     => $this->InstanceID,
-                    'TARGET'     => $this->ReadPropertyInteger('PowerScript')
+                    'TARGET'     => $this->ReadPropertyInteger(self::PropertyPowerScript)
                 ]
             ];
             IPS_SetProperty($this->InstanceID, self::PropertyWOLAction, json_encode($Action)); // Action setzen
             IPS_SetProperty($this->InstanceID, self::PropertyPowerOnType, 1); // PowerOnType auf Action (1) setzen
-            IPS_SetProperty($this->InstanceID, 'PowerScript', 1); // PowerScript auf 1 setzen
+            IPS_SetProperty($this->InstanceID, self::PropertyPowerScript, 1); // PowerScript auf 1 setzen
             IPS_ApplyChanges($this->InstanceID); // speichern
             return; // verlassen
         }
@@ -91,7 +79,7 @@ class KodiDeviceSystem extends KodiBase
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
             [0, $this->Translate('Execute'), '', -1]
         ]);
-        $this->RegisterVariableBoolean('Power', 'Power', '~Switch', 0);
+        $this->RegisterVariableBoolean('Power', $this->Translate('Power'), '~Switch', 0);
         $this->EnableAction('Power');
         $this->RegisterVariableInteger('suspend', 'Standby', 'Action.Kodi', 1);
         $this->EnableAction('suspend');
@@ -380,7 +368,7 @@ class KodiDeviceSystem extends KodiBase
     {
         $this->SendDebug('SendWOL', $mac, 0);
         $ip = '255.255.255.255'; // Broadcast adresse
-        $nic = fsockopen('udp://' . $ip, 15);
+        $nic = fsockopen('udp://' . $ip, 9);
         if ($nic) {
             $packet = '';
             for ($i = 0; $i < 6; $i++) {
@@ -404,4 +392,3 @@ class KodiDeviceSystem extends KodiBase
     }
 }
 
-/** @} */

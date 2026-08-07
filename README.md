@@ -1,10 +1,11 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version 3.00](https://img.shields.io/badge/Modul%20Version-3.00-blue.svg)]()
-[![Version](https://img.shields.io/badge/Symcon%20Version-6.1%20%3E-green.svg)](https://www.symcon.de/service/dokumentation/installation/migrationen/v60-v61-q1-2022/)  
-[![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) 
+[![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
+[![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
 [![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
-[![Spenden](https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_SM.gif)](#4-spenden)
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
 
 # Kodi Library<!-- omit in toc -->
 
@@ -13,12 +14,16 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 ## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
-- [2. Voraussetzungen](#2-voraussetzungen)
-- [3. Installation](#3-installation)
-- [4. Vorbereitungen](#4-vorbereitungen)
-- [5. Einrichten der Instanzen in IPS](#5-einrichten-der-instanzen-in-ips)
-- [6. Funktionen der Instanzen](#6-funktionen-der-instanzen)
-- [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+- [2. Vorbemerkungen](#2-vorbemerkungen)
+  - [Zur Library](#zur-library)
+  - [Zur Integration von Geräten](#zur-integration-von-geräten)
+- [3. Voraussetzungen](#3-voraussetzungen)
+- [4. Software-Installation](#4-software-installation)
+- [5. Enthaltende Module](#5-enthaltende-module)
+- [6. Einrichten der Instanzen in IPS](#6-einrichten-der-instanzen-in-ips)
+- [7. Statusvariablen](#7-statusvariablen)
+- [8. Funktionen der Instanzen](#8-funktionen-der-instanzen)
+- [9. PHP-Befehlsreferenz](#9-php-befehlsreferenz)
   - [1. Kodi Addons](#1-kodi-addons)
   - [2. Kodi Anwendung](#2-kodi-anwendung)
   - [3. Kodi Audio Datenbank](#3-kodi-audio-datenbank)
@@ -33,13 +38,13 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
   - [12. Kodi System](#12-kodi-system)
   - [13. Kodi Video Datenbank](#13-kodi-video-datenbank)
   - [14. Kodi Splitter](#14-kodi-splitter)
-- [8. Aktionen](#8-aktionen)
-- [9. Anhang](#9-anhang)
+- [10. Aktionen](#10-aktionen)
+- [11. Anhang](#11-anhang)
   - [1. GUID der Module](#1-guid-der-module)
   - [2. Eigenschaften der Instanzen](#2-eigenschaften-der-instanzen)
   - [3. Changelog](#3-changelog)
   - [4. Spenden](#4-spenden)
-- [11. Lizenz](#11-lizenz)
+- [12. Lizenz](#12-lizenz)
 
 ## 1. Funktionsumfang
 
@@ -47,32 +52,72 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
  Direkte Bedienung im WebFront möglich.
  Abbilden fast der gesamten Kodi-API in vollen Funktionsumfangs in PHP-Befehlen für eigene Scripte in IPS.
 
-## 2. Voraussetzungen
+## 2. Vorbemerkungen
 
- - IPS ab Version 6.4
+### Zur Library
+
+Die Kodi Library implementiert die Kodi JSON-RPC API in IP-Symcon. Sie ermöglicht die Steuerung und Überwachung von Kodi-Medienzentren über das Netzwerk. Die Bibliothek ist modular aufgebaut und besteht aus folgenden Komponenten:
+
+- **KodiSplitter** – Zentrale Kommunikationsinstanz für die JSON-RPC-Verbindung zu Kodi
+- **KodiDevice-Module** – Jeweils eine Instanz pro Funktionsbereich der Kodi-API (z. B. Player, Playlist, System)
+- **KodiDiscovery** – Automatische Erkennung von Kodi-Geräten im Netzwerk per mDNS
+- **KodiConfigurator** – Unterstützung bei der Einrichtung der Geräte-Instanzen
+
+### Zur Integration von Geräten
+
+Die Integration eines Kodi-Geräts erfolgt in mehreren Schritten:
+
+1. **Discovery** – Die Discovery-Instanz findet Kodi-Geräte im lokalen Netzwerk automatisch.
+2. **Konfigurator** – Der Konfigurator legt alle benötigten Instanzen für ein gefundenes Gerät an.
+3. **Splitter + IO** – Der Splitter stellt die Verbindung zum Kodi JSON-RPC Server her und verteilt Events an die Device-Instanzen.
+4. **Device-Instanzen** – Jede Device-Instanz bildet einen Funktionsbereich der Kodi-API ab und stellt Statusvariablen sowie Aktionsmöglichkeiten bereit.
+
+In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
+
+- In Einstellungen/Dienste/Steuerung/Webserver  
+   - Steuerung über HTTP erlauben.  
+   - Username und Password nach eigenen Ermessen.  
+- In Einstellungen/Dienste/Steuerung/Anwendungskontrolle  
+   - Fernsteuerung durch Anwendungen anderer Rechner erlauben.  
+- In Einstellungen/Dienste/UpnP/DLNA
+   - UPnP-Support aktivieren.  
+
+> **Hinweis:** Damit Geräte über die Discovery-Instanz gefunden werden können, müssen bei gerouteten Netzen und bei NAT-Systemen Multicast-Pakete korrekt weitergeleitet werden.
+
+## 3. Voraussetzungen
+
+ - Symcon ab Version 9.0
  - Kodi installation auf einem unterstützen System
 
-## 3. Installation
+## 4. Software-Installation
 
    Bei privater Nutzung:  
    * Über den Module Store das 'KODI'-Modul installieren.
 
    **Bei kommerzieller Nutzung (z.B. als Errichter oder Integrator) wenden Sie sich bitte an den Autor.**  
 
-## 4. Vorbereitungen
+## 5. Enthaltende Module
 
- In den Kodi-Systemen folgende Einstellungen vornehmen:
+|         Modul          |     Typ      |                            Funktion                            |
+| :--------------------: | :----------: | :------------------------------------------------------------: |
+|      KodiSplitter      |   Splitter   |      JSON-RPC-Verbindung zu Kodi, KeepAlive und Watchdog       |
+|    KodiConfigurator    | Konfigurator |            Einfache Erstellung aller Kodi-Instanzen            |
+|     KodiDiscovery      |  Discovery   |      Automatische Erkennung von Kodi-Geräten im Netzwerk       |
+|    KodiDeviceAddons    |    Gerät     |   Addons de-/aktivieren, lesen, visualisieren und ausführen    |
+| KodiDeviceApplication  |    Gerät     |          Lautstärke, Stummschaltung, Software beenden          |
+| KodiDeviceAudioLibrary |    Gerät     |         Audio-Datenbank lesen, Scannen und Bereinigen          |
+|  KodiDeviceFavourites  |    Gerät     |          Favoriten lesen, visualisieren und ausführen          |
+|    KodiDeviceFiles     |    Gerät     |          Quellen, Verzeichnisse und Dateien auslesen           |
+|     KodiDeviceGUI      |    Gerät     |  Fenster, Steuerung, Skin, Vollbildmodus, Benachrichtigungen   |
+|    KodiDeviceInput     |    Gerät     |              Tastendrücke und Texteingaben senden              |
+|    KodiDevicePlayer    |    Gerät     | Playerstatus und aktuelle Wiedergabe steuern und visualisieren |
+|   KodiDevicePlaylist   |    Gerät     |         Playlists beschreiben, lesen und visualisieren         |
+|     KodiDevicePVR      |    Gerät     |           PVR-Kanäle, Aufnahmen und Timer verwalten            |
+|   KodiDeviceSettings   |    Gerät     |           Einstellungen von Kodi lesen und schreiben           |
+|    KodiDeviceSystem    |    Gerät     |       Systemzustand steuern (Ein/Aus, Neustart, Standby)       |
+| KodiDeviceVideoLibrary |    Gerät     |         Video-Datenbank lesen, Scannen und Bereinigen          |
 
- - In Einstellungen/Dienste/Steuerung/Webserver  
-    - Steuerung über HTTP erlauben.  
-    - Username und Password nach eigenen Ermessen.  
- - In Einstellungen/Dienste/Steuerung/Anwendungskontrolle  
-    - Fernsteuerung durch Anwendungen anderer Rechner erlauben.  
- - In Einstellungen/Dienste/UpnP/DLNA
-    - UPnP-Support aktivieren.  
-
-
-## 5. Einrichten der Instanzen in IPS
+## 6. Einrichten der Instanzen in IPS
 
   **Hinweis:**  
   Damit Geräte über die Discovery-Instanz gefunden werden können, müssen bei in gerouteten Netzen und bei NAT Systemen Multicast-Pakete korrekt weitergeleitet werden.  
@@ -97,7 +142,28 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
  
 
 
-## 6. Funktionen der Instanzen
+## 7. Statusvariablen
+
+Alle Device-Instanzen legen automatisch Statusvariablen an, die den aktuellen Zustand des jeweiligen Kodi-Funktionsbereichs abbilden. Die Variablen werden anhand der RPC-Properties des jeweiligen Namespace erzeugt und über Events vom Kodi-Splitter aktuell gehalten.
+
+|         Modul          | Statusvariablen (Beispiele)                                                         |
+| :--------------------: | :---------------------------------------------------------------------------------- |
+|    KodiDeviceAddons    | Addon-Liste, Enable-Status                                                          |
+| KodiDeviceApplication  | Lautstärke (volume), Stummschaltung (muted), Name, Version                          |
+| KodiDeviceAudioLibrary | Scan-Status, Clean-Status                                                           |
+|  KodiDeviceFavourites  | Favoriten-Liste                                                                     |
+|     KodiDeviceGUI      | Aktuelles Fenster, Aktuelle Steuerung, Skin, Vollbildmodus, Bildschirmschoner       |
+|    KodiDeviceInput     | Eingabe erforderlich (InputRequested)                                               |
+|    KodiDevicePlayer    | Wiedergabestatus (speed, time, percentage), Partymodus, Wiederholung, Zufall        |
+|   KodiDevicePlaylist   | Playlist-Inhalt                                                                     |
+|     KodiDevicePVR      | Verfügbarkeit, Aufnahme aktiv, Suchlauf aktiv                                       |
+|   KodiDeviceSettings   | Abgefragte Einstellungen                                                            |
+|    KodiDeviceSystem    | Power, Standby, Hibernate, Reboot, Shutdown, Eject Optical Drive, Low Battery Event |
+| KodiDeviceVideoLibrary | Scan-Status, Clean-Status                                                           |
+
+Die Statusvariablen werden über die RPC-Events (`OnPropertyChanged`, `OnAVStart`, `OnAVStop` usw.) automatisch aktualisiert. Zusätzlich können über die PHP-Funktion `*_RequestState` einzelne Werte manuell abgefragt werden.
+
+## 8. Funktionen der Instanzen
 
 Jeder Typ von Instanz bildet einen bestimmen Funktionsbereich der Kodi-API ab.
 
@@ -265,7 +331,7 @@ Das Setzen von Daten in der Datenbank ist nicht möglich!
  RPC-Namensraum : JSONRPC  
   ![Splitter](imgs/Splitter.png)  
    
-## 7. PHP-Befehlsreferenz
+## 9. PHP-Befehlsreferenz
 
 ### 1. Kodi Addons
 
@@ -1791,7 +1857,7 @@ boolean KODIVIDEOLIB_Export(integer $InstanzeID, string $Path, boolean $Overwrit
 1-8 vorbereitet
 9 ff fehlt
 
-## 8. Aktionen
+## 10. Aktionen
 
 __Grundsätzlich können alle bedienbaren Statusvariablen als Ziel einer [`Aktion`](https://www.symcon.de/service/dokumentation/konzepte/automationen/ablaufplaene/aktionen/) mit 'Auf Wert schalten' angesteuert werden, so das hier keine speziellen Aktionen benutzt werden müssen.__
 
@@ -1801,7 +1867,7 @@ Wenn so eine Instanz als Ziel einer Aktion ausgewählt wurde, stehen folgende Ak
 //Todo  
 
 
-## 9. Anhang
+## 11. Anhang
 
 ###  1. GUID der Module
 
@@ -2068,12 +2134,12 @@ Version 2.01:
   Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:  
 
   PayPal:  
-<a href="https://www.paypal.com/donate?hosted_button_id=G2SLW2MEMQZH2" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>  
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](https://paypal.me/Nall4chan)  
 
   Wunschliste:  
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share)  
 
 
-## 11. Lizenz  
+## 12. Lizenz  
 
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)  

@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
@@ -36,7 +24,7 @@ class KodiDeviceFavourites extends KodiBase
     public const PropertyShowFavlist = 'showFavlist';
     public const PropertyThumbSize = 'ThumbSize';
     public const ActionVisibleFormElementsFavProperties = 'showFavlist';
-    public const Hook = '/hook/KodiFavlist';
+    public const Hook = 'KodiFavlist';
 
     protected static $Namespace = 'Favourites';
     protected static $Properties = [];
@@ -61,10 +49,11 @@ class KodiDeviceFavourites extends KodiBase
         // Todo 7.0 -> Style per Konfig-Formular
         $ID = @$this->GetIDForIdent('FavlistDesign');
         if ($ID == false) {
-            $ID = $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
-            IPS_SetHidden($ID, true);
+            $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
+            IPS_SetHidden($this->GetIDForIdent('FavlistDesign'), true);
         }
         $this->RegisterPropertyInteger('Favlistconfig', $ID);
+        $this->RegisterTimer('RefreshFavs', 0, 'KODIPVR_RefreshFavouriteList(' . $this->InstanceID . ');');
     }
 
     /**
@@ -78,25 +67,30 @@ class KodiDeviceFavourites extends KodiBase
 
         if ($this->ReadPropertyBoolean(self::PropertyShowFavlist)) {
             $this->RegisterVariableString('Favlist', $this->Translate('Favorites'), '~HTMLBox', 1);
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook(self::Hook . $this->InstanceID);
-            }
-
+            $this->RegisterHook(self::Hook . $this->InstanceID);
             $ID = @$this->GetIDForIdent('FavlistDesign');
             if ($ID == false) {
-                $ID = $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
-                IPS_SetHidden($ID, true);
+                $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
+                IPS_SetHidden($this->GetIDForIdent('FavlistDesign'), true);
             }
+            $this->SetTimerInterval('RefreshFavs', 15 * 60 * 1000);
         } else {
             $this->UnregisterVariable('Favlist');
+            $this->UnregisterHook(self::Hook . $this->InstanceID);
+            $this->SetTimerInterval('RefreshFavs', 0);
         }
         $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
         if ($ScriptID > 0) {
             $this->RegisterReference($ScriptID);
         }
-
         parent::ApplyChanges();
     }
+
+    /**
+     * GetConfigurationForm
+     *
+     * @return string
+     */
     public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
@@ -208,14 +202,106 @@ class KodiDeviceFavourites extends KodiBase
     }
 
     /**
+     * Erzeugt aus der Liste der Favoriten eine HTML-Tabelle für eine ~HTMLBox-Variable.
+     *
+     * @access private
+     */
+    public function RefreshFavouriteList(): bool
+    {
+        if (!$this->ReadPropertyBoolean(self::PropertyShowFavlist)) {
+            return false;
+        }
+        $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
+        if ($ScriptID == 0) {
+            return false;
+        }
+        if (!IPS_ScriptExists($ScriptID)) {
+            return false;
+        }
+
+        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
+        $Config = @unserialize($result);
+        if (($Config === false) || (!is_array($Config))) {
+            trigger_error($this->Translate('Error on read Favlistconfig-Script'));
+            return false;
+        }
+        $AllFavs = $this->GetFavourites('all');
+        if ($AllFavs === false) {
+            return false;
+        }
+        $Data = array_filter($AllFavs, [$this, 'FilterFav'], ARRAY_FILTER_USE_BOTH);
+
+        $NewSecret = base64_encode(openssl_random_pseudo_bytes(12));
+        $this->WebHookSecret = $NewSecret;
+
+        $HTMLData = $this->GetTableHeader($Config);
+        $pos = 0;
+
+        if (count($Data) > 0) {
+            foreach ($Data as $line) {
+                $Line = [];
+                foreach ($line as $key => $value) {
+                    if (is_string($key)) {
+                        $Line[ucfirst($key)] = $value;
+                    } else {
+                        $Line[$key] = $value;
+                    } //$key is not a string
+                }
+                if (array_key_exists('Thumbnail', $Config['Spalten'])) {
+                    if ($Line['Thumbnail'] != '') {
+                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyThumbSize), 0);
+                        if ($CoverRAW === false) {
+                            $Line['Thumbnail'] = '';
+                        } else {
+                            $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
+                        }
+                    }
+                }
+                if (!array_key_exists('Path', $Line)) {
+                    if (array_key_exists('Windowparameter', $Line)) {
+                        $Line['Path'] = $Line['Windowparameter'];
+                    } else {
+                        $Line['Path'] = '';
+                    }
+                }
+
+                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '"
+                        ' . $this->GetWebHookLink($Line, $NewSecret) . '>';
+
+                foreach ($Config['Spalten'] as $feldIndex => $value) {
+                    if (!array_key_exists($feldIndex, $Line)) {
+                        $Line[$feldIndex] = '';
+                    }
+                    if ($Line[$feldIndex] === -1) {
+                        $Line[$feldIndex] = '';
+                    }
+                    if (is_array($Line[$feldIndex])) {
+                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
+                    }
+                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
+                }
+                $HTMLData .= '</tr>' . PHP_EOL;
+                $pos++;
+            }
+        }
+        $HTMLData .= $this->GetTableFooter();
+        $this->SetValueString('Favlist', $HTMLData);
+        return true;
+    }
+
+    /**
      * Wird ausgeführt wenn sich der Status vom Parent ändert.
      * @access protected
      */
     protected function IOChangeState(int $State): void
     {
+        $this->SetTimerInterval('RefreshFavs', 0);
         parent::IOChangeState($State);
         if ($State == IS_ACTIVE) {
-            $this->RefreshFavouriteslist();
+            $this->RefreshFavouriteList();
+            if ($this->ReadPropertyBoolean(self::PropertyShowFavlist)) {
+                $this->SetTimerInterval('RefreshFavs', 15 * 60 * 1000);
+            }
         }
     }
 
@@ -295,90 +381,6 @@ class KodiDeviceFavourites extends KodiBase
                 echo $this->Translate('Bad Request');
                 break;
         }
-    }
-
-    /**
-     * Erzeugt aus der Liste der Favoriten eine HTML-Tabelle für eine ~HTMLBox-Variable.
-     *
-     * @access private
-     */
-    private function RefreshFavouriteslist(): void
-    {
-        if (!$this->ReadPropertyBoolean(self::PropertyShowFavlist)) {
-            return;
-        }
-        $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
-        if ($ScriptID == 0) {
-            return;
-        }
-        if (!IPS_ScriptExists($ScriptID)) {
-            return;
-        }
-
-        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
-        $Config = @unserialize($result);
-        if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read Favlistconfig-Script'));
-            return;
-        }
-        $AllFavs = $this->GetFavourites('all');
-        $Data = array_filter($AllFavs, [$this, 'FilterFav'], ARRAY_FILTER_USE_BOTH);
-
-        $NewSecret = base64_encode(openssl_random_pseudo_bytes(12));
-        $this->WebHookSecret = $NewSecret;
-
-        $HTMLData = $this->GetTableHeader($Config);
-        $pos = 0;
-
-        if (count($Data) > 0) {
-            foreach ($Data as $line) {
-                $Line = [];
-                foreach ($line as $key => $value) {
-                    if (is_string($key)) {
-                        $Line[ucfirst($key)] = $value;
-                    } else {
-                        $Line[$key] = $value;
-                    } //$key is not a string
-                }
-                if (array_key_exists('Thumbnail', $Config['Spalten'])) {
-                    if ($Line['Thumbnail'] != '') {
-                        $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyThumbSize), 0);
-                        if ($CoverRAW === false) {
-                            $Line['Thumbnail'] = '';
-                        } else {
-                            $Line['Thumbnail'] = '<img src="data:image/png;base64,' . base64_encode($CoverRAW) . '" />';
-                        }
-                    }
-                }
-                if (!array_key_exists('Path', $Line)) {
-                    if (array_key_exists('Windowparameter', $Line)) {
-                        $Line['Path'] = $Line['Windowparameter'];
-                    } else {
-                        $Line['Path'] = '';
-                    }
-                }
-
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '"
-                        ' . $this->GetWebHookLink($Line, $NewSecret) . '>';
-
-                foreach ($Config['Spalten'] as $feldIndex => $value) {
-                    if (!array_key_exists($feldIndex, $Line)) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if ($Line[$feldIndex] === -1) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if (is_array($Line[$feldIndex])) {
-                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
-                    }
-                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
-                }
-                $HTMLData .= '</tr>' . PHP_EOL;
-                $pos++;
-            }
-        }
-        $HTMLData .= $this->GetTableFooter();
-        $this->SetValueString('Favlist', $HTMLData);
     }
 
     /**
@@ -499,5 +501,3 @@ echo serialize($Config);
         return $Script;
     }
 }
-
-/** @} */

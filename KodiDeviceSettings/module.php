@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
@@ -137,7 +125,7 @@ class KodiDeviceSettings extends KodiBase
      *
      * @access public
      * @param string $Setting Der Name der zu lesenden Einstellung.
-     * @return array|bool Wert der Einstellung oder NULL bei Fehler.
+     * @return mixed Wert der Einstellung oder NULL bei Fehler.
      */
     public function GetSettingValue(string $Setting): mixed
     {
@@ -218,10 +206,8 @@ class KodiDeviceSettings extends KodiBase
         $SettingsList = [];
         if ($this->HasActiveParent()) {
             $Settings = $this->GetControllableSettings();
-            if (is_array($Settings)) {
-                $SettingsList = $Settings;
-                $this->SendDebug('Settings', $SettingsList, 0);
-            }
+            $SettingsList = $Settings;
+            $this->SendDebug('Settings', $SettingsList, 0);
         } else {
             $Form['actions'][2]['visible'] = true;
             $Form['actions'][2]['popup']['items'][0]['caption'] = 'Error';
@@ -275,11 +261,16 @@ class KodiDeviceSettings extends KodiBase
     }
 
     ################## PRIVATE
+    /**
+     * GetControllableSettings
+     *
+     * @return array
+     */
     private function GetControllableSettings(): array
     {
         $Settings = @$this->GetSettings();
         if ($Settings === false) {
-            return false;
+            return [];
         }
         $Settings = array_filter($Settings, [$this, 'FilterSymconVariables']);
 
@@ -288,6 +279,12 @@ class KodiDeviceSettings extends KodiBase
         return array_values($Settings);
     }
 
+    /**
+     * FilterSymconVariables
+     *
+     * @param  mixed $Setting
+     * @return bool
+     */
     private function FilterSymconVariables(&$Setting): bool
     {
         switch ($Setting['type']) {
@@ -519,5 +516,3 @@ class KodiDeviceSettings extends KodiBase
         $this->ReloadForm();
     }
 }
-
-/** @} */

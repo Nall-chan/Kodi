@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
@@ -36,7 +24,7 @@ class KodiDeviceAddons extends KodiBase
     public const PropertyShowAddonlist = 'showAddonlist';
     public const PropertyThumbSize = 'ThumbSize';
     public const ActionVisibleFormElementsAddon = 'showAddonlist';
-    public const Hook = '/hook/KodiAddonlist';
+    public const Hook = 'KodiAddonlist';
 
     protected static $Namespace = 'Addons';
     protected static $Properties = [];
@@ -71,8 +59,8 @@ class KodiDeviceAddons extends KodiBase
         // Todo 7.0 -> Style per Konfig-Formular
         $ID = @$this->GetIDForIdent('AddonlistDesign');
         if ($ID == false) {
-            $ID = $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
-            IPS_SetHidden($ID, true);
+            $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
+            IPS_SetHidden($this->GetIDForIdent('AddonlistDesign'), true);
         }
         $this->RegisterPropertyInteger('Addonlistconfig', $ID);
     }
@@ -86,17 +74,15 @@ class KodiDeviceAddons extends KodiBase
     {
         if ($this->ReadPropertyBoolean(self::PropertyShowAddonlist)) {
             $this->RegisterVariableString('Addonlist', 'Addons', '~HTMLBox', 1);
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->RegisterHook(self::Hook . $this->InstanceID);
-            }
-
+            $this->RegisterHook(self::Hook . $this->InstanceID);
             $ID = @$this->GetIDForIdent('AddonlistDesign');
             if ($ID == false) {
-                $ID = $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
-                IPS_SetHidden($ID, true);
+                $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
+                IPS_SetHidden($this->GetIDForIdent('AddonlistDesign'), true);
             }
         } else {
             $this->UnregisterVariable('Addonlist');
+            $this->UnregisterHook(self::Hook . $this->InstanceID);
         }
         $ScriptID = $this->ReadPropertyInteger('Addonlistconfig');
         if ($ScriptID > 0) {
@@ -761,5 +747,3 @@ echo serialize($Config);
         return $Script;
     }
 }
-
-/** @} */

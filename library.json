@@ -4,8 +4,7 @@
     "name": "Kodi Library",
     "url": "https://github.com/Nall-chan/Kodi/",
     "compatibility": {
-        "version": "8.1",
-        "date": 1751809221
+        "version": "9.0"
     },
     "version": "3.02",
     "build": 302,

@@ -2,18 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @addtogroup kodi
- * @{
- *
- * @package       Kodi
- * @file          module.php
- * @author        Michael Tröger <micha@nall-chan.net>
- * @copyright     2020 Michael Tröger
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- * @version       3.00
- *
- */
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
@@ -205,15 +193,16 @@ class KodiDevicePlayer extends KodiBase
         'albumlabel',
     ];
     protected static $Playertype = [
-        'song'     => 0,
-        'audio'    => 0,
-        'radio'    => 0,
-        'video'    => 1,
-        'episode'  => 1,
-        'movie'    => 1,
-        'tv'       => 1,
-        'picture'  => 2,
-        'pictures' => 2
+        'unknown'   => -1,
+        'song'      => 0,
+        'audio'     => 0,
+        'radio'     => 0,
+        'video'     => 1,
+        'episode'   => 1,
+        'movie'     => 1,
+        'tv'        => 1,
+        'picture'   => 2,
+        'pictures'  => 2
     ];
 
     /**
@@ -510,25 +499,25 @@ class KodiDevicePlayer extends KodiBase
                 if (property_exists($ret, 'displayartist')) {
                     $this->SetValueString('artist', $ret->displayartist);
                 } else {
-                    if (property_exists($ret, 'albumartist')) {
+                    if (property_exists($ret, 'artist')) {
                         if (is_array($ret->artist)) {
-                            $this->SetValueString('artist', implode(', ', $ret->albumartist));
+                            $this->SetValueString('artist', implode(', ', $ret->artist));
                         } else {
-                            $this->SetValueString('artist', $ret->albumartist);
+                            $this->SetValueString('artist', $ret->artist);
                         }
                     } else {
-                        if (property_exists($ret, 'artist')) {
+                        if (property_exists($ret, 'albumartist')) {
                             if (is_array($ret->artist)) {
-                                $this->SetValueString('artist', implode(', ', $ret->artist));
+                                $this->SetValueString('artist', implode(', ', $ret->albumartist));
                             } else {
-                                $this->SetValueString('artist', $ret->artist);
+                                $this->SetValueString('artist', $ret->albumartist);
                             }
                         } else {
                             $this->SetValueString('artist', '');
                         }
                     }
-                }
 
+                }
                 if (property_exists($ret, 'genre')) {
                     if (is_array($ret->genre)) {
                         $this->SetValueString('genre', implode(', ', $ret->genre));
@@ -871,7 +860,7 @@ class KodiDevicePlayer extends KodiBase
             $Value = 'off';
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->SetSubtitle(['playerid' => $this->PlayerId, 'subtitle' => $Value]);
+        $KodiData->SetSubtitle(['playerid' => $this->PlayerId, 'subtitle' => $Value, 'enable' => $Value != -1]);
         $ret = $this->Send($KodiData);
         if ($ret === 'OK') {
             return true;
@@ -1471,15 +1460,11 @@ class KodiDevicePlayer extends KodiBase
                             if ($this->PlayerId != self::Video) {
                                 break;
                             }
-                            /* if (is_object($value)) {
-                              if (property_exists($value, 'index')) {
-                              $this->SetValueInteger('subtitle', (int) $value->index);
-                              } else {
-                              $this->SetValueInteger('subtitle', -1);
-                              }
-                              } else {
-                              $this->SetValueInteger('subtitle', -1);
-                              } */
+                            if (is_object($value)) {
+                                if (property_exists($value, 'index')) {
+                                    $this->SetValueInteger('subtitle', (int) $value->index);
+                                }
+                            }
                             break;
                         case 'audiostreams':
                             if ($this->PlayerId != self::Video) {
@@ -1620,7 +1605,7 @@ class KodiDevicePlayer extends KodiBase
 
                 $this->setActivePlayer(false);
                 $this->SetCover('');
-                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
                 //todo RequestAction GetItemInternal wird private
                 IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
                 break;
@@ -1628,21 +1613,21 @@ class KodiDevicePlayer extends KodiBase
             case 'OnResume':
                 $this->setActivePlayer(true);
                 $this->SetValueInteger('Status', 2);
-                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
                 //todo RequestAction GetItemInternal wird private
-                IPS_RunScriptText('<? @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
+                IPS_RunScriptText('<? IPS_Sleep(750);  @KODIPLAYER_GetItemInternal(' . $this->InstanceID . ');');
                 $this->SetTimerInterval(self::TimerName, 2000);
                 break;
             case 'OnPause':
                 $this->SetTimerInterval(self::TimerName, 0);
                 $this->SetValueInteger('Status', 3);
-                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
+                IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_RequestState(' . $this->InstanceID . ',"ALL");');
                 break;
             case 'OnSeek':
                 $this->SetValueString('time', $this->ConvertTime($KodiPayload->player->time));
                 break;
             case 'OnSpeedChanged':
-                IPS_RunScriptText('<? @KODIPLAYER_RequestState(' . $this->InstanceID . ',"speed");');
+                IPS_RunScriptText('<? IPS_Sleep(500); @KODIPLAYER_RequestState(' . $this->InstanceID . ',"speed");');
                 break;
             default:
                 $this->SendDebug($Method, $KodiPayload, 0);
@@ -1729,7 +1714,7 @@ class KodiDevicePlayer extends KodiBase
      *   enum['previous', 'next']
      * @return bool True bei Erfolg, sonst false.
      */
-    private function GoToValue(mixed $Value): bool
+    private function GoToValue(int|string $Value): bool
     {
         if (!$this->isActive) {
             trigger_error($this->Translate('Player not active'), E_USER_NOTICE);
@@ -1753,7 +1738,7 @@ class KodiDevicePlayer extends KodiBase
      *
      * @access private
      * @param string $ItemTyp Der Typ des Item.
-     * @param string $ItemValue Der Wert des Item.
+     * @param mixed $ItemValue Der Wert des Item.
      * @param array $Ext Array welches mit übergeben werden soll (optional).
      * @return bool True bei Erfolg. Sonst false.
      */
@@ -1784,7 +1769,11 @@ class KodiDevicePlayer extends KodiBase
                     $Assoziation[] = [$item->index, 'Unbekannt', '', -1];
                 }
             } else {
-                $Assoziation[] = [$item->index, $item->language, '', -1];
+                if (property_exists($item, 'name')) {
+                    $Assoziation[] = [$item->index, $item->language . ' - ' . $item->name, '', -1];
+                } else {
+                    $Assoziation[] = [$item->index, $item->language, '', -1];
+                }
             }
         }
         return $Assoziation;
@@ -1809,5 +1798,3 @@ class KodiDevicePlayer extends KodiBase
         $this->RegisterProfileIntegerEx('AudioStream.' . $this->InstanceID . '.Kodi', '', '', '', $Assoziation);
     }
 }
-
-/** @} */
