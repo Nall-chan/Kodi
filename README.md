@@ -16,32 +16,16 @@ Implementierung der Kodi JSON-RPC API in IP-Symcon.
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Vorbemerkungen](#2-vorbemerkungen)
   - [Zur Library](#zur-library)
-  - [Zur Integration von Geräten](#zur-integration-von-geräten)
+  - [Zur Integration von Geräten](#zur-integration-von-geraten)
 - [3. Voraussetzungen](#3-voraussetzungen)
 - [4. Software-Installation](#4-software-installation)
 - [5. Enthaltende Module](#5-enthaltende-module)
 - [6. Einrichten der Instanzen in IPS](#6-einrichten-der-instanzen-in-ips)
 - [7. Statusvariablen](#7-statusvariablen)
 - [8. Funktionen der Instanzen](#8-funktionen-der-instanzen)
-- [9. PHP-Befehlsreferenz](#9-php-befehlsreferenz)
-  - [1. Kodi Addons](#1-kodi-addons)
-  - [2. Kodi Anwendung](#2-kodi-anwendung)
-  - [3. Kodi Audio Datenbank](#3-kodi-audio-datenbank)
-  - [4. Kodi Favoriten](#4-kodi-favoriten)
-  - [5. Kodi Files](#5-kodi-files)
-  - [6. Kodi GUI](#6-kodi-gui)
-  - [7. Kodi Input](#7-kodi-input)
-  - [8. Kodi Player](#8-kodi-player)
-  - [9. Kodi Playlist](#9-kodi-playlist)
-  - [10. Kodi PVR](#10-kodi-pvr)
-  - [11. Kodi Settings](#11-kodi-settings)
-  - [12. Kodi System](#12-kodi-system)
-  - [13. Kodi Video Datenbank](#13-kodi-video-datenbank)
-  - [14. Kodi Splitter](#14-kodi-splitter)
 - [10. Aktionen](#10-aktionen)
 - [11. Anhang](#11-anhang)
   - [1. GUID der Module](#1-guid-der-module)
-  - [2. Eigenschaften der Instanzen](#2-eigenschaften-der-instanzen)
   - [3. Changelog](#3-changelog)
   - [4. Spenden](#4-spenden)
 - [12. Lizenz](#12-lizenz)
@@ -138,9 +122,6 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
   - ![Instanzen erzeugen](imgs/Konfigurator.png)
   - Über den Button 'Gateway konfigurieren' kann die optionale HTTP-Authentifizierung sowie ein abweichender JSON-RPC Port konfiguriert werden.  
   - In den jeweiligen Instanzen sind dann noch weitere Einstellungen nach eigenen Vorlieben einzustellen.  
-
- 
-
 
 ## 7. Statusvariablen
 
