@@ -1,15 +1,17 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
 [![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
-[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#12-lizenz)
+[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
 [![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
-[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
 
-# Kodi Settings <!-- omit in toc -->
+# Kodi Einstellungen (KodiDeviceSettings)  <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->
+Ermöglicht das Auslesen, Ändern und Zurücksetzen von Kodi-Einstellungen in IP-Symcon.
+
+## Inhaltsverzeichnis  <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -17,21 +19,24 @@
 - [4. Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 - [5. Statusvariablen](#5-statusvariablen)
 - [6. Visualisierung](#6-visualisierung)
+  - [Kachel Visualisierung](#kachel-visualisierung)
+  - [WebFront Visualisierung](#webfront-visualisierung)
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Changelog](#changelog)
-  - [Spenden](#spenden)
+  - [1. Changelog](#1-changelog)
+  - [2. Spenden](#2-spenden)
 - [10. Lizenz](#10-lizenz)
 
 ## 1. Funktionsumfang
 
-- Lesen und Schreiben von Kodi-Einstellungen
-- Anzeige von Systeminformationen
-- Konfiguration von Kodi über IP-Symcon
+- Lesen und Schreiben von Kodi-System- und Dienst-Einstellungen.
+- Zurücksetzen von Einstellungen auf Werkseinstellungen.
+- Anzeige von Einstellungen als Statusvariablen in IP-Symcon.
 
 ## 2. Voraussetzungen
 
+- Symcon ab Version 9.0
 - Funktionierender KodiSplitter
 - Konfigurierte Verbindung zu einem Kodi-Gerät
 
@@ -41,77 +46,96 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
-1. Wird normalerweise automatisch vom KodiConfigurator angelegt
-2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceSettings)
-3. Mit übergeordnetem KodiSplitter verbinden
+Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
 
 **Konfigurationsseite:**
 
-| Eigenschaft | Typ | Standardwert | Funktion |
-| :---: | :---: | :---: | :--- |
-| RequestState | integer | 60 | Interval der Werte-Abfrage in Sekunden |
+| Name | Eigenschaft | Typ | Standardwert | Funktion |
+| :--- | :--- | :---: | :--- | :--- |
+| Abfrage-Intervall | RequestState | int | 60 | Intervall der Werte-Abfrage in Sekunden |
 
 ## 5. Statusvariablen
 
-- Abgefragte Einstellungen (abhängig von Konfiguration)
+Folgende Statusvariablen werden automatisch je nach ausgewählter Konfiguration angelegt.
+
+| Name | Typ | Ident | Beschreibung |
+| :--- | :---: | :--- | :--- |
+| Abgefragte Einstellungen | mixed | *Variiert* | Je nach konfigurierter Einstellung in Kodi |
 
 ## 6. Visualisierung
 
+### Kachel Visualisierung
+
+Darstellung als Kachel:  
 ![Settings](imgs/Settings.png)
+
+### WebFront Visualisierung
+
 ![Settings WebFront](imgs/Settings_WF.png)
 
 ## 7. PHP-Befehlsreferenz
 
+Für alle Befehle gilt:  
+Tritt ein Fehler auf, wird eine Warnung erzeugt.
+
 ```php
-array KODISETTINGS_GetSettings(integer $InstanzeID);
+array KODISETTINGS_GetSettings(int $InstanzID)
 ```
+
 Liefert alle Einstellungen als Array.
 
-```php
-bool|integer|string|array KODISETTINGS_GetSettingValue(integer $InstanzeID, string $Setting);
-```
-Liefert den Wert einer, in Setting übergeben, Einstellung.
-Es muss die id der Einstellung z.B. `services.devicename` übergeben werden.
+---
 
 ```php
-array KODISETTINGS_ResetSettingValue(integer $InstanzeID, string $Setting);
+bool|int|string|array KODISETTINGS_GetSettingValue(int $InstanzID, string $Setting)
 ```
-Setzen eine Einstellung auf die Werkseinstellung zurück.
-Es muss die id der Einstellung z.B. `services.devicename` übergeben werden.
+
+Liefert den Wert der übergebenen Einstellung (z. B. `services.devicename`).
+
+---
 
 ```php
-array KODISETTINGS_SetSettingValueBoolean(integer $InstanzeID, string $Setting, boolean $Value);
+bool KODISETTINGS_ResetSettingValue(int $InstanzID, string $Setting)
 ```
-Schreibt den in `$Value` übergeben Wert in die in `$Settings` angegebene Einstellung.
-Es muss die id der Einstellung z.B. `services.esenabled` übergeben werden.
+
+Setzt eine Einstellung (z. B. `services.devicename`) auf Werkseinstellung zurück.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array KODISETTINGS_SetSettingValueInteger(integer $InstanzeID, string $Setting, integer $Value);
+bool KODISETTINGS_SetSettingValueBoolean(int $InstanzID, string $Setting, bool $Value)
+bool KODISETTINGS_SetSettingValueInteger(int $InstanzID, string $Setting, int $Value)
+bool KODISETTINGS_SetSettingValueString(int $InstanzID, string $Setting, string $Value)
 ```
-Schreibt den in `$Value` übergeben Wert in die in `$Settings` angegebene Einstellung.
-Es muss die id der Einstellung z.B. `services.webserverport` übergeben werden.
 
-```php
-array KODISETTINGS_SetSettingValueString(integer $InstanzeID, string $Setting, string $Value);
-```
-Schreibt den in `$Value` übergeben Wert in die in `$Settings` angegebene Einstellung.
-Es muss die id der Einstellung z.B. `services.devicename` übergeben werden.
+Schreibt den Wert in die angegebene Einstellung (`$Setting`).  
+Liefert `true` bei Erfolg, sonst `false`.
 
 ## 8. Aktionen
 
-- Einstellungen ändern über Variablen
+**Grundsätzlich können alle bedienbaren Statusvariablen als Ziel einer [`Aktion`](https://www.symcon.de/service/dokumentation/konzepte/automationen/ablaufplaene/aktionen/) mit `Auf Wert schalten` angesteuert werden, so dass hier keine speziellen Aktionen benutzt werden müssen.**
+
+- Einstellungen über Variablen im WebFront/Kachel verändern
 
 ## 9. Anhang
 
-### Changelog
+### 1. Changelog
 
-Siehe Haupt-[README](../README.md)
+[Changelog der Library](../README.md#2-changelog)
 
-### Spenden
+### 2. Spenden
 
+Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:
+
+PayPal:  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](https://paypal.me/Nall4chan)
+
+Wunschliste:  
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share)
 
 ## 10. Lizenz
 
-[CC BY-NC-SA 4.0](../LICENSE)
+IPS-Modul:  
+[Custom NC-SA](../LICENSE)

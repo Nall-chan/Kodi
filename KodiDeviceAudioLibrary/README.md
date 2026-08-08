@@ -1,15 +1,17 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
 [![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
-[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#12-lizenz)
+[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
 [![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
-[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
 
-# Kodi AudioLibrary <!-- omit in toc -->
+# Kodi Audio Datenbank (KodiDeviceAudioLibrary)  <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->
+Ermöglicht das Auslesen, Scannen, Bereinigen und Exportieren der Audio-Datenbank von Kodi in IP-Symcon.
+
+## Inhaltsverzeichnis  <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -17,22 +19,25 @@
 - [4. Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 - [5. Statusvariablen](#5-statusvariablen)
 - [6. Visualisierung](#6-visualisierung)
+  - [Kachel Visualisierung](#kachel-visualisierung)
+  - [WebFront Visualisierung](#webfront-visualisierung)
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Changelog](#changelog)
-  - [Spenden](#spenden)
+  - [1. Changelog](#1-changelog)
+  - [2. Spenden](#2-spenden)
 - [10. Lizenz](#10-lizenz)
 
 ## 1. Funktionsumfang
 
-- Zugriff auf die Kodi-Audio-Datenbank
-- Anzeige von Künstlern, Alben und Songs
-- Scannen und Bereinigen der Datenbank
-- Export der Datenbank
+- Zugriff auf die Kodi-Audio-Datenbank.
+- Auslesen von Künstlern, Alben, Songs und Genres.
+- Ausführen von Scannen und Bereinigen der Datenbank.
+- Exportieren der Datenbank.
 
 ## 2. Voraussetzungen
 
+- Symcon ab Version 9.0
 - Funktionierender KodiSplitter
 - Konfigurierte Verbindung zu einem Kodi-Gerät
 - Eingerichtete Musikbibliothek in Kodi
@@ -43,217 +48,238 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
-1. Wird normalerweise automatisch vom KodiConfigurator angelegt
-2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceAudioLibrary)
-3. Mit übergeordnetem KodiSplitter verbinden
+Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
 
 **Konfigurationsseite:**
 
-| Eigenschaft | Typ | Standardwert | Funktion |
-| :---: | :---: | :---: | :--- |
-| showScan | boolean | true | Statusvariable für DB-Scanner verwenden |
-| showDoScan | boolean | true | Statusvariable für DB-Bereinigung verwenden |
-| showClean | boolean | true | Aktions-Variable zum starten des Scan anlegen |
-| showDoClean | boolean | true | Aktions-Variable zum starten der Bereinigung anlegen |
+| Name | Eigenschaft | Typ | Standardwert | Funktion |
+| :--- | :--- | :---: | :--- | :--- |
+| Zeige Scan-Status | showScan | bool | true | Statusvariable für DB-Scan anzeigen |
+| Zeige Clean-Status | showClean | bool | true | Statusvariable für DB-Bereinigung anzeigen |
+| Zeige Scan-Aktion | showDoScan | bool | true | Aktions-Variable zum Starten des Scans anlegen |
+| Zeige Clean-Aktion | showDoClean | bool | true | Aktions-Variable zum Starten der Bereinigung anlegen |
 
 ## 5. Statusvariablen
 
-- Scan-Status
-- Clean-Status
-- Zuletzt hinzugefügte Alben/Songs
-- Zuletzt abgespielte Alben/Songs
+Folgende Statusvariablen werden automatisch angelegt.
+
+| Name | Typ | Ident | Beschreibung |
+| :--- | :---: | :--- | :--- |
+| Scannen | bool | Scan | Status des Datenbank-Scans |
+| Bereinigen | bool | Clean | Status der Datenbank-Bereinigung |
 
 ## 6. Visualisierung
 
+### Kachel Visualisierung
+
+Darstellung als Kachel:  
 ![AudioLibrary](imgs/AudioLib.png)
+
+### WebFront Visualisierung
+
 ![AudioLibrary WebFront](imgs/AudioLib_WF.png)
 
 ## 7. PHP-Befehlsreferenz
 
-```php
-boolean KODIAUDIOLIB_Scan(integer $InstanzeID);
-```
- Startet das bereinigen der Datenbank.
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+Für alle Befehle gilt:  
+Tritt ein Fehler auf, wird eine Warnung erzeugt.
 
 ```php
-boolean KODIAUDIOLIB_Clean(integer $InstanzeID);
+bool KODIAUDIOLIB_Scan(int $InstanzID)
 ```
- Startet das bereinigen der Datenbank.
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+Startet das Scannen der Audio-Datenbank.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
 
 ```php
-boolean KODIAUDIOLIB_Export(integer $InstanzeID, string $Path, boolean $Overwrite, boolean $includeImages);
+bool KODIAUDIOLIB_Clean(int $InstanzID)
 ```
- Exportiert die Audio Datenbank.
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+Startet das Bereinigen der Audio-Datenbank.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetAlbumDetails(integer $InstanzeID, integer $AlbumID);
+bool KODIAUDIOLIB_Export(int $InstanzID, string $Path, bool $Overwrite, bool $includeImages)
 ```
- Liest die Eigenschaften eines Album aus.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.
 
-|          Index           |    Typ    |        Beschreibung        |
-| :----------------------: | :-------: | :------------------------: |
-|          theme           | string[]  |                            |
-|       description        |  string   |        Beschreibung        |
-|           type           |  string   |                            |
-|          style           | string[]  |      Array der Stiele      |
-|         albumid          |  integer  |                            |
-|        playcount         |  integer  |   Anzahl der Wiedergaben   |
-|        albumlabel        |  string   |                            |
-|           mood           | string[]  |    Array der Stimmungen    |
-|      displayartist       |  string   |          Künstler          |
-|          artist          | string[]  |     Array der Künstler     |
-|         genreid          | integer[] |    Array der Genre IDs     |
-| musicbrainzalbumartistid |  string   | Music Brainz AlbumArtistID |
-|           year           |  integer  |      Erscheinungsjahr      |
-|          rating          |  integer  |         Bewertung          |
-|         artistid         | integer[] |   Array der Künstler IDs   |
-|          title           |  string   |      Titel des Album       |
-|    musicbrainzalbumid    |  string   |    Music Brainz AlbumID    |
-|          genre           | string[]  |      Array der Genres      |
-|          fanart          |  string   |      Pfad zum Fanart       |
-|        thumbnail         |  string   |       Pfad zum Cover       |
+Exportiert die Audio-Datenbank.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetAlbums(integer $InstanzeID);
+array|bool KODIAUDIOLIB_GetAlbumDetails(int $InstanzID, int $AlbumID)
 ```
- Liest einen Teil der Eigenschaften aller Alben aus.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.
- Es gilt die Tabelle von KODIAUDIOLIB_GetAlbumDetails.
+
+Liest die Eigenschaften eines Albums aus.  
+Liefert ein assoziatives Array bei Erfolg, sonst `false`.
+
+| Index | Typ | Beschreibung |
+| :--- | :---: | :--- |
+| theme | string[] | Themen |
+| description | string | Beschreibung |
+| type | string | Typ |
+| style | string[] | Stilrichtungen |
+| albumid | int | ID des Albums |
+| playcount | int | Anzahl der Wiedergaben |
+| albumlabel | string | Plattenlabel |
+| mood | string[] | Stimmungen |
+| displayartist | string | Angezeigter Künstler |
+| artist | string[] | Künstler |
+| genreid | int[] | Genre-IDs |
+| musicbrainzalbumartistid | string | MusicBrainz AlbumArtistID |
+| year | int | Erscheinungsjahr |
+| rating | int | Bewertung |
+| artistid | int[] | Künstler-IDs |
+| title | string | Titel des Albums |
+| musicbrainzalbumid | string | MusicBrainz AlbumID |
+| genre | string[] | Genres |
+| fanart | string | Pfad zum Fanart |
+| thumbnail | string | Pfad zum Cover |
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetRecentlyAddedAlbums(integer $InstanzeID);
+array|bool KODIAUDIOLIB_GetAlbums(int $InstanzID)
 ```
- Liest die Eigenschaften der Alben aus, welche zuletzt zur Datenbank hinzugefügt wurden.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE zurückgegeben.
- Es gilt die Tabelle von KODIAUDIOLIB_GetAlbumDetails.
+
+Liest alle Alben aus der Datenbank aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetRecentlyPlayedAlbums(integer $InstanzeID);
+array|bool KODIAUDIOLIB_GetRecentlyAddedAlbums(int $InstanzID)
 ```
- Liest die Eigenschaften der Alben aus, welche zuletzt zur wiedergegeben wurden.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.
- Es gilt die Tabelle von KODIAUDIOLIB_GetAlbumDetails.
+
+Liest die zuletzt hinzugefügten Alben aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetArtistDetails(integer $InstanzeID, integer $ArtistID);
+array|bool KODIAUDIOLIB_GetRecentlyPlayedAlbums(int $InstanzID)
 ```
- Liest die Eigenschaften eines Künstlers aus.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.
 
-|        Index        |   Typ    |   Beschreibung   |
-| :-----------------: | :------: | :--------------: |
-|        born         |  string  |                  |
-|       formed        |  string  |                  |
-|        died         |  string  |                  |
-|        style        | string[] |                  |
-|     yearsactive     | string[] |                  |
-|        mood         | string[] |                  |
-| musicbrainzartistid | string[] |                  |
-|      disbanded      |  string  |                  |
-|     description     |  string  |                  |
-|       artist        |  string  |                  |
-|     instrument      | string[] |                  |
-|      artistid       | integer  |                  |
-|        genre        | string[] | Array der Genres |
-|       fanart        |  string  | Pfad zum Fanart  |
-|      thumbnail      |  string  |  Pfad zum Cover  |
+Liest die zuletzt abgespielten Alben aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetArtists(integer $InstanzeID);
+array|bool KODIAUDIOLIB_GetArtistDetails(int $InstanzID, int $ArtistID)
 ```
- Liest die Eigenschaften aller Künstler aus.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.
- Es gilt die Tabelle von KODIAUDIOLIB_GetArtistDetails.
+
+Liest die Eigenschaften eines Künstlers aus.  
+Liefert ein assoziatives Array bei Erfolg, sonst `false`.
+
+| Index | Typ | Beschreibung |
+| :--- | :---: | :--- |
+| born | string | Geburtsdatum |
+| formed | string | Gründungsdatum |
+| died | string | Todesdatum |
+| style | string[] | Stilrichtungen |
+| yearsactive | string[] | Aktive Jahre |
+| mood | string[] | Stimmungen |
+| musicbrainzartistid | string[] | MusicBrainz ArtistID |
+| disbanded | string | Auflösungsdatum |
+| description | string | Beschreibung |
+| artist | string | Name des Künstlers |
+| instrument | string[] | Instrumente |
+| artistid | int | ID des Künstlers |
+| genre | string[] | Genres |
+| fanart | string | Pfad zum Fanart |
+| thumbnail | string | Pfad zum Cover |
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetGenres(integer $InstanzeID);
+array|bool KODIAUDIOLIB_GetArtists(int $InstanzID)
 ```
- Liest die Eigenschaften aller bekannten Genres aus.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.
 
-|   Index   |   Typ   |  Beschreibung   |
-| :-------: | :-----: | :-------------: |
-|  genreid  | integer |  ID des Genres  |
-|  fanart   | string  | Pfad zum Fanart |
-| thumbnail | string  | Pfad zum Cover  |
+Liest alle Künstler aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetSongDetails(integer $InstanzeID, integer $SongID);
+array|bool KODIAUDIOLIB_GetGenres(int $InstanzID)
 ```
- Liest die Eigenschaften eines Songs aus.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.
 
-|          Index           |    Typ    |        Beschreibung        |
-| :----------------------: | :-------: | :------------------------: |
-|          lyrics          |  string   |                            |
-|          songid          |  integer  |                            |
-|      albumartistid       | integer[] |                            |
-|           disc           |  integer  |                            |
-|         comment          |  string   |                            |
-|        playcount         |  integer  |   Anzahl der Wiedergaben   |
-|          album           |  string   |                            |
-|           file           |  string   |                            |
-|        lastplayed        |  string   |                            |
-|         albumid          |  integer  |                            |
-|   musicbrainzartistid    |  string   |                            |
-|       albumartist        | string[]  |                            |
-|         duration         |  integer  |                            |
-|    musicbrainztrackid    |  string   |                            |
-|          track           |  integer  |                            |
-|      displayartist       |  string   |          Künstler          |
-|          artist          | string[]  |                            |
-|         genreid          | integer[] |    Array der Genre IDs     |
-| musicbrainzalbumartistid |  string   | Music Brainz AlbumArtistID |
-|           year           |  integer  |      Erscheinungsjahr      |
-|          rating          |  integer  |         Bewertung          |
-|         artistid         | integer[] |   Array der Künstler IDs   |
-|          title           |  string   |      Titel des Album       |
-|    musicbrainzalbumid    |  string   |    Music Brainz AlbumID    |
-|          genre           | string[]  |      Array der Genres      |
-|          fanart          |  string   |      Pfad zum Fanart       |
-|        thumbnail         |  string   |       Pfad zum Cover       |
+Liest alle Genres aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+| Index | Typ | Beschreibung |
+| :--- | :---: | :--- |
+| genreid | int | ID des Genres |
+| fanart | string | Pfad zum Fanart |
+| thumbnail | string | Pfad zum Cover |
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetSongs(integer $InstanzeID);
+array|bool KODIAUDIOLIB_GetSongDetails(int $InstanzID, int $SongID)
 ```
- Liest die Eigenschaften aller Songs aus.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.
- Es gilt die Tabelle von KODIAUDIOLIB_GetSongDetails.
+
+Liest die Eigenschaften eines Songs aus.  
+Liefert ein assoziatives Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetRecentlyAddedSongs(integer $InstanzeID);
+array|bool KODIAUDIOLIB_GetSongs(int $InstanzID)
 ```
- Liest die Eigenschaften der Songs aus, welche zuletzt zur Datenbank hinzugefügt wurden.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.
- Es gilt die Tabelle von KODIAUDIOLIB_GetSongDetails.
+
+Liest alle Songs aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIAUDIOLIB_GetRecentlyPlayedSongs(integer $InstanzeID);
+array|bool KODIAUDIOLIB_GetRecentlyAddedSongs(int $InstanzID)
 ```
- Liest die Eigenschaften der Songs aus, welche zuletzt zur wiedergegeben wurden.
- Rückgabewert ist ein assoziiertes Array mit den Daten. Tritt ein Fehler auf, wird FALSE k.
- Es gilt die Tabelle von KODIAUDIOLIB_GetSongDetails.
+
+Liest die zuletzt hinzugefügten Songs aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
+
+```php
+array|bool KODIAUDIOLIB_GetRecentlyPlayedSongs(int $InstanzID)
+```
+
+Liest die zuletzt abgespielten Songs aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
 
 ## 8. Aktionen
+
+**Grundsätzlich können alle bedienbaren Statusvariablen als Ziel einer [`Aktion`](https://www.symcon.de/service/dokumentation/konzepte/automationen/ablaufplaene/aktionen/) mit `Auf Wert schalten` angesteuert werden, so dass hier keine speziellen Aktionen benutzt werden müssen.**
 
 - Scan und Clean über Buttons startbar
 - Export über PHP-Befehl möglich
 
 ## 9. Anhang
 
-### Changelog
+### 1. Changelog
 
-Siehe Haupt-[README](../README.md)
+[Changelog der Library](../README.md#2-changelog)
 
-### Spenden
+### 2. Spenden
 
+Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:
+
+PayPal:  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](https://paypal.me/Nall4chan)
+
+Wunschliste:  
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share)
 
 ## 10. Lizenz
 
-[CC BY-NC-SA 4.0](../LICENSE)
+IPS-Modul:  
+[Custom NC-SA](../LICENSE)

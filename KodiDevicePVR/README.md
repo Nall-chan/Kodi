@@ -1,15 +1,17 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
 [![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
-[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#12-lizenz)
+[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
 [![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
-[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
 
-# Kodi PVR <!-- omit in toc -->
+# Kodi PVR (KodiDevicePVR)  <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->
+Ermöglicht das Verwalten, Steuern und Darstellen von Live-TV/Radio, Aufnahmen und Timern von Kodi in IP-Symcon.
+
+## Inhaltsverzeichnis  <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -17,22 +19,25 @@
 - [4. Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 - [5. Statusvariablen](#5-statusvariablen)
 - [6. Visualisierung](#6-visualisierung)
+  - [Kachel Visualisierung](#kachel-visualisierung)
+  - [WebFront Visualisierung](#webfront-visualisierung)
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Changelog](#changelog)
-  - [Spenden](#spenden)
+  - [1. Changelog](#1-changelog)
+  - [2. Spenden](#2-spenden)
 - [10. Lizenz](#10-lizenz)
 
 ## 1. Funktionsumfang
 
-- Verwaltung von PVR-Kanälen, Aufnahmen und Timern
-- Anzeige der aktuellen Sendungen
-- Steuerung von Aufnahmen
-- Suchfunktion für Kanäle
+- Verwaltung und Anzeige von TV- und Radio-Kanälen.
+- Auslesen und Wiedergeben von Aufnahmen.
+- Steuern und Überwachen von Aufnahmen und Timern.
+- Kanalsuche / Scan ausführen.
 
 ## 2. Voraussetzungen
 
+- Symcon ab Version 9.0
 - Funktionierender KodiSplitter
 - Konfigurierte Verbindung zu einem Kodi-Gerät
 - Aktiviertes PVR-Addon in Kodi
@@ -43,206 +48,105 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
-1. Wird normalerweise automatisch vom KodiConfigurator angelegt
-2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDevicePVR)
-3. Mit übergeordnetem KodiSplitter verbinden
+Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
 
 **Konfigurationsseite:**
 
-| Eigenschaft | Typ | Standardwert | Funktion |
-| :---: | :---: | :---: | :--- |
-| showIsAvailable | boolean | true | Status-Variable PVR-Verfügbarkeit anzeigen |
-| showIsRecording | boolean | true | Status-Variable Aufzeichnung aktiv anzeigen |
-| showDoRecording | boolean | true | Aktions-Variable zum steuern einer Aufzeichnung anzeigen |
-| showIsScanning | boolean | true | Status-Variable für aktive Kanalsuche anzeigen |
-| showTVChannellist | boolean | true | HTML-Tabelle mit den TV Kanälen erzeugen |
-| showMaxTVChannels | integer | 20 | Anzahl der darzustellenden TV Kanäle |
-| TVChannellistconfig | integer | auto | Script mit den Style für die HTML-Tabelle |
-| TVThumbSize | integer | 100 | Breite der Senderlogos |
-| showRadioChannellist | boolean | true | HTML-Tabelle mit den Radio Kanälen erzeugen |
-| showMaxRadioChannels | integer | 20 | Anzahl der darzustellenden Radio Kanäle |
-| RadioChannellistconfig | integer | auto | Script mit den Style für die HTML-Tabelle |
-| RadioThumbSize | integer | 100 | Breite der Senderlogos |
-| showRecordinglist | boolean | true | HTML-Tabelle mit den Aufzeichnungen erzeugen |
-| showMaxRecording | integer | 20 | Anzahl der darzustellenden Aufzeichnungen |
-| Recordinglistconfig | integer | auto | Script mit den Style für die HTML-Tabelle |
-| RecordingThumbSize | integer | 100 | Breite der Thumbnails |
+| Name | Eigenschaft | Typ | Standardwert | Funktion |
+| :--- | :--- | :---: | :--- | :--- |
+| Zeige PVR-Verfügbarkeit | showIsAvailable | bool | true | Statusvariable für Verfügbarkeit erzeugen |
+| Zeige Aufnahmestatus | showIsRecording | bool | true | Statusvariable für aktive Aufnahme erzeugen |
+| Zeige Aufnahme-Aktion | showDoRecording | bool | true | Aktionsvariable zur Aufnahmesteuerung erzeugen |
+| Zeige Suchlauf-Status | showIsScanning | bool | true | Statusvariable für Kanalsuchlauf erzeugen |
+| Zeige TV-Kanalliste | showTVChannellist | bool | true | HTML-Tabelle mit TV-Kanälen erzeugen |
+| Max. TV-Kanäle | showMaxTVChannels | int | 20 | Maximale Anzahl darzustellender TV-Kanäle |
+| Zeige Radio-Kanalliste | showRadioChannellist | bool | true | HTML-Tabelle mit Radio-Kanälen erzeugen |
+| Max. Radio-Kanäle | showMaxRadioChannels | int | 20 | Maximale Anzahl darzustellender Radio-Kanäle |
+| Zeige Aufnahmeliste | showRecordinglist | bool | true | HTML-Tabelle mit Aufnahmen erzeugen |
+| Max. Aufnahmen | showMaxRecording | int | 20 | Maximale Anzahl darzustellender Aufnahmen |
 
 ## 5. Statusvariablen
 
-- Verfügbarkeit des PVR-Dienstes
-- Aktive Aufnahme
-- Suchlauf-Status
-- Aktuelle Sendung
+Folgende Statusvariablen werden automatisch angelegt.
+
+| Name | Typ | Ident | Beschreibung |
+| :--- | :---: | :--- | :--- |
+| PVR Verfügbar | bool | IsAvailable | PVR-Dienst verfügbar / nicht verfügbar |
+| Aufnahme aktiv | bool | IsRecording | Aktuelle Aufnahme aktiv / inaktiv |
+| Suchlauf aktiv | bool | IsScanning | Kanalsuchlauf aktiv / inaktiv |
 
 ## 6. Visualisierung
 
+### Kachel Visualisierung
+
+Darstellung als Kachel:  
 ![PVR](imgs/PVR.png)
+
+### WebFront Visualisierung
+
 ![PVR WebFront](imgs/PVR_WF.png)
 
 ## 7. PHP-Befehlsreferenz
 
-```php
-boolean KODIPVR_Scan();
-```
- Startet einen Suchlauf.
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+Für alle Befehle gilt:  
+Tritt ein Fehler auf, wird eine Warnung erzeugt.
 
 ```php
-boolean KODIPVR_Record(integer $InstanzeID, boolean $Record, string $Channel);
+bool KODIPVR_Scan(int $InstanzID)
 ```
- Startet/Beendet eine Aufnahme.
- Mit $Record TRUE für starten, FALSE zum stoppen.
- Mit $Channel wird der Kanalname übergeben.
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+Startet den PVR-Kanalsuchlauf.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIPVR_GetBroadcasts(integer $InstanzeID, integer $ChannelId);
+bool KODIPVR_Record(int $InstanzID, bool $Record, string $Channel)
 ```
- Liefert die Sendungen des in $ChannelId übergeben Kanals als Array.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
 
-|       Index        |   Typ   | Beschreibung |
-| :----------------: | :-----: | :----------: |
-|    broadcastid     | integer |              |
-|      endtime       | string  |              |
-|    episodename     | string  |              |
-|     episodenum     | integer |              |
-|    episodepart     | integer |              |
-|     firstaired     | string  |              |
-|       genre        | string  |              |
-|      hastimer      | boolean |              |
-|      isactive      | boolean |              |
-|   parentalrating   | integer |              |
-|        plot        | string  |              |
-|    plotoutline     | string  |              |
-|      progress      | integer |              |
-| progresspercentage |  float  |              |
-|       rating       | integer |              |
-|      runtime       | integer |              |
-|     starttime      | string  |              |
-|     thumbnail      | string  |              |
-|       title        | string  |              |
-|     wasactive      | boolean |              |
+Startet (`$Record = true`) oder stoppt (`$Record = false`) eine Aufnahme auf dem angegebenen Kanal.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIPVR_GetBroadcastDetails(integer $InstanzeID, integer $BroadcastId);
+array|bool KODIPVR_GetBroadcasts(int $InstanzID, int $ChannelId)
 ```
- Liefert die Eigenschaften der Sendungen welche mit $BroadcastId übergeben wurde als Array.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
- Es gilt die Tabelle von KODIPVR_GetBroadcasts.
+
+Liefert alle Sendungen eines Kanals als Array.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIPVR_GetChannels(integer $InstanzeID, string $ChannelTyp);
+array|bool KODIPVR_GetChannels(int $InstanzID, string $ChannelTyp)
 ```
- Liest alle Kanäle vom Typ $ChannelTyp aus und liefert die Eigenschaften als Array.
- $ChannelTyp kann 'tv' oder 'radio' sein.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
 
-|    Index    |   Typ   | Beschreibung |
-| :---------: | :-----: | :----------: |
-| channeltype | string  |              |
-|  thumbnail  | string  |              |
-|   channel   | string  |              |
-|   hidden    | boolean |              |
-|  channelid  | integer |              |
-|   locked    | boolean |              |
-| lastplayed  | string  |              |
+Liest alle Kanäle vom Typ `$ChannelTyp` (`tv` oder `radio`) aus.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIPVR_GetChannelDetails(integer $InstanzeID, integer $ChannelId);
+array|bool KODIPVR_GetRecordings(int $InstanzID)
 ```
- Liefert die Eigenschaften des in $ChannelId übergeben Kanals als Array.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
- Es gilt die Tabelle von KODIAPP_GetChannels.
+
+Liefert alle PVR-Aufnahmen als Array.  
+Liefert ein Array bei Erfolg, sonst `false`.
+
+---
 
 ```php
-array|boolean KODIPVR_GetChannelGroups(integer $InstanzeID, string $ChannelTyp);
+array|bool KODIPVR_GetTimers(int $InstanzID)
 ```
- Liest alle Kanalgruppen vom Typ $ChannelTyp aus und liefert die Eigenschaften als Array.
- $ChannelTyp kann 'tv' oder 'radio' sein.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
 
-|     Index      |   Typ   | Beschreibung |
-| :------------: | :-----: | :----------: |
-|  channeltype   | string  |              |
-| channelgroupid | integer |              |
-
-```php
-array|boolean KODIPVR_GetChannelGroupDetails(integer $InstanzeID, integer $ChannelGroupId);
-```
- Liefert die Eigenschaften der in $ChannelGroupId übergeben Kanalgruppe als Array.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
- Es gilt die Tabelle von KODIAPP_GetChannelGroups.
-
-```php
-array|boolean KODIPVR_GetRecordings(integer $InstanzeID);
-```
- Liefert alle Aufnahmen als Array.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
-
-|    Index    |   Typ    |   Beschreibung   |
-| :---------: | :------: | :--------------: |
-|     art     |  array   |                  |
-|   channel   |  string  |                  |
-|  directory  |  string  |                  |
-|   endtime   |  string  |                  |
-|    file     |  string  |                  |
-|    genre    | string[] | Array der Genres |
-|    icon     |  string  |                  |
-|  lifetime   | integer  |                  |
-|  playcount  | integer  |                  |
-|    plot     |  string  |                  |
-| plotoutline |  string  |                  |
-| recordingid | integer  |                  |
-|   resume    |  array   |                  |
-|   runtime   | integer  |                  |
-|  starttime  |  string  |                  |
-|  streamurl  |  string  |                  |
-|    title    |  string  |                  |
-
-```php
-array|boolean KODIPVR_GetRecordingDetails(integer $InstanzeID, integer $RecordingId);
-```
- Liefert die Eigenschaften der in $RecordingId übergeben Aufnahme als Array.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
- Es gilt die Tabelle von KODIPVR_GetRecordings.
-
-```php
-array|boolean KODIPVR_GetTimers(integer $InstanzeID);
-```
- Liefert alle Aufnahmen-Timer als Array.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
-
-|    Index    |   Typ   | Beschreibung |
-| :---------: | :-----: | :----------: |
-|  channelid  | integer |              |
-|  directory  | string  |              |
-|  endmargin  | integer |              |
-|   endtime   | string  |              |
-|    file     | string  |              |
-|  firstday   | string  |              |
-|   isradio   | boolean |              |
-|  lifetime   | integer |              |
-|  priority   | integer |              |
-|  repeating  | boolean |              |
-|   runtime   | integer |              |
-| startmargin | integer |              |
-|  starttime  | string  |              |
-|    state    |  array  |              |
-|   summary   | string  |              |
-|   timerid   | integer |              |
-|    title    | string  |              |
-|  weekdays   |  array  |              |
-
-```php
-array|boolean KODIPVR_GetTimerDetails(integer $InstanzeID, integer $TimerId);
-```
- Liefert die Eigenschaften des in $TimerId übergeben Aufnahme-Timers als Array.
- Rückgabewert ist ein Array bei erfolgreicher Ausführung, sonst FALSE.
- Es gilt die Tabelle von KODIPVR_GetTimers.
+Liefert alle programmierten Aufnahme-Timer als Array.  
+Liefert ein Array bei Erfolg, sonst `false`.
 
 ## 8. Aktionen
+
+**Grundsätzlich können alle bedienbaren Statusvariablen als Ziel einer [`Aktion`](https://www.symcon.de/service/dokumentation/konzepte/automationen/ablaufplaene/aktionen/) mit `Auf Wert schalten` angesteuert werden, so dass hier keine speziellen Aktionen benutzt werden müssen.**
 
 - Kanäle umschalten
 - Aufnahmen starten/stoppen
@@ -250,15 +154,21 @@ array|boolean KODIPVR_GetTimerDetails(integer $InstanzeID, integer $TimerId);
 
 ## 9. Anhang
 
-### Changelog
+### 1. Changelog
 
-Siehe Haupt-[README](../README.md)
+[Changelog der Library](../README.md#2-changelog)
 
-### Spenden
+### 2. Spenden
 
+Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:
+
+PayPal:  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](https://paypal.me/Nall4chan)
+
+Wunschliste:  
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share)
 
 ## 10. Lizenz
 
-[CC BY-NC-SA 4.0](../LICENSE)
+IPS-Modul:  
+[Custom NC-SA](../LICENSE)

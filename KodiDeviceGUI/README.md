@@ -1,15 +1,17 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
 [![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
-[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#12-lizenz)
+[![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
 [![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
-[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
+[![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
+[![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
 
-# Kodi GUI <!-- omit in toc -->
+# Kodi GUI (KodiDeviceGUI)  <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->
+Ermöglicht die Steuerung sowie die Darstellung der Benutzeroberfläche (GUI) von Kodi in IP-Symcon.
+
+## Inhaltsverzeichnis  <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -17,23 +19,26 @@
 - [4. Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 - [5. Statusvariablen](#5-statusvariablen)
 - [6. Visualisierung](#6-visualisierung)
+  - [Kachel Visualisierung](#kachel-visualisierung)
+  - [WebFront Visualisierung](#webfront-visualisierung)
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Changelog](#changelog)
-  - [Spenden](#spenden)
+  - [1. Changelog](#1-changelog)
+  - [2. Spenden](#2-spenden)
 - [10. Lizenz](#10-lizenz)
 
 ## 1. Funktionsumfang
 
-- Anzeige des aktuellen Kodi-Fensters
-- Steuerung der GUI (Vollbildmodus, Fensterwechsel)
-- Anzeige des aktuellen Skins
-- Status des Bildschirmschoners
-- Versenden von Benachrichtigungen
+- Anzeige und Steuerung des aktuellen Kodi-Fensters.
+- Umschalten von Vollbildmodus und Fensterwechsel.
+- Anzeige des aktuellen Skins.
+- Statusüberwachung des Bildschirmschoners.
+- Versenden von Benachrichtigungen an den Bildschirm.
 
 ## 2. Voraussetzungen
 
+- Symcon ab Version 9.0
 - Funktionierender KodiSplitter
 - Konfigurierte Verbindung zu einem Kodi-Gerät
 
@@ -43,66 +48,85 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
-1. Wird normalerweise automatisch vom KodiConfigurator angelegt
-2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceGUI)
-3. Mit übergeordnetem KodiSplitter verbinden
+Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
 
 **Konfigurationsseite:**
 
-| Eigenschaft | Typ | Standardwert | Funktion |
-| :---: | :---: | :---: | :--- |
-| showCurrentWindow | boolean | true | Statusvariable für aktuelles Fenster verwenden |
-| showCurrentControl | boolean | true | Statusvariable für aktuelle Steuerung verwenden |
-| showSkin | boolean | true | Statusvariable für Skin verwenden |
-| showFullscreen | boolean | true | Statusvariable für Vollbildmodus verwenden |
-| showScreensaver | boolean | true | Statusvariable für Bildschirmschoner verwenden |
+| Name | Eigenschaft | Typ | Standardwert | Funktion |
+| :--- | :--- | :---: | :--- | :--- |
+| Zeige Aktuelles Fenster | showCurrentWindow | bool | true | Statusvariable für aktuelles Fenster verwenden |
+| Zeige Aktuelle Steuerung | showCurrentControl | bool | true | Statusvariable für aktuelle Steuerung verwenden |
+| Zeige Skin | showSkin | bool | true | Statusvariable für Skin verwenden |
+| Zeige Vollbildmodus | showFullscreen | bool | true | Statusvariable für Vollbildmodus verwenden |
+| Zeige Bildschirmschoner | showScreensaver | bool | true | Statusvariable für Bildschirmschoner verwenden |
 
 ## 5. Statusvariablen
 
-- Aktuelles Fenster
-- Aktuelle Steuerung
-- Skin
-- Vollbildmodus
-- Bildschirmschoner
+Folgende Statusvariablen werden automatisch angelegt.
+
+| Name | Typ | Ident | Beschreibung |
+| :--- | :---: | :--- | :--- |
+| Aktuelles Fenster | string | CurrentWindow | Name/ID des aktuell aktiven Fensters |
+| Aktuelle Steuerung | string | CurrentControl | Aktuelles Steuerungselement |
+| Skin | string | Skin | Name des aktiven Kodi-Skins |
+| Vollbildmodus | bool | Fullscreen | Vollbildmodus aktiv / inaktiv |
+| Bildschirmschoner | bool | Screensaver | Bildschirmschoner aktiv / inaktiv |
 
 ## 6. Visualisierung
 
+### Kachel Visualisierung
+
+Darstellung als Kachel:  
 ![GUI](imgs/GUI.png)
+
+### WebFront Visualisierung
+
 ![GUI WebFront](imgs/GUI_WF.png)
 
 ## 7. PHP-Befehlsreferenz
 
-```php
-boolean KODIGUI_SetFullscreen(integer $InstanzeID, boolean $Value);
-```
- De-/Aktiviert den Vollbildmodus.
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+Für alle Befehle gilt:  
+Tritt ein Fehler auf, wird eine Warnung erzeugt.
 
 ```php
-boolean KODIGUI_ShowNotification(integer $InstanzeID, string $Title, string $Message, string $Image, integer $Timeout);
+bool KODIGUI_SetFullscreen(int $InstanzID, bool $Value)
 ```
- Erzeugt eine Benachrichtigung.
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+De-/Aktiviert den Vollbildmodus.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
 
 ```php
-boolean KODIGUI_ActivateWindow(integer $InstanzeID, string $Window);
+bool KODIGUI_ShowNotification(int $InstanzID, string $Title, string $Message, string $Image, int $Timeout)
 ```
- Aktiviert ein Fenster.
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+Erzeugt eine Benachrichtigung auf dem Kodi-Bildschirm.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
 
 ```php
-boolean KODIGUI_RequestState(integer $InstanzeID, string $Ident);
+bool KODIGUI_ActivateWindow(int $InstanzID, string $Window)
 ```
- Frage einen Wert ab.
- Es ist der Ident der Statusvariable zu übergeben:
-    "currentwindow",
-    "currentcontrol",
-    "skin",
-    "fullscreen"
 
- Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+Aktiviert ein bestimmtes Fenster in Kodi.  
+Liefert `true` bei Erfolg, sonst `false`.
+
+---
+
+```php
+bool KODIGUI_RequestState(int $InstanzID, string $Ident)
+```
+
+Fordert den Wert einer Statusvariable an.  
+Es ist der Ident der Statusvariable zu übergeben (`CurrentWindow`, `CurrentControl`, `Skin`, `Fullscreen`).  
+Liefert `true` bei Erfolg, sonst `false`.
 
 ## 8. Aktionen
+
+**Grundsätzlich können alle bedienbaren Statusvariablen als Ziel einer [`Aktion`](https://www.symcon.de/service/dokumentation/konzepte/automationen/ablaufplaene/aktionen/) mit `Auf Wert schalten` angesteuert werden, so dass hier keine speziellen Aktionen benutzt werden müssen.**
 
 - Vollbildmodus über Checkbox
 - Fensterwechsel über Auswahlmenü
@@ -110,15 +134,21 @@ boolean KODIGUI_RequestState(integer $InstanzeID, string $Ident);
 
 ## 9. Anhang
 
-### Changelog
+### 1. Changelog
 
-Siehe Haupt-[README](../README.md)
+[Changelog der Library](../README.md#2-changelog)
 
-### Spenden
+### 2. Spenden
 
+Die Library ist für die nicht kommerzielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden hier akzeptiert:
+
+PayPal:  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](https://paypal.me/Nall4chan)
+
+Wunschliste:  
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](https://www.amazon.de/hz/wishlist/ls/YU4AI9AQT9F?ref_=wl_share)
 
 ## 10. Lizenz
 
-[CC BY-NC-SA 4.0](../LICENSE)
+IPS-Modul:  
+[Custom NC-SA](../LICENSE)
