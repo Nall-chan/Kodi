@@ -7,9 +7,9 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
 
-# Kodi Input <!-- omit in toc -->  
+# Kodi Input <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->  
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -20,7 +20,6 @@
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Eigenschaften](#eigenschaften)
   - [Changelog](#changelog)
   - [Spenden](#spenden)
 - [10. Lizenz](#10-lizenz)
@@ -39,7 +38,7 @@
 
 ## 3. Software-Installation
 
-Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch über den KodiConfigurator.
+Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installation).
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
@@ -47,6 +46,16 @@ Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch �
 2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceInput)
 3. Mit übergeordnetem KodiSplitter verbinden
 4. Remote-Typ auswählen (vertikal/horizontal)
+
+**Konfigurationsseite:**
+
+| Eigenschaft | Typ | Standardwert | Funktion |
+| :---: | :---: | :---: | :--- |
+| showSVGRemote | boolean | true | SVG-Remote anzeigen |
+| RemoteId | integer | 1 | 1=vertikal, 2=horizontal |
+| showNavigationButtons | boolean | true | Aktions-Variable zum navigieren anzeigen |
+| showControlButtons | boolean | true | Aktions-Variable zum steuern anzeigen |
+| showInputRequested | boolean | true | Status-Variable wenn Eingaben nötig sind |
 
 ## 5. Statusvariablen
 
@@ -61,18 +70,108 @@ Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch �
 
 ```php
 boolean KODIINPUT_Up(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'hoch'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_Down(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'runter'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_Left(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'links'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_Right(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'rechts'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_ContextMenu(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'Context-Menü'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_Home(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'Home'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_Info(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'Info'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_Select(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'auswählen'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_ShowOSD(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'OSD anzeigen'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_ShowCodec(integer $InstanzeID);
+```
+ Sendet den Tastendruck 'Codec anzeigen'.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIINPUT_ExecuteAction(integer $InstanzeID, string $Action);
+```
+ Sendet die in $Action übergebene Aktion.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+ $Action kann sein:
+ "left", "right", "up", "down", "pageup", "pagedown", "select", "highlight", "parentdir",
+ "parentfolder", "back", "previousmenu", "info", "pause", "stop", "skipnext", "skipprevious",
+ "fullscreen", "aspectratio", "stepforward", "stepback", "bigstepforward", "bigstepback",
+ "chapterorbigstepforward", "chapterorbigstepback", "osd", "showsubtitles", "nextsubtitle",
+ "cyclesubtitle", "codecinfo", "nextpicture", "previouspicture", "zoomout", "zoomin",
+ "playlist", "queue", "zoomnormal", "zoomlevel1", "zoomlevel2", "zoomlevel3", "zoomlevel4",
+ "zoomlevel5", "zoomlevel6", "zoomlevel7", "zoomlevel8", "zoomlevel9", "nextcalibration",
+ "resetcalibration", "analogmove", "analogmovex", "analogmovey", "rotate", "rotateccw",
+ "close", "subtitledelayminus", "subtitledelay", "subtitledelayplus", "audiodelayminus",
+ "audiodelay", "audiodelayplus", "subtitleshiftup", "subtitleshiftdown", "subtitlealign",
+ "audionextlanguage", "verticalshiftup", "verticalshiftdown", "nextresolution", "audiotoggledigital",
+ "number0", "number1", "number2", "number3", "number4", "number5", "number6", "number7",
+ "number8", "number9", "osdleft", "osdright", "osdup", "osddown", "osdselect", "osdvalueplus",
+ "osdvalueminus", "smallstepback", "fastforward", "rewind", "play", "playpause", "switchplayer",
+ "delete", "copy", "move", "mplayerosd", "hidesubmenu", "screenshot", "rename", "togglewatched",
+ "scanitem", "reloadkeymaps", "volumeup", "volumedown", "mute", "backspace", "scrollup",
+ "scrolldown", "analogfastforward", "analogrewind", "moveitemup", "moveitemdown", "contextmenu",
+ "shift", "symbols", "cursorleft", "cursorright", "showtime", "analogseekforward", "analogseekback",
+ "showpreset", "nextpreset", "previouspreset", "lockpreset", "randompreset","increasevisrating",
+ "decreasevisrating", "showvideomenu", "enter", "increaserating", "decreaserating", "togglefullscreen",
+ "nextscene", "previousscene", "nextletter", "prevletter", "jumpsms2", "jumpsms3", "jumpsms4",
+ "jumpsms5", "jumpsms6", "jumpsms7", "jumpsms8", "jumpsms9", "filter", "filterclear","filtersms2",
+ "filtersms3", "filtersms4", "filtersms5", "filtersms6", "filtersms7", "filtersms8","filtersms9",
+ "firstpage", "lastpage", "guiprofile", "red", "green", "yellow", "blue", "increasepar",
+ "decreasepar", "volampup", "volampdown", "volumeamplification", "createbookmark","createepisodebookmark",
+ "settingsreset", "settingslevelchange", "stereomode", "nextstereomode","previousstereomode",
+ "togglestereomode", "stereomodetomono", "channelup", "channeldown","previouschannelgroup",
+ "nextchannelgroup", "playpvr", "playpvrtv", "playpvrradio", "record", "leftclick", "rightclick",
+ "middleclick", "doubleclick", "longclick", "wheelup", "wheeldown", "mousedrag", "mousemove",
+ "tap", "longpress", "pangesture", "zoomgesture", "rotategesture", "swipeleft", "swiperight",
+ "swipeup", "swipedown", "error", "noop"
+
+```php
 boolean KODIINPUT_SendText(integer $InstanzeID, string $Text, boolean $Done);
 ```
+ Sendet den in $Text rn Text an Kodi.
+ Mit $Done = true kann die Eingabe beendet werden.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
 
 ## 8. Aktionen
 
@@ -81,16 +180,6 @@ boolean KODIINPUT_SendText(integer $InstanzeID, string $Text, boolean $Done);
 - Direkte Ausführung von Aktionen
 
 ## 9. Anhang
-
-### Eigenschaften
-
-|      Eigenschaft      |   Typ   | Standardwert |                 Funktion                 |
-| :-------------------: | :-----: | :----------: | :--------------------------------------: |
-|     showSVGRemote     | boolean |     true     |           SVG-Remote anzeigen            |
-|       RemoteId        | integer |      1       |         1=vertikal, 2=horizontal         |
-| showNavigationButtons | boolean |     true     | Aktions-Variable zum navigieren anzeigen |
-|  showControlButtons   | boolean |     true     |  Aktions-Variable zum steuern anzeigen   |
-|  showInputRequested   | boolean |     true     | Status-Variable wenn Eingaben nötig sind |
 
 ### Changelog
 

@@ -7,9 +7,9 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
 
-# Kodi Application <!-- omit in toc -->  
+# Kodi Application <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->  
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -20,7 +20,6 @@
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Eigenschaften](#eigenschaften)
   - [Changelog](#changelog)
   - [Spenden](#spenden)
 - [10. Lizenz](#10-lizenz)
@@ -39,13 +38,21 @@
 
 ## 3. Software-Installation
 
-Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch über den KodiConfigurator.
+Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installation).
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 1. Wird normalerweise automatisch vom KodiConfigurator angelegt
 2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceApplication)
 3. Mit übergeordnetem KodiSplitter verbinden
+
+**Konfigurationsseite:**
+
+| Eigenschaft | Typ | Standardwert | Funktion |
+| :---: | :---: | :---: | :--- |
+| showName | boolean | true | Statusvariable für Name verwenden |
+| showVersion | boolean | true | Statusvariable für Version verwenden |
+| showExit | boolean | true | Aktions-Variable für beenden anlegen |
 
 ## 5. Statusvariablen
 
@@ -63,10 +70,28 @@ Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch �
 
 ```php
 boolean KODIAPP_SetMute(integer $InstanzeID, boolean $Value);
+```
+ De-/Aktiviert die Stummschaltung.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIAPP_SetVolume(integer $InstanzeID, integer $Value);
+```
+ Setzen der Lautstärke (0 - 100).
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIAPP_Quit(integer $InstanzeID);
+```
+ Beendet die Kodi-Anwendung.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIAPP_RequestState(integer $InstanzeID, string $Ident);
 ```
+ Frage einen Wert ab.
+ Es ist der Ident der Statusvariable zu übergeben ("volume","muted","name","version")
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
 
 ## 8. Aktionen
 
@@ -75,14 +100,6 @@ boolean KODIAPP_RequestState(integer $InstanzeID, string $Ident);
 - Beenden über Button
 
 ## 9. Anhang
-
-### Eigenschaften
-
-| Eigenschaft |   Typ   | Standardwert |               Funktion               |
-| :---------: | :-----: | :----------: | :----------------------------------: |
-|  showName   | boolean |     true     |  Statusvariable für Name verwenden   |
-| showVersion | boolean |     true     | Statusvariable für Version verwenden |
-|  showExit   | boolean |     true     | Aktions-Variable für beenden anlegen |
 
 ### Changelog
 

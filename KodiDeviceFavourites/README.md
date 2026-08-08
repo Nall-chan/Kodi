@@ -7,9 +7,9 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
 
-# Kodi Favourites <!-- omit in toc -->  
+# Kodi Favourites <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->  
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -20,7 +20,6 @@
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Eigenschaften](#eigenschaften)
   - [Changelog](#changelog)
   - [Spenden](#spenden)
 - [10. Lizenz](#10-lizenz)
@@ -39,13 +38,21 @@
 
 ## 3. Software-Installation
 
-Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch über den KodiConfigurator.
+Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installation).
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 1. Wird normalerweise automatisch vom KodiConfigurator angelegt
 2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceFavourites)
 3. Mit übergeordnetem KodiSplitter verbinden
+
+**Konfigurationsseite:**
+
+| Eigenschaft | Typ | Standardwert | Funktion |
+| :---: | :---: | :---: | :--- |
+| showFavlist | boolean | true | HTML-Tabelle mit den Favoriten erzeugen |
+| Favlistconfig | integer | auto | Script mit den Style für die HTML-Tabelle |
+| ThumbSize | integer | 100 | Breite der Thumbnails |
 
 ## 5. Statusvariablen
 
@@ -60,24 +67,44 @@ Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch �
 
 ```php
 array|boolean KODIFAV_GetFavourites(integer $InstanzeID, string $Type);
+```
+ Liest die Eigenschaften der Favoriten aus, welche dem im $Type übergeben Typen angehören.
+ $Type kann dabei "all", "media", "window", "script" oder "unknown" annehmen.
+ Rückgabewert ist ein assoziiertes Array mit den Daten. Je nach Type, sind nicht alle Werte vorhanden.
+ Tritt ein Fehler auf, wird FALSE k.
+
+|      Index      |  Typ   |            Beschreibung             |
+| :-------------: | :----: | :---------------------------------: |
+|    thumbnail    | string |           Pfad zum Cover            |
+|      title      | string |         Titel des Favoriten         |
+|      type       | string |        Der Typ des Favoriten        |
+|     window      | string | Ziel-Fenster eines Window-Favoriten |
+| windowparameter | string |   Parameter für das Ziel-Fenster    |
+|      path       | string | Pfad zum Favoriten (script & media  |
+
+```php
 boolean KODIFAV_LoadFavouriteMedia(integer $InstanzeID, string $Path);
+```
+ Lädt einen Favoriten vom Typ Media.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIFAV_LoadFavouriteScript(integer $InstanzeID, string $Script);
+```
+ Lädt einen Favoriten vom Typ Script.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIFAV_LoadFavouriteWindow(integer $InstanzeID, string $Window, string $WindowParameter);
 ```
+ Lädt einen Favoriten vom Typ Window.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
 
 ## 8. Aktionen
 
 - Favoriten können direkt über die HTML-Tabelle ausgeführt werden
 
 ## 9. Anhang
-
-### Eigenschaften
-
-|  Eigenschaft  |   Typ   | Standardwert |                 Funktion                  |
-| :-----------: | :-----: | :----------: | :---------------------------------------: |
-|  showFavlist  | boolean |     true     |  HTML-Tabelle mit den Favoriten erzeugen  |
-| Favlistconfig | integer |     auto     | Script mit den Style für die HTML-Tabelle |
-|   ThumbSize   | integer |     100      |           Breite der Thumbnails           |
 
 ### Changelog
 

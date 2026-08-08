@@ -7,7 +7,7 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
 
-# Kodi Konfigurator <!-- omit in toc -->  
+# Kodi Konfigurator <!-- omit in toc -->
 
 ## Inhaltsverzeichnis <!-- omit in toc -->
 
@@ -37,7 +37,7 @@
 
 ## 3. Software-Installation
 
-Die Installation erfolgt über den Module Store von IP-Symcon.
+Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installation).
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
@@ -46,6 +46,10 @@ Die Installation erfolgt über den Module Store von IP-Symcon.
 3. Gewünschte Funktionen auswählen und erstellen
 
 ![Konfigurator](imgs/Konfigurator.png)
+
+**Konfigurationsseite:**
+
+Keine spezifischen Eigenschaften vorhanden.
 
 ## 5. Statusvariablen
 

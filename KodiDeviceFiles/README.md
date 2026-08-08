@@ -7,9 +7,9 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
 
-# Kodi Files <!-- omit in toc -->  
+# Kodi Files <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->  
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -20,7 +20,6 @@
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Eigenschaften](#eigenschaften)
   - [Changelog](#changelog)
   - [Spenden](#spenden)
 - [10. Lizenz](#10-lizenz)
@@ -39,13 +38,17 @@
 
 ## 3. Software-Installation
 
-Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch über den KodiConfigurator.
+Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installation).
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 1. Wird normalerweise automatisch vom KodiConfigurator angelegt
 2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceFiles)
 3. Mit übergeordnetem KodiSplitter verbinden
+
+**Konfigurationsseite:**
+
+Keine spezifischen Eigenschaften vorhanden.
 
 ## 5. Statusvariablen
 
@@ -57,22 +60,137 @@ Keine direkte Visualisierung - wird über eigene Skripte realisiert
 
 ## 7. PHP-Befehlsreferenz
 
-```php
+ ```php
 array|boolean KODIFILES_GetSources(integer $InstanzeID, string $Media);
+```
+ Liefert alle bekannten Quellen nach Typ $Value.
+ $Media: Der Typ der zu suchenden Quellen.
+    "video"=Video
+    "music"=Musik
+    "pictures"=Bilder
+    "files"=Dateien
+    "programs"=Programme
+ Rückgabewert ist ein Array mit den Quellen oder FALSE bei einem Fehler.
+
+| Index |  Typ   |      Beschreibung      |
+| :---: | :----: | :--------------------: |
+| file  | string | Verzeichnis der Quelle |
+| label | string |    Name der Quelle     |
+
+ ```php
 array|boolean KODIFILES_GetFileDetails(integer $InstanzeID, string $File, string $Media);
+```
+ Liefert alle Details einer Datei.
+ $File : Dateiname
+ $Media: Der Typ der zu suchenden Quellen.
+    "video"=Video
+    "music"=Musik
+    "pictures"=Bilder
+    "files"=Dateien
+    "programs"=Programme
+ Rückgabewert ist ein Array mit den Eigenschaften oder FALSE bei einem Fehler.
+
+|          Index           |     Typ     |        Beschreibung        |
+| :----------------------: | :---------: | :------------------------: |
+|         filetyp          |   string    |                            |
+|           size           |   integer   |                            |
+|         mimetype         |   integer   |                            |
+|           file           |   string    |                            |
+|       lastmodified       |   string    |                            |
+|        sorttitle         |   string    |                            |
+|      productioncode      |   string    |                            |
+|           cast           |    array    |                            |
+|          votes           |   string    |                            |
+|         duration         |   integer   |                            |
+|         trailer          |   string    |                            |
+|         albumid          |   integer   |                            |
+|   musicbrainzartistid    |   string    |                            |
+|           mpaa           |   string    |                            |
+|        albumlabel        |   string    |                            |
+|      originaltitle       |   string    |                            |
+|          writer          |  string[]   |                            |
+|      albumartistid       |  integer[]  |                            |
+|           type           |   string    |                            |
+|         episode          |   integer   |                            |
+|        firstaired        |   string    |                            |
+|        showtitle         |   string    |                            |
+|         country          | string[]  ] |
+|           mood           |  string[]   |                            |
+|           set            |   string    |                            |
+|    musicbrainztrackid    |   string    |                            |
+|           tag            |  string[]   |                            |
+|          lyrics          |   string    |                            |
+|          top250          |   integer   |                            |
+|         comment          |   string    |                            |
+|        premiered         |   string    |                            |
+|         showlink         |  string[]   |                            |
+|          style           |  string[]   |                            |
+|          album           |   string    |                            |
+|         tvshowid         |   integer   |                            |
+|          season          |   integer   |                            |
+|          theme           |  string[]   |                            |
+|       description        |   string    |                            |
+|          setid           |   integer   |                            |
+|          track           |   integer   |                            |
+|         tagline          |   string    |                            |
+|       plotoutline        |   string    |                            |
+|     watchedepisodes      |   integer   |                            |
+|            id            |   integer   |                            |
+|           disc           |   integer   |                            |
+|       albumartist        |  string[]   |                            |
+|          studio          |  string[]   |                            |
+|         uniqueid         |    array    |                            |
+|       episodeguide       |   string    |                            |
+|        imdbnumber        |   string    |                            |
+|        dateadded         |   string    |                            |
+|        lastplayed        |   string    |                            |
+|           plot           |   string    |                            |
+|      streamdetails       |    array    |                            |
+|         director         |  string[]   |                            |
+|          resume          |    array    |                            |
+|         runtime          |   integer   |                            |
+|           art            |    array    |                            |
+|        playcount         |   integer   |   Anzahl der Wiedergaben   |
+|      displayartist       |   string    |          Künstler          |
+|          artist          |  string[]   |     Array der Künstler     |
+|         genreid          |  integer[]  |    Array der Genre IDs     |
+| musicbrainzalbumartistid |   string    | Music Brainz AlbumArtistID |
+|           year           |   integer   |      Erscheinungsjahr      |
+|          rating          |   integer   |         Bewertung          |
+|         artistid         |  integer[]  |   Array der Künstler IDs   |
+|          title           |   string    |      Titel der Datei       |
+|    musicbrainzalbumid    |   string    |    Music Brainz AlbumID    |
+|          genre           |  string[]   |      Array der Genres      |
+|          fanart          |   string    |      Pfad zum Fanart       |
+|        thumbnail         |   string    |       Pfad zum Cover       |
+
+ ```php
 array|boolean KODIFILES_GetDirectory(integer $InstanzeID, string $Directory);
+```
+ Liefert Informationen zu einem Verzeichnis.
+ $Directory : Verzeichnis
+ Rückgabewert ist ein Array mit den Eigenschaften des Verzeichnisses FALSE bei einem Fehler.
+ Es gilt die Tabelle von KODIFILES_GetFileDetails.
+
+ ```php
 array|boolean KODIFILES_GetDirectoryDetails(integer $InstanzeID, string $Directory, string $Media);
 ```
+ Liefert alle Details eines Verzeichnisses.
+ $Directory : Verzeichnis
+ $Media: Der Typ der zu suchenden Quellen.
+    "video"=Video
+    "music"=Musik
+    "pictures"=Bilder
+    "files"=Dateien
+    "programs"=Programme
+ Rückgabewert ist ein Array mit den Eigenschaften oder FALSE bei einem Fehler.
+ Es gilt die Tabelle von KODIFILES_GetFileDetails.
 
 ## 8. Aktionen
 
 Keine direkten Aktionen - wird über PHP-Befehle gesteuert
 
 ## 9. Anhang
-
-### Eigenschaften
-
-Keine spezifischen Eigenschaften
 
 ### Changelog
 

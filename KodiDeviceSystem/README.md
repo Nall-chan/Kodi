@@ -7,9 +7,9 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
 
-# Kodi System <!-- omit in toc -->  
+# Kodi System <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->  
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -20,7 +20,6 @@
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Eigenschaften](#eigenschaften)
   - [Changelog](#changelog)
   - [Spenden](#spenden)
 - [10. Lizenz](#10-lizenz)
@@ -39,7 +38,7 @@
 
 ## 3. Software-Installation
 
-Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch über den KodiConfigurator.
+Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installation).
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
@@ -47,6 +46,15 @@ Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch �
 2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceSystem)
 3. Mit übergeordnetem KodiSplitter verbinden
 4. Power-On Methode konfigurieren
+
+**Konfigurationsseite:**
+
+| Eigenschaft | Typ | Standardwert | Funktion |
+| :---: | :---: | :---: | :--- |
+| PowerOnType | integer | 1 | 0 = internes WOL, 1 = WOLAction ausführen |
+| MACAddress | string | | MAC-Adresse für internes WOL |
+| WOLAction | string | | Aktion welche zum einschalten ausgeführt werden soll |
+| PowerOff | integer | 0 | Ausschalt-Methode: 0 = OFF, 1 = Hibernate, 2 = Standby |
 
 ## 5. Statusvariablen
 
@@ -65,14 +73,58 @@ Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch �
 
 ```php
 boolean KODISYS_Power(integer $InstanzeID, boolean $Value);
+```
+ Schaltet Kodi ein (TRUE) oder aus (FALSE).
+ Einschalten erfolgt per hinterlegten PHP-Script in der Instanz-Konfiguration.
+ Der Modus für das Ausschalten ist ebenfalls in der Instanz zu konfigurieren.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODISYS_WakeUp(integer $InstanzeID);
+```
+ Startet das hinterlegte Einschalt-Script um die Kodi-Hardware einzuschalten.
+ Der Modus für das Ausschalten ist ebenfalls in der Instanz zu konfigurieren.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+ ```php
 boolean KODISYS_Shutdown(integer $InstanzeID);
+```
+ Führt einen Shutdown auf Betriebssystemebene aus.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+ ```php
 boolean KODISYS_Hibernate(integer $InstanzeID);
+```
+ Führt einen Hibernate auf Betriebssystemebene aus.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+ ```php
 boolean KODISYS_Suspend(integer $InstanzeID);
+```
+ Führt einen Suspend auf Betriebssystemebene aus.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+ ```php
 boolean KODISYS_Reboot(integer $InstanzeID);
+```
+ Führt einen Reboot auf Betriebssystemebene aus.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+ ```php
 boolean KODISYS_EjectOpticalDrive(integer $InstanzeID);
+```
+ Öffnet das Optische Laufwerk.
+ Ein Schließen ist häufig nicht möglich!
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODISYS_RequestState(integer $InstanzeID, string $Ident);
 ```
+ Frage einen Wert ab.
+ Es können hier nur Fähigkeiten angefragt werden.
+ Diese verstecken automatisch die Aktionsvariablen welche nicht verwendet werden können.
+ $Ident kann "canshutdown", "canhibernate", "cansuspend" oder "canreboot" sein.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
 
 ## 8. Aktionen
 
@@ -80,15 +132,6 @@ boolean KODISYS_RequestState(integer $InstanzeID, string $Ident);
 - Optisches Laufwerk auswerfen
 
 ## 9. Anhang
-
-### Eigenschaften
-
-| Eigenschaft |   Typ   | Standardwert |                        Funktion                        |
-| :---------: | :-----: | :----------: | :----------------------------------------------------: |
-| PowerOnType | integer |      1       |       0 = internes WOL, 1 = WOLAction ausführen        |
-| MACAddress  | string  |              |              MAC-Adresse für internes WOL              |
-|  WOLAction  | string  |              |  Aktion welche zum einschalten ausgeführt werden soll  |
-|  PowerOff   | integer |      0       | Ausschalt-Methode: 0 = OFF, 1 = Hibernate, 2 = Standby |
 
 ### Changelog
 

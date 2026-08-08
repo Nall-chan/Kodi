@@ -7,9 +7,9 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#4-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#4-spenden)
 
-# Kodi GUI <!-- omit in toc -->  
+# Kodi GUI <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->  
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -20,7 +20,6 @@
 - [7. PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 - [8. Aktionen](#8-aktionen)
 - [9. Anhang](#9-anhang)
-  - [Eigenschaften](#eigenschaften)
   - [Changelog](#changelog)
   - [Spenden](#spenden)
 - [10. Lizenz](#10-lizenz)
@@ -40,13 +39,23 @@
 
 ## 3. Software-Installation
 
-Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch über den KodiConfigurator.
+Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installation).
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 1. Wird normalerweise automatisch vom KodiConfigurator angelegt
 2. Manuell anlegen über "Instanz hinzufügen" (Typ: KodiDeviceGUI)
 3. Mit übergeordnetem KodiSplitter verbinden
+
+**Konfigurationsseite:**
+
+| Eigenschaft | Typ | Standardwert | Funktion |
+| :---: | :---: | :---: | :--- |
+| showCurrentWindow | boolean | true | Statusvariable für aktuelles Fenster verwenden |
+| showCurrentControl | boolean | true | Statusvariable für aktuelle Steuerung verwenden |
+| showSkin | boolean | true | Statusvariable für Skin verwenden |
+| showFullscreen | boolean | true | Statusvariable für Vollbildmodus verwenden |
+| showScreensaver | boolean | true | Statusvariable für Bildschirmschoner verwenden |
 
 ## 5. Statusvariablen
 
@@ -65,10 +74,33 @@ Die Installation erfolgt über den Module Store von IP-Symcon oder automatisch �
 
 ```php
 boolean KODIGUI_SetFullscreen(integer $InstanzeID, boolean $Value);
+```
+ De-/Aktiviert den Vollbildmodus.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIGUI_ShowNotification(integer $InstanzeID, string $Title, string $Message, string $Image, integer $Timeout);
+```
+ Erzeugt eine Benachrichtigung.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIGUI_ActivateWindow(integer $InstanzeID, string $Window);
+```
+ Aktiviert ein Fenster.
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
+
+```php
 boolean KODIGUI_RequestState(integer $InstanzeID, string $Ident);
 ```
+ Frage einen Wert ab.
+ Es ist der Ident der Statusvariable zu übergeben:
+    "currentwindow",
+    "currentcontrol",
+    "skin",
+    "fullscreen"
+
+ Rückgabewert TRUE bei erfolgreicher Ausführung, sonst FALSE.
 
 ## 8. Aktionen
 
@@ -77,16 +109,6 @@ boolean KODIGUI_RequestState(integer $InstanzeID, string $Ident);
 - Benachrichtigungen versenden
 
 ## 9. Anhang
-
-### Eigenschaften
-
-|    Eigenschaft     |   Typ   | Standardwert |                    Funktion                     |
-| :----------------: | :-----: | :----------: | :---------------------------------------------: |
-| showCurrentWindow  | boolean |     true     | Statusvariable für aktuelles Fenster verwenden  |
-| showCurrentControl | boolean |     true     | Statusvariable für aktuelle Steuerung verwenden |
-|      showSkin      | boolean |     true     |        Statusvariable für Skin verwenden        |
-|   showFullscreen   | boolean |     true     |   Statusvariable für Vollbildmodus verwenden    |
-|  showScreensaver   | boolean |     true     | Statusvariable für Bildschirmschoner verwenden  |
 
 ### Changelog
 

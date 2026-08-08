@@ -7,9 +7,9 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#6-anhang)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#6-anhang)
 
-# Kodi Splitter <!-- omit in toc -->  
+# Kodi Splitter <!-- omit in toc -->
 
-## Inhaltsverzeichnis <!-- omit in toc -->  
+## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -38,15 +38,26 @@
 
 ## 3. Software-Installation
 
-Die Installation erfolgt über den Module Store von IP-Symcon.
+Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installation).
 
 ## 4. Einrichten der Instanzen in IP-Symcon
 
-Die Instanz wird automatisch vom KodiConfigurator angelegt. Manuelle Konfiguration:  
+Die Instanz wird automatisch vom KodiConfigurator angelegt. Manuelle Konfiguration:
 
 1. Instanz anlegen (Typ: KodiSplitter)
 2. Host und Port des Kodi-Servers eintragen
 3. Bei Bedarf Authentifizierung aktivieren
+
+**Konfigurationsseite:**
+
+| Eigenschaft | Typ | Standardwert | Funktion |
+| :---: | :---: | :---: | :--- |
+| Open | boolean | false | Verbindung herstellen |
+| Host | string | | Hostnamen, IP-Adresse von Kodi |
+| Port | integer | 9090 | Ziel-Port in Kodi für die RPC-JSON-API via TCP |
+| Webport | integer | 80 | Webfront von Kodi, wird für den download der Cover genutzt |
+| Watchdog | boolean | false | Mit Ping prüfen bevor versucht wird eine Verbindung aufzubauen |
+| Interval | integer | 5 | Interval der Ping-Prüfung |
 
 ## 5. Statusvariablen
 
@@ -58,7 +69,9 @@ Keine Statusvariablen - dient nur als Kommunikationsschnittstelle
 
 ## 7. PHP-Befehlsreferenz
 
-Keine direkten Befehle - wird automatisch von den Device-Instanzen genutzt
+//Todo
+1-8 vorbereitet
+9 ff fehlt
 
 ## 8. Aktionen
 
