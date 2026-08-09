@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Kodi Favorites": "Kodi Favoriten",
             "Show HTML-Box for favorites": "Favoriten als HTML-Box anlegen",
             "Script for HTML-Box Desgin:": "Script für HTML-Box Aussehen:",
             "Script:": "Script:",

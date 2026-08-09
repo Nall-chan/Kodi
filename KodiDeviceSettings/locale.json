@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Kodi Settings": "Kodi Einstellungen",
             "Reload values of settings every": "Lade die Werte der Setting alle",
             "List of possible and controllable settings:": "Liste von möglichen und steuerbaren Einstellungen:",
             "seconds": "Sekunden",

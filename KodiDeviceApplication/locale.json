@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Kodi Application": "Kodi Anwendung",
             "Show variable for systemname": "Status-Variable für Namen anlegen",
             "Show variable for version": "Status-Variable für Version anlegen",
             "Show Action-Variable for exit Kodi": "Aktions-Variable für Kodi beenden anlegen",

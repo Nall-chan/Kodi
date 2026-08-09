@@ -57,7 +57,7 @@ class KodiRPCException extends Exception
  * @method null GetSongDetails(array $Params) (string "songid" SongID) (array "properties" Zu lesende Song-Eigenschaften) Liest die Eigenschaften eines Songs aus.
  * @method null GetSongs(array $Params) Liest die Eigenschaften aller Songs aus.
  * @method null Scan() Startet das Scannen von PVR-Kanälen oder von Quellen für neue Einträge in der Datenbank.
- * @method null GetFavourites(array $Params) Liest die Eigenschaften aller Favoriten aus.
+ * @method null GetFavorites(array $Params) Liest die Eigenschaften aller Favoriten aus.
  * @method null GetSources(array $Params) (string "media"  enum["video", "music", "pictures", "files", "programs"]) Liest die Quellen.
  * @method null GetFileDetails(array $Params) (string "file" Dateiname) (string "media"  enum["video", "music", "pictures", "files", "programs"]) (array "properties" Zu lesende Eigenschaften)) Liest die Quellen.
  * @method null GetDirectory(array $Params) (string "directory" Verzeichnis welches gelesen werden soll.)) Liest ein Verzeichnis aus.

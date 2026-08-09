@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Kodi Discovery": "Kodi Discovery",
             "Credentials": "Anmeldedaten",
             "Username": "Benutzername",
             "Password": "Passwort",

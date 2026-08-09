@@ -51,7 +51,11 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 ![Discovery Dialog](imgs/Discovery1.png)  
 ![Discovery](imgs/Discovery.png)
 
+![Instanz hinzufügen](imgs/add1.png)  
+
 **Konfigurationsseite:**
+
+![Konfigurationsseite](imgs/conf1.png)
 
 Keine spezifischen Eigenschaften vorhanden.
 

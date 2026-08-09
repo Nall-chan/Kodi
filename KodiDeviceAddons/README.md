@@ -51,6 +51,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Zeige Addonliste | showAddonlist | bool | true | HTML-Tabelle mit den Addons erzeugen |
@@ -69,12 +71,11 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![Addon](imgs/Addon.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![Addon WebFront](imgs/Addon_WF.png)
+![Addon WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 

@@ -4,7 +4,7 @@
     "type": 3,
     "vendor": "Kodi",
     "aliases": [
-        "Kodi Playerstatus"
+        "Kodi Player"
     ],
     "parentRequirements": [
         "{0222A902-A6FA-4E94-94D3-D54AA4666321}"
@@ -14,5 +14,5 @@
         "{73249F91-710A-4D24-B1F1-A72F216C2BDC}"
     ],
     "prefix": "KODIPLAYER",
-    "url": "https://github.com/Nall-chan/Kodi/"
+    "url": "https://github.com/Nall-chan/Kodi/blob/master/KodiDevicePlayer"
 }

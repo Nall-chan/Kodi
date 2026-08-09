@@ -53,6 +53,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Zeige PVR-Verfügbarkeit | showIsAvailable | bool | true | Statusvariable für Verfügbarkeit erzeugen |
@@ -80,12 +82,11 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![PVR](imgs/PVR.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![PVR WebFront](imgs/PVR_WF.png)
+![PVR WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 

@@ -1,11 +1,12 @@
 {
     "translations": {
         "de": {
+            "Kodi Configurator": "Kodi Konfigurator",
             "PVR": "PVR",
             "Type": "Typ",
             "Location": "Lokation",
             "Application": "Anwendung",
-            "Favourites": "Favoriten",
+            "Favorites": "Favoriten",
             "Audio Library": "Audio Datenbank",
             "Settings": "Einstellungen",
             "System": "System",

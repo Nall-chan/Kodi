@@ -7,7 +7,7 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
 
-# Kodi Favoriten (KodiDeviceFavourites)  <!-- omit in toc -->
+# Kodi Favoriten (KodiDeviceFavorites)  <!-- omit in toc -->
 
 Ermöglicht das Auslesen, Ausführen und Darstellen von Kodi-Favoriten in IP-Symcon.
 
@@ -52,30 +52,31 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
-| Name | Eigenschaft | Typ | Standardwert | Funktion |
-| :--- | :--- | :---: | :--- | :--- |
-| Zeige Favoritenliste | showFavlist | bool | true | HTML-Tabelle mit den Favoriten erzeugen |
-| Style Favoritenliste | Favlistconfig | int | 0 | Skript mit dem Style für die HTML-Tabelle |
-| Thumbnail Größe | ThumbSize | int | 100 | Breite der Thumbnails in Pixeln |
+![Konfigurationsseite](imgs/conf1.png)
+
+| Name                 | Eigenschaft   |  Typ  | Standardwert | Funktion                                  |
+| :------------------- | :------------ | :---: | :----------- | :---------------------------------------- |
+| Zeige Favoritenliste | showFavlist   | bool  | true         | HTML-Tabelle mit den Favoriten erzeugen   |
+| Style Favoritenliste | Favlistconfig |  int  | 0            | Skript mit dem Style für die HTML-Tabelle |
+| Thumbnail Größe      | ThumbSize     |  int  | 100          | Breite der Thumbnails in Pixeln           |
 
 ## 5. Statusvariablen
 
 Folgende Statusvariablen werden automatisch angelegt.
 
-| Name | Typ | Ident | Beschreibung |
-| :--- | :---: | :--- | :--- |
-| Favoriten-Liste | string | Favourites | HTML-Box mit der Liste der Kodi-Favoriten |
+| Name            |  Typ   | Ident     | Beschreibung                              |
+| :-------------- | :----: | :-------- | :---------------------------------------- |
+| Favoriten-Liste | string | Favorites | HTML-Box mit der Liste der Kodi-Favoriten |
 
 ## 6. Visualisierung
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![Favourites](imgs/Favourites.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![Favourites WebFront](imgs/Favourites_WF.png)
+![Favorites WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 
@@ -83,20 +84,20 @@ Für alle Befehle gilt:
 Tritt ein Fehler auf, wird eine Warnung erzeugt.
 
 ```php
-array|bool KODIFAV_GetFavourites(int $InstanzID, string $Type)
+array|bool KODIFAV_GetFavorites(int $InstanzID, string $Type)
 ```
 
 Liest die Eigenschaften der Favoriten aus, welche dem übergebenen Typ entsprechen (`all`, `media`, `window`, `script` oder `unknown`).  
 Liefert ein assoziatives Array bei Erfolg, sonst `false`.
 
-| Index | Typ | Beschreibung |
-| :--- | :---: | :--- |
-| thumbnail | string | Pfad zum Cover |
-| title | string | Titel des Favoriten |
-| type | string | Typ des Favoriten |
-| window | string | Ziel-Fenster eines Window-Favoriten |
-| windowparameter | string | Parameter für das Ziel-Fenster |
-| path | string | Pfad zum Favoriten (Script & Media) |
+| Index           |  Typ   | Beschreibung                        |
+| :-------------- | :----: | :---------------------------------- |
+| thumbnail       | string | Pfad zum Cover                      |
+| title           | string | Titel des Favoriten                 |
+| type            | string | Typ des Favoriten                   |
+| window          | string | Ziel-Fenster eines Window-Favoriten |
+| windowparameter | string | Parameter für das Ziel-Fenster      |
+| path            | string | Pfad zum Favoriten (Script & Media) |
 
 ---
 
@@ -110,7 +111,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIFAV_LoadFavouriteScript(int $InstanzID, string $Script)
+bool KODIFAV_LoadFavoritescript(int $InstanzID, string $Script)
 ```
 
 Lädt einen Favoriten vom Typ Script.  

@@ -53,6 +53,10 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite Audio Playlist](imgs/conf1.png)  
+![Konfigurationsseite Bilder Playlist](imgs/conf2.png)  
+![Konfigurationsseite Video Playlist](imgs/conf3.png)  
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Playlist Typ | PlaylistID | int | 0 | 0 = Audio, 1 = Video, 2 = Bilder |
@@ -71,16 +75,13 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![Audio Playlist](imgs/AudioPlaylist.png)  
-![Picture Playlist](imgs/PicturePlaylist.png)  
-![Video Playlist](imgs/VideoPlaylist.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![Audio Playlist WebFront](imgs/AudioPlaylist_WF.png)  
-![Picture Playlist WebFront](imgs/PicturePlaylist_WF.png)  
-![Video Playlist WebFront](imgs/VideoPlaylist_WF.png)
+![Audio Playlist WebFront](imgs/wf1.png)  
+![Picture Playlist WebFront](imgs/wf2.png)  
+![Video Playlist WebFront](imgs/wf3.png)
 
 ## 7. PHP-Befehlsreferenz
 

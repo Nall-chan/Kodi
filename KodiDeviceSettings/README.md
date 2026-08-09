@@ -51,6 +51,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Abfrage-Intervall | RequestState | int | 60 | Intervall der Werte-Abfrage in Sekunden |
@@ -67,12 +69,11 @@ Folgende Statusvariablen werden automatisch je nach ausgewählter Konfiguration 
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![Settings](imgs/Settings.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![Settings WebFront](imgs/Settings_WF.png)
+![Settings WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 

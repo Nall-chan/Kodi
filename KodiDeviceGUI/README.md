@@ -53,6 +53,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Zeige Aktuelles Fenster | showCurrentWindow | bool | true | Statusvariable für aktuelles Fenster verwenden |
@@ -77,12 +79,11 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![GUI](imgs/GUI.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![GUI WebFront](imgs/GUI_WF.png)
+![GUI WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 

@@ -52,6 +52,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Zeige SVG Remote | showSVGRemote | bool | true | SVG-Fernbedienung anzeigen |
@@ -72,12 +74,11 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![Input](imgs/Input.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![Input WebFront](imgs/Input_WF.png)
+![Input WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 

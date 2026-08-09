@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Kodi Input": "Kodi Eingabe",
             "Show SVG-Remotecontrol": "SVG-Fernsteuerung anzeigen",
             "Remote:": "Fernsteuerung:",
             "vertical": "vertikal",

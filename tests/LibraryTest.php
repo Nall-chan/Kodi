@@ -38,9 +38,9 @@ class LibraryTest extends TestCaseSymconValidation
     {
         $this->validateModule(__DIR__ . '/../KodiDeviceAudioLibrary');
     }
-    public function testValidateKodiDeviceFavourites(): void
+    public function testValidateKodiDeviceFavorites(): void
     {
-        $this->validateModule(__DIR__ . '/../KodiDeviceFavourites');
+        $this->validateModule(__DIR__ . '/../KodiDeviceFavorites');
     }
     public function testValidateKodiDeviceFiles(): void
     {

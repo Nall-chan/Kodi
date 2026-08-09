@@ -5,10 +5,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
 
 /**
- * KodiDeviceFavourites Klasse für den Namespace Favourites der KODI-API.
+ * KodiDeviceFavorites Klasse für den Namespace Favorites der KODI-API.
  * Erweitert KodiBase.
  *
- * @project       KodiDeviceFavourites
+ * @project       KodiDeviceFavorites
  * @file          module.php
  * @package       Kodi
  * @author        Michael Tröger <nall4chan@gmail.com>
@@ -21,14 +21,14 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @property array $Properties Alle Properties des RPC-Namespace
  * @property array $FavouriteItemList Alle Properties eines Favoriten
  */
-class KodiDeviceFavourites extends KodiBase
+class KodiDeviceFavorites extends KodiBase
 {
     public const PropertyShowFavlist = 'showFavlist';
     public const PropertyThumbSize = 'ThumbSize';
     public const ActionVisibleFormElementsFavProperties = 'showFavlist';
     public const Hook = 'KodiFavlist';
 
-    protected static $Namespace = 'Favourites';
+    protected static $Namespace = 'Favorites';
     protected static $Properties = [];
     protected static $FavouriteItemList = [
         'window',
@@ -51,11 +51,11 @@ class KodiDeviceFavourites extends KodiBase
         // Todo 7.0 -> Style per Konfig-Formular
         $ID = @$this->GetIDForIdent('FavlistDesign');
         if ($ID == false) {
-            $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
+            $this->RegisterScript('FavlistDesign', 'Favoriteslist Config', $this->CreateFavlistConfigScript(), -7);
             IPS_SetHidden($this->GetIDForIdent('FavlistDesign'), true);
         }
         $this->RegisterPropertyInteger('Favlistconfig', $ID);
-        $this->RegisterTimer('RefreshFavs', 0, 'KODIPVR_RefreshFavouriteList(' . $this->InstanceID . ');');
+        $this->RegisterTimer('RefreshFavs', 0, 'KODIFAV_RefreshFavouriteList(' . $this->InstanceID . ');');
     }
 
     /**
@@ -72,7 +72,7 @@ class KodiDeviceFavourites extends KodiBase
             $this->RegisterHook(self::Hook . $this->InstanceID);
             $ID = @$this->GetIDForIdent('FavlistDesign');
             if ($ID == false) {
-                $this->RegisterScript('FavlistDesign', 'Favouriteslist Config', $this->CreateFavlistConfigScript(), -7);
+                $this->RegisterScript('FavlistDesign', 'Favoriteslist Config', $this->CreateFavlistConfigScript(), -7);
                 IPS_SetHidden($this->GetIDForIdent('FavlistDesign'), true);
             }
             $this->SetTimerInterval('RefreshFavs', 15 * 60 * 1000);
@@ -142,12 +142,12 @@ class KodiDeviceFavourites extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteScript'. Lädt einen Media Favoriten.
+     * IPS-Instanz-Funktion 'KODIFAV_LoadFavoritescript'. Lädt einen Media Favoriten.
      *
      * @access public
      * @param string $Script Das Script des Favoriten.
      */
-    public function LoadFavouriteScript(string $Script): bool
+    public function LoadFavoritescript(string $Script): bool
     {
         $KodiData = new Kodi_RPC_Data('Addons');
         $KodiData->ExecuteAddon(['addonid' => rawurlencode($Script)]);
@@ -171,14 +171,14 @@ class KodiDeviceFavourites extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIFAV_GetFavourites'. Liefert die Favoriten.
+     * IPS-Instanz-Funktion 'KODIFAV_GetFavorites'. Liefert die Favoriten.
      *
      * @access public
      * @param string $Type Der Typ der zu suchenden Favoriten.
      *   enum["media"=Media, "window"=Fenster, "script"=Skript, "unknown"=Unbekannt]
      * @return array | bool Array mit den Daten oder false bei Fehlern.
      */
-    public function GetFavourites(string $Type): false|array
+    public function GetFavorites(string $Type): false|array
     {
         $Type = strtolower($Type);
         if (!in_array($Type, ['all', 'media', 'window', 'script', 'unknown'])) {
@@ -188,9 +188,9 @@ class KodiDeviceFavourites extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
 
         if ($Type == 'all') {
-            $KodiData->GetFavourites(['properties' => static::$FavouriteItemList]);
+            $KodiData->GetFavorites(['properties' => static::$FavouriteItemList]);
         } else {
-            $KodiData->GetFavourites(['type' => $Type, 'properties' => static::$FavouriteItemList]);
+            $KodiData->GetFavorites(['type' => $Type, 'properties' => static::$FavouriteItemList]);
         }
 
         $ret = $this->SendDirect($KodiData);
@@ -198,7 +198,7 @@ class KodiDeviceFavourites extends KodiBase
             return false;
         }
         if ($ret->limits->total > 0) {
-            return $KodiData->ToArray($ret->favourites);
+            return $KodiData->ToArray($ret->Favorites);
         }
         return [];
     }
@@ -227,7 +227,7 @@ class KodiDeviceFavourites extends KodiBase
             trigger_error($this->Translate('Error on read Favlistconfig-Script'));
             return false;
         }
-        $AllFavs = $this->GetFavourites('all');
+        $AllFavs = $this->GetFavorites('all');
         if ($AllFavs === false) {
             return false;
         }

@@ -103,10 +103,12 @@ class KodiDiscovery extends IPSModuleStrict
                 $AddValue['create'][$Host] = [
                     [
                         'moduleID'      => self::GUID_Configurator,
+                        'name'          => $Device['devicename'],
                         'configuration' => new stdClass()
                     ],
                     [
                         'moduleID'      => self::GUID_Splitter,
+                        'name'          => $Device['devicename'],
                         'configuration' => [
                             'Open'      => true,
                             'Port'      => $Device['RPCPort'],
@@ -118,6 +120,7 @@ class KodiDiscovery extends IPSModuleStrict
                     ],
                     [
                         'moduleID'      => self::GUID_IO,
+                        'name'          => $Device['devicename'],
                         'configuration' => [
                             'Host'      => $Host
                         ]

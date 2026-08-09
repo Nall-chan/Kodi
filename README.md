@@ -119,7 +119,7 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
 
 - Audio-Datenbank lesen, Künstler/Alben/Songs abfragen, Scannen und Bereinigen.
 
-### [Kodi Favoriten:](KodiDeviceFavourites/)
+### [Kodi Favoriten:](KodiDeviceFavorites/)
 
 - Favoriten lesen, visualisieren und ausführen.
 
@@ -163,24 +163,24 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
 
 ### 1. GUID der Module
 
-|         Instanz        |     Typ      | Prefix |                  GUID                  |
-| :--------------------: | :----------: | :----: | :------------------------------------: |
-|      KodiDiscovery     |  Discovery   |  KODI  | {28AC8A6C-4E03-43BE-9C3E-B8FEF78D374C} |
-|      KodiSplitter      |   Splitter   |  KODI  | {D2F106B5-4473-4C19-A48F-812E8BAA316C} |
-|    KodiConfigurator    | Konfigurator |  KODI  | {7B4F8B62-7AB4-4877-AD60-F3B294DDB43E} |
-|    KodiDeviceAddons    |    Device    | KODIADD| {0731DD94-99E6-43D8-9BE3-2854B0C6EF24} |
-| KodiDeviceApplication  |    Device    | KODIAPP| {3AF936C4-9B31-48EC-84D8-A30F0BEF104C} |
-| KodiDeviceAudioLibrary |    Device    | KODIAUD| {AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC} |
-|  KodiDeviceFavourites  |    Device    | KODIFAV| {DA2C90A2-3863-4454-9B07-FBD083420E10} |
-|    KodiDeviceFiles     |    Device    | KODIFIL| {54827867-BB3B-4ACC-A453-7A8D4DC78130} |
-|     KodiDeviceGUI      |    Device    | KODIGUI| {E15F2C11-0B28-4CFB-AEE6-463BD313A964} |
-|    KodiDeviceInput     |    Device    | KODIINP| {9F3BE8BB-4610-49F4-A41A-40E14F641F43} |
-|    KodiDevicePlayer    |    Device    | KODIPLA| {BA014AD9-9568-4F12-BE31-17D37BFED06D} |
-|   KodiDevicePlaylist   |    Device    | KODIlist| {7D73D0FF-0CC7-43D0-A196-0D6143E52756} |
-|     KodiDevicePVR      |    Device    | KODIPVR| {9D73D46E-7B80-4814-A7B2-31768DC6AB7E} |
-|   KodiDeviceSettings   |    Device    | KODISET| {310E1F8B-D1B2-460C-9DBB-C7C500B28658} |
-|    KodiDeviceSystem    |    Device    | KODISYS| {03E18A60-02FD-45E8-8A2C-1F8E247C92D0} |
-| KodiDeviceVideoLibrary |    Device    | KODIVID| {07943DF4-FAB9-454F-AA9E-702A5F9C9D57} |
+|        Instanz         |     Typ      |  Prefix  |                  GUID                  |
+| :--------------------: | :----------: | :------: | :------------------------------------: |
+|     KodiDiscovery      |  Discovery   |   KODI   | {28AC8A6C-4E03-43BE-9C3E-B8FEF78D374C} |
+|      KodiSplitter      |   Splitter   |   KODI   | {D2F106B5-4473-4C19-A48F-812E8BAA316C} |
+|    KodiConfigurator    | Konfigurator |   KODI   | {7B4F8B62-7AB4-4877-AD60-F3B294DDB43E} |
+|    KodiDeviceAddons    |    Device    | KODIADD  | {0731DD94-99E6-43D8-9BE3-2854B0C6EF24} |
+| KodiDeviceApplication  |    Device    | KODIAPP  | {3AF936C4-9B31-48EC-84D8-A30F0BEF104C} |
+| KodiDeviceAudioLibrary |    Device    | KODIAUD  | {AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC} |
+|  KodiDeviceFavorites   |    Device    | KODIFAV  | {DA2C90A2-3863-4454-9B07-FBD083420E10} |
+|    KodiDeviceFiles     |    Device    | KODIFIL  | {54827867-BB3B-4ACC-A453-7A8D4DC78130} |
+|     KodiDeviceGUI      |    Device    | KODIGUI  | {E15F2C11-0B28-4CFB-AEE6-463BD313A964} |
+|    KodiDeviceInput     |    Device    | KODIINP  | {9F3BE8BB-4610-49F4-A41A-40E14F641F43} |
+|    KodiDevicePlayer    |    Device    | KODIPLA  | {BA014AD9-9568-4F12-BE31-17D37BFED06D} |
+|   KodiDevicePlaylist   |    Device    | KODIlist | {7D73D0FF-0CC7-43D0-A196-0D6143E52756} |
+|     KodiDevicePVR      |    Device    | KODIPVR  | {9D73D46E-7B80-4814-A7B2-31768DC6AB7E} |
+|   KodiDeviceSettings   |    Device    | KODISET  | {310E1F8B-D1B2-460C-9DBB-C7C500B28658} |
+|    KodiDeviceSystem    |    Device    | KODISYS  | {03E18A60-02FD-45E8-8A2C-1F8E247C92D0} |
+| KodiDeviceVideoLibrary |    Device    | KODIVID  | {07943DF4-FAB9-454F-AA9E-702A5F9C9D57} |
 
 ### 2. Changelog
 

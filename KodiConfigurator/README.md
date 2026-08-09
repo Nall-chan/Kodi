@@ -50,6 +50,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 Keine spezifischen Eigenschaften vorhanden.
 
 ## 5. Statusvariablen

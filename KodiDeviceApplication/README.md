@@ -52,6 +52,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Zeige Name | showName | bool | true | Statusvariable für Name verwenden |
@@ -73,12 +75,11 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![Application](imgs/Application.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![Application WebFront](imgs/Application_WF.png)
+![Application WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 

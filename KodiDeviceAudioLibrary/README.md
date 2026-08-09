@@ -53,6 +53,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Zeige Scan-Status | showScan | bool | true | Statusvariable für DB-Scan anzeigen |
@@ -73,12 +75,11 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![AudioLibrary](imgs/AudioLib.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![AudioLibrary WebFront](imgs/AudioLib_WF.png)
+![AudioLibrary WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 

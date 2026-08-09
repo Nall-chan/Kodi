@@ -1,11 +1,9 @@
 {
     "id": "{D2F106B5-4473-4C19-A48F-812E8BAA316C}",
-    "name": "KodiSplitter",
+    "name": "Kodi Splitter",
     "type": 2,
     "vendor": "",
-    "aliases": [
-        "Kodi Splitter"
-    ],
+    "aliases": [],
     "parentRequirements": [
         "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"
     ],
@@ -17,5 +15,5 @@
         "{0222A902-A6FA-4E94-94D3-D54AA4666321}"
     ],
     "prefix": "KODIRPC",
-    "url": "https://github.com/Nall-chan/Kodi/"
+    "url": "https://github.com/Nall-chan/Kodi/blob/master/KodiSplitter"
 }

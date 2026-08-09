@@ -52,6 +52,8 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 
 **Konfigurationsseite:**
 
+![Konfigurationsseite](imgs/conf1.png)
+
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Einschalt-Typ | PowerOnType | int | 1 | 0 = internes WOL, 1 = WOLAction ausführen |
@@ -75,12 +77,11 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-Darstellung als Kachel:  
-![System](imgs/System.png)
+*Keine Kachel-Visualisierung vorhanden.*
 
 ### WebFront Visualisierung
 
-![System WebFront](imgs/System_WF.png)
+![System WebFront](imgs/wf1.png)
 
 ## 7. PHP-Befehlsreferenz
 

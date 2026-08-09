@@ -449,6 +449,7 @@ class KodiSplitter extends IPSModuleStrict
      */
     protected function IOChangeState(int $State): void
     {
+        $this->LogMessage('KodiSplitter: IOChangeState(' . $State . ')', KL_DEBUG);
         if ($this->StatusIsChanging) {
             $this->SendDebug('IOChangeState', 'StatusIsChanging already locked', 0);
             return;

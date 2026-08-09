@@ -3,12 +3,10 @@
     "name": "Kodi Discovery",
     "type": 5,
     "vendor": "Kodi",
-    "aliases": [
-        "Kodi Discovery"
-    ],
+    "aliases": [],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
     "prefix": "KODI",
-    "url": "https://github.com/Nall-chan/Kodi/"
+    "url": "https://github.com/Nall-chan/Kodi/blob/master/KodiDiscovery"
 }

@@ -1,6 +1,7 @@
 {
     "translations": {
         "de": {
+            "Kodi Playlist": "Kodi Wiedergabeliste",
             "Playlist for player:": "Playlist für Player:",
             "Audio": "Audio",
             "Video": "Video",

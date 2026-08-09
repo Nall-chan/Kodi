@@ -27,7 +27,7 @@ class KodiConfigurator extends IPSModuleStrict
         'Addons'        => '{0731DD94-99E6-43D8-9BE3-2854B0C6EF24}',
         'Application'   => '{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}',
         'Audio Library' => '{AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC}',
-        'Favourites'    => '{DA2C90A2-3863-4454-9B07-FBD083420E10}',
+        'Favorites'     => '{DA2C90A2-3863-4454-9B07-FBD083420E10}',
         'Files'         => '{54827867-BB3B-4ACC-A453-7A8D4DC78130}',
         'GUI'           => '{E15F2C11-0B28-4CFB-AEE6-463BD313A964}',
         'Input'         => '{9F3BE8BB-4610-49F4-A41A-40E14F641F43}',
@@ -134,7 +134,8 @@ class KodiConfigurator extends IPSModuleStrict
                 'type'   => $this->Translate($Name),
                 'create' => [
                     'moduleID'      => $ModuleData['GUID'],
-                    'configuration' => ['PlayerID' => $ModuleData['PlayerID']]
+                    'configuration' => ['PlayerID' => $ModuleData['PlayerID']],
+                    'location'      => [IPS_GetName($this->InstanceID)]
                 ]
             ];
             $InstanzID = $this->SearchPlayerInstance($SplitterID, $ModuleData['GUID'], $ModuleData['PlayerID']);
@@ -154,7 +155,8 @@ class KodiConfigurator extends IPSModuleStrict
                 'type'   => $this->Translate($Name),
                 'create' => [
                     'moduleID'      => $ModuleData['GUID'],
-                    'configuration' => ['PlaylistID' => $ModuleData['PlaylistID']]
+                    'configuration' => ['PlaylistID' => $ModuleData['PlaylistID']],
+                    'location'      => [IPS_GetName($this->InstanceID)]
                 ]
             ];
             $InstanzID = $this->SearchPlaylistInstance($SplitterID, $ModuleData['GUID'], $ModuleData['PlaylistID']);
@@ -174,7 +176,8 @@ class KodiConfigurator extends IPSModuleStrict
                 'type'   => $this->Translate($Name),
                 'create' => [
                     'moduleID'      => $ModuleID,
-                    'configuration' => new stdClass()
+                    'configuration' => new stdClass(),
+                    'location'      => [IPS_GetName($this->InstanceID)]
                 ]
             ];
             $InstanzID = $this->SearchInstance($SplitterID, $ModuleID);
