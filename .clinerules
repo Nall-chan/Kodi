@@ -1,0 +1,86 @@
+# IP-Symcon PHP-Modul Entwicklungsregeln
+
+Du hilfst bei der Entwicklung einer Bibliothek aus PHP-Modulen für die Smart-Home-Software IP-Symcon.
+
+- **Klassenstruktur:**
+  - Alle Symcon Module erben von `IPSModuleStrict`.
+  - Nutze sinnvolle Vererbung der Klassen um Code-Duplikate zu vermeiden.
+  - Nutze die globale Helper Klassen, welche per eval in den jeweiligen Namensraum des Moduls geladen werden, um die Funktionalität zu erweitern und sich nicht gegenseitig zu stören. Diese Helper-Klassen sind nicht veränderbar und liegen als Submodul unter [/libs/helper](https://github.com/Nall-chan/SymconModulHelper).
+  - Bei Modulübergreifenden Konstanten sollten diese in einer eigenen Datei und Klasse definiert werden.
+- **Dateistruktur:**
+  - `module.json`: Modul-Metadaten (GUIDs, Name, Typ).
+  - `form.json`: Konfigurationsformular für die Console.
+  - `module.php`: Hauptklasse des Moduls.
+  - `locale.json`: Übersetzungen.
+- **Lebenszyklus-Methoden:**
+  - `Create()`: Properties mit `$this->RegisterPropertyString(...)` etc. registrieren.
+  - `ApplyChanges()`: Einstellungen anwenden, Timer & Messages registrieren.
+- **Konventionen:**
+  - Nutze `$this->SendDebug('Headline', 'Data', 0)` für Logging.
+  - Nutze `$this->SetStatus(...)` für Modulzustände (z. B. 102 = Aktiv, 201 = Fehler).
+  - Nutze keine IPS_ Funktionen direkt, sondern die Methoden der IPSModuleStrict-Klasse, außer es existiert keine entsprechende Methode.
+  - Sandboxing: Zugriff auf Symcon Objekte außerhalb der eigenen Modulinstanz ist nur lesend erlaubt, Ausnahme ist das Schalten von Variablen mit RequestAction.
+  - Nutze anständige Namenskonventionen für Variablen, Methoden und Klassen.
+  - Deklariere wiederkehrende Strings als Konstanten, um Tippfehler zu vermeiden.
+  - Wahrung der Hoheit des Nutzers: Die Module sollen so entwickelt werden, dass der Nutzer die volle Kontrolle über die Konfiguration und Nutzung der Module hat. Es sollten keine versteckten Funktionen oder Abhängigkeiten implementiert werden, die den Nutzer einschränken oder die Nutzung der Module behindern. Ebenso dürfen keine Objektnamen (auch Symcon Statusvariablen sind Objekte) ohne Zustimmung des Nutzers geändert werden.
+  - Sollen Objekte aus dem Symcon Objektbaum gelöscht werden, so muss der Nutzer dies explizit bestätigen bzw. vorher darauf hingewiesen werden.
+- **Namenskonventionen:**
+  - Klassenname = Modulname (z. B. `MyModule`).
+  - Methoden in CamelCase (z. B. `GetStatus()`).
+  - Variablen in CamelCase (z. B. `$MyVariable`).
+  - Konstanten in UPPER_CASE (z. B. `MY_CONSTANT`).
+- **Dokumentation:**
+  - Nutze PHPDoc für Klassen, Methoden und Variablen.
+  - Beschreibe die Funktionalität und Parameter der Methoden.
+  - Dokumentiere die Modulkonfiguration im form.json.
+  - Erstelle im Hauptordner eine README.md mit einer Anwenderbeschreibung der Library und dessen Bestandteile.
+  - Der Aufbau der README.md sollte wie folgt aussehen:
+    - **1. Funktionsumfang**
+    - **Vorbemerkungen** <Bei Bedarf einfügen, wenn die z.B. umfange Vorbereitungen an Hardware oder Software notwenig sind, um die Library nutzen zu können. Details siehe die nächsten zwei Punkte.>
+      - **Zur Library** <Kurze Leistungsabgrenzung wenn z.B. nicht der ganze Protokollstack, oder nicht alle Geräte unterstützt werden.>
+      - **Zur Integration von Geräten** <Beschreibung wenn z.B. vorher bestimmte Freigaben, API-Keys, Zugangsdaten usw. benötigt werden, damit die Library genutzt werden kann.>
+    - **2. Voraussetzungen**
+    - **3. Software-Installation**
+    - **4. Enthaltende Module**
+      - <Auflistung alle Module mit Überschrift (+Link zur Dokumentation) und kurzer Beschreibung der Funktionalität>
+    - **5. Anhang**
+      - **1. GUID der Module**
+      - **2. Changelog**
+      - **3. Spenden**
+    - **6. Lizenz**
+  - Erstelle in jedem Ordner eine README.md mit einer Anwenderbeschreibung des Moduls und dessen Funktionalität.
+  - Der Aufbau der README.md sollte wie folgt aussehen:
+    - **1. Funktionsumfang**
+    - **2. Voraussetzungen**
+    - **3. Software-Installation**
+    - **4. Einrichten der Instanzen in IP-Symcon**
+    - **5. Statusvariablen**
+    - **6. Visualisierung**
+      - **Kachel Visualisierung**
+      - **WebFront Visualisierung**
+    - **7. PHP-Befehlsreferenz**
+    - **8. Aktionen**
+    - **9. Anhang**
+      - **1. Changelog**
+      - **2. Spenden**
+    - **10. Lizenz**
+- **Code-Qualität:**
+  - Nutze den im Ordner .style vorhanden Stil für die Codeformatierung.
+  - Nutze sinnvolle Kommentare, um den Code verständlich zu machen.
+  - Vermeide unnötige Abhängigkeiten und externe Bibliotheken, außer es ist zwingend notwendig.
+  - Schreibe Unit-Tests für die Module, um die Funktionalität zu gewährleisten (im Ordner tests).
+  - Der Pfad zur ausführbaren PHP-Datei und zur phpunit, sowie dem CSFixer sind der Konfig von Visual Studio Code zu entnehmen.
+  - Als Style für PHP-CS-Fixer wird die unter ./style vorhandene Konfiguration verwendet, welche als [Submodule](https://github.com/Nall-chan/StylePHP) eingebunden wird.
+  - Der Style ist in Visual Studio Code über die Tasks ausführbar, welche im Ordner .vscode vorhanden sind.
+  - Entsprechende Tasks sind in Visual Studio Code vorhanden, durch den Einsatz eines [Submodul unter /.vscode](https://github.com/Nall-chan/SymconVSCTasks.git)
+- **Allgemeine Anforderungen an eine Library**
+  - Die Instanzen sollen vom User einfach eingerichtet werden können, ohne dass tiefgehende Programmierkenntnisse erforderlich sind.
+  - Entsprechend sind Discovery-Instanzen (automatische Erkennung von Geräten im Netzwerk) vorgesehen, die dem User die Einrichtung erleichtern.
+  - Sowie Konfigurator-Instanzen, welche dem User bei der anlage und Einrichtung der jeweiligen Geräte-Instanzen unterstützen.
+  - Die Library sollte modular aufgebaut sein, um die Erweiterbarkeit zu gewährleisten.
+  - Die Library sollte eine klare Trennung zwischen der Logik der Module und der Benutzeroberfläche (Formulare) haben.
+  - Die Library sollte eine konsistente Fehlerbehandlung implementieren, um die Stabilität der Module zu gewährleisten.
+  - Die Library sollte eine umfassende Dokumentation enthalten, um die Nutzung und Erweiterung der Module zu erleichtern.
+- **Spezifische Nutzung dieser Library**
+  - Diese Library dient zur Anbindung an die Software KODi an Symcon. Sie stellt die notwendigen Module und Funktionen bereit, um KODi-Geräte in  IP-Symcon zu integrieren und zu steuern.
+  - Die Library ist so konzipiert, dass sie leicht erweiterbar ist, um zukünftige KODi-Geräte und Funktionen zu unterstützen.
