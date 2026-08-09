@@ -57,7 +57,7 @@ class KodiRPCException extends Exception
  * @method null GetSongDetails(array $Params) (string "songid" SongID) (array "properties" Zu lesende Song-Eigenschaften) Liest die Eigenschaften eines Songs aus.
  * @method null GetSongs(array $Params) Liest die Eigenschaften aller Songs aus.
  * @method null Scan() Startet das Scannen von PVR-Kanälen oder von Quellen für neue Einträge in der Datenbank.
- * @method null GetFavorites(array $Params) Liest die Eigenschaften aller Favoriten aus.
+ * @method null GetFavourites(array $Params) Liest die Eigenschaften aller Favoriten aus.
  * @method null GetSources(array $Params) (string "media"  enum["video", "music", "pictures", "files", "programs"]) Liest die Quellen.
  * @method null GetFileDetails(array $Params) (string "file" Dateiname) (string "media"  enum["video", "music", "pictures", "files", "programs"]) (array "properties" Zu lesende Eigenschaften)) Liest die Quellen.
  * @method null GetDirectory(array $Params) (string "directory" Verzeichnis welches gelesen werden soll.)) Liest ein Verzeichnis aus.
@@ -248,7 +248,6 @@ class Kodi_RPC_Data extends stdClass
     {
         return $this->{$name};
     }
-
     /**
      * Führt eine RPC-Methode aus.
      *
@@ -272,6 +271,20 @@ class Kodi_RPC_Data extends stdClass
             }
         }
         $this->Id = (int) round(explode(' ', microtime())[0] * 10000);
+    }  
+
+    /**
+     * GetCalledMethod
+     *
+     * @return string
+     */
+    public function GetCalledMethod(): ?string
+    {
+        if (!is_null($this->Namespace)) {
+            return $this->Namespace . '.' . $this->Method;
+        } else {
+            return $this->Method;
+        }
     }
 
     /**
@@ -448,7 +461,11 @@ class Kodi_RPC_Data extends stdClass
     {
         $RPC = new stdClass();
         $RPC->jsonrpc = '2.0';
-        $RPC->method = $this->Namespace . '.' . $this->Method;
+        if (!is_null($this->Namespace)) {
+            $RPC->method = $this->Namespace . '.' . $this->Method;
+        } else {
+            $RPC->method = $this->Method;
+        }
         if (!is_null($this->Params)) {
             $RPC->params = $this->Params;
         }

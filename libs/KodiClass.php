@@ -520,7 +520,7 @@ sleep(10).then(() => {
             return $ret;
         } catch (KodiRPCException $ex) {
             $this->SendDebug('Receive Direct', $ex, 0);
-            trigger_error('Error (' . $ex->getCode() . ')' . "\r\n" . $ex->getMessage() . ' in ' . get_called_class(), E_USER_NOTICE);
+            trigger_error('Error (' . $ex->getCode() . ')' . ' '.$KodiData->GetCalledMethod()."\r\n" . $ex->getMessage() . "\r\n" . get_called_class(), E_USER_NOTICE);
         } catch (Exception $ex) {
             $this->SendDebug('Receive Direct', $ex->getMessage(), 0);
             trigger_error($ex->getMessage() . "\r\n" . $ex->getTraceAsString(), $ex->getCode());

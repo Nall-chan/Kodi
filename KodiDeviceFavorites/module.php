@@ -28,7 +28,7 @@ class KodiDeviceFavorites extends KodiBase
     public const ActionVisibleFormElementsFavProperties = 'showFavlist';
     public const Hook = 'KodiFavlist';
 
-    protected static $Namespace = 'Favorites';
+    protected static $Namespace = 'Favourites';
     protected static $Properties = [];
     protected static $FavouriteItemList = [
         'window',
@@ -188,9 +188,9 @@ class KodiDeviceFavorites extends KodiBase
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
 
         if ($Type == 'all') {
-            $KodiData->GetFavorites(['properties' => static::$FavouriteItemList]);
+            $KodiData->GetFavourites(['properties' => static::$FavouriteItemList]);
         } else {
-            $KodiData->GetFavorites(['type' => $Type, 'properties' => static::$FavouriteItemList]);
+            $KodiData->GetFavourites(['type' => $Type, 'properties' => static::$FavouriteItemList]);
         }
 
         $ret = $this->SendDirect($KodiData);
@@ -198,7 +198,7 @@ class KodiDeviceFavorites extends KodiBase
             return false;
         }
         if ($ret->limits->total > 0) {
-            return $KodiData->ToArray($ret->Favorites);
+            return $KodiData->ToArray($ret->favourites);
         }
         return [];
     }
