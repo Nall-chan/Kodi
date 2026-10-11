@@ -1,9 +1,9 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
-[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#6-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#3-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#3-spenden)
 
@@ -88,7 +88,6 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
 ## 3. Software-Installation
 
 Über den 'Module-Store' in IPS das Modul 'Kodi' hinzufügen.  
-**Bei kommerzieller Nutzung (z.B. als Errichter oder Integrator) wenden Sie sich bitte an den Autor.**
 
 ## 4. Enthaltende Module
 
@@ -183,6 +182,74 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
 | KodiDeviceVideoLibrary |    Device    | KODIVID  | {07943DF4-FAB9-454F-AA9E-702A5F9C9D57} |
 
 ### 2. Changelog
+
+**Version 3.10:**  
+
+> [!IMPORTANT]
+> **Vor dem Update beachten:**
+> - Die alten Konfigurations-Skripte der HTML-Tabellen (Addons, Favoriten, Playlist, PVR) werden einmalig übernommen und danach nicht mehr benutzt. Sie können manuell gelöscht werden. War ein Skript nicht lesbar, gilt das Standard-Design (Warnung im Log).
+> - Veraltete Statusvariablen des Players werden umbenannt (Ident) oder gelöscht, wenn es eine Nachfolgevariable gibt bzw. keine Nachfolge existiert. Skripte, Ereignisse und Links, die diese Variablen nutzen, prüfen.
+> - Die neuen optionalen Player-Variablen (Videospur, Audio-Verzögerung, Bildformat, Tempo) sind bei bestehenden Instanzen ausgeschaltet und im Formular unter „Zusätzliche Statusvariablen“ einschaltbar.
+> - Umbenannte Funktionen: `KODIFAV_*Favourite*` heißen jetzt `KODIFAV_*Favorite*`, `KODIADDONS_EnableAddon` heißt `KODIADDONS_SetAddonEnabled`. Die alten Namen funktionieren bis Version 3.20 mit Warnung im Log. Skripte anpassen.
+> - `KODIPLAYER_GoToTrack` zählt ab 1. Skripte, die bisher den um eins kleineren Wert übergeben, anpassen.
+> - `KODIINPUT_ExecuteAction` lehnt Aktionen alter Kodi-Versionen ab (z.B. `analogmovex`, `osdleft`).
+> - Listen der Video-Datenbank enthalten kein `cast`, `streamdetails` und `art` mehr (über `Get*Details` lesen). Bei großen Bibliotheken liefern die Listen `false`, dann die `Ex`-Funktionen nutzen.
+> - Zeiten aus Sekunden (z.B. Dauer) haben keine führende Null bei den Stunden (`1:30:00` statt `01:30:00`). Staffel und Episode stehen nach dem Stoppen auf `-1` statt `0`. Skripte, die diese Werte auswerten, prüfen.
+> - System: Aktionen, die Kodi auf dem Gerät nicht unterstützt (Ausschalten, Ruhezustand, Standby, Neustart), sind nicht mehr bedienbar.
+> - `KODIFAV_AddFavorite` schaltet um: Ein vorhandener Favorit wird entfernt.
+> - Die neuen Funktionen setzen Kodi 21 (JSON-RPC 13.5) voraus.
+
+Neue Funktionen und Aktionen:  
+- Aktionen: Addon aktivieren/deaktivieren und ausführen, Favorit laden, Fenster aktivieren, Vollbild, Benachrichtigung, Eingabeaktion, Text senden, Datenbank durchsuchen/bereinigen/exportieren, Wiedergabe steuern, zu Titel springen, Medium laden, Lautstärke, Stumm, Kodi beenden, Systemsteuerung, Status abfragen.  
+- Anwendung: `KODIAPP_VolumeUp`, `KODIAPP_VolumeDown`, `KODIAPP_GetProfiles`, `KODIAPP_GetCurrentProfile`.  
+- Audio-Datenbank: `KODIAUDIOLIB_GetLibraryProperties`, `KODIAUDIOLIB_GetSources`, `KODIAUDIOLIB_GetRoles`, `KODIAUDIOLIB_GetAlbumsEx`, `KODIAUDIOLIB_GetArtistsEx`, `KODIAUDIOLIB_GetSongsEx`.  
+- Video-Datenbank: `KODIVIDEOLIB_GetInProgressTVShows`, `KODIVIDEOLIB_GetSeasonDetails`, `KODIVIDEOLIB_GetTags`, `KODIVIDEOLIB_GetMoviesEx`, `KODIVIDEOLIB_GetTVShowsEx`, `KODIVIDEOLIB_GetEpisodesEx`, `KODIVIDEOLIB_GetMusicVideosEx`, `KODIVIDEOLIB_GetMovieSetsEx`.  
+- Player: `KODIPLAYER_LoadEx`, `KODIPLAYER_GetPlayers`, `KODIPLAYER_SetVideoStream`, `KODIPLAYER_AddSubtitle`, `KODIPLAYER_SetAudioDelay`, `KODIPLAYER_GetAudioDelay`, `KODIPLAYER_SetViewMode`, `KODIPLAYER_GetViewMode`, `KODIPLAYER_SetTempo`, `KODIPLAYER_Zoom`, `KODIPLAYER_ZoomIn`, `KODIPLAYER_ZoomOut`, `KODIPLAYER_Rotate`, `KODIPLAYER_Move`.  
+- Player: optionale Statusvariablen Videospur, Audio-Verzögerung, Bildformat und Tempo; Schaltflächen zum Anlegen der Links für die Mediaplayer-Kachel (Lautstärke, Stumm, Playlist).  
+- Playlist: `KODIPLAYLIST_GetPlaylists`.  
+- GUI: `KODIGUI_ActivateWindowEx`, `KODIGUI_ActivateScreenSaver`, `KODIGUI_DeactivateScreenSaver`, `KODIGUI_GetInfoLabels`, `KODIGUI_GetInfoBooleans`; Statusvariable „Bildschirmschoner“ ist bedienbar.  
+- Input: `KODIINPUT_ButtonEvent`, `KODIINPUT_ShowPlayerProcessInfo`.  
+- PVR: `KODIPVR_AddTimer`, `KODIPVR_DeleteTimer`, `KODIPVR_ToggleTimer`, `KODIPVR_GetClients`, `KODIPVR_GetBroadcastIsPlayable`.  
+- Favoriten: `KODIFAV_AddFavorite`.  
+- Einstellungen: `KODISETTINGS_SetSettingValueFloat` und Statusvariablen für Kommazahl-Einstellungen, `KODISETTINGS_GetSkinSettings`, `KODISETTINGS_GetSkinSettingValue`, `KODISETTINGS_SetSkinSettingValueBoolean`, `KODISETTINGS_SetSkinSettingValueString`.  
+- Splitter: `KODIRPC_GetImageBase64`.  
+
+Änderungen:  
+- Das Aussehen der HTML-Tabellen (Addons, Favoriten, Playlist, PVR) wird im Konfigurationsformular eingestellt. Die bisherigen Konfigurations-Skripte werden beim Update übernommen und danach nicht mehr benutzt.  
+- Einstellungen und Statusvariablen älterer Versionen werden beim Update automatisch übernommen bzw. bereinigt.  
+- Funktionsnamen der Favoriten einheitlich „Favorite“ (`KODIFAV_LoadFavoriteMedia`, `KODIFAV_LoadFavoriteScript`, `KODIFAV_LoadFavoriteWindow`, `KODIFAV_GetFavorites`, `KODIFAV_RefreshFavoriteList`). Die alten Namen sowie `KODIADDONS_EnableAddon` (ersetzt durch `KODIADDONS_SetAddonEnabled`) sind veraltet, schreiben eine Warnung ins Log und werden in Version 3.20 entfernt.  
+- `KODIPLAYER_GoToTrack` zählt die Titel ab 1.  
+- `KODIINPUT_ExecuteAction` kennt die Eingabeaktionen von Kodi 21, nicht mehr vorhandene Aktionen werden abgelehnt.  
+- Listen der Video-Datenbank (`KODIVIDEOLIB_GetMovies`, `GetTVShows`, `GetRecentlyAdded*` usw.) enthalten keine Darsteller, Stream-Details und Grafiken (`art`) mehr, diese liefern die `Get*Details`-Funktionen. Für große Bibliotheken gibt es die `Ex`-Funktionen zum seitenweisen Lesen.  
+- `*_RequestState` liefert `true` bei Erfolg, sonst `false`.  
+- System: Ausschalten, Ruhezustand, Standby und Neustart sind nur bedienbar, wenn Kodi sie auf dem Gerät unterstützt.  
+- Addons: Die Addon-Liste wird beim Verbinden und nach `KODIADDONS_SetAddonEnabled` erneuert.  
+- Player: Audio-, Untertitel- und Videospuren werden bei Start und Wechsel der Wiedergabe neu gelesen.  
+
+Behobene falsche Werte in Statusvariablen:  
+- Player „Geschwindigkeit“ zeigte nie die tatsächliche Geschwindigkeit.  
+- Player „Artist“ blieb leer, wenn Kodi nur den Album-Interpreten lieferte.  
+- Player „Dauer“ und Zeiten aus Sekunden hingen von Zeitzone und Sommerzeit ab (jetzt rechnerisch, Stunden ohne führende Null, z.B. `1:30:00`).  
+- Player „Staffel“ und „Episode“ standen nach dem Stoppen auf `0` statt `-1`.  
+- System „Batterie schwach“ wurde nie zurückgesetzt (jetzt beim Verbinden und Aufwachen).  
+- Addons: Texte „An“, „Aus“ und „Ausführen“ in der Tabelle waren nicht übersetzt.  
+
+Fehlerbehebungen:  
+- Vorschaubilder der HTML-Tabellen und das Player-Cover fehlten.  
+- `KODIGUI_ShowNotification` und `KODIGUI_ActivateWindow` meldeten auch bei Erfolg `false`.  
+- `KODIPLAYER_Play` meldete bei inaktivem Player nach dem Laden der Playlist `false`.  
+- `KODIPLAYER_GoToTrack` sprang einen Eintrag zu weit.  
+- `KODIPLAYER_SetSubtitle(-1)` schaltete die Untertitel nicht aus.  
+- `KODIPVR_Record` endete bei Erfolg mit einem Typfehler.  
+- `KODIAUDIOLIB_Export` und `KODIVIDEOLIB_Export` sendeten eine von Kodi nicht unterstützte Kombination der Optionen.  
+- `LoadDirectoryRecursive` (Player), `AddDirectoryRecursive` und `InsertDirectoryRecursive` (Playlist) sendeten ein ungültiges Item.  
+- Favoriten-Funktionen sendeten URL-kodierte Pfade an Kodi.  
+- Ganzzahlige Kommawerte (z.B. Audio-Verzögerung 0) wurden als Ganzzahl gesendet und von Kodi abgelehnt.  
+- Video-Listen waren bei großen Bibliotheken zu groß für Symcon (Rückgabe `false`).  
+- Beim Abwählen von „Texteingabe anzeigen“ wurde die falsche Variable gelöscht.  
+- `KODIPVR_ProcessHookdata` wurde als Instanz-Funktion angeboten.  
+- Konfigurator ohne Splitter und Discovery bei Geräten ohne UUID erzeugten Warnungen.  
+- Die Discovery gab das Passwort im Klartext im Debug aus.  
 
 **Version 3.02:**  
 - Fix: WOL-Port in `KodiDeviceSystem` korrigiert.  
@@ -302,4 +369,7 @@ Wunschliste:
 ## 6. Lizenz
 
 IPS-Modul:  
-[Custom NC-SA](LICENSE)
+[Custom NC-SA](LICENSE)  
+
+Kodi JSON-RPC API Schema unter [docs/](docs/README.md) (nur Entwicklungsreferenz):  
+Copyright (C) 2005-2018 Team Kodi, [GPL-2.0-or-later](https://github.com/xbmc/xbmc/blob/Omega/LICENSES/GPL-2.0-or-later)

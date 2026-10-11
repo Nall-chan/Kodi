@@ -1,0 +1,54 @@
+{
+    "id": "{89FB0119-38CC-9F21-6952-6DE723004BF2}",
+    "caption": "Export library",
+    "form": [
+        {
+            "type": "ValidationTextBox",
+            "name": "PATH",
+            "caption": "Target directory in Kodi (empty = separate files next to the media)"
+        },
+        {
+            "type": "CheckBox",
+            "name": "OVERWRITE",
+            "caption": "Overwrite existing files (only for separate files)"
+        },
+        {
+            "type": "CheckBox",
+            "name": "IMAGES",
+            "caption": "Export images (only for separate files)"
+        }
+    ],
+    "action": [
+        "if (IPS_GetInstance($_IPS['TARGET'])['ModuleInfo']['ModuleID'] == '{AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC}') {",
+        "    KODIAUDIOLIB_Export($_IPS['TARGET'], $_IPS['PATH'], $_IPS['OVERWRITE'], $_IPS['IMAGES']);",
+        "} else {",
+        "    KODIVIDEOLIB_Export($_IPS['TARGET'], $_IPS['PATH'], $_IPS['OVERWRITE'], $_IPS['IMAGES']);",
+        "}"
+    ],
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC}",
+            "{07943DF4-FAB9-454F-AA9E-702A5F9C9D57}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Export library": "Datenbank exportieren",
+            "Target directory in Kodi (empty = separate files next to the media)": "Zielverzeichnis in Kodi (leer = einzelne Dateien bei den Medien)",
+            "Overwrite existing files (only for separate files)": "Vorhandene Dateien überschreiben (nur bei einzelnen Dateien)",
+            "Export images (only for separate files)": "Bilder exportieren (nur bei einzelnen Dateien)",
+            "Exports the library either into one file in a directory or into separate files next to the media.": "Exportiert die Datenbank entweder in eine Datei in einem Verzeichnis oder in einzelne Dateien bei den Medien.",
+            "Export library {TARGET, object}": "Datenbank {TARGET, object} exportieren"
+        }
+    },
+    "format": "Export library {TARGET, object}",
+    "description": "Exports the library either into one file in a directory or into separate files next to the media."
+}

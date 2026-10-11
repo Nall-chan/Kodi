@@ -1,0 +1,50 @@
+{
+    "id": "{EA613A4F-E40C-48E5-AC67-9F1DA30B07E0}",
+    "caption": "Enable or disable addon",
+    "form": [
+        "$Options = [];",
+        "$Addons = @KODIADDONS_GetAddons($_IPS['TARGET']);",
+        "if (is_array($Addons)) {",
+        "    foreach ($Addons as $Addon) {",
+        "        $Options[] = ['caption' => $Addon['name'] . ' (' . $Addon['addonid'] . ')', 'value' => $Addon['addonid']];",
+        "    }",
+        "    usort($Options, fn ($a, $b) => strcasecmp($a['caption'], $b['caption']));",
+        "}",
+        "if (isset($_IPS['ADDONID']) && ($_IPS['ADDONID'] != '') && !in_array($_IPS['ADDONID'], array_column($Options, 'value'))) {",
+        "    $Options[] = ['caption' => $_IPS['ADDONID'], 'value' => $_IPS['ADDONID']];",
+        "}",
+        "if (count($Options) > 0) {",
+        "    $Form[] = ['type' => 'Select', 'name' => 'ADDONID', 'caption' => 'Addon', 'options' => $Options];",
+        "} else {",
+        "    $Form[] = ['type' => 'ValidationTextBox', 'name' => 'ADDONID', 'caption' => 'Addon ID (Kodi not reachable)', 'validate' => '^\\\\S+$'];",
+        "}",
+        "$Form[] = ['type' => 'CheckBox', 'name' => 'VALUE', 'caption' => 'Enabled'];",
+        "return $Form;"
+    ],
+    "action": "KODIADDONS_SetAddonEnabled($_IPS['TARGET'], $_IPS['ADDONID'], $_IPS['VALUE']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{0731DD94-99E6-43D8-9BE3-2854B0C6EF24}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Addon": "Addon",
+            "Addon ID (Kodi not reachable)": "Addon-ID (Kodi nicht erreichbar)",
+            "Enable or disable addon": "Addon aktivieren oder deaktivieren",
+            "Enabled": "Aktiviert",
+            "Enables or disables an addon in Kodi.": "Aktiviert oder deaktiviert ein Addon in Kodi.",
+            "{VALUE, select, 0 {Disable} false {Disable} other {Enable}} addon {ADDONID} on {TARGET, object}": "Addon {ADDONID} auf {TARGET, object} {VALUE, select, 0 {deaktivieren} false {deaktivieren} other {aktivieren}}"
+        }
+    },
+    "format": "{VALUE, select, 0 {Disable} false {Disable} other {Enable}} addon {ADDONID} on {TARGET, object}",
+    "description": "Enables or disables an addon in Kodi."
+}

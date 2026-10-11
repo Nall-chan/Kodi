@@ -1,0 +1,81 @@
+{
+    "id": "{0F928AC6-AF94-F4EE-7EBC-36D11919F8F2}",
+    "caption": "Playback control",
+    "form": [
+        {
+            "type": "Select",
+            "name": "VALUE",
+            "caption": "Command",
+            "value": "Play",
+            "options": [
+                {
+                    "caption": "Play",
+                    "value": "Play"
+                },
+                {
+                    "caption": "Pause",
+                    "value": "Pause"
+                },
+                {
+                    "caption": "Stop",
+                    "value": "Stop"
+                },
+                {
+                    "caption": "Next",
+                    "value": "GoToNext"
+                },
+                {
+                    "caption": "Previous",
+                    "value": "GoToPrevious"
+                }
+            ]
+        }
+    ],
+    "action": [
+        "switch ($_IPS['VALUE']) {",
+        "    case 'Play':",
+        "        KODIPLAYER_Play($_IPS['TARGET']);",
+        "        break;",
+        "    case 'Pause':",
+        "        KODIPLAYER_Pause($_IPS['TARGET']);",
+        "        break;",
+        "    case 'Stop':",
+        "        KODIPLAYER_Stop($_IPS['TARGET']);",
+        "        break;",
+        "    case 'GoToNext':",
+        "        KODIPLAYER_GoToNext($_IPS['TARGET']);",
+        "        break;",
+        "    case 'GoToPrevious':",
+        "        KODIPLAYER_GoToPrevious($_IPS['TARGET']);",
+        "        break;",
+        "}"
+    ],
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{BA014AD9-9568-4F12-BE31-17D37BFED06D}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Playback control": "Wiedergabesteuerung",
+            "Command": "Befehl",
+            "Play": "Wiedergabe",
+            "Pause": "Pause",
+            "Stop": "Stopp",
+            "Next": "Nächster Titel",
+            "Previous": "Vorheriger Titel",
+            "Controls the playback.": "Steuert die Wiedergabe.",
+            "{VALUE, select, Play {Start playback} Pause {Pause playback} Stop {Stop playback} GoToNext {Next title} other {Previous title}} on {TARGET, object}": "{VALUE, select, Play {Wiedergabe starten} Pause {Wiedergabe pausieren} Stop {Wiedergabe stoppen} GoToNext {Nächster Titel} other {Vorheriger Titel}} auf {TARGET, object}"
+        }
+    },
+    "format": "{VALUE, select, Play {Start playback} Pause {Pause playback} Stop {Stop playback} GoToNext {Next title} other {Previous title}} on {TARGET, object}",
+    "description": "Controls the playback."
+}

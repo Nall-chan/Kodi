@@ -27,7 +27,22 @@
             "Error on send suspend": "Fehler beim senden von Standby.",
             "Error on send reboot": "Fehler beim senden von Neustart.",
             "Error on eject optical drive": "Fehler beim Laufwerk öffnen.",
-            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:",
+            "Invalid Ident.": "Ungültiger Ident.",
+            "Property not found.": "Eigenschaft nicht gefunden.",
+            "Power": "Eingeschaltet",
+            "Power-On method:": "Methode zum Einschalten:",
+            "build-in WOL": "integriertes Wake-On-LAN",
+            "Selected action": "Ausgewählte Aktion",
+            "Select Power-On action": "Aktion zum Einschalten auswählen",
+            "Power-On action": "Aktion zum Einschalten",
+            "Invalid Value.": "Ungültiger Wert.",
+            "Instance has no active parent.": "Instanz hat keinen aktiven Parent.",
+            "Instance inactive.": "Instanz ist inaktiv.",
+            "Kodi unreachable.": "Kodi ist nicht erreichbar.",
+            "Error (%d) on %s: %s": "Fehler (%d) bei %s: %s",
+            "%s is deprecated and will be removed in version 3.20. Use %s instead.": "%s ist veraltet und wird in Version 3.20 entfernt. Bitte %s verwenden.",
+            "Power-on script %d migrated to the power-on action.": "Einschalt-Skript %d in die Einschalt-Aktion übernommen."
         }
     }
 }

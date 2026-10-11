@@ -27,6 +27,40 @@ class KodiDeviceAddons extends KodiBase
     public const PropertyThumbSize = 'ThumbSize';
     public const ActionVisibleFormElementsAddon = 'showAddonlist';
     public const Hook = 'KodiAddonlist';
+    /** Alte Eigenschaft mit der ID des Konfigurations-Skripts (bis 3.02), nur noch in Migrate vorhanden. */
+    public const LegacyPropertyConfigScript = 'Addonlistconfig';
+    public const FormPanelDesign = 'HTMLDesign';
+
+    /** Spalten der Addon-Tabelle: Schlüssel, Überschrift, Breite (em), sichtbar. */
+    private const TableColumns = [
+        ['Thumbnail', '', 100, true],
+        ['Enabled', 'Active', 120, true],
+        ['Name', 'Name', 200, true],
+        ['Version', 'Version', 100, true],
+        ['Summary', 'Summary', 400, true],
+        ['Execute', 'Start', 100, true],
+        ['Description', 'Description', 400, false],
+        ['Path', 'Path', 100, false],
+        ['Author', 'Author', 100, false],
+        ['Disclaimer', 'Disclaimer', 100, false],
+        ['Fanart', 'Fanart', 100, false],
+        ['Broken', 'Broken', 50, false],
+        ['Rating', 'Rating', 50, false],
+        ['Type', 'Type', 100, false],
+        ['Addonid', 'Addon ID', 200, false]
+    ];
+
+    /** Gemeinsamer Teil der Button-Styles. */
+    private const ButtonBaseStyle = 'display:inline-block; margin:2px 0px 1px 3px; font-family:arial,sans-serif; font-size:17px; line-height:28px; border-color:transparent; border-style:solid; border-width:1px 0px; min-height:28px; padding:0px 10px; vertical-align:middle; background-image:linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);';
+
+    /** CSS-Klassen der Buttons: isenabled/isdisabled = Zustand, doenabled/dodisabled = schalten, execute = ausführen. */
+    private const TableButtons = [
+        'isenabled'  => 'color:rgb(255,255,255); background-color:rgb(0,255,0); width:25%;',
+        'isdisabled' => 'background-color:rgba(255,255,255,0.3); width:25%;',
+        'doenabled'  => 'background-color:rgba(0,255,0,0.3); width:25%;',
+        'dodisabled' => 'color:rgba(255,255,255,0.3); background-color:rgba(255,255,255,0.1); width:25%;',
+        'execute'    => 'background-color:rgb(0,255,0); width:80%;'
+    ];
 
     protected static $Namespace = 'Addons';
     protected static $Properties = [];
@@ -57,14 +91,22 @@ class KodiDeviceAddons extends KodiBase
         parent::Create();
         $this->RegisterPropertyBoolean(self::PropertyShowAddonlist, true);
         $this->RegisterPropertyInteger(self::PropertyThumbSize, 100);
+        $this->RegisterTableProperties('', $this->GetDefaultAddonTable());
+    }
 
-        // Todo 7.0 -> Style per Konfig-Formular
-        $ID = @$this->GetIDForIdent('AddonlistDesign');
-        if ($ID == false) {
-            $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
-            IPS_SetHidden($this->GetIDForIdent('AddonlistDesign'), true);
+    /**
+     * Interne Funktion des SDK.
+     * Überträgt das Design aus dem alten Konfigurations-Skript in die Eigenschaften.
+     *
+     * @access public
+     */
+    public function Migrate(string $JSONData): string
+    {
+        $Data = json_decode($JSONData);
+        if ($this->MigrateTableScript($Data->configuration, self::LegacyPropertyConfigScript, '', $this->GetDefaultAddonTable())) {
+            return json_encode($Data);
         }
-        $this->RegisterPropertyInteger('Addonlistconfig', $ID);
+        return '';
     }
 
     /**
@@ -77,52 +119,25 @@ class KodiDeviceAddons extends KodiBase
         if ($this->ReadPropertyBoolean(self::PropertyShowAddonlist)) {
             $this->RegisterVariableString('Addonlist', 'Addons', '~HTMLBox', 1);
             $this->RegisterHook(self::Hook . $this->InstanceID);
-            $ID = @$this->GetIDForIdent('AddonlistDesign');
-            if ($ID == false) {
-                $this->RegisterScript('AddonlistDesign', 'AddonList Config', $this->CreateAddonlistConfigScript(), -7);
-                IPS_SetHidden($this->GetIDForIdent('AddonlistDesign'), true);
-            }
         } else {
             $this->UnregisterVariable('Addonlist');
             $this->UnregisterHook(self::Hook . $this->InstanceID);
         }
-        $ScriptID = $this->ReadPropertyInteger('Addonlistconfig');
-        if ($ScriptID > 0) {
-            $this->RegisterReference($ScriptID);
-        }
         parent::ApplyChanges();
     }
+
+    /**
+     * Interne Funktion des SDK.
+     *
+     * @access public
+     */
     public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $Form['elements'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowAddonlist);
-        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowAddonlist);
-        $this->SendDebug('FORM', json_encode($Form), 0);
-        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        $Show = $this->ReadPropertyBoolean(self::PropertyShowAddonlist);
+        $this->FillTableFormPanel($Form['elements'], self::FormPanelDesign, '', $Show, true);
+        $Form['elements'][2]['visible'] = $Show;
         return json_encode($Form);
-    }
-    ################## ActionHandler
-    /**
-     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     *
-     * @access public
-     * @param string $Ident Der Ident der Statusvariable.
-     * @param bool|float|int|string $Value Der angeforderte neue Wert.
-     */
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        switch ($Ident) {
-            case self::ActionVisibleFormElementsAddon:
-                $this->UpdateFormField('HTMLRow', 'visible', (bool) $Value);
-                $this->UpdateFormField('ThumbRow', 'visible', (bool) $Value);
-                return;
-            default:
-                trigger_error('Invalid Ident.', E_USER_NOTICE);
-        }
     }
 
     ################## PUBLIC
@@ -133,27 +148,9 @@ class KodiDeviceAddons extends KodiBase
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident): void
+    public function RequestState(string $Ident): bool
     {
-        $this->RefreshAddonlist();
-    }
-    /**
-     * IPS-Instanz-Funktion 'KODIADDONS_EnableAddon'. Aktiviert / Deaktiviert ein Addon
-     *
-     * @access public
-     * @param string $AddonId Das zu aktivirende / deaktivierende Addon.
-     * @return bool true bei Erfolg oder false bei Fehler.
-     */
-    public function EnableAddon(string $AddonId, bool $Value): bool
-    {
-        $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
-        $ret = $this->SendDirect($KodiData);
-        if (is_null($ret)) {
-            return false;
-        }
-        $this->RefreshAddonlist();
-        return $ret === 'OK';
+        return $this->RefreshAddonlist();
     }
 
     /**
@@ -272,7 +269,7 @@ class KodiDeviceAddons extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIADDONS_SetAddonEnabled'. Liefert alle Details eines Verzeichnisses.
+     * IPS-Instanz-Funktion 'KODIADDONS_SetAddonEnabled'. Aktiviert oder deaktiviert ein Addon und erneuert danach die Addon-Liste.
      *
      * @access public
      * @param string $AddonId Addon welches aktiviert/deaktiviert werden soll.
@@ -283,14 +280,60 @@ class KodiDeviceAddons extends KodiBase
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->SetAddonEnabled(['addonid' => $AddonId, 'enabled' => $Value]);
-        $ret = $this->Send($KodiData);
+        $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
         }
+        $this->RefreshAddonlist();
         return $ret === 'OK';
     }
 
+    ################## DEPRECATED (Entfernung in Version 3.20)
+    /**
+     * IPS-Instanz-Funktion 'KODIADDONS_EnableAddon'.
+     *
+     * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIADDONS_SetAddonEnabled.
+     */
+    public function EnableAddon(string $AddonId, bool $Value): bool
+    {
+        $this->DeprecatedFunction('KODIADDONS_EnableAddon', 'KODIADDONS_SetAddonEnabled');
+        return $this->SetAddonEnabled($AddonId, $Value);
+    }
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        switch ($Ident) {
+            case self::ActionVisibleFormElementsAddon:
+                $this->UpdateFormField(self::FormPanelDesign, 'visible', (bool) $Value);
+                $this->UpdateFormField('ThumbRow', 'visible', (bool) $Value);
+                return;
+            default:
+                trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
+        }
+    }
+
     ################## PRIVATE
+
+    /**
+     * Wird ausgeführt wenn sich der Status vom Parent ändert.
+     * Erzeugt die Addon-Liste neu, sobald Kodi verbunden ist.
+     *
+     * @access protected
+     */
+    protected function IOChangeState(int $State): void
+    {
+        parent::IOChangeState($State);
+        if ($State == IS_ACTIVE) {
+            $this->RefreshAddonlist();
+        }
+    }
 
     /**
      * Keine Funktion.
@@ -343,12 +386,12 @@ class KodiDeviceAddons extends KodiBase
                 }
                 break;
             case 'Enable':
-                if ($this->EnableAddon($_GET['Addonid'], true) === true) {
+                if ($this->SetAddonEnabled($_GET['Addonid'], true) === true) {
                     echo 'OK';
                 }
                 break;
             case 'Disable':
-                if ($this->EnableAddon($_GET['Addonid'], false) === true) {
+                if ($this->SetAddonEnabled($_GET['Addonid'], false) === true) {
                     echo 'OK';
                 }
                 break;
@@ -362,27 +405,16 @@ class KodiDeviceAddons extends KodiBase
      * Erzeugt aus der Liste der Addons eine HTML-Tabelle für eine ~HTMLBox-Variable.
      *
      * @access private
+     * @return bool False, wenn die Addons nicht gelesen werden konnten.
      */
-    private function RefreshAddonlist(): void
+    private function RefreshAddonlist(): bool
     {
         if (!$this->ReadPropertyBoolean(self::PropertyShowAddonlist)) {
-            return;
+            return true;
         }
-        $ScriptID = $this->ReadPropertyInteger('Addonlistconfig');
-        if ($ScriptID == 0) {
-            return;
-        }
-        if (!IPS_ScriptExists($ScriptID)) {
-            return;
-        }
-
-        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
-        $Config = @unserialize($result);
-        if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read Addonlistconfig-Script'));
-            return;
-        }
+        $Config = $this->GetTableConfig('', true);
         $AllAddons = $this->GetAddons();
+        $Result = ($AllAddons !== false);
         if ($AllAddons === false) {
             $AllAddons = [];
         }
@@ -404,8 +436,8 @@ class KodiDeviceAddons extends KodiBase
                         $Line[$key] = $value;
                     } //$key is not a string
                 }
-                if (array_key_exists('Thumbnail', $Config['Spalten'])) {
-                    if ($Line['Thumbnail'] != '') {
+                if (isset($Config['Columns']['Thumbnail'])) {
+                    if (($Line['Thumbnail'] ?? '') != '') {
                         $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyThumbSize), 0);
                         if ($CoverRAW === false) {
                             $Line['Thumbnail'] = '';
@@ -414,7 +446,7 @@ class KodiDeviceAddons extends KodiBase
                         }
                     }
                 }
-                if ((array_key_exists('Fanart', $Config['Spalten'])) && ($Line['Fanart'] != '')) {
+                if (isset($Config['Columns']['Fanart']) && (($Line['Fanart'] ?? '') != '')) {
                     $CoverRAW = $this->GetThumbnail($Line['Fanart'], $this->ReadPropertyInteger(self::PropertyThumbSize), 0);
                     if ($CoverRAW === false) {
                         $Line['Fanart'] = '';
@@ -423,28 +455,31 @@ class KodiDeviceAddons extends KodiBase
                     }
                 }
 
-                $Line['Enabled'] = $Line['Enabled'] == true ? '<div class="dodisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable', $NewSecret) . '>Aus</div><div class="isenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable', $NewSecret) . '>An</div>' : '<div class="isdisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable', $NewSecret) . '>Aus</div><div class="doenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable', $NewSecret) . '>An</div>';
-                $Line['Execute'] = '<div class="execute" ' . $this->GetWebHookLink($Line['Addonid'], 'Execute', $NewSecret) . '>Ausführen</div>';
+                $Line['Enabled'] = $Line['Enabled'] == true ? '<div class="dodisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable', $NewSecret) . '>' . $this->Translate('Off') . '</div><div class="isenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable', $NewSecret) . '>' . $this->Translate('On') . '</div>' : '<div class="isdisabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Disable', $NewSecret) . '>' . $this->Translate('Off') . '</div><div class="doenabled" ' . $this->GetWebHookLink($Line['Addonid'], 'Enable', $NewSecret) . '>' . $this->Translate('On') . '</div>';
+                $Line['Execute'] = '<div class="execute" ' . $this->GetWebHookLink($Line['Addonid'], 'Execute', $NewSecret) . '>' . $this->Translate('Execute') . '</div>';
 
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '">';
-                foreach ($Config['Spalten'] as $feldIndex => $value) {
-                    if (!array_key_exists($feldIndex, $Line)) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if ($Line[$feldIndex] === -1) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if (is_array($Line[$feldIndex])) {
-                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
-                    }
-                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
-                }
-                $HTMLData .= '</tr>' . PHP_EOL;
+                $HTMLData .= $this->GetTableRow($Config, $pos % 2 ? \KodiBase\TableRow::Odd : \KodiBase\TableRow::Even, $Line);
                 $pos++;
             }
         }
         $HTMLData .= $this->GetTableFooter();
         $this->SetValueString('Addonlist', $HTMLData);
+        return $Result;
+    }
+
+    /**
+     * Liefert die Standardkonfiguration der Addon-Tabelle.
+     *
+     * @access private
+     * @return array Konfiguration (Table, Columns, Rows, Buttons).
+     */
+    private function GetDefaultAddonTable(): array
+    {
+        $Buttons = [];
+        foreach (self::TableButtons as $Class => $Style) {
+            $Buttons[] = ['class' => $Class, 'style' => self::ButtonBaseStyle . ' ' . $Style];
+        }
+        return $this->GetDefaultTableConfig(self::TableColumns, false, $Buttons);
     }
 
     /**
@@ -459,293 +494,5 @@ class KodiDeviceAddons extends KodiBase
         //return 'onclick="window.xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '\' })"';
         $LineSecret = rawurlencode(base64_encode(sha1($NewSecret . '0' . $Addonid, true)));
         return 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiAddonlist' . $this->InstanceID . '?Addonid=' . $Addonid . '&Action=' . $Action . '&Secret=' . $LineSecret . '\' })"';
-    }
-
-    /**
-     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Addon-Tabelle enthält.
-     *
-     * @access private
-     * @return string Ein PHP-Script welche als Grundlage für die User dient.
-     */
-    private function CreateAddonlistConfigScript(): string
-    {
-        $Script = '<?
-### Konfig ab Zeile 10 !!!
-
-if ($_IPS["SENDER"] <> "Kodi")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-##########   KONFIGURATION
-#### Tabellarische Ansicht
-# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die Addons dargestellt werden.
-
-// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
-// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
-$Config["Spalten"] = array(
-    "Thumbnail"=>"",
-    "Enabled" =>"Aktiv",
-    "Name"=>"Name",
-    "Version" => "Version",
-    "Summary"=>"Beschreibung",
-//    "Description"=>"Beschreibung",
-//    "Path"=>"Path",
-//    "Author" => "Author",
-//    "Disclaimer" => "Disclaimer", //meist leer
-//    "Fanart" => "Fanart",         //meist leer
-//    "Broken" => "Defekt",
-//    "Rating"=>"Rating",
-//    "Type" => "Typ",
-//    "Addonid" => "Id",
-    "Execute" =>"Starten"
-);
-#### Mögliche Index-Felder
-/*
-        
-| Index       | Typ     | Beschreibung                        |
-| :---------: | :-----: | :---------------------------------: |
-| Addonid     | string  | Id des Addon                        |
-| Author      | string  | Autor des Addon                     |
-| Broken      | boolean | Zustand ob Addon defekt ist         |
-| Description | string  | Beschreibung                        |
-| Disclaimer  | string  | Haftungsausschluss                  |
-| Enabled     | boolean | Addon aktiv (steuerbar)             |
-| Execute     | boolean | Addon starten (steuerbar)           |
-| Fanart      | string  | Fanart des Addon                    | 
-| Name        | string  | Name des Addon                      |
-| Path        | string  | Path zum Addon auf dem System       |
-| Rating      | integer | Bewertung                           |
-| Summary     | string  | Zusammenfassung                     |
-| Thumbnail   | string  | Vorschaubild des Addon              |
-| Type        | string  | Art des Addon                       |
-| Version     | string  | Version des Addon                   |
-*/
-// Breite der Spalten (Reihenfolge ist egal)
-$Config["Breite"] = array(
-    "Thumbnail"=>"100em",
-    "Enabled" =>"120em",
-    "Name"=>"200em",
-    "Version" => "100em",
-    "Summary"=>"400em",
-//    "Description"=>"400em",
-//    "Path"=>"100em",
-//    "Author" => "100em",
-//    "Disclaimer" => "100em", //meist leer
-//    "Fanart" => "100em",         //meist leer
-//    "Broken" => "50em",
-//    "Rating"=>"50em",
-//    "Type" => "100em",
-//    "Addonid" => "200em",
-	"Execute" => "100em"      
-
-);
-// Style Informationen der Tabelle
-$Config["Style"] = array(
-    // <table>-Tag:
-    "T"    => "margin:0 auto; font-size:0.8em;",
-    // <thead>-Tag:
-    "H"    => "",
-    // <tr>-Tag im thead-Bereich:
-    "HR"   => "",
-    // <th>-Tag Feld Thumbnail:
-    "HFThumbnail"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Enabled:
-    "HFEnabled"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Name:
-    "HFName"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Version:
-    "HFVersion"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Summary:
-    "HFSummary"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Description:
-    "HFDescription"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Path:
-    "HFPath"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Author:
-    "HFAuthor"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Disclaimer:
-    "HFDisclaimer"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Fanart:
-    "HFFanart"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Broken:
-    "HFBroken"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Rating:
-    "HFRating"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Type:
-    "HFType"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Addonid:
-    "HFAddonid"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Execute:
-    "HFExecute"  => "color:#ffffff; width:35px; align:left;",
-    // <tbody>-Tag:
-    "B"    => "",
-    // <tr>-Tag:
-    "BRG"  => "background-color:#000000; color:#ffffff;",
-    "BRU"  => "background-color:#080808; color:#ffffff;",
-    // <td>-Tag Feld Thumbnail:
-    "DFGThumbnail" => "text-align:center;",
-    "DFUThumbnail" => "text-align:center;",
-    // <td>-Tag Feld Enabled:
-    "DFGEnabled" => "text-align:center;",
-    "DFUEnabled" => "text-align:center;",
-    // <td>-Tag Feld Name:
-    "DFGName" => "text-align:center;",
-    "DFUName" => "text-align:center;",
-    // <td>-Tag Feld Version:
-    "DFGVersion" => "text-align:center;",
-    "DFUVersion" => "text-align:center;",
-    // <td>-Tag Feld Summary:
-    "DFGSummary" => "text-align:center;",
-    "DFUSummary" => "text-align:center;",
-    // <td>-Tag Feld Description:
-    "DFGDescription" => "text-align:center;",
-    "DFUDescription" => "text-align:center;",
-    // <td>-Tag Feld Path:
-    "DFGPath" => "text-align:center;",
-    "DFUPath" => "text-align:center;",
-    // <td>-Tag Feld Author:
-    "DFGAuthor" => "text-align:center;",
-    "DFUAuthor" => "text-align:center;",
-    // <td>-Tag Feld Disclaimer:
-    "DFGDisclaimer" => "text-align:center;",
-    "DFUDisclaimer" => "text-align:center;",
-    // <td>-Tag Feld Fanart:
-    "DFGFanart" => "text-align:center;",
-    "DFUFanart" => "text-align:center;",
-    // <td>-Tag Feld Broken:
-    "DFGBroken" => "text-align:center;",
-    "DFUBroken" => "text-align:center;",
-    // <td>-Tag Feld Rating:
-    "DFGRating" => "text-align:center;",
-    "DFURating" => "text-align:center;",
-    // <td>-Tag Feld Type:
-    "DFGType" => "text-align:center;",
-    "DFUType" => "text-align:center;",
-    // <td>-Tag Feld Addonid:
-    "DFGAddonid" => "text-align:center;",
-    "DFUAddonid" => "text-align:center;",
-    // <td>-Tag Feld Execute:
-    "DFGExecute" => "text-align:center;",
-    "DFUExecute" => "text-align:center;",
-    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade.
- );
- 
-// CSS-Styles für die Klassen der Buttons.
-// isenabled => Button für Addon ist aktivieren
-// isdisabled => Button für Addon ist deaktivieren
-// doenabled => Button für Addon aktivieren
-// dodisabled => Button für Addon deaktivieren
-//execute => Button für Addon ausführen
-$Config["Button"]= array(
-	"isenabled" => "
-background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -moz-linear-gradient(50% 0%, transparent 0px, rgba(0, 0, 0, 0.3) 28%, rgba(0, 0, 0, 0.3) 100%);
-background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-color: rgba(255, 255, 255, 0.3);
-color: rgb(255, 255, 255);
-background-color: rgba(255,255,255,0.1);
-background-color: rgb(0, 255, 0);
-width: 25%;
-display: inline-block;
-margin: 2px 0px 1px 3px;
-font-family: arial,sans-serif; 
-font-size: 17px;
-line-height: 28px;
-border-color: transparent;
-border-style: solid;
-border-width: 1px 0px;
-min-height: 28px;
-padding: 0px 10px;
-vertical-align: middle;",
-
-	"isdisabled"=> "
-background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-color: rgba(255, 255, 255, 0.3);
-width: 25%;
-display: inline-block;
-margin: 2px 0px 1px 3px;
-font-family: arial,sans-serif; 
-font-size: 17px;
-line-height: 28px;
-border-color: transparent;
-border-style: solid;
-border-width: 1px 0px;
-min-height: 28px;
-padding: 0px 10px;
-vertical-align: middle;",
-
-	"doenabled" => "
-background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-color: rgba(0, 255, 0, 0.3);
-width: 25%;
-display: inline-block;
-margin: 2px 0px 1px 3px;
-font-family: arial,sans-serif; 
-font-size: 17px;
-line-height: 28px;
-border-color: transparent;
-border-style: solid;
-border-width: 1px 0px;
-min-height: 28px;
-padding: 0px 10px;
-vertical-align: middle;",
-
-	"dodisabled"=> "
-background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-color: rgba(255,255,255,0.1);
-color: rgba(255, 255, 255, 0.3);
-width: 25%;
-display: inline-block;
-margin: 2px 0px 1px 3px;
-font-family: arial,sans-serif; 
-font-size: 17px;
-line-height: 28px;
-border-color: transparent;
-border-style: solid;
-border-width: 1px 0px;
-min-height: 28px;
-padding: 0px 10px;
-vertical-align: middle;",
-	"execute"=> "
-background-image: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-image: -ms-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.3) 28%,rgba(0,0,0,0.3) 100%);
-background-color: rgb(0, 255, 0);
-width: 80%;
-display: inline-block;
-margin: 2px 0px 1px 3px;
-font-family: arial,sans-serif; 
-font-size: 17px;
-line-height: 28px;
-border-color: transparent;
-border-style: solid;
-border-width: 1px 0px;
-min-height: 28px;
-padding: 0px 10px;
-vertical-align: middle;",
-
-);
-
-### Konfig ENDE !!!
-echo serialize($Config);
-';
-        return $Script;
     }
 }

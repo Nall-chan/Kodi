@@ -1,0 +1,81 @@
+{
+    "id": "{57872C9E-F4B7-EF75-9278-DFD3EB25F1C2}",
+    "caption": "Show notification",
+    "form": [
+        {
+            "type": "ValidationTextBox",
+            "name": "TITLE",
+            "caption": "Title",
+            "validate": "\\S"
+        },
+        {
+            "type": "ValidationTextBox",
+            "name": "MESSAGE",
+            "caption": "Message",
+            "validate": "\\S"
+        },
+        {
+            "type": "Select",
+            "name": "IMAGE",
+            "caption": "Icon",
+            "value": "info",
+            "options": [
+                {
+                    "caption": "Information",
+                    "value": "info"
+                },
+                {
+                    "caption": "Warning",
+                    "value": "warning"
+                },
+                {
+                    "caption": "Error",
+                    "value": "error"
+                },
+                {
+                    "caption": "None",
+                    "value": ""
+                }
+            ]
+        },
+        {
+            "type": "NumberSpinner",
+            "name": "TIMEOUT",
+            "caption": "Display time",
+            "suffix": " ms",
+            "minimum": 1500,
+            "value": 5000
+        }
+    ],
+    "action": "KODIGUI_ShowNotification($_IPS['TARGET'], $_IPS['TITLE'], $_IPS['MESSAGE'], $_IPS['IMAGE'], $_IPS['TIMEOUT']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{E15F2C11-0B28-4CFB-AEE6-463BD313A964}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Show notification": "Benachrichtigung anzeigen",
+            "Title": "Titel",
+            "Message": "Nachricht",
+            "Icon": "Symbol",
+            "Information": "Information",
+            "Warning": "Warnung",
+            "Error": "Fehler",
+            "None": "Keines",
+            "Display time": "Anzeigedauer",
+            "Shows a notification in the Kodi user interface.": "Zeigt eine Benachrichtigung in der Oberfläche von Kodi an.",
+            "Show notification \"{TITLE}\" on {TARGET, object}": "Benachrichtigung „{TITLE}“ auf {TARGET, object} anzeigen"
+        }
+    },
+    "format": "Show notification \"{TITLE}\" on {TARGET, object}",
+    "description": "Shows a notification in the Kodi user interface."
+}

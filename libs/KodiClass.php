@@ -9,6 +9,7 @@ eval('declare(strict_types=1);namespace KodiBase {?>' . file_get_contents(__DIR_
 
 require_once __DIR__ . '/DebugHelper.php';  // diverse Klassen
 require_once __DIR__ . '/KodiRPCClass.php';  // diverse Klassen
+require_once __DIR__ . '/HTMLTableHelper.php';  // HTML-Tabellen
 
 /**
  * Basisklasse für alle Kodi IPS-Instanzklassen.
@@ -42,6 +43,7 @@ abstract class KodiBase extends IPSModuleStrict
         \KodiBase\DebugHelper,
         \KodiBase\BufferHelper,
         \KodiBase\AttributeArrayHelper,
+        \KodiBase\HTMLTable,
         \KodiBase\InstanceStatus {
             \KodiBase\InstanceStatus::MessageSink as IOMessageSink;
             \KodiBase\InstanceStatus::RegisterParent as IORegisterParent;
@@ -89,6 +91,10 @@ abstract class KodiBase extends IPSModuleStrict
         $this->RegisterMessage($this->InstanceID, FM_DISCONNECT);
         $this->ParentID = 0;
 
+        // Referenzen auf die alten Konfigurations-Skripte der HTML-Tabellen (bis 3.02) entfernen
+        foreach ($this->GetReferenceList() as $Reference) {
+            $this->UnregisterReference($Reference);
+        }
         $this->UnregisterVariable('_ReplyJSONData');
 
         if (is_array(static::$Namespace)) {
@@ -135,11 +141,24 @@ abstract class KodiBase extends IPSModuleStrict
         }
     }
 
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
+    /**
+     * Actionhandler der Statusvariablen und Formularaktionen. Interne SDK-Funktion.
+     * Fehler (trigger_error) der Module werden hier per ModulErrorHandler an den Aufrufer ausgegeben.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable bzw. Aktion.
+     * @param mixed $Value Der angeforderte neue Wert.
+     */
+    public function RequestAction(string $Ident, mixed $Value): void
     {
-        $done = false;
         if ($this->IORequestAction($Ident, $Value)) {
-            $done = true;
+            return;
+        }
+        set_error_handler([$this, 'ModulErrorHandler'], E_USER_NOTICE | E_USER_WARNING);
+        try {
+            $this->ActionHandler($Ident, $Value);
+        } finally {
+            restore_error_handler();
         }
     }
 
@@ -151,21 +170,19 @@ abstract class KodiBase extends IPSModuleStrict
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident): void
+    public function RequestState(string $Ident): bool
     {
         if ($Ident == 'ALL') {
-            $this->RequestProperties(['properties' => static::$Properties]);
-            return;
+            return $this->RequestProperties(['properties' => static::$Properties]);
         }
         if ($Ident == 'PARTIAL') {
-            $this->RequestProperties(['properties' => static::$PartialProperties]);
-            return;
+            return $this->RequestProperties(['properties' => static::$PartialProperties]);
         }
         if (!in_array($Ident, static::$Properties)) {
-            trigger_error('Property not found.');
-            return;
+            trigger_error($this->Translate('Property not found.'), E_USER_NOTICE);
+            return false;
         }
-        $this->RequestProperties(['properties' => [$Ident]]);
+        return $this->RequestProperties(['properties' => [$Ident]]);
     }
 
     ################## Datapoints
@@ -189,6 +206,29 @@ abstract class KodiBase extends IPSModuleStrict
 
         $this->Decode($KodiData->Method, $Event);
         return '';
+    }
+
+    /**
+     * Gibt Fehlermeldungen an den Aufrufer aus.
+     *
+     * @access protected
+     */
+    protected function ModulErrorHandler(int $errno, string $errstr): bool
+    {
+        echo $errstr . PHP_EOL;
+        return true;
+    }
+
+    /**
+     * Verarbeitet die Aktionen des Moduls. Wird von den Modulen überschrieben.
+     *
+     * @access protected
+     * @param string $Ident Der Ident der Statusvariable bzw. Aktion.
+     * @param mixed $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
     }
 
     /**
@@ -256,6 +296,49 @@ abstract class KodiBase extends IPSModuleStrict
      * @param object $KodiPayload Der zu dekodierende Datensatz als Objekt.
      */
     abstract protected function Decode(string $Method, mixed $KodiPayload): void;
+
+    /**
+     * Liest eine Seite einer Liste aus einer Kodi-Datenbank (List.Limits).
+     * Hintergrund: Instanz-Funktionen dürfen höchstens 1 MB zurückgeben, große Bibliotheken überschreiten das.
+     *
+     * @access protected
+     * @param string $Method RPC-Methode im Namespace des Moduls, z.B. 'GetMovies'.
+     * @param array $Fields Die anzufordernden Felder.
+     * @param string $ResultKey Schlüssel der Liste in der Antwort, z.B. 'movies'.
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge (ab 1).
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge der Seite) oder false bei Fehler.
+     */
+    protected function GetListPage(string $Method, array $Fields, string $ResultKey, int $Start, int $Count): false|array
+    {
+        if (($Start < 0) || ($Count < 1)) {
+            trigger_error($this->Translate('Start must be 0 or higher and count must be 1 or higher.'), E_USER_NOTICE);
+            return false;
+        }
+        $KodiData = new Kodi_RPC_Data(static::$Namespace, $Method, ['properties' => $Fields, 'limits' => ['start' => $Start, 'end' => $Start + $Count]]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return [
+            'total' => (int) $ret->limits->total,
+            'items' => property_exists($ret, $ResultKey) ? $KodiData->ToArray($ret->{$ResultKey}) : []
+        ];
+    }
+
+    /**
+     * Meldet den Aufruf einer veralteten Instanz-Funktion (Alias mit altem Namen).
+     *
+     * @access protected
+     * @param string $OldFunction Veralteter Funktionsname inkl. Präfix.
+     * @param string $NewFunction Neuer Funktionsname inkl. Präfix.
+     */
+    protected function DeprecatedFunction(string $OldFunction, string $NewFunction): void
+    {
+        // Kein trigger_error: Symcon verwirft dann den Rückgabewert der Instanz-Funktion (Aufrufer erhält false)
+        $this->LogMessage(sprintf($this->Translate('%s is deprecated and will be removed in version 3.20. Use %s instead.'), $OldFunction, $NewFunction), KL_WARNING);
+    }
+
     /**
      * Erzeugt ein lesbares Zeitformat.
      *
@@ -274,102 +357,16 @@ abstract class KodiBase extends IPSModuleStrict
             return $Time->minutes . ':' . $Time->seconds;
         }
         if (is_int($Time)) {
-            if ($Time > 3600) {
-                return date('H:i:s', $Time - (gettimeofday()['dsttime'] * 3600));
-            } else {
-                return date('i:s', $Time);
+            // Dauer in Sekunden, rein rechnerisch (unabhängig von Zeitzone und Sommerzeit), Format wie bei Player.Time
+            $Hours = intdiv($Time, 3600);
+            $Minutes = str_pad((string) intdiv($Time % 3600, 60), 2, '0', STR_PAD_LEFT);
+            $Seconds = str_pad((string) ($Time % 60), 2, '0', STR_PAD_LEFT);
+            if ($Hours > 0) {
+                return $Hours . ':' . $Minutes . ':' . $Seconds;
             }
+            return $Minutes . ':' . $Seconds;
         }
         return (string) $Time;
-    }
-
-    /**
-     * Liefert den Header der HTML-Tabelle.
-     *
-     * @access private
-     * @param array $Config Die Konfiguration der Tabelle
-     * @return string HTML-String
-     */
-    protected function GetTableHeader(array $Config): string
-    {
-        $html = '';
-        // JS Rückkanal erzeugen
-        $html .= '<script>
-//window.xhrGet' . $this->InstanceID . '=
-    function xhrGet' . $this->InstanceID . '(o)
-{
-    var HTTP = new XMLHttpRequest();
-    HTTP.open(\'GET\',o.url,true);
-    HTTP.send();
-    HTTP.addEventListener(\'load\', function(event)
-    {
-        if (HTTP.status >= 200 && HTTP.status < 300)
-        {
-            if (HTTP.responseText != \'OK\')
-                sendError' . $this->InstanceID . '(HTTP.responseText);
-        } else {
-            sendError' . $this->InstanceID . '(HTTP.statusText);
-        }
-    });
-};
-
-function sendError' . $this->InstanceID . '(data)
-{
-var notify = document.getElementsByClassName("ipsNotifications")[0];
-var newDiv = document.createElement("div");
-newDiv.innerHTML =\'<div style="height:auto; visibility: hidden; overflow: hidden; transition: height 500ms ease-in 0s" class="ipsNotification"><div class="spacer"></div><div class="message icon error" onclick="document.getElementsByClassName(\\\'ipsNotifications\\\')[0].removeChild(this.parentNode);"><div class="ipsIconClose"></div><div class="content"><div class="title">Fehler</div><div class="text">\' + data + \'</div></div></div></div>\';
-if (notify.childElementCount == 0)
-	var thisDiv = notify.appendChild(newDiv.firstChild);
-else
-	var thisDiv = notify.insertBefore(newDiv.firstChild,notify.childNodes[0]);
-var newheight = window.getComputedStyle(thisDiv, null)["height"];
-thisDiv.style.height = "0px";
-thisDiv.style.visibility = "visible";
-function sleep (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
-sleep(10).then(() => {
-	thisDiv.style.height = newheight;
-})
-}
-</script>';
-        // Button Styles erzeugen
-        if (isset($Config['Button'])) {
-            $html .= '<style>' . PHP_EOL;
-            foreach ($Config['Button'] as $Class => $Button) {
-                $html .= '.' . $Class . ' {' . $Button . '}' . PHP_EOL;
-            }
-            $html .= '</style>' . PHP_EOL;
-        }
-        // Kopf der Tabelle erzeugen
-        $html .= '<table style="' . $Config['Style']['T'] . '">' . PHP_EOL;
-        $html .= '<colgroup>' . PHP_EOL;
-        foreach ($Config['Spalten'] as $Index => $Value) {
-            $html .= '<col width="' . $Config['Breite'][$Index] . '" />' . PHP_EOL;
-        }
-        $html .= '</colgroup>' . PHP_EOL;
-        $html .= '<thead style="' . $Config['Style']['H'] . '">' . PHP_EOL;
-        $html .= '<tr style="' . $Config['Style']['HR'] . '">';
-        foreach ($Config['Spalten'] as $Index => $Value) {
-            $html .= '<th style="' . $Config['Style']['HF' . $Index] . '">' . $Value . '</th>';
-        }
-        $html .= '</tr>' . PHP_EOL;
-        $html .= '</thead>' . PHP_EOL;
-        $html .= '<tbody style="' . $Config['Style']['B'] . '">' . PHP_EOL;
-        return $html;
-    }
-
-    /**
-     * Liefert den Footer der HTML-Tabelle.
-     *
-     * @access private
-     * @return string HTML-String
-     */
-    protected function GetTableFooter(): string
-    {
-        $html = '</tbody>' . PHP_EOL;
-        $html .= '</table>' . PHP_EOL;
-        return $html;
     }
 
     /**
@@ -387,7 +384,12 @@ sleep(10).then(() => {
             return false;
         }
 
-        $ThumbRAW = @KODIRPC_GetImage($this->ParentID, $file);
+        // Kodi liefert über /image/ nur image://-Pfade zuverlässig (rohe http://- oder special://-Pfade ergeben 404).
+        if (!str_starts_with($file, 'image://')) {
+            $file = 'image://' . rawurlencode($file) . '/';
+        }
+        $ThumbBase64 = @KODIRPC_GetImageBase64($this->ParentID, $file);
+        $ThumbRAW = is_string($ThumbBase64) ? base64_decode($ThumbBase64, true) : false;
 
         if ($ThumbRAW !== false) {
             $image = @imagecreatefromstring($ThumbRAW);
@@ -434,7 +436,7 @@ sleep(10).then(() => {
         try {
             $JSONData = $KodiData->ToJSONString('{0222A902-A6FA-4E94-94D3-D54AA4666321}');
             if (!$this->HasActiveParent()) {
-                throw new Exception('Instance has no active parent.', E_USER_NOTICE);
+                throw new Exception($this->Translate('Instance has no active parent.'), E_USER_NOTICE);
             }
             $answer = $this->SendDataToParent($JSONData);
             $this->SendDebug('Send', $JSONData, 0);
@@ -469,7 +471,7 @@ sleep(10).then(() => {
 
             $Data = $KodiData->ToRawRPCJSONString();
             if (@IPS_GetProperty($SplitterInstance['ConnectionID'], 'Open') === false) {
-                throw new Exception('Instance inactive.', E_USER_NOTICE);
+                throw new Exception($this->Translate('Instance inactive.'), E_USER_NOTICE);
             }
 
             $Host = @IPS_GetProperty($SplitterInstance['ConnectionID'], 'Host');
@@ -506,7 +508,7 @@ sleep(10).then(() => {
             $result = curl_exec($ch);
 
             if ($result === false) {
-                throw new Exception('Kodi unreachable', E_USER_NOTICE);
+                throw new Exception($this->Translate('Kodi unreachable.'), E_USER_NOTICE);
             }
             $this->SendDebug('Receive Direct', $result, 0);
 
@@ -520,10 +522,10 @@ sleep(10).then(() => {
             return $ret;
         } catch (KodiRPCException $ex) {
             $this->SendDebug('Receive Direct', $ex, 0);
-            trigger_error('Error (' . $ex->getCode() . ')' . ' '.$KodiData->GetCalledMethod()."\r\n" . $ex->getMessage() . "\r\n" . get_called_class(), E_USER_NOTICE);
+            trigger_error(sprintf($this->Translate('Error (%d) on %s: %s'), $ex->getCode(), $KodiData->GetCalledMethod(), $ex->getMessage()), E_USER_NOTICE);
         } catch (Exception $ex) {
-            $this->SendDebug('Receive Direct', $ex->getMessage(), 0);
-            trigger_error($ex->getMessage() . "\r\n" . $ex->getTraceAsString(), $ex->getCode());
+            $this->SendDebug('Receive Direct', $ex->getMessage() . "\r\n" . $ex->getTraceAsString(), 0);
+            trigger_error($ex->getMessage(), E_USER_NOTICE);
         }
         return null;
     }

@@ -1,0 +1,591 @@
+{
+    "id": "{8527BAEB-3F57-7315-8C23-DE49BADA6045}",
+    "caption": "Activate window",
+    "form": [
+        {
+            "type": "Select",
+            "name": "WINDOW",
+            "caption": "Window",
+            "options": [
+                {
+                    "caption": "addon",
+                    "value": "addon"
+                },
+                {
+                    "caption": "addonbrowser",
+                    "value": "addonbrowser"
+                },
+                {
+                    "caption": "addoninformation",
+                    "value": "addoninformation"
+                },
+                {
+                    "caption": "addonsettings",
+                    "value": "addonsettings"
+                },
+                {
+                    "caption": "appearancesettings",
+                    "value": "appearancesettings"
+                },
+                {
+                    "caption": "busydialog",
+                    "value": "busydialog"
+                },
+                {
+                    "caption": "busydialognocancel",
+                    "value": "busydialognocancel"
+                },
+                {
+                    "caption": "contentsettings",
+                    "value": "contentsettings"
+                },
+                {
+                    "caption": "contextmenu",
+                    "value": "contextmenu"
+                },
+                {
+                    "caption": "dialogcolorpicker",
+                    "value": "dialogcolorpicker"
+                },
+                {
+                    "caption": "eventlog",
+                    "value": "eventlog"
+                },
+                {
+                    "caption": "extendedprogressdialog",
+                    "value": "extendedprogressdialog"
+                },
+                {
+                    "caption": "favouritesbrowser",
+                    "value": "favouritesbrowser"
+                },
+                {
+                    "caption": "filebrowser",
+                    "value": "filebrowser"
+                },
+                {
+                    "caption": "filemanager",
+                    "value": "filemanager"
+                },
+                {
+                    "caption": "fullscreengame",
+                    "value": "fullscreengame"
+                },
+                {
+                    "caption": "fullscreeninfo",
+                    "value": "fullscreeninfo"
+                },
+                {
+                    "caption": "fullscreenlivetv",
+                    "value": "fullscreenlivetv"
+                },
+                {
+                    "caption": "fullscreenlivetvinput",
+                    "value": "fullscreenlivetvinput"
+                },
+                {
+                    "caption": "fullscreenlivetvpreview",
+                    "value": "fullscreenlivetvpreview"
+                },
+                {
+                    "caption": "fullscreenradio",
+                    "value": "fullscreenradio"
+                },
+                {
+                    "caption": "fullscreenradioinput",
+                    "value": "fullscreenradioinput"
+                },
+                {
+                    "caption": "fullscreenradiopreview",
+                    "value": "fullscreenradiopreview"
+                },
+                {
+                    "caption": "fullscreenvideo",
+                    "value": "fullscreenvideo"
+                },
+                {
+                    "caption": "gameadvancedsettings",
+                    "value": "gameadvancedsettings"
+                },
+                {
+                    "caption": "gameagents",
+                    "value": "gameagents"
+                },
+                {
+                    "caption": "gamecontrollers",
+                    "value": "gamecontrollers"
+                },
+                {
+                    "caption": "gameosd",
+                    "value": "gameosd"
+                },
+                {
+                    "caption": "gamepadinput",
+                    "value": "gamepadinput"
+                },
+                {
+                    "caption": "gameports",
+                    "value": "gameports"
+                },
+                {
+                    "caption": "games",
+                    "value": "games"
+                },
+                {
+                    "caption": "gamesaves",
+                    "value": "gamesaves"
+                },
+                {
+                    "caption": "gamesettings",
+                    "value": "gamesettings"
+                },
+                {
+                    "caption": "gamestretchmode",
+                    "value": "gamestretchmode"
+                },
+                {
+                    "caption": "gamevideofilter",
+                    "value": "gamevideofilter"
+                },
+                {
+                    "caption": "gamevideorotation",
+                    "value": "gamevideorotation"
+                },
+                {
+                    "caption": "gamevolume",
+                    "value": "gamevolume"
+                },
+                {
+                    "caption": "home",
+                    "value": "home"
+                },
+                {
+                    "caption": "infoprovidersettings",
+                    "value": "infoprovidersettings"
+                },
+                {
+                    "caption": "ingamesaves",
+                    "value": "ingamesaves"
+                },
+                {
+                    "caption": "interfacesettings",
+                    "value": "interfacesettings"
+                },
+                {
+                    "caption": "libexportsettings",
+                    "value": "libexportsettings"
+                },
+                {
+                    "caption": "locksettings",
+                    "value": "locksettings"
+                },
+                {
+                    "caption": "loginscreen",
+                    "value": "loginscreen"
+                },
+                {
+                    "caption": "managevideoextras",
+                    "value": "managevideoextras"
+                },
+                {
+                    "caption": "managevideoversions",
+                    "value": "managevideoversions"
+                },
+                {
+                    "caption": "mediafilter",
+                    "value": "mediafilter"
+                },
+                {
+                    "caption": "mediasettings",
+                    "value": "mediasettings"
+                },
+                {
+                    "caption": "mediasource",
+                    "value": "mediasource"
+                },
+                {
+                    "caption": "movieinformation",
+                    "value": "movieinformation"
+                },
+                {
+                    "caption": "music",
+                    "value": "music"
+                },
+                {
+                    "caption": "musicinformation",
+                    "value": "musicinformation"
+                },
+                {
+                    "caption": "musicosd",
+                    "value": "musicosd"
+                },
+                {
+                    "caption": "musicplaylist",
+                    "value": "musicplaylist"
+                },
+                {
+                    "caption": "musicplaylisteditor",
+                    "value": "musicplaylisteditor"
+                },
+                {
+                    "caption": "networksetup",
+                    "value": "networksetup"
+                },
+                {
+                    "caption": "notification",
+                    "value": "notification"
+                },
+                {
+                    "caption": "numericinput",
+                    "value": "numericinput"
+                },
+                {
+                    "caption": "okdialog",
+                    "value": "okdialog"
+                },
+                {
+                    "caption": "osdaudiosettings",
+                    "value": "osdaudiosettings"
+                },
+                {
+                    "caption": "osdcmssettings",
+                    "value": "osdcmssettings"
+                },
+                {
+                    "caption": "osdsubtitlesettings",
+                    "value": "osdsubtitlesettings"
+                },
+                {
+                    "caption": "osdvideosettings",
+                    "value": "osdvideosettings"
+                },
+                {
+                    "caption": "peripherals",
+                    "value": "peripherals"
+                },
+                {
+                    "caption": "peripheralsettings",
+                    "value": "peripheralsettings"
+                },
+                {
+                    "caption": "pictureinfo",
+                    "value": "pictureinfo"
+                },
+                {
+                    "caption": "pictures",
+                    "value": "pictures"
+                },
+                {
+                    "caption": "playercontrols",
+                    "value": "playercontrols"
+                },
+                {
+                    "caption": "playerprocessinfo",
+                    "value": "playerprocessinfo"
+                },
+                {
+                    "caption": "playersettings",
+                    "value": "playersettings"
+                },
+                {
+                    "caption": "profiles",
+                    "value": "profiles"
+                },
+                {
+                    "caption": "profilesettings",
+                    "value": "profilesettings"
+                },
+                {
+                    "caption": "programs",
+                    "value": "programs"
+                },
+                {
+                    "caption": "progressdialog",
+                    "value": "progressdialog"
+                },
+                {
+                    "caption": "pvrchannelguide",
+                    "value": "pvrchannelguide"
+                },
+                {
+                    "caption": "pvrchannelmanager",
+                    "value": "pvrchannelmanager"
+                },
+                {
+                    "caption": "pvrchannelscan",
+                    "value": "pvrchannelscan"
+                },
+                {
+                    "caption": "pvrgroupmanager",
+                    "value": "pvrgroupmanager"
+                },
+                {
+                    "caption": "pvrguidecontrols",
+                    "value": "pvrguidecontrols"
+                },
+                {
+                    "caption": "pvrguideinfo",
+                    "value": "pvrguideinfo"
+                },
+                {
+                    "caption": "pvrguidesearch",
+                    "value": "pvrguidesearch"
+                },
+                {
+                    "caption": "pvrosdchannels",
+                    "value": "pvrosdchannels"
+                },
+                {
+                    "caption": "pvrosdguide",
+                    "value": "pvrosdguide"
+                },
+                {
+                    "caption": "pvrosdteletext",
+                    "value": "pvrosdteletext"
+                },
+                {
+                    "caption": "pvrradiordsinfo",
+                    "value": "pvrradiordsinfo"
+                },
+                {
+                    "caption": "pvrrecordinginfo",
+                    "value": "pvrrecordinginfo"
+                },
+                {
+                    "caption": "pvrsettings",
+                    "value": "pvrsettings"
+                },
+                {
+                    "caption": "pvrtimersetting",
+                    "value": "pvrtimersetting"
+                },
+                {
+                    "caption": "pvrupdateprogress",
+                    "value": "pvrupdateprogress"
+                },
+                {
+                    "caption": "radiochannels",
+                    "value": "radiochannels"
+                },
+                {
+                    "caption": "radioguide",
+                    "value": "radioguide"
+                },
+                {
+                    "caption": "radiorecordings",
+                    "value": "radiorecordings"
+                },
+                {
+                    "caption": "radiosearch",
+                    "value": "radiosearch"
+                },
+                {
+                    "caption": "radiotimerrules",
+                    "value": "radiotimerrules"
+                },
+                {
+                    "caption": "radiotimers",
+                    "value": "radiotimers"
+                },
+                {
+                    "caption": "screencalibration",
+                    "value": "screencalibration"
+                },
+                {
+                    "caption": "screensaver",
+                    "value": "screensaver"
+                },
+                {
+                    "caption": "seekbar",
+                    "value": "seekbar"
+                },
+                {
+                    "caption": "selectdialog",
+                    "value": "selectdialog"
+                },
+                {
+                    "caption": "selectvideoextra",
+                    "value": "selectvideoextra"
+                },
+                {
+                    "caption": "selectvideoversion",
+                    "value": "selectvideoversion"
+                },
+                {
+                    "caption": "servicesettings",
+                    "value": "servicesettings"
+                },
+                {
+                    "caption": "settings",
+                    "value": "settings"
+                },
+                {
+                    "caption": "shutdownmenu",
+                    "value": "shutdownmenu"
+                },
+                {
+                    "caption": "skinsettings",
+                    "value": "skinsettings"
+                },
+                {
+                    "caption": "sliderdialog",
+                    "value": "sliderdialog"
+                },
+                {
+                    "caption": "slideshow",
+                    "value": "slideshow"
+                },
+                {
+                    "caption": "smartplaylisteditor",
+                    "value": "smartplaylisteditor"
+                },
+                {
+                    "caption": "smartplaylistrule",
+                    "value": "smartplaylistrule"
+                },
+                {
+                    "caption": "songinformation",
+                    "value": "songinformation"
+                },
+                {
+                    "caption": "splash",
+                    "value": "splash"
+                },
+                {
+                    "caption": "startup",
+                    "value": "startup"
+                },
+                {
+                    "caption": "startwindow",
+                    "value": "startwindow"
+                },
+                {
+                    "caption": "submenu",
+                    "value": "submenu"
+                },
+                {
+                    "caption": "subtitlesearch",
+                    "value": "subtitlesearch"
+                },
+                {
+                    "caption": "systeminfo",
+                    "value": "systeminfo"
+                },
+                {
+                    "caption": "systemsettings",
+                    "value": "systemsettings"
+                },
+                {
+                    "caption": "teletext",
+                    "value": "teletext"
+                },
+                {
+                    "caption": "textviewer",
+                    "value": "textviewer"
+                },
+                {
+                    "caption": "tvchannels",
+                    "value": "tvchannels"
+                },
+                {
+                    "caption": "tvguide",
+                    "value": "tvguide"
+                },
+                {
+                    "caption": "tvrecordings",
+                    "value": "tvrecordings"
+                },
+                {
+                    "caption": "tvsearch",
+                    "value": "tvsearch"
+                },
+                {
+                    "caption": "tvtimerrules",
+                    "value": "tvtimerrules"
+                },
+                {
+                    "caption": "tvtimers",
+                    "value": "tvtimers"
+                },
+                {
+                    "caption": "videobookmarks",
+                    "value": "videobookmarks"
+                },
+                {
+                    "caption": "videomenu",
+                    "value": "videomenu"
+                },
+                {
+                    "caption": "videoosd",
+                    "value": "videoosd"
+                },
+                {
+                    "caption": "videoplaylist",
+                    "value": "videoplaylist"
+                },
+                {
+                    "caption": "videos",
+                    "value": "videos"
+                },
+                {
+                    "caption": "videotimeseek",
+                    "value": "videotimeseek"
+                },
+                {
+                    "caption": "virtualkeyboard",
+                    "value": "virtualkeyboard"
+                },
+                {
+                    "caption": "visualisation",
+                    "value": "visualisation"
+                },
+                {
+                    "caption": "visualisationpresetlist",
+                    "value": "visualisationpresetlist"
+                },
+                {
+                    "caption": "volumebar",
+                    "value": "volumebar"
+                },
+                {
+                    "caption": "weather",
+                    "value": "weather"
+                },
+                {
+                    "caption": "yesnodialog",
+                    "value": "yesnodialog"
+                }
+            ]
+        },
+        {
+            "type": "ValidationTextBox",
+            "name": "PARAMETER",
+            "caption": "Parameter (optional, e.g. musicdb://albums/)"
+        }
+    ],
+    "action": "KODIGUI_ActivateWindowEx($_IPS['TARGET'], $_IPS['WINDOW'], $_IPS['PARAMETER']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{E15F2C11-0B28-4CFB-AEE6-463BD313A964}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Activate window": "Fenster aktivieren",
+            "Window": "Fenster",
+            "Parameter (optional, e.g. musicdb://albums/)": "Parameter (optional, z.B. musicdb://albums/)",
+            "Opens a window in the Kodi user interface.": "Öffnet ein Fenster in der Oberfläche von Kodi.",
+            "Activate window {WINDOW} on {TARGET, object}": "Fenster {WINDOW} auf {TARGET, object} aktivieren"
+        }
+    },
+    "format": "Activate window {WINDOW} on {TARGET, object}",
+    "description": "Opens a window in the Kodi user interface."
+}

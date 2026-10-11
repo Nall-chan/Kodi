@@ -25,7 +25,6 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @property array $GenreItemList  Alle Eigenschaften von Genres
  * @property array $SongItemList  Alle Eigenschaften von Songs
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Album/Artist etc... Ergebnis als HTML-Tabelle.
- * @todo AudioLibrary.GetProperties ab v8
  * @todo AudioLibrary.GetAvailableArt ab V10
  * @todo AudioLibrary.GetAvailableArtTypes ab V10
  */
@@ -35,6 +34,21 @@ class KodiDeviceAudioLibrary extends KodiBase
     public const PropertyShowDoClean = 'showDoClean';
     public const PropertyShowScan = 'showScan';
     public const PropertyShowClean = 'showClean';
+
+    /** Eigenschaften von AudioLibrary.GetProperties (Kodi 21). */
+    public const LibraryProperties = [
+        'missingartistid',
+        'librarylastupdated',
+        'librarylastcleaned',
+        'artistlinksupdated',
+        'songslastadded',
+        'albumslastadded',
+        'artistslastadded',
+        'genreslastadded',
+        'songsmodified',
+        'albumsmodified',
+        'artistsmodified'
+    ];
 
     protected static $Namespace = 'AudioLibrary';
     protected static $Properties = [];
@@ -171,32 +185,6 @@ class KodiDeviceAudioLibrary extends KodiBase
         parent::ApplyChanges();
     }
 
-    ################## ActionHandler
-    /**
-     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     *
-     * @access public
-     * @param string $Ident Der Ident der Statusvariable.
-     * @param bool|float|int|string $Value Der angeforderte neue Wert.
-     */
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        switch ($Ident) {
-            case 'doclean':
-                $this->Clean();
-                return;
-            case 'doscan':
-                $this->Scan();
-                return;
-            default:
-                trigger_error('Invalid Ident.', E_USER_NOTICE);
-        }
-    }
-
     ################## PUBLIC
     /**
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_Clean'. Startet das bereinigen der Datenbank
@@ -223,15 +211,20 @@ class KodiDeviceAudioLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_Export'. Exportiert die Audio Datenbank.
      *
      * @access public
-     * @param  string $Path Ziel-Verzeichnis für den Export.
-     * @param bool $Overwrite Vorhandene Daten überschreiben.
-     * @param bool $includeImages Bilder mit exportieren.
+     * @param  string $Path Ziel-Verzeichnis für den Export in eine Datei. Leer = Export in einzelne Dateien bei den Medien.
+     * @param bool $Overwrite Vorhandene Dateien überschreiben (nur bei leerem $Path).
+     * @param bool $includeImages Bilder mit exportieren (nur bei leerem $Path).
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Export(string $Path, bool $Overwrite, bool $includeImages): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->Export(['options' => ['path' => $Path, 'overwrite' => $Overwrite, 'images' => $includeImages]]);
+        // Kodi kennt nur zwei Varianten: Export in eine Datei unter $Path oder in einzelne Dateien bei den Medien (overwrite/images).
+        if ($Path != '') {
+            $KodiData->Export(['options' => ['path' => $Path]]);
+        } else {
+            $KodiData->Export(['options' => ['overwrite' => $Overwrite, 'images' => $includeImages]]);
+        }
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -278,6 +271,19 @@ class KodiDeviceAudioLibrary extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetAlbumsEx'. Liest eine Seite der Alben (für große Bibliotheken).
+     *
+     * @access public
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge.
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.
+     */
+    public function GetAlbumsEx(int $Start, int $Count): false|array
+    {
+        return $this->GetListPage('GetAlbums', static::$AlbumItemListSmall, 'albums', $Start, $Count);
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetArtistDetails'. Liest die Eigenschaften eines Künstlers aus.
      *
      * @access public
@@ -316,6 +322,19 @@ class KodiDeviceAudioLibrary extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetArtistsEx'. Liest eine Seite der Interpreten (für große Bibliotheken).
+     *
+     * @access public
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge.
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.
+     */
+    public function GetArtistsEx(int $Start, int $Count): false|array
+    {
+        return $this->GetListPage('GetArtists', static::$ArtistItemList, 'artists', $Start, $Count);
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetGenres'. Liest die Eigenschaften aller Genres aus.
      *
      * @access public
@@ -331,6 +350,63 @@ class KodiDeviceAudioLibrary extends KodiBase
         }
         if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->genres);
+        }
+        return [];
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetLibraryProperties'. Liest den Zustand der Musikdatenbank aus (letzte Aktualisierung, letzte Bereinigung, zuletzt hinzugefügt usw.).
+     *
+     * @access public
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
+     */
+    public function GetLibraryProperties(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetProperties(['properties' => self::LibraryProperties]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $KodiData->ToArray($ret);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetRoles'. Liest alle Rollen von Mitwirkenden aus (z.B. Komponist, Dirigent).
+     *
+     * @access public
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
+     */
+    public function GetRoles(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetRoles(['properties' => ['title']]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret->limits->total > 0) {
+            return $KodiData->ToArray($ret->roles);
+        }
+        return [];
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetSources'. Liest alle Musikquellen aus.
+     *
+     * @access public
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
+     */
+    public function GetSources(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetSources(['properties' => ['file', 'paths']]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret->limits->total > 0) {
+            return $KodiData->ToArray($ret->sources);
         }
         return [];
     }
@@ -454,6 +530,19 @@ class KodiDeviceAudioLibrary extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIAUDIOLIB_GetSongsEx'. Liest eine Seite der Lieder (für große Bibliotheken).
+     *
+     * @access public
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge.
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.
+     */
+    public function GetSongsEx(int $Start, int $Count): false|array
+    {
+        return $this->GetListPage('GetSongs', static::$SongItemList, 'songs', $Start, $Count);
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIAUDIOLIB_Scan'. Startet das Scannen der Quellen für neue Einträge in der Datenbank.
      *
      * @access public
@@ -472,6 +561,28 @@ class KodiDeviceAudioLibrary extends KodiBase
         }
         trigger_error($this->Translate('Error start scanning'), E_USER_NOTICE);
         return false;
+    }
+
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        switch ($Ident) {
+            case 'doclean':
+                $this->Clean();
+                return;
+            case 'doscan':
+                $this->Scan();
+                return;
+            default:
+                trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
+        }
     }
 
     ################## PRIVATE

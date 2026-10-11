@@ -17,10 +17,6 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @version       3.02
  * @example <b>Ohne</b>
  *
- * @todo PVR.AddTimer ab v8
- * @todo PVR.ToggleTimer ab v8
- * @todo PVR.GetBroadcastIsPlayable ab v10
- * @todo PVR.PVR.GetClients ab v10
  *
  * @property string $WebHookSecretTv
  * @property string $WebHookSecretRadio
@@ -61,6 +57,54 @@ class KodiDevicePVR extends KodiBase
     public const HookTV = 'KodiTVChannellist';
     public const HookRadio = 'KodiRadioChannellist';
     public const HookRecording = 'KodiRecordinglist';
+
+    /** Präfixe der Eigenschaften für das Design der drei Tabellen. */
+    public const TablePrefixTV = 'TV';
+    public const TablePrefixRadio = 'Radio';
+    public const TablePrefixRecording = 'Recording';
+
+    /**
+     * Die Tabellen der Instanz: alte Eigenschaft mit der ID des Konfigurations-Skripts (bis 3.02, nur noch in Migrate vorhanden),
+     * Name des Panels im Formular und Eigenschaft für die Anzeige der HTML-Box.
+     */
+    private const Tables = [
+        self::TablePrefixTV => [
+            'Legacy' => 'TVChannellistconfig',
+            'Panel'  => 'TVRow2',
+            'Show'   => self::PropertyShowTVChannellist
+        ],
+        self::TablePrefixRadio => [
+            'Legacy' => 'RadioChannellistconfig',
+            'Panel'  => 'RadioRow2',
+            'Show'   => self::PropertyShowRadioChannellist
+        ],
+        self::TablePrefixRecording => [
+            'Legacy' => 'Recordinglistconfig',
+            'Panel'  => 'RecordingRow2',
+            'Show'   => self::PropertyShowRecordinglist
+        ]
+    ];
+
+    /** Spalten der Kanal-Tabellen (TV und Radio): Schlüssel, Überschrift, Breite (em), sichtbar. */
+    private const ChannelTableColumns = [
+        ['Thumbnail', '', 100, true],
+        ['Label', 'Name', 150, true],
+        ['Now', 'Now playing', 300, true],
+        ['Next', 'Up next', 300, true],
+        ['Lastplayed', 'Last played', 300, false]
+    ];
+
+    /** Spalten der Tabelle der Aufzeichnungen: Schlüssel, Überschrift, Breite (em), sichtbar. */
+    private const RecordingTableColumns = [
+        ['Thumbnail', '', 100, true],
+        ['Label', 'Name', 300, true],
+        ['Runtime', 'Duration', 100, true],
+        ['Starttime', 'Start time', 200, true],
+        ['Channel', 'Channel', 150, true],
+        ['Endtime', 'End time', 200, false],
+        ['Plot', 'Plot', 400, false],
+        ['Genre', 'Genre', 200, false]
+    ];
 
     protected static $Namespace = 'PVR';
     protected static $Properties = [
@@ -172,27 +216,27 @@ class KodiDevicePVR extends KodiBase
         $this->RegisterPropertyInteger(self::PropertyRecordingThumbSize, 100);
         $this->RegisterTimer('RefreshLists', 0, 'KODIPVR_RefreshAll(' . $this->InstanceID . ');');
 
-        // Todo 7.0 -> Style per Konfig-Formular
-        $ID = @$this->GetIDForIdent('TVChannellistDesign');
-        if ($ID == false) {
-            $this->RegisterScript('TVChannellistDesign', 'TV Channellist Config', $this->CreateTVChannellistConfigScript(), -7);
-            IPS_SetHidden($this->GetIDForIdent('TVChannellistDesign'), true);
+        foreach (self::Tables as $Prefix => $Table) {
+            $this->RegisterTableProperties($Prefix, $this->GetDefaultPVRTable($Prefix));
         }
-        $this->RegisterPropertyInteger('TVChannellistconfig', $ID);
+    }
 
-        $ID = @$this->GetIDForIdent('RadioChannellistDesign');
-        if ($ID == false) {
-            $this->RegisterScript('RadioChannellistDesign', 'Radio Channellist Config', $this->CreateRadioChannellistConfigScript(), -7);
-            IPS_SetHidden($this->GetIDForIdent('RadioChannellistDesign'), true);
+    /**
+     * Interne Funktion des SDK.
+     * Überträgt das Design aus den alten Konfigurations-Skripten in die Eigenschaften.
+     *
+     * @access public
+     */
+    public function Migrate(string $JSONData): string
+    {
+        $Data = json_decode($JSONData);
+        $Changed = false;
+        foreach (self::Tables as $Prefix => $Table) {
+            if ($this->MigrateTableScript($Data->configuration, $Table['Legacy'], $Prefix, $this->GetDefaultPVRTable($Prefix))) {
+                $Changed = true;
+            }
         }
-        $this->RegisterPropertyInteger('RadioChannellistconfig', $ID);
-
-        $ID = @$this->GetIDForIdent('RecordinglistDesign');
-        if ($ID == false) {
-            $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
-            IPS_SetHidden($this->GetIDForIdent('RecordinglistDesign'), true);
-        }
-        $this->RegisterPropertyInteger('Recordinglistconfig', $ID);
+        return $Changed ? json_encode($Data) : '';
     }
 
     /**
@@ -244,11 +288,6 @@ class KodiDevicePVR extends KodiBase
         if ($this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {
             $this->RegisterVariableString('TVChannellist', $this->Translate('TV channels'), '~HTMLBox', 1);
             $this->RegisterHook(self::HookTV . $this->InstanceID);
-            $ID = @$this->GetIDForIdent('TVChannellistDesign');
-            if ($ID == false) {
-                $this->RegisterScript('TVChannellistDesign', 'TVChannellist Config', $this->CreateTVChannellistConfigScript(), -7);
-                IPS_SetHidden($this->GetIDForIdent('TVChannellistDesign'), true);
-            }
         } else {
             $this->UnregisterVariable('TVChannellist');
             $this->UnregisterHook(self::HookTV . $this->InstanceID);
@@ -257,11 +296,6 @@ class KodiDevicePVR extends KodiBase
         if ($this->ReadPropertyBoolean(self::PropertyShowRadioChannellist)) {
             $this->RegisterVariableString('RadioChannellist', $this->Translate('Radio channels'), '~HTMLBox', 1);
             $this->RegisterHook(self::HookRadio . $this->InstanceID);
-            $ID = @$this->GetIDForIdent('RadioChannellistDesign');
-            if ($ID == false) {
-                $this->RegisterScript('RadioChannellistDesign', 'RadioChannellist Config', $this->CreateRadioChannellistConfigScript(), -7);
-                IPS_SetHidden($this->GetIDForIdent('RadioChannellistDesign'), true);
-            }
         } else {
             $this->UnregisterVariable('RadioChannellist');
             $this->UnregisterHook(self::HookRadio . $this->InstanceID);
@@ -270,11 +304,6 @@ class KodiDevicePVR extends KodiBase
         if ($this->ReadPropertyBoolean(self::PropertyShowRecordinglist)) {
             $this->RegisterVariableString('Recordinglist', $this->Translate('Recordings'), '~HTMLBox', 1);
             $this->RegisterHook(self::HookRecording . $this->InstanceID);
-            $ID = @$this->GetIDForIdent('RecordinglistDesign');
-            if ($ID == false) {
-                $this->RegisterScript('RecordinglistDesign', 'Recordinglist Config', $this->CreateRecordlistConfigScript(), -7);
-                IPS_SetHidden($this->GetIDForIdent('RecordinglistDesign'), true);
-            }
         } else {
             $this->UnregisterVariable('Recordinglist');
             $this->UnregisterHook(self::HookRecording . $this->InstanceID);
@@ -289,19 +318,6 @@ class KodiDevicePVR extends KodiBase
         } else {
             $this->SetTimerInterval('RefreshLists', 0);
         }
-        $ScriptID = $this->ReadPropertyInteger('TVChannellistconfig');
-        if ($ScriptID > 0) {
-            $this->RegisterReference($ScriptID);
-        }
-        $ScriptID = $this->ReadPropertyInteger('RadioChannellistconfig');
-        if ($ScriptID > 0) {
-            $this->RegisterReference($ScriptID);
-        }
-        $ScriptID = $this->ReadPropertyInteger('Recordinglistconfig');
-        if ($ScriptID > 0) {
-            $this->RegisterReference($ScriptID);
-        }
-
         parent::ApplyChanges();
     }
     public function GetConfigurationForm(): string
@@ -316,85 +332,10 @@ class KodiDevicePVR extends KodiBase
         $Form['elements'][3]['items'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRecordinglist);
         $Form['elements'][3]['items'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRecordinglist);
         $Form['elements'][3]['items'][3]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowRecordinglist);
-        $this->SendDebug('FORM', json_encode($Form), 0);
-        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        foreach (self::Tables as $Prefix => $Table) {
+            $this->FillTableFormPanel($Form['elements'], $Table['Panel'], $Prefix, $this->ReadPropertyBoolean($Table['Show']));
+        }
         return json_encode($Form);
-    }
-    ################## ActionHandler
-    /**
-     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     *
-     * @access public
-     * @param string $Ident Der Ident der Statusvariable.
-     * @param bool|float|int|string $Value Der angeforderte neue Wert.
-     */
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        switch ($Ident) {
-            case 'scan':
-                $this->Scan();
-                return;
-            case 'record':
-                $this->Record($Value, 'current');
-                return;
-            case self::ActionVisibleFormElementsTVChannellist:
-                $this->UpdateFormField('TVRow1', 'visible', (bool) $Value);
-                $this->UpdateFormField('TVRow2', 'visible', (bool) $Value);
-                $this->UpdateFormField('TVRow3', 'visible', (bool) $Value);
-                return;
-            case self::ActionVisibleFormElementsRadioChannellist:
-                $this->UpdateFormField('RadioRow1', 'visible', (bool) $Value);
-                $this->UpdateFormField('RadioRow2', 'visible', (bool) $Value);
-                $this->UpdateFormField('RadioRow3', 'visible', (bool) $Value);
-                return;
-            case self::ActionVisibleFormElementsRecordinglist:
-                $this->UpdateFormField('RecordingRow1', 'visible', (bool) $Value);
-                $this->UpdateFormField('RecordingRow2', 'visible', (bool) $Value);
-                $this->UpdateFormField('RecordingRow3', 'visible', (bool) $Value);
-                return;
-            default:
-                trigger_error('Invalid Ident.', E_USER_NOTICE);
-        }
-    }
-
-    ################## PUBLIC
-    /**
-     * Verarbeitet Daten aus dem Webhook.
-     *
-     * @access protected
-     * @global array $_GET
-     */
-    public function ProcessHookdata(): void
-    {
-        if ((!isset($_GET['ID'])) || (!isset($_GET['TYP'])) || (!isset($_GET['Secret']))) {
-            echo $this->Translate('Bad Request');
-            return;
-        }
-        $CalcSecret = base64_encode(sha1($this->{'WebHookSecret' . ucfirst($_GET['TYP'])} . '0' . $_GET['ID'], true));
-        if ($CalcSecret != rawurldecode($_GET['Secret'])) {
-            echo $this->Translate('Access denied');
-            return;
-        }
-        $this->SendDebug($_GET['TYP'] . ' HOOK', $_GET['ID'], 0);
-        $KodiData = new Kodi_RPC_Data('Player');
-        switch ($_GET['TYP']) {
-            case 'tv':
-            case 'radio':
-                $KodiData->Open(['item' => ['channelid' => (int) $_GET['ID']]]);
-                break;
-            case 'recording':
-                $KodiData->Open(['item' => ['recordingid' => (int) $_GET['ID']]]);
-                break;
-            default:
-                echo $this->Translate('Bad Request');
-                break;
-        }
-        $ret = $this->Send($KodiData);
-        echo $ret;
     }
 
     /**
@@ -426,7 +367,7 @@ class KodiDevicePVR extends KodiBase
      * @param string $Channel Kanalname.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function Record(bool $Record, string $Channel): false|array
+    public function Record(bool $Record, string $Channel): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
         $KodiData->Record(['record' => $Record, 'channel' => $Channel]);
@@ -610,6 +551,44 @@ class KodiDevicePVR extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIPVR_GetBroadcastIsPlayable'. Prüft, ob eine Sendung abgespielt werden kann (läuft gerade oder ist als Catch-up verfügbar).
+     *
+     * @access public
+     * @param int $BroadcastId ID der Sendung (aus GetBroadcasts).
+     * @return bool True wenn abspielbar, false wenn nicht abspielbar oder bei Fehler.
+     */
+    public function GetBroadcastIsPlayable(int $BroadcastId): bool
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetBroadcastIsPlayable(['broadcastid' => $BroadcastId]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $ret === true;
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIPVR_GetClients'. Liefert alle PVR-Clients (PVR-Addons) und deren Fähigkeiten.
+     *
+     * @access public
+     * @return array|bool Ein Array mit den Daten oder FALSE bei Fehler.
+     */
+    public function GetClients(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetClients();
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret->limits->total > 0) {
+            return $KodiData->ToArray($ret->clients);
+        }
+        return [];
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIPVR_GetTimers'. Liefert alle AufnahmeTimer.
      *
      * @access public
@@ -648,6 +627,75 @@ class KodiDevicePVR extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIPVR_AddTimer'. Legt einen Timer für eine Sendung an.
+     *
+     * @access public
+     * @param int $BroadcastId ID der Sendung (aus KODIPVR_GetBroadcasts).
+     * @param bool $TimerRule true legt eine Timer-Regel (Serienaufnahme) an, false einen einmaligen Timer.
+     * @param bool $Reminder true legt eine Erinnerung an, false eine Aufnahme.
+     * @return bool true bei Erfolg, sonst false.
+     */
+    public function AddTimer(int $BroadcastId, bool $TimerRule, bool $Reminder): bool
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->AddTimer(['broadcastid' => $BroadcastId, 'timerrule' => $TimerRule, 'reminder' => $Reminder]);
+        $ret = $this->Send($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret === 'OK') {
+            return true;
+        }
+        trigger_error($this->Translate('Error on add timer.'), E_USER_NOTICE);
+        return false;
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIPVR_DeleteTimer'. Löscht einen Timer oder eine Timer-Regel.
+     *
+     * @access public
+     * @param int $TimerId ID des Timers (aus KODIPVR_GetTimers).
+     * @return bool true bei Erfolg, sonst false.
+     */
+    public function DeleteTimer(int $TimerId): bool
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->DeleteTimer(['timerid' => $TimerId]);
+        $ret = $this->Send($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret === 'OK') {
+            return true;
+        }
+        trigger_error($this->Translate('Error on delete timer.'), E_USER_NOTICE);
+        return false;
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIPVR_ToggleTimer'. Legt für eine Sendung einen Timer an oder löscht den vorhandenen.
+     *
+     * @access public
+     * @param int $BroadcastId ID der Sendung (aus KODIPVR_GetBroadcasts).
+     * @param bool $TimerRule true für eine Timer-Regel (Serienaufnahme), false für einen einmaligen Timer.
+     * @return bool true bei Erfolg, sonst false.
+     */
+    public function ToggleTimer(int $BroadcastId, bool $TimerRule): bool
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->ToggleTimer(['broadcastid' => $BroadcastId, 'timerrule' => $TimerRule]);
+        $ret = $this->Send($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret === 'OK') {
+            return true;
+        }
+        trigger_error($this->Translate('Error on toggle timer.'), E_USER_NOTICE);
+        return false;
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIPVR_RefreshAll'. Erzeugt alle HTML-Tabellen neu
      *
      * @access public
@@ -666,9 +714,75 @@ class KodiDevicePVR extends KodiBase
      * @param string $Ident Enthält den Names des 'properties' welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident): void
+    public function RequestState(string $Ident): bool
     {
-        parent::RequestState($Ident);
+        return parent::RequestState($Ident);
+    }
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        switch ($Ident) {
+            case 'scan':
+                $this->Scan();
+                return;
+            case 'record':
+                $this->Record($Value, 'current');
+                return;
+            case self::ActionVisibleFormElementsTVChannellist:
+                $this->UpdateFormField('TVRow1', 'visible', (bool) $Value);
+                $this->UpdateFormField(self::Tables[self::TablePrefixTV]['Panel'], 'visible', (bool) $Value);
+                $this->UpdateFormField('TVRow3', 'visible', (bool) $Value);
+                return;
+            case self::ActionVisibleFormElementsRadioChannellist:
+                $this->UpdateFormField('RadioRow1', 'visible', (bool) $Value);
+                $this->UpdateFormField(self::Tables[self::TablePrefixRadio]['Panel'], 'visible', (bool) $Value);
+                $this->UpdateFormField('RadioRow3', 'visible', (bool) $Value);
+                return;
+            case self::ActionVisibleFormElementsRecordinglist:
+                $this->UpdateFormField('RecordingRow1', 'visible', (bool) $Value);
+                $this->UpdateFormField(self::Tables[self::TablePrefixRecording]['Panel'], 'visible', (bool) $Value);
+                $this->UpdateFormField('RecordingRow3', 'visible', (bool) $Value);
+                return;
+            default:
+                trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
+        }
+    }
+
+    ################## PUBLIC
+    /**
+     * Verarbeitet Daten aus dem Webhook.
+     *
+     * @access protected
+     * @global array $_GET
+     */
+    protected function ProcessHookdata(): void
+    {
+        if ((!isset($_GET['ID'])) || (!isset($_GET['TYP'])) || (!isset($_GET['Secret']))
+            || (!in_array($_GET['TYP'], ['tv', 'radio', 'recording'], true))) {
+            echo $this->Translate('Bad Request');
+            return;
+        }
+        $CalcSecret = base64_encode(sha1($this->{'WebHookSecret' . ucfirst($_GET['TYP'])} . '0' . $_GET['ID'], true));
+        if ($CalcSecret != rawurldecode($_GET['Secret'])) {
+            echo $this->Translate('Access denied');
+            return;
+        }
+        $this->SendDebug($_GET['TYP'] . ' HOOK', $_GET['ID'], 0);
+        $KodiData = new Kodi_RPC_Data('Player');
+        if ($_GET['TYP'] == 'recording') {
+            $KodiData->Open(['item' => ['recordingid' => (int) $_GET['ID']]]);
+        } else {
+            $KodiData->Open(['item' => ['channelid' => (int) $_GET['ID']]]);
+        }
+        $ret = $this->Send($KodiData);
+        echo $ret;
     }
 
     /**
@@ -754,19 +868,7 @@ class KodiDevicePVR extends KodiBase
         if (!$this->ReadPropertyBoolean(self::PropertyShowTVChannellist)) {
             return;
         }
-        $ScriptID = $this->ReadPropertyInteger('TVChannellistconfig');
-        if ($ScriptID == 0) {
-            return;
-        }
-        if (!IPS_ScriptExists($ScriptID)) {
-            return;
-        }
-        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
-        $Config = @unserialize($result);
-        if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read TV Channellistconfig-Script'));
-            return;
-        }
+        $Config = $this->GetTableConfig(self::TablePrefixTV);
 
         $Max = $this->ReadPropertyInteger(self::PropertyShowMaxTVChannels);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -797,8 +899,8 @@ class KodiDevicePVR extends KodiBase
                         $Line[$key] = $value;
                     } //$key is not a string
                 }
-                if (array_key_exists('Thumbnail', $Config['Spalten'])) {
-                    if ($Line['Thumbnail'] != '') {
+                if (isset($Config['Columns']['Thumbnail'])) {
+                    if (($Line['Thumbnail'] ?? '') != '') {
                         $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyTVThumbSize), 0);
                         if ($CoverRAW === false) {
                             $Line['Thumbnail'] = '';
@@ -807,7 +909,7 @@ class KodiDevicePVR extends KodiBase
                         }
                     }
                 }
-                if (array_key_exists('Now', $Config['Spalten']) && array_key_exists('Broadcastnow', $Line)) {
+                if (isset($Config['Columns']['Now']) && array_key_exists('Broadcastnow', $Line)) {
                     if (array_key_exists('title', $Line['Broadcastnow'])) {
                         $Line['Now'] = $Line['Broadcastnow']['title'];
                         if (array_key_exists('episodename', $Line['Broadcastnow'])) {
@@ -822,7 +924,7 @@ class KodiDevicePVR extends KodiBase
                 } else {
                     $Line['Now'] = 'No Info';
                 }
-                if (array_key_exists('Next', $Config['Spalten']) && array_key_exists('Broadcastnext', $Line)) {
+                if (isset($Config['Columns']['Next']) && array_key_exists('Broadcastnext', $Line)) {
                     if (array_key_exists('title', $Line['Broadcastnext'])) {
                         $Line['Next'] = $Line['Broadcastnext']['title'];
                         if (array_key_exists('episodename', $Line['Broadcastnext'])) {
@@ -840,21 +942,7 @@ class KodiDevicePVR extends KodiBase
                     $Line['Next'] = 'No Info';
                 }
                 $LineSecret = rawurlencode(base64_encode(sha1($NewSecretTV . '0' . $Line['Channelid'], true)));
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?TYP=tv&ID=' . $Line['Channelid'] . '&Secret=' . $LineSecret . '\' })" >';
-
-                foreach ($Config['Spalten'] as $feldIndex => $value) {
-                    if (!array_key_exists($feldIndex, $Line)) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if ($Line[$feldIndex] === -1) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if (is_array($Line[$feldIndex])) {
-                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
-                    }
-                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
-                }
-                $HTMLData .= '</tr>' . PHP_EOL;
+                $HTMLData .= $this->GetTableRow($Config, $pos % 2 ? \KodiBase\TableRow::Odd : \KodiBase\TableRow::Even, $Line, 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiTVChannellist' . $this->InstanceID . '?TYP=tv&ID=' . $Line['Channelid'] . '&Secret=' . $LineSecret . '\' })"');
                 $pos++;
                 //                if ($pos == $max)
                 //                    break;
@@ -874,19 +962,7 @@ class KodiDevicePVR extends KodiBase
         if (!$this->ReadPropertyBoolean(self::PropertyShowRadioChannellist)) {
             return;
         }
-        $ScriptID = $this->ReadPropertyInteger('RadioChannellistconfig');
-        if ($ScriptID == 0) {
-            return;
-        }
-        if (!IPS_ScriptExists($ScriptID)) {
-            return;
-        }
-        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
-        $Config = @unserialize($result);
-        if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read radio Channellistconfig-Script'));
-            return;
-        }
+        $Config = $this->GetTableConfig(self::TablePrefixRadio);
 
         $Max = $this->ReadPropertyInteger(self::PropertyShowMaxRadioChannels);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -918,8 +994,8 @@ class KodiDevicePVR extends KodiBase
                         $Line[$key] = $value;
                     } //$key is not a string
                 }
-                if (array_key_exists('Thumbnail', $Config['Spalten'])) {
-                    if ($Line['Thumbnail'] != '') {
+                if (isset($Config['Columns']['Thumbnail'])) {
+                    if (($Line['Thumbnail'] ?? '') != '') {
                         $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyRadioThumbSize), 0);
                         if ($CoverRAW === false) {
                             $Line['Thumbnail'] = '';
@@ -928,7 +1004,7 @@ class KodiDevicePVR extends KodiBase
                         }
                     }
                 }
-                if (array_key_exists('Now', $Config['Spalten']) && array_key_exists('Broadcastnow', $Line)) {
+                if (isset($Config['Columns']['Now']) && array_key_exists('Broadcastnow', $Line)) {
                     if (array_key_exists('title', $Line['Broadcastnow'])) {
                         $Line['Now'] = $Line['Broadcastnow']['title'];
                         if (array_key_exists('episodename', $Line['Broadcastnow'])) {
@@ -943,7 +1019,7 @@ class KodiDevicePVR extends KodiBase
                 } else {
                     $Line['Now'] = 'No Info';
                 }
-                if (array_key_exists('Next', $Config['Spalten']) && array_key_exists('Broadcastnext', $Line)) {
+                if (isset($Config['Columns']['Next']) && array_key_exists('Broadcastnext', $Line)) {
                     if (array_key_exists('title', $Line['Broadcastnext'])) {
                         $Line['Next'] = $Line['Broadcastnext']['title'];
                         if (array_key_exists('episodename', $Line['Broadcastnext'])) {
@@ -961,21 +1037,7 @@ class KodiDevicePVR extends KodiBase
                     $Line['Next'] = 'No Info';
                 }
                 $LineSecret = rawurlencode(base64_encode(sha1($NewSecretRadio . '0' . $Line['Channelid'], true)));
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?TYP=radio&ID=' . $Line['Channelid'] . '&Secret=' . $LineSecret . '\' })" >';
-
-                foreach ($Config['Spalten'] as $feldIndex => $value) {
-                    if (!array_key_exists($feldIndex, $Line)) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if ($Line[$feldIndex] === -1) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if (is_array($Line[$feldIndex])) {
-                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
-                    }
-                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
-                }
-                $HTMLData .= '</tr>' . PHP_EOL;
+                $HTMLData .= $this->GetTableRow($Config, $pos % 2 ? \KodiBase\TableRow::Odd : \KodiBase\TableRow::Even, $Line, 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRadioChannellist' . $this->InstanceID . '?TYP=radio&ID=' . $Line['Channelid'] . '&Secret=' . $LineSecret . '\' })"');
                 $pos++;
                 //                if ($pos == $max)
                 //                    break;
@@ -995,19 +1057,7 @@ class KodiDevicePVR extends KodiBase
         if (!$this->ReadPropertyBoolean(self::PropertyShowRecordinglist)) {
             return;
         }
-        $ScriptID = $this->ReadPropertyInteger('Recordinglistconfig');
-        if ($ScriptID == 0) {
-            return;
-        }
-        if (!IPS_ScriptExists($ScriptID)) {
-            return;
-        }
-        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
-        $Config = @unserialize($result);
-        if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read Recordinglistconfig-Script'));
-            return;
-        }
+        $Config = $this->GetTableConfig(self::TablePrefixRecording);
 
         $Max = $this->ReadPropertyInteger(self::PropertyShowMaxRecording);
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -1037,7 +1087,7 @@ class KodiDevicePVR extends KodiBase
                         $Line[$key] = $value;
                     } //$key is not a string
                 }
-                if (array_key_exists('Thumbnail', $Config['Spalten'])) {
+                if (isset($Config['Columns']['Thumbnail'])) {
                     if (array_key_exists('thumb', $Line['Art'])) {
                         if ($Line['Art']['thumb'] != '') {
                             $CoverRAW = $this->GetThumbnail($Line['Art']['thumb'], $this->ReadPropertyInteger(self::PropertyRecordingThumbSize), 0);
@@ -1051,20 +1101,7 @@ class KodiDevicePVR extends KodiBase
                 }
                 $Line['Runtime'] = $this->ConvertTime($Line['Runtime']);
                 $LineSecret = rawurlencode(base64_encode(sha1($NewSecretRecording . '0' . $Line['Recordingid'], true)));
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '" onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?TYP=recording&ID=' . $Line['Recordingid'] . '&Secret=' . $LineSecret . '\' })" >';
-                foreach ($Config['Spalten'] as $feldIndex => $value) {
-                    if (!array_key_exists($feldIndex, $Line)) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if ($Line[$feldIndex] === -1) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if (is_array($Line[$feldIndex])) {
-                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
-                    }
-                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
-                }
-                $HTMLData .= '</tr>' . PHP_EOL;
+                $HTMLData .= $this->GetTableRow($Config, $pos % 2 ? \KodiBase\TableRow::Odd : \KodiBase\TableRow::Even, $Line, 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiRecordinglist' . $this->InstanceID . '?TYP=recording&ID=' . $Line['Recordingid'] . '&Secret=' . $LineSecret . '\' })"');
                 $pos++;
                 //                if ($pos == $max)
                 //                    break;
@@ -1075,292 +1112,17 @@ class KodiDevicePVR extends KodiBase
     }
 
     /**
-     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der TV Kanal-Tabelle enthält.
+     * Liefert die Standardkonfiguration einer der drei Tabellen.
      *
      * @access private
-     * @return string Ein PHP-Script welche als Grundlage für die User dient.
+     * @param string $Prefix Präfix der Tabelle (TablePrefixTV, TablePrefixRadio oder TablePrefixRecording).
+     * @return array Konfiguration (Table, Columns, Rows, Buttons).
      */
-    private function CreateTVChannellistConfigScript(): string
+    private function GetDefaultPVRTable(string $Prefix): array
     {
-        $Script = '<?php
-### Konfig ab Zeile 10 !!!
-
-if ($_IPS["SENDER"] <> "Kodi")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-##########   KONFIGURATION
-#### Tabellarische Ansicht
-# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die TV Kanäle dargestellt werden.
-
-// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
-// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
-$Config["Spalten"] = array(
-    "Thumbnail"=>"",
-    "Label" =>"Name",
-//    "Lastplayed" => "zuletzt gesehen",
-    "Now" => "es läuft",
-    "Next" => "gleich läuft"
-    
-);
-#### Mögliche Index-Felder
-/*
-        
-| Index       | Typ     | Beschreibung                        |
-| :---------: | :-----: | :---------------------------------: |
-| Thumbnail   | string  | Senderlogo                          |
-| Label       | string  | Name des Kanals                     |
-| Lastplayed  | string  | Wann zuletzt gesehen                |
-*/
-// Breite der Spalten (Reihenfolge ist egal)
-$Config["Breite"] = array(
-    "Thumbnail"=>"100em",
-    "Label"=>"150em",
-    "Now"=>"300em",
-    "Next"=>"300em",
-//    "Lastplayed"=>"300em"
-);
-// Style Informationen der Tabelle
-$Config["Style"] = array(
-    // <table>-Tag:
-    "T"    => "margin:0 auto; font-size:0.8em;",
-    // <thead>-Tag:
-    "H"    => "",
-    // <tr>-Tag im thead-Bereich:
-    "HR"   => "",
-    // <th>-Tag Feld Thumbnail:
-    "HFThumbnail"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Label:
-    "HFLabel"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Now:
-    "HFNow"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Next:
-    "HFNext"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Lastplayed:
-    "HFLastplayed"  => "color:#ffffff; width:35px; align:left;",
-    // <tbody>-Tag:
-    "B"    => "",
-    // <tr>-Tag:
-    "BRG"  => "background-color:#000000; color:#ffffff;",
-    "BRU"  => "background-color:#080808; color:#ffffff;",
-    // <td>-Tag Feld Thumbnail:
-    "DFGThumbnail" => "text-align:center;",
-    "DFUThumbnail" => "text-align:center;",
-    // <td>-Tag Feld Label:
-    "DFGLabel" => "text-align:center;",
-    "DFULabel" => "text-align:center;",
-    // <td>-Tag Feld Now:
-    "DFGNow" => "text-align:center;",
-    "DFUNow" => "text-align:center;",
-    // <td>-Tag Feld Next:
-    "DFGNext" => "text-align:center;",
-    "DFUNext" => "text-align:center;",
-    // <td>-Tag Feld Lastplayed:
-    "DFGLastplayed" => "text-align:center;",
-    "DFULastplayed" => "text-align:center;",
-    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade.
- );
- 
-### Konfig ENDE !!!
-echo serialize($Config);
-';
-        return $Script;
-    }
-
-    /**
-     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Radio Kanal-Tabelle enthält.
-     *
-     * @access private
-     * @return string Ein PHP-Script welche als Grundlage für die User dient.
-     */
-    private function CreateRadioChannellistConfigScript(): string
-    {
-        $Script = '<?php
-### Konfig ab Zeile 10 !!!
-
-if ($_IPS["SENDER"] <> "Kodi")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-##########   KONFIGURATION
-#### Tabellarische Ansicht
-# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die Radio Kanäle dargestellt werden.
-
-// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
-// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
-$Config["Spalten"] = array(
-    "Thumbnail"=>"",
-    "Label" =>"Name",
-//    "Lastplayed" => "zuletzt gesehen",
-    "Now" => "es läuft",
-    "Next" => "gleich läuft"
-    
-);
-#### Mögliche Index-Felder
-/*
-        
-| Index       | Typ     | Beschreibung                        |
-| :---------: | :-----: | :---------------------------------: |
-| Thumbnail   | string  | Senderlogo                          |
-| Label       | string  | Name des Kanals                     |
-| Lastplayed  | string  | Wann zuletzt gesehen                |
-*/
-// Breite der Spalten (Reihenfolge ist egal)
-$Config["Breite"] = array(
-    "Thumbnail"=>"100em",
-    "Label"=>"150em",
-    "Now"=>"300em",
-    "Next"=>"300em",
-//    "Lastplayed"=>"300em"
-);
-// Style Informationen der Tabelle
-$Config["Style"] = array(
-    // <table>-Tag:
-    "T"    => "margin:0 auto; font-size:0.8em;",
-    // <thead>-Tag:
-    "H"    => "",
-    // <tr>-Tag im thead-Bereich:
-    "HR"   => "",
-    // <th>-Tag Feld Thumbnail:
-    "HFThumbnail"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Label:
-    "HFLabel"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Now:
-    "HFNow"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Next:
-    "HFNext"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Lastplayed:
-    "HFLastplayed"  => "color:#ffffff; width:35px; align:left;",
-    // <tbody>-Tag:
-    "B"    => "",
-    // <tr>-Tag:
-    "BRG"  => "background-color:#000000; color:#ffffff;",
-    "BRU"  => "background-color:#080808; color:#ffffff;",
-    // <td>-Tag Feld Thumbnail:
-    "DFGThumbnail" => "text-align:center;",
-    "DFUThumbnail" => "text-align:center;",
-    // <td>-Tag Feld Label:
-    "DFGLabel" => "text-align:center;",
-    "DFULabel" => "text-align:center;",
-    // <td>-Tag Feld Now:
-    "DFGNow" => "text-align:center;",
-    "DFUNow" => "text-align:center;",
-    // <td>-Tag Feld Next:
-    "DFGNext" => "text-align:center;",
-    "DFUNext" => "text-align:center;",
-    // <td>-Tag Feld Lastplayed:
-    "DFGLastplayed" => "text-align:center;",
-    "DFULastplayed" => "text-align:center;",
-    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade.
- );
- 
-### Konfig ENDE !!!
-echo serialize($Config);
-';
-        return $Script;
-    }
-
-    /**
-     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Radio Kanal-Tabelle enthält.
-     *
-     * @access private
-     * @return string Ein PHP-Script welche als Grundlage für die User dient.
-     */
-    private function CreateRecordlistConfigScript(): string
-    {
-        $Script = '<?php
-### Konfig ab Zeile 10 !!!
-
-if ($_IPS["SENDER"] <> "Kodi")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-##########   KONFIGURATION
-#### Tabellarische Ansicht
-# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die Radio Kanäle dargestellt werden.
-
-// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
-// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
-$Config["Spalten"] = array(
-    "Thumbnail"=>"",
-    "Label" =>"Name",
-    "Runtime" => "Dauer",
-    "Starttime"=>"Startzeit",
-//    "Endtime"=>"Endzeit",
-//    "Plot"=>"Handlung",
-//    "Genre"=>"Genre",
-    "Channel"=>"Kanal"
-);
-#### Mögliche Index-Felder
-/*
-        
-| Index       | Typ     | Beschreibung                        |
-| :---------: | :-----: | :---------------------------------: |
-| Thumbnail   | string  | Thumbnail der Aufzeichnung          |
-| Label       | string  | Name der Aufzeichnung               |
-| Runtime     | string  | Laufzeit der Aufzeichnung           |
-| Starttime   | string  | Beginn der Aufzeichnung             |
-| Endtime     | string  | Ende der Aufzeichnung               |
-| Plot        | string  | Handlung der Aufzeichnung           |
-| Genre       | string  | Genre der Aufzeichnung              |
-| Channel     | string  | Kanal der Aufzeichnung              |
-
-*/
-// Breite der Spalten (Reihenfolge ist egal)
-$Config["Breite"] = array(
-    "Thumbnail"=>"100em",
-    "Label"=>"300em",
-    "Runtime"=>"100em",
-    "Starttime"=>"200em",
-    "Channel"=>"150em"
-);
-// Style Informationen der Tabelle
-$Config["Style"] = array(
-    // <table>-Tag:
-    "T"    => "margin:0 auto; font-size:0.8em;",
-    // <thead>-Tag:
-    "H"    => "",
-    // <tr>-Tag im thead-Bereich:
-    "HR"   => "",
-    // <th>-Tag Feld Thumbnail:
-    "HFThumbnail"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Label:
-    "HFLabel"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Runtime:
-    "HFRuntime"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Starttime:
-    "HFStarttime"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Channel:
-    "HFChannel"  => "color:#ffffff; width:35px; align:left;",
-    // <tbody>-Tag:
-    "B"    => "",
-    // <tr>-Tag:
-    "BRG"  => "background-color:#000000; color:#ffffff;",
-    "BRU"  => "background-color:#080808; color:#ffffff;",
-    // <td>-Tag Feld Thumbnail:
-    "DFGThumbnail" => "text-align:center;",
-    "DFUThumbnail" => "text-align:center;",
-    // <td>-Tag Feld Label:
-    "DFGLabel" => "text-align:center;",
-    "DFULabel" => "text-align:center;",
-    // <td>-Tag Feld Runtime:
-    "DFGRuntime" => "text-align:center;",
-    "DFURuntime" => "text-align:center;",
-    // <td>-Tag Feld Starttime:
-    "DFGStarttime" => "text-align:center;",
-    "DFUStarttime" => "text-align:center;",
-    // <td>-Tag Feld Channel:
-    "DFGChannel" => "text-align:center;",
-    "DFUChannel" => "text-align:center;",
-    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade.
- );
- 
-### Konfig ENDE !!!
-echo serialize($Config);
-';
-        return $Script;
+        if ($Prefix == self::TablePrefixRecording) {
+            return $this->GetDefaultTableConfig(self::RecordingTableColumns);
+        }
+        return $this->GetDefaultTableConfig(self::ChannelTableColumns);
     }
 }

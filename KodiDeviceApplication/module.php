@@ -86,35 +86,6 @@ class KodiDeviceApplication extends KodiBase
         parent::ApplyChanges();
     }
 
-    ################## ActionHandler
-    /**
-     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     *
-     * @access public
-     * @param string $Ident Der Ident der Statusvariable.
-     * @param bool|float|int|string $Value Der angeforderte neue Wert.
-     */
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        switch ($Ident) {
-            case 'mute':
-                $this->SetMute((bool) $Value);
-                return;
-            case 'volume':
-                $this->SetVolume((int) $Value);
-                return;
-            case 'quit':
-                $this->Quit();
-                return;
-            default:
-                trigger_error('Invalid Ident.', E_USER_NOTICE);
-        }
-    }
-
     ################## PUBLIC
     /**
      * IPS-Instanz-Funktion 'KODIAPP_SetMute'. De-/Aktiviert die Stummschaltung
@@ -163,6 +134,28 @@ class KodiDeviceApplication extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIAPP_VolumeUp'. Erhöht die Lautstärke um eine Stufe von Kodi.
+     *
+     * @access public
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
+     */
+    public function VolumeUp(): bool
+    {
+        return $this->ChangeVolume('increment');
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIAPP_VolumeDown'. Verringert die Lautstärke um eine Stufe von Kodi.
+     *
+     * @access public
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
+     */
+    public function VolumeDown(): bool
+    {
+        return $this->ChangeVolume('decrement');
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIAPP_Quit'. Beendet die Kodi-Anwendung
      *
      * @access public
@@ -184,15 +177,77 @@ class KodiDeviceApplication extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIAPP_GetProfiles'. Liefert alle Benutzerprofile von Kodi.
+     *
+     * @access public
+     * @return array|bool Array mit den Profilen (label, thumbnail, lockmode) oder false bei Fehler.
+     */
+    public function GetProfiles(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data('Profiles');
+        $KodiData->GetProfiles(['properties' => ['thumbnail', 'lockmode']]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret->limits->total > 0) {
+            return $KodiData->ToArray($ret->profiles);
+        }
+        return [];
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIAPP_GetCurrentProfile'. Liefert das aktive Benutzerprofil von Kodi.
+     *
+     * @access public
+     * @return array|bool Array mit dem Profil (label, thumbnail, lockmode) oder false bei Fehler.
+     */
+    public function GetCurrentProfile(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data('Profiles');
+        $KodiData->GetCurrentProfile(['properties' => ['thumbnail', 'lockmode']]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $KodiData->ToArray($ret);
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIAPP_RequestState'. Frage eine oder mehrere Properties ab.
      *
      * @access public
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident): void
+    public function RequestState(string $Ident): bool
     {
-        parent::RequestState($Ident);
+        return parent::RequestState($Ident);
+    }
+
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        switch ($Ident) {
+            case 'mute':
+                $this->SetMute((bool) $Value);
+                return;
+            case 'volume':
+                $this->SetVolume((int) $Value);
+                return;
+            case 'quit':
+                $this->Quit();
+                return;
+            default:
+                trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
+        }
     }
 
     ################## PRIVATE
@@ -221,6 +276,24 @@ class KodiDeviceApplication extends KodiBase
                     break;
             }
         }
+    }
+
+    /**
+     * Ändert die Lautstärke um eine Stufe.
+     *
+     * @param string $Direction 'increment' oder 'decrement'.
+     * @return bool true bei erfolgreicher Ausführung, sonst false.
+     */
+    private function ChangeVolume(string $Direction): bool
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->SetVolume(['volume' => $Direction]);
+        $ret = $this->Send($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        $this->SetValueInteger('volume', (int) $ret);
+        return true;
     }
 }
 

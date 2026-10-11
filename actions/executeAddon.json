@@ -1,0 +1,68 @@
+{
+    "id": "{3A1040B2-A5C4-2FFC-CAB2-1AB6AE3EFD37}",
+    "caption": "Execute addon",
+    "form": [
+        "$Options = [];",
+        "$Addons = @KODIADDONS_GetAddons($_IPS['TARGET']);",
+        "if (is_array($Addons)) {",
+        "    foreach ($Addons as $Addon) {",
+        "        if (!in_array($Addon['type'], ['xbmc.python.pluginsource', 'xbmc.python.script'])) {\n            continue;\n        }",
+        "        $Options[] = ['caption' => $Addon['name'] . ' (' . $Addon['addonid'] . ')', 'value' => $Addon['addonid']];",
+        "    }",
+        "    usort($Options, fn ($a, $b) => strcasecmp($a['caption'], $b['caption']));",
+        "}",
+        "if (isset($_IPS['ADDONID']) && ($_IPS['ADDONID'] != '') && !in_array($_IPS['ADDONID'], array_column($Options, 'value'))) {",
+        "    $Options[] = ['caption' => $_IPS['ADDONID'], 'value' => $_IPS['ADDONID']];",
+        "}",
+        "if (count($Options) > 0) {",
+        "    $Form[] = ['type' => 'Select', 'name' => 'ADDONID', 'caption' => 'Addon', 'options' => $Options];",
+        "} else {",
+        "    $Form[] = ['type' => 'ValidationTextBox', 'name' => 'ADDONID', 'caption' => 'Addon ID (Kodi not reachable)', 'validate' => '^\\\\S+$'];",
+        "}",
+        "$Form[] = ['type' => 'ValidationTextBox', 'name' => 'PARAMS', 'caption' => 'Parameters as JSON (optional)'];",
+        "$Form[] = ['type' => 'CheckBox', 'name' => 'WAIT', 'caption' => 'Wait until the addon has finished'];",
+        "return $Form;"
+    ],
+    "action": [
+        "$Params = trim($_IPS['PARAMS']);",
+        "if ($Params === '') {",
+        "    if ($_IPS['WAIT']) {",
+        "        KODIADDONS_ExecuteAddonWait($_IPS['TARGET'], $_IPS['ADDONID']);",
+        "    } else {",
+        "        KODIADDONS_ExecuteAddon($_IPS['TARGET'], $_IPS['ADDONID']);",
+        "    }",
+        "} else {",
+        "    if ($_IPS['WAIT']) {",
+        "        KODIADDONS_ExecuteAddonExWait($_IPS['TARGET'], $_IPS['ADDONID'], $Params);",
+        "    } else {",
+        "        KODIADDONS_ExecuteAddonEx($_IPS['TARGET'], $_IPS['ADDONID'], $Params);",
+        "    }",
+        "}"
+    ],
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{0731DD94-99E6-43D8-9BE3-2854B0C6EF24}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Addon": "Addon",
+            "Addon ID (Kodi not reachable)": "Addon-ID (Kodi nicht erreichbar)",
+            "Execute addon": "Addon ausführen",
+            "Parameters as JSON (optional)": "Parameter als JSON (optional)",
+            "Wait until the addon has finished": "Warten, bis das Addon beendet ist",
+            "Starts a plugin or script addon in Kodi.": "Startet ein Plugin- oder Skript-Addon in Kodi.",
+            "Execute addon {ADDONID} on {TARGET, object}": "Addon {ADDONID} auf {TARGET, object} ausführen"
+        }
+    },
+    "format": "Execute addon {ADDONID} on {TARGET, object}",
+    "description": "Starts a plugin or script addon in Kodi."
+}

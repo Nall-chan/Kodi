@@ -18,8 +18,6 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @example <b>Ohne</b>
  *
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle.
- * @todo VideoLibrary.GetInProgressTVShows ab v8
- * @todo VideoLibrary.GetTags ab v8
  * @todo VideoLibrary.GetAvailableArt ab v10
  * @todo VideoLibrary.GetAvailableArtTypes ab v10
  *
@@ -41,6 +39,9 @@ class KodiDeviceVideoLibrary extends KodiBase
     public const PropertyShowDoClean = 'showDoClean';
     public const PropertyShowScan = 'showScan';
     public const PropertyShowClean = 'showClean';
+
+    /** Felder, die Listen-Abfragen nicht anfordern (zu groß, z.B. alle Darsteller). Die Get*Details-Funktionen liefern sie weiterhin. */
+    public const ListExcludedFields = ['cast', 'streamdetails', 'art'];
 
     protected static $Namespace = 'VideoLibrary';
     protected static $Properties = [];
@@ -134,7 +135,9 @@ class KodiDeviceVideoLibrary extends KodiBase
         'thumbnail',
         'tvshowid',
         'watchedepisodes',
-        'art'
+        'art',
+        'userrating',
+        'title'
     ];
     protected static $MusicVideoItemList = [
         'title',
@@ -244,32 +247,6 @@ class KodiDeviceVideoLibrary extends KodiBase
         parent::ApplyChanges();
     }
 
-    ################## ActionHandler
-    /**
-     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     *
-     * @access public
-     * @param string $Ident Der Ident der Statusvariable.
-     * @param bool|float|int|string $Value Der angeforderte neue Wert.
-     */
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        switch ($Ident) {
-            case 'doclean':
-                $this->Clean();
-                return;
-            case 'doscan':
-                $this->Scan();
-                return;
-            default:
-                trigger_error('Invalid Ident.', E_USER_NOTICE);
-        }
-    }
-
     ################## PUBLIC
     /**
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_Clean'. Startet das bereinigen der Datenbank
@@ -296,15 +273,20 @@ class KodiDeviceVideoLibrary extends KodiBase
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_Export'. Exportiert die Video Datenbank.
      *
      * @access public
-     * @param  string $Path Ziel-Verzeichnis für den Export.
-     * @param bool $Overwrite Vorhandene Daten überschreiben.
-     * @param bool $includeImages Bilder mit exportieren.
+     * @param  string $Path Ziel-Verzeichnis für den Export in eine Datei. Leer = Export in einzelne Dateien bei den Medien.
+     * @param bool $Overwrite Vorhandene Dateien überschreiben (nur bei leerem $Path).
+     * @param bool $includeImages Bilder mit exportieren (nur bei leerem $Path).
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
     public function Export(string $Path, bool $Overwrite, bool $includeImages): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->Export(['options' => ['path' => $Path, 'overwrite' => $Overwrite, 'images' => $includeImages]]);
+        // Kodi kennt nur zwei Varianten: Export in eine Datei unter $Path oder in einzelne Dateien bei den Medien (overwrite/images).
+        if ($Path != '') {
+            $KodiData->Export(['options' => ['path' => $Path]]);
+        } else {
+            $KodiData->Export(['options' => ['overwrite' => $Overwrite, 'images' => $includeImages]]);
+        }
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -351,6 +333,19 @@ class KodiDeviceVideoLibrary extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetEpisodesEx'. Liest eine Seite der Episoden (für große Bibliotheken).
+     *
+     * @access public
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge.
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.
+     */
+    public function GetEpisodesEx(int $Start, int $Count): false|array
+    {
+        return $this->GetListPage('GetEpisodes', static::$EpisodeItemListSmall, 'episodes', $Start, $Count);
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetGenres'. Liest die Eigenschaften aller Genres aus.
      *
      * @access public
@@ -368,6 +363,26 @@ class KodiDeviceVideoLibrary extends KodiBase
         }
         if ($ret->limits->total > 0) {
             return $KodiData->ToArray($ret->genres);
+        }
+        return [];
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetInProgressTVShows'. Liest die Eigenschaften aller angefangenen TV-Serien aus.
+     *
+     * @access public
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
+     */
+    public function GetInProgressTVShows(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetInProgressTVShows(['properties' => $this->ListFields(static::$TvShowItemList)]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret->limits->total > 0) {
+            return $KodiData->ToArray($ret->tvshows);
         }
         return [];
     }
@@ -399,7 +414,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     public function GetMovies(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetMovies(['properties' => static::$MovieItemList]);
+        $KodiData->GetMovies(['properties' => $this->ListFields(static::$MovieItemList)]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -408,6 +423,19 @@ class KodiDeviceVideoLibrary extends KodiBase
             return $KodiData->ToArray($ret->movies);
         }
         return [];
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMoviesEx'. Liest eine Seite der Filme (für große Bibliotheken).
+     *
+     * @access public
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge.
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.
+     */
+    public function GetMoviesEx(int $Start, int $Count): false|array
+    {
+        return $this->GetListPage('GetMovies', $this->ListFields(static::$MovieItemList), 'movies', $Start, $Count);
     }
 
     /**
@@ -449,6 +477,19 @@ class KodiDeviceVideoLibrary extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMovieSetsEx'. Liest eine Seite der Film-Sets (für große Bibliotheken).
+     *
+     * @access public
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge.
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.
+     */
+    public function GetMovieSetsEx(int $Start, int $Count): false|array
+    {
+        return $this->GetListPage('GetMovieSets', static::$SetItemList, 'sets', $Start, $Count);
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMusicVideoDetails'. Liest die Eigenschaften eines Musikvideos aus.
      *
      * @access public
@@ -475,7 +516,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     public function GetMusicVideos(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetMusicVideos(['properties' => static::$MusicVideoItemList]);
+        $KodiData->GetMusicVideos(['properties' => $this->ListFields(static::$MusicVideoItemList)]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -487,6 +528,19 @@ class KodiDeviceVideoLibrary extends KodiBase
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetMusicVideosEx'. Liest eine Seite der Musikvideos (für große Bibliotheken).
+     *
+     * @access public
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge.
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.
+     */
+    public function GetMusicVideosEx(int $Start, int $Count): false|array
+    {
+        return $this->GetListPage('GetMusicVideos', $this->ListFields(static::$MusicVideoItemList), 'musicvideos', $Start, $Count);
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetRecentlyAddedEpisodes'. Liest die Eigenschaften der zuletzt hinzugefügten Episoden aus.
      *
      * @access public
@@ -495,7 +549,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     public function GetRecentlyAddedEpisodes(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetRecentlyAddedEpisodes(['properties' => static::$EpisodeItemList]);
+        $KodiData->GetRecentlyAddedEpisodes(['properties' => $this->ListFields(static::$EpisodeItemList)]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -515,7 +569,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     public function GetRecentlyAddedMovies(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetRecentlyAddedMovies(['properties' => static::$MovieItemList]);
+        $KodiData->GetRecentlyAddedMovies(['properties' => $this->ListFields(static::$MovieItemList)]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -535,7 +589,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     public function GetRecentlyAddedMusicVideos(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetRecentlyAddedMusicVideos(['properties' => static::$MusicVideoItemList]);
+        $KodiData->GetRecentlyAddedMusicVideos(['properties' => $this->ListFields(static::$MusicVideoItemList)]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -547,7 +601,25 @@ class KodiDeviceVideoLibrary extends KodiBase
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetSeasons'. Liest die Eigenschaften eines Musikvideos aus.
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetSeasonDetails'. Liest die Eigenschaften einer Staffel aus.
+     *
+     * @access public
+     * @param  int $SeasonId SeasonId der zu lesenden Staffel (aus GetSeasons, nicht die Staffelnummer).
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
+     */
+    public function GetSeasonDetails(int $SeasonId): false|array
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetSeasonDetails(['seasonid' => $SeasonId, 'properties' => static::$SeasonItemList]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $KodiData->ToArray($ret->seasondetails);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetSeasons'. Liest die Eigenschaften aller Staffeln einer TV-Serie aus.
      *
      * @access public
      * @param  int $TvShowId TvShowId der zu lesenden Serie.
@@ -562,6 +634,32 @@ class KodiDeviceVideoLibrary extends KodiBase
             return false;
         }
         return $KodiData->ToArray($ret->seasons);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetTags'. Liest alle Tags eines Medientyps aus.
+     *
+     * @access public
+     * @param string $Type Der Typ der Medien.
+     *   enum["movie"=Filme, "tvshow"=Serien, "musicvideo"=Musikvideos]
+     * @return array | bool Array mit den Daten oder false bei Fehlern.
+     */
+    public function GetTags(string $Type): false|array
+    {
+        if (!in_array($Type, ['movie', 'tvshow', 'musicvideo'], true)) {
+            trigger_error(sprintf($this->Translate('Invalid type: %s'), $Type), E_USER_NOTICE);
+            return false;
+        }
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetTags(['type' => $Type, 'properties' => ['title']]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret->limits->total > 0) {
+            return $KodiData->ToArray($ret->tags);
+        }
+        return [];
     }
 
     /**
@@ -591,7 +689,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     public function GetTVShows(): false|array
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
-        $KodiData->GetTVShows(['properties' => static::$TvShowItemList]);
+        $KodiData->GetTVShows(['properties' => $this->ListFields(static::$TvShowItemList)]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -600,6 +698,19 @@ class KodiDeviceVideoLibrary extends KodiBase
             return $KodiData->ToArray($ret->tvshows);
         }
         return [];
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIVIDEOLIB_GetTVShowsEx'. Liest eine Seite der TV-Serien (für große Bibliotheken).
+     *
+     * @access public
+     * @param int $Start Erster Eintrag (ab 0).
+     * @param int $Count Anzahl der Einträge.
+     * @return array|bool Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.
+     */
+    public function GetTVShowsEx(int $Start, int $Count): false|array
+    {
+        return $this->GetListPage('GetTVShows', $this->ListFields(static::$TvShowItemList), 'tvshows', $Start, $Count);
     }
 
     /**
@@ -623,7 +734,27 @@ class KodiDeviceVideoLibrary extends KodiBase
         return false;
     }
 
-    ################## PRIVATE
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        switch ($Ident) {
+            case 'doclean':
+                $this->Clean();
+                return;
+            case 'doscan':
+                $this->Scan();
+                return;
+            default:
+                trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
+        }
+    }
     protected function Decode(string $Method, mixed $KodiPayload): void
     {
         switch ($Method) {
@@ -640,5 +771,18 @@ class KodiDeviceVideoLibrary extends KodiBase
                 $this->SetValueBoolean('clean', false);
                 break;
         }
+    }
+
+    ################## PRIVATE
+    /**
+     * Liefert die Felder für Listen-Abfragen ohne die sehr großen Felder.
+     * Hintergrund: Instanz-Funktionen dürfen höchstens 1 MB zurückgeben, cast allein macht über die Hälfte aus.
+     *
+     * @param array $Fields Alle Felder.
+     * @return array Felder ohne ListExcludedFields.
+     */
+    private function ListFields(array $Fields): array
+    {
+        return array_values(array_diff($Fields, self::ListExcludedFields));
     }
 }

@@ -95,33 +95,6 @@ class KodiDeviceSettings extends KodiBase
         }
     }
 
-    ################## PUBLIC
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        if ($Ident == self::ActionCreateVariable) {
-            $this->CreateSettingsVariable(json_decode($Value, true));
-            return;
-        }
-        if ($Ident == self::ActionReloadForm) {
-            $this->ReloadForm();
-            return;
-        }
-        if ($Ident == self::TimerName) {
-            $this->GetSettings();
-            return;
-        }
-        if (@$this->GetIDForIdent($Ident) > 0) {
-            $this->SetSettingValue(str_replace('_', '.', $Ident), $Value);
-            return;
-        }
-
-        trigger_error($this->Translate('Invalid ident.'), E_USER_NOTICE);
-    }
-
     /**
      * IPS-Instanz-Funktion 'KODISETTINGS_GetSettingValue'. Liefert einen Wert einer Einstellung.
      *
@@ -144,12 +117,41 @@ class KodiDeviceSettings extends KodiBase
         return $ret->value;
     }
 
+    /**
+     * IPS-Instanz-Funktion 'KODISETTINGS_SetSettingValueBoolean'. Setzt eine Einstellung vom Typ boolean.
+     *
+     * @access public
+     * @param string $Setting Der Name der zu schreibenden Einstellung.
+     * @param bool $Value Der Wert der zu schreibenden Einstellung.
+     * @return bool True bei Erfolg, false bei Fehler.
+     */
     public function SetSettingValueBoolean(string $Setting, bool $Value): bool
     {
         return $this->SetSettingValue($Setting, $Value);
     }
 
+    /**
+     * IPS-Instanz-Funktion 'KODISETTINGS_SetSettingValueInteger'. Setzt eine Einstellung vom Typ integer.
+     *
+     * @access public
+     * @param string $Setting Der Name der zu schreibenden Einstellung.
+     * @param int $Value Der Wert der zu schreibenden Einstellung.
+     * @return bool True bei Erfolg, false bei Fehler.
+     */
     public function SetSettingValueInteger(string $Setting, int $Value): bool
+    {
+        return $this->SetSettingValue($Setting, $Value);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODISETTINGS_SetSettingValueFloat'. Setzt eine Einstellung vom Typ number (Kommazahl).
+     *
+     * @access public
+     * @param string $Setting Der Name der zu schreibenden Einstellung.
+     * @param float $Value Der Wert der zu schreibenden Einstellung.
+     * @return bool True bei Erfolg, false bei Fehler.
+     */
+    public function SetSettingValueFloat(string $Setting, float $Value): bool
     {
         return $this->SetSettingValue($Setting, $Value);
     }
@@ -221,6 +223,89 @@ class KodiDeviceSettings extends KodiBase
         return json_encode($Form);
     }
     /**
+     * IPS-Instanz-Funktion 'KODISETTINGS_GetSkinSettings'. Liefert den aktiven Skin und dessen Einstellungen.
+     *
+     * @access public
+     * @return array|bool Array mit 'skin' und 'settings' (id, type, value) oder false bei Fehler.
+     */
+    public function GetSkinSettings(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetSkinSettings();
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $KodiData->ToArray($ret);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODISETTINGS_GetSkinSettingValue'. Liefert den Wert einer Einstellung des aktiven Skins.
+     *
+     * @access public
+     * @param string $Setting Die Id der Skin-Einstellung (aus GetSkinSettings).
+     * @return mixed Wert (bool oder string) oder NULL bei Fehler.
+     */
+    public function GetSkinSettingValue(string $Setting): mixed
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->GetSkinSettingValue(['setting' => $Setting]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return null;
+        }
+        return $ret->value;
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODISETTINGS_SetSkinSettingValueBoolean'. Setzt eine boolesche Einstellung des aktiven Skins.
+     *
+     * @access public
+     * @param string $Setting Die Id der Skin-Einstellung (aus GetSkinSettings).
+     * @param bool $Value Der neue Wert.
+     * @return bool True bei Erfolg, false bei Fehler.
+     */
+    public function SetSkinSettingValueBoolean(string $Setting, bool $Value): bool
+    {
+        return $this->SetSkinSettingValue($Setting, $Value);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODISETTINGS_SetSkinSettingValueString'. Setzt eine Text-Einstellung des aktiven Skins.
+     *
+     * @access public
+     * @param string $Setting Die Id der Skin-Einstellung (aus GetSkinSettings).
+     * @param string $Value Der neue Wert.
+     * @return bool True bei Erfolg, false bei Fehler.
+     */
+    public function SetSkinSettingValueString(string $Setting, string $Value): bool
+    {
+        return $this->SetSkinSettingValue($Setting, $Value);
+    }
+
+    ################## PUBLIC
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        if ($Ident == self::ActionCreateVariable) {
+            $this->CreateSettingsVariable(json_decode($Value, true));
+            return;
+        }
+        if ($Ident == self::ActionReloadForm) {
+            $this->ReloadForm();
+            return;
+        }
+        if ($Ident == self::TimerName) {
+            $this->GetSettings();
+            return;
+        }
+        if (@$this->GetIDForIdent($Ident) > 0) {
+            $this->SetSettingValue(str_replace('_', '.', $Ident), $Value);
+            return;
+        }
+
+        trigger_error($this->Translate('Invalid ident.'), E_USER_NOTICE);
+    }
+    /**
      * Wird ausgeführt wenn sich der Status vom Parent ändert.
      * @access protected
      */
@@ -232,6 +317,29 @@ class KodiDeviceSettings extends KodiBase
             $this->SetTimerInterval(self::TimerName, $this->ReadPropertyInteger(self::PropertyRefreshState) * 1000);
         }
     }
+
+    /**
+     * Setzt eine Einstellung des aktiven Skins.
+     *
+     * @param string $Setting Die Id der Skin-Einstellung.
+     * @param bool|string $Value Der neue Wert.
+     * @return bool True bei Erfolg, false bei Fehler.
+     */
+    protected function SetSkinSettingValue(string $Setting, bool|string $Value): bool
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->SetSkinSettingValue(['setting' => $Setting, 'value' => $Value]);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret === true) {
+            return true;
+        }
+        trigger_error($this->Translate('Error on set skin setting.'), E_USER_NOTICE);
+        return false;
+    }
+
     protected function SetSettingValue(string $Setting, $Value): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -315,23 +423,44 @@ class KodiDeviceSettings extends KodiBase
         $Data['Profile']['MaxValue'] = 0;
         $Data['Profile']['StepSize'] = 0;
         $Data['Profile']['Suffix'] = '';
+        $Data['Profile']['Digits'] = 0;
         $Suffix = '';
+        if (array_key_exists('formatlabel', $Setting['control'])) {
+            $Parts = explode(chr(0x20), $Setting['control']['formatlabel']);
+            if (count($Parts) == 1) {
+                $Parts = explode(chr(0xa0), $Setting['control']['formatlabel']);
+            }
+            if (count($Parts) > 1) {
+                $Suffix = ' ' . array_pop($Parts);
+            }
+        }
         switch ($Setting['type']) {
             case 'boolean':
                 $Creatable = true;
                 $Data['VarType'] = VARIABLETYPE_BOOLEAN;
                 $Data['Profile']['Name'] = '~Switch';
                 break;
-            case 'integer':
-                if (array_key_exists('formatlabel', $Setting['control'])) {
-                    $Parts = explode(chr(0x20), $Setting['control']['formatlabel']);
-                    if (count($Parts) == 1) {
-                        $Parts = explode(chr(0xa0), $Setting['control']['formatlabel']);
-                    }
-                    if (count($Parts) > 1) {
-                        $Suffix = ' ' . array_pop($Parts);
-                    }
+            case 'number':
+                // Kommazahlen (z.B. Verzögerungen, Verstärkung), Nachkommastellen aus der Schrittweite
+                if (!in_array($Setting['control']['type'], ['slider', 'spinner', 'edit'])) {
+                    break;
                 }
+                $Step = (float) ($Setting['step'] ?? 0);
+                $Digits = 0;
+                if ($Step > 0) {
+                    $Fraction = rtrim(substr(sprintf('%.6F', $Step - floor($Step)), 2), '0');
+                    $Digits = strlen($Fraction);
+                }
+                $Data['VarType'] = VARIABLETYPE_FLOAT;
+                $Data['Profile']['Name'] = self::ProfilePrefix . $this->InstanceID . '.' . $Setting['id'];
+                $Data['Profile']['MinValue'] = (float) ($Setting['minimum'] ?? 0);
+                $Data['Profile']['MaxValue'] = (float) ($Setting['maximum'] ?? 0);
+                $Data['Profile']['StepSize'] = $Step;
+                $Data['Profile']['Digits'] = $Digits;
+                $Data['Profile']['Suffix'] = $Suffix;
+                $Creatable = true;
+                break;
+            case 'integer':
                 switch ($Setting['control']['type']) {
                     case 'slider':
                         $Data['VarType'] = VARIABLETYPE_INTEGER;
@@ -412,9 +541,6 @@ class KodiDeviceSettings extends KodiBase
                         $Creatable = true;
                         break;
                     case 'list':
-                        /* TODO
-                        Erst mit String Assoziationen ab IPS 5.X
-                         */
                         $Data['VarType'] = VARIABLETYPE_STRING;
                         if (array_key_exists('options', $Setting)) {
                             $Data['Profile']['Name'] = self::ProfilePrefix . $this->InstanceID . '.' . $Setting['id'];
@@ -495,7 +621,8 @@ class KodiDeviceSettings extends KodiBase
                     $VariableData['Profile']['Suffix'],
                     $VariableData['Profile']['MinValue'],
                     $VariableData['Profile']['MaxValue'],
-                    $VariableData['Profile']['StepSize']
+                    $VariableData['Profile']['StepSize'],
+                    $VariableData['Profile']['Digits'] ?? 0
                 );
             }
         }

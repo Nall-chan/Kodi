@@ -69,19 +69,10 @@
                     ]
                 },
                 {
-                    "type": "RowLayout",
+                    "type": "ExpansionPanel",
                     "name": "TVRow2",
-                    "items": [
-                        {
-                            "type": "Label",
-                            "caption": "Script for TV HTML-Box Desgin:"
-                        },
-                        {
-                            "name": "TVChannellistconfig",
-                            "type": "SelectScript",
-                            "caption": "Script:"
-                        }
-                    ]
+                    "caption": "HTML-Box design",
+                    "items": []
                 },
                 {
                     "type": "RowLayout",
@@ -127,19 +118,10 @@
                     ]
                 },
                 {
-                    "type": "RowLayout",
+                    "type": "ExpansionPanel",
                     "name": "RadioRow2",
-                    "items": [
-                        {
-                            "type": "Label",
-                            "caption": "Script for radio HTML-Box Desgin:"
-                        },
-                        {
-                            "name": "RadioChannellistconfig",
-                            "type": "SelectScript",
-                            "caption": "Script:"
-                        }
-                    ]
+                    "caption": "HTML-Box design",
+                    "items": []
                 },
                 {
                     "type": "RowLayout",
@@ -185,19 +167,10 @@
                     ]
                 },
                 {
-                    "type": "RowLayout",
+                    "type": "ExpansionPanel",
                     "name": "RecordingRow2",
-                    "items": [
-                        {
-                            "type": "Label",
-                            "caption": "Script for recording HTML-Box Desgin:"
-                        },
-                        {
-                            "name": "Recordinglistconfig",
-                            "type": "SelectScript",
-                            "caption": "Script:"
-                        }
-                    ]
+                    "caption": "HTML-Box design",
+                    "items": []
                 },
                 {
                     "type": "RowLayout",

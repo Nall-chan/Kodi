@@ -15,7 +15,15 @@
             "Error on set mute.": "Fehler beim Stummschalten.",
             "Error on set volume.": "Fehler beim setzen der Lautstärke.",
             "Error on quit Kodi.": "Fehler beim verlassen von Kodi.",
-            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:",
+            "Property not found.": "Eigenschaft nicht gefunden.",
+            "Invalid Ident.": "Ungültiger Ident.",
+            "Invalid Value.": "Ungültiger Wert.",
+            "Instance has no active parent.": "Instanz hat keinen aktiven Parent.",
+            "Instance inactive.": "Instanz ist inaktiv.",
+            "Kodi unreachable.": "Kodi ist nicht erreichbar.",
+            "Error (%d) on %s: %s": "Fehler (%d) bei %s: %s",
+            "%s is deprecated and will be removed in version 3.20. Use %s instead.": "%s ist veraltet und wird in Version 3.20 entfernt. Bitte %s verwenden."
         }
     }
 }

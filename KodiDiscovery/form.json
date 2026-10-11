@@ -69,7 +69,7 @@
                     {
                         "name": "ErrorText",
                         "type": "Label",
-                        "caption": "No devices were found.\r\nTo recognize devices, incoming multicast on port 1901 (UDP) must be forwarded to IPS.\r\nPlease configure the firewall or routing accordingly."
+                        "caption": "No devices were found.\r\nTo recognize devices, incoming multicast on port 5353 (UDP) must be forwarded to IPS.\r\nPlease configure the firewall or routing accordingly."
                     }
                 ]
             }

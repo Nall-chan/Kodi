@@ -1,0 +1,89 @@
+{
+    "id": "{B6FC1082-F171-2B66-6A75-43F88E9AE122}",
+    "caption": "System control",
+    "form": [
+        {
+            "type": "Select",
+            "name": "VALUE",
+            "caption": "Command",
+            "value": "WakeUp",
+            "options": [
+                {
+                    "caption": "Power on",
+                    "value": "WakeUp"
+                },
+                {
+                    "caption": "Shutdown",
+                    "value": "Shutdown"
+                },
+                {
+                    "caption": "Reboot",
+                    "value": "Reboot"
+                },
+                {
+                    "caption": "Suspend",
+                    "value": "Suspend"
+                },
+                {
+                    "caption": "Hibernate",
+                    "value": "Hibernate"
+                },
+                {
+                    "caption": "Eject optical drive",
+                    "value": "EjectOpticalDrive"
+                }
+            ]
+        }
+    ],
+    "action": [
+        "switch ($_IPS['VALUE']) {",
+        "    case 'WakeUp':",
+        "        KODISYS_WakeUp($_IPS['TARGET']);",
+        "        break;",
+        "    case 'Shutdown':",
+        "        KODISYS_Shutdown($_IPS['TARGET']);",
+        "        break;",
+        "    case 'Reboot':",
+        "        KODISYS_Reboot($_IPS['TARGET']);",
+        "        break;",
+        "    case 'Suspend':",
+        "        KODISYS_Suspend($_IPS['TARGET']);",
+        "        break;",
+        "    case 'Hibernate':",
+        "        KODISYS_Hibernate($_IPS['TARGET']);",
+        "        break;",
+        "    case 'EjectOpticalDrive':",
+        "        KODISYS_EjectOpticalDrive($_IPS['TARGET']);",
+        "        break;",
+        "}"
+    ],
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{03E18A60-02FD-45E8-8A2C-1F8E247C92D0}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "System control": "Systemsteuerung",
+            "Command": "Befehl",
+            "Power on": "Einschalten",
+            "Shutdown": "Herunterfahren",
+            "Reboot": "Neustarten",
+            "Suspend": "Standby",
+            "Hibernate": "Ruhezustand",
+            "Eject optical drive": "Laufwerk auswerfen",
+            "Powers the Kodi system on or off, reboots it or ejects the optical drive.": "Schaltet das Kodi-System ein oder aus, startet es neu oder wirft das optische Laufwerk aus.",
+            "{VALUE, select, WakeUp {Power on} Shutdown {Shut down} Reboot {Reboot} Suspend {Suspend} Hibernate {Hibernate} other {Eject optical drive of}} {TARGET, object}": "{TARGET, object} {VALUE, select, WakeUp {einschalten} Shutdown {herunterfahren} Reboot {neu starten} Suspend {in Standby versetzen} Hibernate {in Ruhezustand versetzen} other {Laufwerk auswerfen}}"
+        }
+    },
+    "format": "{VALUE, select, WakeUp {Power on} Shutdown {Shut down} Reboot {Reboot} Suspend {Suspend} Hibernate {Hibernate} other {Eject optical drive of}} {TARGET, object}",
+    "description": "Powers the Kodi system on or off, reboots it or ejects the optical drive."
+}

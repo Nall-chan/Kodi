@@ -26,7 +26,14 @@
             "Could not connect to webserver.": "Keine Verbindung zum Webserver",
             "Unauthorized! Check username and password.": "Nicht autorisiert! Benutzername und Passwort prüfen.",
             "Error on load image from Kodi.": "Fehler beim laden des Bild von Kodi,",
-            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:",
+            "Connection to Kodi lost.": "Verbindung zu Kodi verloren.",
+            "Instance inactive.": "Instanz ist inaktiv.",
+            "Instance has no active parent.": "Instanz hat keinen aktiven Parent.",
+            "No answer from Kodi.": "Keine Antwort von Kodi.",
+            "Error (%d) on %s: %s": "Fehler (%d) bei %s: %s",
+            "Error (%d): %s": "Fehler (%d): %s",
+            "Internal error: receive buffer is locked.": "Interner Fehler: Empfangspuffer ist gesperrt."
         }
     }
 }

@@ -1,0 +1,70 @@
+{
+    "id": "{0F844F8A-8CFC-BD75-AF28-511411D0219A}",
+    "caption": "Load favorite",
+    "form": [
+        "$Options = [];",
+        "$Favorites = @KODIFAV_GetFavorites($_IPS['TARGET'], 'all');",
+        "if (is_array($Favorites)) {",
+        "    foreach ($Favorites as $Favorite) {",
+        "        if (!in_array($Favorite['type'], ['media', 'window', 'script'])) {",
+        "            continue;",
+        "        }",
+        "        $Value = json_encode([",
+        "            'title'           => $Favorite['title'],",
+        "            'type'            => $Favorite['type'],",
+        "            'path'            => $Favorite['path'] ?? '',",
+        "            'window'          => $Favorite['window'] ?? '',",
+        "            'windowparameter' => $Favorite['windowparameter'] ?? ''",
+        "        ]);",
+        "        $Options[] = ['caption' => $Favorite['title'], 'value' => $Value];",
+        "    }",
+        "}",
+        "if (isset($_IPS['FAVORITE']) && ($_IPS['FAVORITE'] != '') && !in_array($_IPS['FAVORITE'], array_column($Options, 'value'))) {",
+        "    $Options[] = ['caption' => json_decode($_IPS['FAVORITE'], true)['title'] ?? $_IPS['FAVORITE'], 'value' => $_IPS['FAVORITE']];",
+        "}",
+        "if (count($Options) == 0) {",
+        "    $Form[] = ['type' => 'Label', 'caption' => 'Kodi is not reachable, the favorites cannot be loaded.'];",
+        "    return $Form;",
+        "}",
+        "$Form[] = ['type' => 'Select', 'name' => 'FAVORITE', 'caption' => 'Favorite', 'options' => $Options];",
+        "return $Form;"
+    ],
+    "action": [
+        "$Favorite = json_decode($_IPS['FAVORITE'], true);",
+        "switch ($Favorite['type']) {",
+        "    case 'media':",
+        "        KODIFAV_LoadFavoriteMedia($_IPS['TARGET'], $Favorite['path']);",
+        "        break;",
+        "    case 'script':",
+        "        KODIFAV_LoadFavoriteScript($_IPS['TARGET'], $Favorite['path']);",
+        "        break;",
+        "    case 'window':",
+        "        KODIFAV_LoadFavoriteWindow($_IPS['TARGET'], $Favorite['window'], $Favorite['windowparameter']);",
+        "        break;",
+        "}"
+    ],
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{DA2C90A2-3863-4454-9B07-FBD083420E10}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Load favorite": "Favorit laden",
+            "Favorite": "Favorit",
+            "Kodi is not reachable, the favorites cannot be loaded.": "Kodi ist nicht erreichbar, die Favoriten können nicht geladen werden.",
+            "Plays, opens or starts a Kodi favorite.": "Spielt einen Kodi-Favoriten ab, öffnet oder startet ihn.",
+            "Load a favorite on {TARGET, object}": "Favorit auf {TARGET, object} laden"
+        }
+    },
+    "format": "Load a favorite on {TARGET, object}",
+    "description": "Plays, opens or starts a Kodi favorite."
+}

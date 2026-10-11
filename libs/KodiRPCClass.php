@@ -271,7 +271,7 @@ class Kodi_RPC_Data extends stdClass
             }
         }
         $this->Id = (int) round(explode(' ', microtime())[0] * 10000);
-    }  
+    }
 
     /**
      * GetCalledMethod
@@ -390,7 +390,7 @@ class Kodi_RPC_Data extends stdClass
         if (!is_null($this->Typ)) {
             $SendData->Typ = $this->Typ;
         }
-        return json_encode($SendData);
+        return json_encode($SendData, JSON_PRESERVE_ZERO_FRACTION);
     }
 
     /**
@@ -447,7 +447,7 @@ class Kodi_RPC_Data extends stdClass
         $RPC->id = $this->Id;
         $SendData = new stdClass();
         $SendData->DataID = $GUID;
-        $SendData->Buffer = bin2hex(json_encode($RPC));
+        $SendData->Buffer = bin2hex(json_encode($RPC, JSON_PRESERVE_ZERO_FRACTION));
         return json_encode($SendData);
     }
 
@@ -470,7 +470,7 @@ class Kodi_RPC_Data extends stdClass
             $RPC->params = $this->Params;
         }
         $RPC->id = $this->Id;
-        return json_encode($RPC);
+        return json_encode($RPC, JSON_PRESERVE_ZERO_FRACTION);
     }
 
     /**

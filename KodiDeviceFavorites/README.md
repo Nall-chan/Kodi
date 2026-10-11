@@ -57,8 +57,23 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 | Name                 | Eigenschaft   |  Typ  | Standardwert | Funktion                                  |
 | :------------------- | :------------ | :---: | :----------- | :---------------------------------------- |
 | Zeige Favoritenliste | showFavlist   | bool  | true         | HTML-Tabelle mit den Favoriten erzeugen   |
-| Style Favoritenliste | Favlistconfig |  int  | 0            | Skript mit dem Style für die HTML-Tabelle |
+| Aussehen der HTML-Box | Table, Columns, Rows | string | siehe unten | Design der HTML-Tabelle |
 | Thumbnail Größe      | ThumbSize     |  int  | 100          | Breite der Thumbnails in Pixeln           |
+
+**Aussehen der HTML-Box:**
+
+Spalten, Farben und CSS der Favoriten-Tabelle werden in drei Listen eingestellt. Die Listen liegen im Formular unter „Aussehen der HTML-Box“ und sind nur sichtbar, wenn die HTML-Box aktiviert ist.
+
+| Liste | Inhalt |
+| :--- | :--- |
+| Tabelle | CSS für die Tags `<table>`, `<thead>`, die Kopfzeile (`<thead><tr>`) und `<tbody>` |
+| Spalten | Je Datenfeld: sichtbar, Position, Überschrift, Breite (em), Ausrichtung, Textfarbe der Überschrift und zusätzliches CSS für Überschrift und Zellen |
+| Zeilen | Hintergrundfarbe, Textfarbe und zusätzliches CSS für gerade und ungerade Zeilen |
+
+Die Eigenschaften `Table`, `Columns` und `Rows` sind JSON-Strings (Arrays der Listeneinträge) und können per `IPS_SetProperty` gesetzt werden. Einfacher ist das Bearbeiten im Formular.
+
+> [!NOTE]
+> Bis Version 3.02 wurde das Aussehen über ein verstecktes Konfigurations-Skript unterhalb der Instanz eingestellt. Beim Update wird dessen Inhalt einmalig in die Listen übernommen. Das Skript wird danach nicht mehr benutzt und kann gelöscht werden.
 
 ## 5. Statusvariablen
 
@@ -102,7 +117,7 @@ Liefert ein assoziatives Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIFAV_LoadFavouriteMedia(int $InstanzID, string $Path)
+bool KODIFAV_LoadFavoriteMedia(int $InstanzID, string $Path)
 ```
 
 Lädt einen Favoriten vom Typ Media.  
@@ -111,7 +126,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIFAV_LoadFavoritescript(int $InstanzID, string $Script)
+bool KODIFAV_LoadFavoriteScript(int $InstanzID, string $Script)
 ```
 
 Lädt einen Favoriten vom Typ Script.  
@@ -120,11 +135,14 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIFAV_LoadFavouriteWindow(int $InstanzID, string $Window, string $WindowParameter)
+bool KODIFAV_LoadFavoriteWindow(int $InstanzID, string $Window, string $WindowParameter)
 ```
 
 Lädt einen Favoriten vom Typ Window.  
 Liefert `true` bei Erfolg, sonst `false`.
+
+> [!WARNING]
+> Die Funktionen `KODIFAV_LoadFavouriteMedia`, `KODIFAV_LoadFavouriteScript`, `KODIFAV_LoadFavouriteWindow`, `KODIFAV_GetFavourites` und `KODIFAV_RefreshFavouriteList` (Schreibweise „Favourite“) sind veraltet. Sie funktionieren bis Version 3.20 weiter, schreiben aber bei jedem Aufruf eine Warnung ins Log.
 
 ## 8. Aktionen
 

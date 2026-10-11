@@ -7,19 +7,10 @@
             "onChange": "IPS_RequestAction($id,'showFavlist',$showFavlist);"
         },
         {
-            "type": "RowLayout",
-            "name": "HTMLRow",
-            "items": [
-                {
-                    "type": "Label",
-                    "caption": "Script for HTML-Box Desgin:"
-                },
-                {
-                    "name": "Favlistconfig",
-                    "type": "SelectScript",
-                    "caption": "Script:"
-                }
-            ]
+            "type": "ExpansionPanel",
+            "name": "HTMLDesign",
+            "caption": "HTML-Box design",
+            "items": []
         },
         {
             "type": "RowLayout",

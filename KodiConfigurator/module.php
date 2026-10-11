@@ -115,6 +115,7 @@ class KodiConfigurator extends IPSModuleStrict
                     ]]
                 ]
             ];
+            return json_encode($Form);
         }
 
         if (IPS_GetInstance($SplitterID)['InstanceStatus'] != IS_ACTIVE) {

@@ -61,7 +61,22 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 | :--- | :--- | :---: | :--- | :--- |
 | Playlist Typ | PlaylistID | int | 0 | 0 = Audio, 1 = Video, 2 = Bilder |
 | Zeige Playlist | showPlaylist | bool | true | HTML-Tabelle mit der Playlist erzeugen |
-| Style Playlist | Playlistconfig | int | 0 | Skript mit dem Style für die HTML-Tabelle |
+| Aussehen der HTML-Box | Table, Columns, Rows | string | siehe unten | Design der HTML-Tabelle |
+
+**Aussehen der HTML-Box:**
+
+Spalten, Farben und CSS der Playlist-Tabelle werden in drei Listen eingestellt. Die Listen liegen im Formular unter „Aussehen der HTML-Box“ und sind nur sichtbar, wenn die HTML-Box aktiviert ist.
+
+| Liste | Inhalt |
+| :--- | :--- |
+| Tabelle | CSS für die Tags `<table>`, `<thead>`, die Kopfzeile (`<thead><tr>`) und `<tbody>` |
+| Spalten | Je Datenfeld: sichtbar, Position, Überschrift, Breite (em), Ausrichtung, Textfarbe der Überschrift und zusätzliches CSS für Überschrift und Zellen |
+| Zeilen | Hintergrundfarbe, Textfarbe und zusätzliches CSS für gerade und ungerade Zeilen sowie für den aktuell gespielten Eintrag |
+
+Die Eigenschaften `Table`, `Columns` und `Rows` sind JSON-Strings (Arrays der Listeneinträge) und können per `IPS_SetProperty` gesetzt werden. Einfacher ist das Bearbeiten im Formular.
+
+> [!NOTE]
+> Bis Version 3.02 wurde das Aussehen über ein verstecktes Konfigurations-Skript unterhalb der Instanz eingestellt. Beim Update wird dessen Inhalt einmalig in die Listen übernommen. Das Skript wird danach nicht mehr benutzt und kann gelöscht werden.
 
 ## 5. Statusvariablen
 

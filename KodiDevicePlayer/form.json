@@ -58,6 +58,32 @@
                     "value": "banner"
                 }
             ]
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Additional status variables",
+            "items": [
+                {
+                    "name": "showVideoStream",
+                    "type": "CheckBox",
+                    "caption": "Videostream (video only)"
+                },
+                {
+                    "name": "showAudioDelay",
+                    "type": "CheckBox",
+                    "caption": "Audio delay (video only)"
+                },
+                {
+                    "name": "showViewMode",
+                    "type": "CheckBox",
+                    "caption": "View mode (video only)"
+                },
+                {
+                    "name": "showTempo",
+                    "type": "CheckBox",
+                    "caption": "Tempo (audio and video)"
+                }
+            ]
         }
     ],
     "actions": [
@@ -80,6 +106,31 @@
             "type": "Button",
             "caption": "Request all states",
             "onClick": "KODIPLAYER_RequestState($id,'ALL');"
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Media player tile",
+            "items": [
+                {
+                    "type": "Label",
+                    "caption": "Volume, mute and playlist belong to other Kodi instances.\nThese buttons create or remove links to them below this instance, so the media player tile shows all elements."
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Button",
+                            "caption": "Create links",
+                            "onClick": "IPS_RequestAction($id, 'CreateTileLinks', true);"
+                        },
+                        {
+                            "type": "Button",
+                            "caption": "Remove links",
+                            "onClick": "IPS_RequestAction($id, 'RemoveTileLinks', true);"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "type": "Label",

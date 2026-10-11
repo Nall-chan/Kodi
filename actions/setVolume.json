@@ -1,0 +1,38 @@
+{
+    "id": "{8279BED8-577F-84BE-590D-95D419C3F9F2}",
+    "caption": "Set volume",
+    "form": [
+        {
+            "type": "NumberSpinner",
+            "name": "VALUE",
+            "caption": "Volume",
+            "suffix": " %",
+            "minimum": 0,
+            "maximum": 100
+        }
+    ],
+    "action": "KODIAPP_SetVolume($_IPS['TARGET'], $_IPS['VALUE']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Set volume": "Lautstärke setzen",
+            "Volume": "Lautstärke",
+            "Sets the volume of Kodi.": "Setzt die Lautstärke von Kodi.",
+            "Set volume of {TARGET, object} to {VALUE} %": "Lautstärke von {TARGET, object} auf {VALUE} % setzen"
+        }
+    },
+    "format": "Set volume of {TARGET, object} to {VALUE} %",
+    "description": "Sets the volume of Kodi."
+}

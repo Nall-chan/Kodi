@@ -1,0 +1,42 @@
+{
+    "id": "{94ED93DF-8433-E4B1-1A41-ADDC0A04AB0D}",
+    "caption": "Send text",
+    "form": [
+        {
+            "type": "ValidationTextBox",
+            "name": "TEXT",
+            "caption": "Text"
+        },
+        {
+            "type": "CheckBox",
+            "name": "DONE",
+            "caption": "Finish input",
+            "value": true
+        }
+    ],
+    "action": "KODIINPUT_SendText($_IPS['TARGET'], $_IPS['TEXT'], $_IPS['DONE']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{9F3BE8BB-4610-49F4-A41A-40E14F641F43}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Send text": "Text senden",
+            "Text": "Text",
+            "Finish input": "Eingabe abschließen",
+            "Sends text to an open input dialog of Kodi.": "Sendet Text an einen geöffneten Eingabedialog von Kodi.",
+            "Send text \"{TEXT}\" to {TARGET, object}": "Text „{TEXT}“ an {TARGET, object} senden"
+        }
+    },
+    "format": "Send text \"{TEXT}\" to {TARGET, object}",
+    "description": "Sends text to an open input dialog of Kodi."
+}

@@ -67,6 +67,22 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 | Max. Radio-Kanäle | showMaxRadioChannels | int | 20 | Maximale Anzahl darzustellender Radio-Kanäle |
 | Zeige Aufnahmeliste | showRecordinglist | bool | true | HTML-Tabelle mit Aufnahmen erzeugen |
 | Max. Aufnahmen | showMaxRecording | int | 20 | Maximale Anzahl darzustellender Aufnahmen |
+| Aussehen der HTML-Boxen | TVTable, TVColumns, TVRows, RadioTable, RadioColumns, RadioRows, RecordingTable, RecordingColumns, RecordingRows | string | siehe unten | Design der drei HTML-Tabellen |
+
+**Aussehen der HTML-Box:**
+
+Spalten, Farben und CSS werden für jede der drei Tabellen (TV, Radio, Aufnahmen) getrennt in drei Listen eingestellt. Die Listen liegen im Formular unter „Aussehen der HTML-Box“ und sind nur sichtbar, wenn die HTML-Box aktiviert ist.
+
+| Liste | Inhalt |
+| :--- | :--- |
+| Tabelle | CSS für die Tags `<table>`, `<thead>`, die Kopfzeile (`<thead><tr>`) und `<tbody>` |
+| Spalten | Je Datenfeld: sichtbar, Position, Überschrift, Breite (em), Ausrichtung, Textfarbe der Überschrift und zusätzliches CSS für Überschrift und Zellen |
+| Zeilen | Hintergrundfarbe, Textfarbe und zusätzliches CSS für gerade und ungerade Zeilen |
+
+Die Eigenschaften mit den Präfixen `TV`, `Radio` und `Recording` (z.B. `TVTable`, `TVColumns`, `TVRows`) sind JSON-Strings (Arrays der Listeneinträge) und können per `IPS_SetProperty` gesetzt werden. Einfacher ist das Bearbeiten im Formular.
+
+> [!NOTE]
+> Bis Version 3.02 wurde das Aussehen über ein verstecktes Konfigurations-Skript unterhalb der Instanz eingestellt. Beim Update wird dessen Inhalt einmalig in die Listen übernommen. Das Skript wird danach nicht mehr benutzt und kann gelöscht werden.
 
 ## 5. Statusvariablen
 

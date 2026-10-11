@@ -84,7 +84,14 @@ Folgende Statusvariablen werden automatisch angelegt.
 
 ### Kachel Visualisierung
 
-*Keine Kachel-Visualisierung vorhanden.*
+Die Instanz wird in der Kachel-Visualisierung als Mediaplayer dargestellt, da sie die Variable `Status` mit dem Profil `~PlaybackPreviousNext` enthält.  
+Zusätzlich nutzt die Mediaplayer-Kachel die Variablen `Position` (`~Progress`), `Wiederholen` (`~Repeat`), `Zufall` (`~Shuffle`), `Titel` (`~Song`) und beim Audio-Player `Artist` (`~Artist`).  
+
+> [!NOTE]
+> Lautstärke und Stummschaltung gehören in Kodi zur Anwendung und liegen deshalb in der Instanz [Kodi Application](../KodiDeviceApplication/README.md). Die aktuelle Wiedergabeliste liegt in der Instanz [Kodi Playlist](../KodiDevicePlaylist/README.md). Die Mediaplayer-Kachel des Players zeigt diese Elemente daher nicht an.
+
+> [!TIP]
+> Eine Mediaplayer-Kachel mit allen Elementen lässt sich mit einer Instanz `Dummy Modul` erreichen. Darunter Links auf die Variablen `Status`, `Position`, `Wiederholen`, `Zufall`, `Titel` und `Artist` dieser Instanz anlegen, außerdem auf `Mute` und `Volume` der Instanz Kodi Application sowie auf die Variable `Playlist` (Profil `~Playlist`) der passenden Instanz Kodi Playlist.
 
 ### WebFront Visualisierung
 

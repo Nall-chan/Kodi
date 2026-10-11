@@ -1,0 +1,35 @@
+{
+    "id": "{0D4EDA2A-3279-3CDC-BF91-3F06D8A1DB73}",
+    "caption": "Switch mute",
+    "form": [
+        {
+            "type": "CheckBox",
+            "name": "VALUE",
+            "caption": "Mute"
+        }
+    ],
+    "action": "KODIAPP_SetMute($_IPS['TARGET'], $_IPS['VALUE']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Switch mute": "Stummschaltung schalten",
+            "Mute": "Stumm",
+            "Mutes or unmutes Kodi.": "Schaltet Kodi stumm oder hebt die Stummschaltung auf.",
+            "Switch mute of {TARGET, object} {VALUE, select, 0 {off} false {off} other {on}}": "Stummschaltung von {TARGET, object} {VALUE, select, 0 {ausschalten} false {ausschalten} other {einschalten}}"
+        }
+    },
+    "format": "Switch mute of {TARGET, object} {VALUE, select, 0 {off} false {off} other {on}}",
+    "description": "Mutes or unmutes Kodi."
+}

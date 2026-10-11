@@ -1,0 +1,167 @@
+{
+    "id": "{C179A781-2956-0228-8DD2-41A9F8A72BD1}",
+    "caption": "Load and play media",
+    "form": [
+        {
+            "type": "Select",
+            "name": "TYPE",
+            "caption": "Media",
+            "value": "File",
+            "options": [
+                {
+                    "caption": "Album ID",
+                    "value": "Album"
+                },
+                {
+                    "caption": "Artist ID",
+                    "value": "Artist"
+                },
+                {
+                    "caption": "Genre ID",
+                    "value": "Genre"
+                },
+                {
+                    "caption": "Song ID",
+                    "value": "Song"
+                },
+                {
+                    "caption": "Movie ID",
+                    "value": "Movie"
+                },
+                {
+                    "caption": "Episode ID",
+                    "value": "Episode"
+                },
+                {
+                    "caption": "Music video ID",
+                    "value": "Musicvideo"
+                },
+                {
+                    "caption": "PVR channel ID",
+                    "value": "Channel"
+                },
+                {
+                    "caption": "PVR recording ID",
+                    "value": "Recording"
+                },
+                {
+                    "caption": "File",
+                    "value": "File"
+                },
+                {
+                    "caption": "Directory",
+                    "value": "Directory"
+                },
+                {
+                    "caption": "Directory with subdirectories",
+                    "value": "DirectoryRecursive"
+                },
+                {
+                    "caption": "Current playlist of the player",
+                    "value": "Playlist"
+                }
+            ]
+        },
+        {
+            "type": "ValidationTextBox",
+            "name": "VALUE",
+            "caption": "ID from the Kodi library or path (for the current playlist: start position from 1, empty = beginning)"
+        },
+        {
+            "type": "Select",
+            "name": "SHUFFLE",
+            "caption": "Shuffle",
+            "value": -1,
+            "options": [
+                {
+                    "caption": "Unchanged",
+                    "value": -1
+                },
+                {
+                    "caption": "Off",
+                    "value": 0
+                },
+                {
+                    "caption": "On",
+                    "value": 1
+                }
+            ]
+        },
+        {
+            "type": "Select",
+            "name": "REPEAT",
+            "caption": "Repeat",
+            "value": -1,
+            "options": [
+                {
+                    "caption": "Unchanged",
+                    "value": -1
+                },
+                {
+                    "caption": "Off",
+                    "value": 0
+                },
+                {
+                    "caption": "Track",
+                    "value": 1
+                },
+                {
+                    "caption": "All",
+                    "value": 2
+                }
+            ]
+        },
+        {
+            "type": "CheckBox",
+            "name": "RESUME",
+            "caption": "Resume from the last position",
+            "value": false
+        }
+    ],
+    "action": "KODIPLAYER_LoadEx($_IPS['TARGET'], $_IPS['TYPE'], (string) $_IPS['VALUE'], $_IPS['SHUFFLE'], $_IPS['REPEAT'], $_IPS['RESUME']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{BA014AD9-9568-4F12-BE31-17D37BFED06D}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Load and play media": "Medium laden und abspielen",
+            "Media": "Medium",
+            "Album ID": "Album-ID",
+            "Artist ID": "Interpreten-ID",
+            "Genre ID": "Genre-ID",
+            "Song ID": "Lied-ID",
+            "Movie ID": "Film-ID",
+            "Episode ID": "Episoden-ID",
+            "Music video ID": "Musikvideo-ID",
+            "PVR channel ID": "PVR-Kanal-ID",
+            "PVR recording ID": "PVR-Aufnahme-ID",
+            "File": "Datei",
+            "Directory": "Verzeichnis",
+            "Directory with subdirectories": "Verzeichnis mit Unterverzeichnissen",
+            "Current playlist of the player": "Aktuelle Playlist des Players",
+            "Play {TYPE} {VALUE} on {TARGET, object}": "{TYPE} {VALUE} auf {TARGET, object} abspielen",
+            "ID from the Kodi library or path (for the current playlist: start position from 1, empty = beginning)": "ID aus der Kodi-Datenbank oder Pfad (bei der aktuellen Playlist: Startposition ab 1, leer = Anfang)",
+            "Shuffle": "Zufallswiedergabe",
+            "Repeat": "Wiederholen",
+            "Unchanged": "Unverändert",
+            "Off": "Aus",
+            "On": "An",
+            "Track": "Titel",
+            "All": "Alle",
+            "Resume from the last position": "An der letzten Position fortsetzen",
+            "Loads a medium from the Kodi library, a file or a directory and starts the playback. Optionally with shuffle, repeat and resume.": "Lädt ein Medium aus der Kodi-Datenbank, eine Datei oder ein Verzeichnis und startet die Wiedergabe. Optional mit Zufallswiedergabe, Wiederholen und Fortsetzen."
+        }
+    },
+    "format": "Play {TYPE} {VALUE} on {TARGET, object}",
+    "description": "Loads a medium from the Kodi library, a file or a directory and starts the playback. Optionally with shuffle, repeat and resume."
+}

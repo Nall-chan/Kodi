@@ -1,0 +1,35 @@
+{
+    "id": "{515F9045-B556-4AA9-19FB-808191BEF122}",
+    "caption": "Switch fullscreen",
+    "form": [
+        {
+            "type": "CheckBox",
+            "name": "VALUE",
+            "caption": "Fullscreen"
+        }
+    ],
+    "action": "KODIGUI_SetFullscreen($_IPS['TARGET'], $_IPS['VALUE']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{E15F2C11-0B28-4CFB-AEE6-463BD313A964}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Switch fullscreen": "Vollbild schalten",
+            "Fullscreen": "Vollbild",
+            "Switches the fullscreen mode of the playback on or off.": "Schaltet den Vollbildmodus der Wiedergabe ein oder aus.",
+            "Switch fullscreen of {TARGET, object} {VALUE, select, 0 {off} false {off} other {on}}": "Vollbild von {TARGET, object} {VALUE, select, 0 {ausschalten} false {ausschalten} other {einschalten}}"
+        }
+    },
+    "format": "Switch fullscreen of {TARGET, object} {VALUE, select, 0 {off} false {off} other {on}}",
+    "description": "Switches the fullscreen mode of the playback on or off."
+}

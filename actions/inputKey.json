@@ -1,0 +1,898 @@
+{
+    "id": "{48DE86F8-9C62-25B1-FA53-17FE3297ABC1}",
+    "caption": "Execute input action",
+    "form": [
+        {
+            "type": "Select",
+            "name": "ACTION",
+            "caption": "Action",
+            "value": "select",
+            "options": [
+                {
+                    "caption": "analogfastforward",
+                    "value": "analogfastforward"
+                },
+                {
+                    "caption": "analogmove",
+                    "value": "analogmove"
+                },
+                {
+                    "caption": "analogmovexleft",
+                    "value": "analogmovexleft"
+                },
+                {
+                    "caption": "analogmovexright",
+                    "value": "analogmovexright"
+                },
+                {
+                    "caption": "analogmoveydown",
+                    "value": "analogmoveydown"
+                },
+                {
+                    "caption": "analogmoveyup",
+                    "value": "analogmoveyup"
+                },
+                {
+                    "caption": "analogrewind",
+                    "value": "analogrewind"
+                },
+                {
+                    "caption": "analogseekback",
+                    "value": "analogseekback"
+                },
+                {
+                    "caption": "analogseekforward",
+                    "value": "analogseekforward"
+                },
+                {
+                    "caption": "aspectratio",
+                    "value": "aspectratio"
+                },
+                {
+                    "caption": "audiodelay",
+                    "value": "audiodelay"
+                },
+                {
+                    "caption": "audiodelayminus",
+                    "value": "audiodelayminus"
+                },
+                {
+                    "caption": "audiodelayplus",
+                    "value": "audiodelayplus"
+                },
+                {
+                    "caption": "audionextlanguage",
+                    "value": "audionextlanguage"
+                },
+                {
+                    "caption": "audiotoggledigital",
+                    "value": "audiotoggledigital"
+                },
+                {
+                    "caption": "back",
+                    "value": "back"
+                },
+                {
+                    "caption": "backspace",
+                    "value": "backspace"
+                },
+                {
+                    "caption": "bigstepback",
+                    "value": "bigstepback"
+                },
+                {
+                    "caption": "bigstepforward",
+                    "value": "bigstepforward"
+                },
+                {
+                    "caption": "blue",
+                    "value": "blue"
+                },
+                {
+                    "caption": "browsesubtitle",
+                    "value": "browsesubtitle"
+                },
+                {
+                    "caption": "channeldown",
+                    "value": "channeldown"
+                },
+                {
+                    "caption": "channelnumberseparator",
+                    "value": "channelnumberseparator"
+                },
+                {
+                    "caption": "channelup",
+                    "value": "channelup"
+                },
+                {
+                    "caption": "chapterorbigstepback",
+                    "value": "chapterorbigstepback"
+                },
+                {
+                    "caption": "chapterorbigstepforward",
+                    "value": "chapterorbigstepforward"
+                },
+                {
+                    "caption": "close",
+                    "value": "close"
+                },
+                {
+                    "caption": "codecinfo",
+                    "value": "codecinfo"
+                },
+                {
+                    "caption": "contextmenu",
+                    "value": "contextmenu"
+                },
+                {
+                    "caption": "copy",
+                    "value": "copy"
+                },
+                {
+                    "caption": "createbookmark",
+                    "value": "createbookmark"
+                },
+                {
+                    "caption": "createepisodebookmark",
+                    "value": "createepisodebookmark"
+                },
+                {
+                    "caption": "cursorleft",
+                    "value": "cursorleft"
+                },
+                {
+                    "caption": "cursorright",
+                    "value": "cursorright"
+                },
+                {
+                    "caption": "cyclesubtitle",
+                    "value": "cyclesubtitle"
+                },
+                {
+                    "caption": "cycletonemapmethod",
+                    "value": "cycletonemapmethod"
+                },
+                {
+                    "caption": "decreasepar",
+                    "value": "decreasepar"
+                },
+                {
+                    "caption": "decreaserating",
+                    "value": "decreaserating"
+                },
+                {
+                    "caption": "decreasevisrating",
+                    "value": "decreasevisrating"
+                },
+                {
+                    "caption": "delete",
+                    "value": "delete"
+                },
+                {
+                    "caption": "doubleclick",
+                    "value": "doubleclick"
+                },
+                {
+                    "caption": "down",
+                    "value": "down"
+                },
+                {
+                    "caption": "enter",
+                    "value": "enter"
+                },
+                {
+                    "caption": "error",
+                    "value": "error"
+                },
+                {
+                    "caption": "fastforward",
+                    "value": "fastforward"
+                },
+                {
+                    "caption": "filter",
+                    "value": "filter"
+                },
+                {
+                    "caption": "filterclear",
+                    "value": "filterclear"
+                },
+                {
+                    "caption": "filtersms2",
+                    "value": "filtersms2"
+                },
+                {
+                    "caption": "filtersms3",
+                    "value": "filtersms3"
+                },
+                {
+                    "caption": "filtersms4",
+                    "value": "filtersms4"
+                },
+                {
+                    "caption": "filtersms5",
+                    "value": "filtersms5"
+                },
+                {
+                    "caption": "filtersms6",
+                    "value": "filtersms6"
+                },
+                {
+                    "caption": "filtersms7",
+                    "value": "filtersms7"
+                },
+                {
+                    "caption": "filtersms8",
+                    "value": "filtersms8"
+                },
+                {
+                    "caption": "filtersms9",
+                    "value": "filtersms9"
+                },
+                {
+                    "caption": "firstpage",
+                    "value": "firstpage"
+                },
+                {
+                    "caption": "fullscreen",
+                    "value": "fullscreen"
+                },
+                {
+                    "caption": "green",
+                    "value": "green"
+                },
+                {
+                    "caption": "guiprofile",
+                    "value": "guiprofile"
+                },
+                {
+                    "caption": "hdrtoggle",
+                    "value": "hdrtoggle"
+                },
+                {
+                    "caption": "highlight",
+                    "value": "highlight"
+                },
+                {
+                    "caption": "increasepar",
+                    "value": "increasepar"
+                },
+                {
+                    "caption": "increaserating",
+                    "value": "increaserating"
+                },
+                {
+                    "caption": "increasevisrating",
+                    "value": "increasevisrating"
+                },
+                {
+                    "caption": "info",
+                    "value": "info"
+                },
+                {
+                    "caption": "jumpsms2",
+                    "value": "jumpsms2"
+                },
+                {
+                    "caption": "jumpsms3",
+                    "value": "jumpsms3"
+                },
+                {
+                    "caption": "jumpsms4",
+                    "value": "jumpsms4"
+                },
+                {
+                    "caption": "jumpsms5",
+                    "value": "jumpsms5"
+                },
+                {
+                    "caption": "jumpsms6",
+                    "value": "jumpsms6"
+                },
+                {
+                    "caption": "jumpsms7",
+                    "value": "jumpsms7"
+                },
+                {
+                    "caption": "jumpsms8",
+                    "value": "jumpsms8"
+                },
+                {
+                    "caption": "jumpsms9",
+                    "value": "jumpsms9"
+                },
+                {
+                    "caption": "lastpage",
+                    "value": "lastpage"
+                },
+                {
+                    "caption": "left",
+                    "value": "left"
+                },
+                {
+                    "caption": "leftclick",
+                    "value": "leftclick"
+                },
+                {
+                    "caption": "lockpreset",
+                    "value": "lockpreset"
+                },
+                {
+                    "caption": "longclick",
+                    "value": "longclick"
+                },
+                {
+                    "caption": "longpress",
+                    "value": "longpress"
+                },
+                {
+                    "caption": "menu",
+                    "value": "menu"
+                },
+                {
+                    "caption": "middleclick",
+                    "value": "middleclick"
+                },
+                {
+                    "caption": "mousedrag",
+                    "value": "mousedrag"
+                },
+                {
+                    "caption": "mousedragend",
+                    "value": "mousedragend"
+                },
+                {
+                    "caption": "mousemove",
+                    "value": "mousemove"
+                },
+                {
+                    "caption": "move",
+                    "value": "move"
+                },
+                {
+                    "caption": "moveitemdown",
+                    "value": "moveitemdown"
+                },
+                {
+                    "caption": "moveitemup",
+                    "value": "moveitemup"
+                },
+                {
+                    "caption": "mute",
+                    "value": "mute"
+                },
+                {
+                    "caption": "nextcalibration",
+                    "value": "nextcalibration"
+                },
+                {
+                    "caption": "nextchannelgroup",
+                    "value": "nextchannelgroup"
+                },
+                {
+                    "caption": "nextletter",
+                    "value": "nextletter"
+                },
+                {
+                    "caption": "nextpicture",
+                    "value": "nextpicture"
+                },
+                {
+                    "caption": "nextpreset",
+                    "value": "nextpreset"
+                },
+                {
+                    "caption": "nextresolution",
+                    "value": "nextresolution"
+                },
+                {
+                    "caption": "nextscene",
+                    "value": "nextscene"
+                },
+                {
+                    "caption": "nextstereomode",
+                    "value": "nextstereomode"
+                },
+                {
+                    "caption": "nextsubtitle",
+                    "value": "nextsubtitle"
+                },
+                {
+                    "caption": "noop",
+                    "value": "noop"
+                },
+                {
+                    "caption": "number0",
+                    "value": "number0"
+                },
+                {
+                    "caption": "number1",
+                    "value": "number1"
+                },
+                {
+                    "caption": "number2",
+                    "value": "number2"
+                },
+                {
+                    "caption": "number3",
+                    "value": "number3"
+                },
+                {
+                    "caption": "number4",
+                    "value": "number4"
+                },
+                {
+                    "caption": "number5",
+                    "value": "number5"
+                },
+                {
+                    "caption": "number6",
+                    "value": "number6"
+                },
+                {
+                    "caption": "number7",
+                    "value": "number7"
+                },
+                {
+                    "caption": "number8",
+                    "value": "number8"
+                },
+                {
+                    "caption": "number9",
+                    "value": "number9"
+                },
+                {
+                    "caption": "osd",
+                    "value": "osd"
+                },
+                {
+                    "caption": "pagedown",
+                    "value": "pagedown"
+                },
+                {
+                    "caption": "pageup",
+                    "value": "pageup"
+                },
+                {
+                    "caption": "pangesture",
+                    "value": "pangesture"
+                },
+                {
+                    "caption": "parentdir",
+                    "value": "parentdir"
+                },
+                {
+                    "caption": "parentfolder",
+                    "value": "parentfolder"
+                },
+                {
+                    "caption": "pause",
+                    "value": "pause"
+                },
+                {
+                    "caption": "play",
+                    "value": "play"
+                },
+                {
+                    "caption": "playerdebug",
+                    "value": "playerdebug"
+                },
+                {
+                    "caption": "playerdebugvideo",
+                    "value": "playerdebugvideo"
+                },
+                {
+                    "caption": "playerprocessinfo",
+                    "value": "playerprocessinfo"
+                },
+                {
+                    "caption": "playerprogramselect",
+                    "value": "playerprogramselect"
+                },
+                {
+                    "caption": "playerresolutionselect",
+                    "value": "playerresolutionselect"
+                },
+                {
+                    "caption": "playlist",
+                    "value": "playlist"
+                },
+                {
+                    "caption": "playnext",
+                    "value": "playnext"
+                },
+                {
+                    "caption": "playpause",
+                    "value": "playpause"
+                },
+                {
+                    "caption": "playpvr",
+                    "value": "playpvr"
+                },
+                {
+                    "caption": "playpvrradio",
+                    "value": "playpvrradio"
+                },
+                {
+                    "caption": "playpvrtv",
+                    "value": "playpvrtv"
+                },
+                {
+                    "caption": "previouschannelgroup",
+                    "value": "previouschannelgroup"
+                },
+                {
+                    "caption": "previousmenu",
+                    "value": "previousmenu"
+                },
+                {
+                    "caption": "previouspicture",
+                    "value": "previouspicture"
+                },
+                {
+                    "caption": "previouspreset",
+                    "value": "previouspreset"
+                },
+                {
+                    "caption": "previousscene",
+                    "value": "previousscene"
+                },
+                {
+                    "caption": "previousstereomode",
+                    "value": "previousstereomode"
+                },
+                {
+                    "caption": "prevletter",
+                    "value": "prevletter"
+                },
+                {
+                    "caption": "queue",
+                    "value": "queue"
+                },
+                {
+                    "caption": "randompreset",
+                    "value": "randompreset"
+                },
+                {
+                    "caption": "record",
+                    "value": "record"
+                },
+                {
+                    "caption": "red",
+                    "value": "red"
+                },
+                {
+                    "caption": "reloadkeymaps",
+                    "value": "reloadkeymaps"
+                },
+                {
+                    "caption": "rename",
+                    "value": "rename"
+                },
+                {
+                    "caption": "resetcalibration",
+                    "value": "resetcalibration"
+                },
+                {
+                    "caption": "rewind",
+                    "value": "rewind"
+                },
+                {
+                    "caption": "right",
+                    "value": "right"
+                },
+                {
+                    "caption": "rightclick",
+                    "value": "rightclick"
+                },
+                {
+                    "caption": "rotate",
+                    "value": "rotate"
+                },
+                {
+                    "caption": "rotateccw",
+                    "value": "rotateccw"
+                },
+                {
+                    "caption": "rotategesture",
+                    "value": "rotategesture"
+                },
+                {
+                    "caption": "scanitem",
+                    "value": "scanitem"
+                },
+                {
+                    "caption": "screenshot",
+                    "value": "screenshot"
+                },
+                {
+                    "caption": "scrolldown",
+                    "value": "scrolldown"
+                },
+                {
+                    "caption": "scrollup",
+                    "value": "scrollup"
+                },
+                {
+                    "caption": "select",
+                    "value": "select"
+                },
+                {
+                    "caption": "setrating",
+                    "value": "setrating"
+                },
+                {
+                    "caption": "settingslevelchange",
+                    "value": "settingslevelchange"
+                },
+                {
+                    "caption": "settingsreset",
+                    "value": "settingsreset"
+                },
+                {
+                    "caption": "shift",
+                    "value": "shift"
+                },
+                {
+                    "caption": "showpreset",
+                    "value": "showpreset"
+                },
+                {
+                    "caption": "showsubtitles",
+                    "value": "showsubtitles"
+                },
+                {
+                    "caption": "showtime",
+                    "value": "showtime"
+                },
+                {
+                    "caption": "showtimerrule",
+                    "value": "showtimerrule"
+                },
+                {
+                    "caption": "showvideomenu",
+                    "value": "showvideomenu"
+                },
+                {
+                    "caption": "skipnext",
+                    "value": "skipnext"
+                },
+                {
+                    "caption": "skipprevious",
+                    "value": "skipprevious"
+                },
+                {
+                    "caption": "smallstepback",
+                    "value": "smallstepback"
+                },
+                {
+                    "caption": "stepback",
+                    "value": "stepback"
+                },
+                {
+                    "caption": "stepforward",
+                    "value": "stepforward"
+                },
+                {
+                    "caption": "stereomode",
+                    "value": "stereomode"
+                },
+                {
+                    "caption": "stereomodetomono",
+                    "value": "stereomodetomono"
+                },
+                {
+                    "caption": "stop",
+                    "value": "stop"
+                },
+                {
+                    "caption": "subtitlealign",
+                    "value": "subtitlealign"
+                },
+                {
+                    "caption": "subtitledelay",
+                    "value": "subtitledelay"
+                },
+                {
+                    "caption": "subtitledelayminus",
+                    "value": "subtitledelayminus"
+                },
+                {
+                    "caption": "subtitledelayplus",
+                    "value": "subtitledelayplus"
+                },
+                {
+                    "caption": "subtitleshiftdown",
+                    "value": "subtitleshiftdown"
+                },
+                {
+                    "caption": "subtitleshiftup",
+                    "value": "subtitleshiftup"
+                },
+                {
+                    "caption": "swipedown",
+                    "value": "swipedown"
+                },
+                {
+                    "caption": "swipeleft",
+                    "value": "swipeleft"
+                },
+                {
+                    "caption": "swiperight",
+                    "value": "swiperight"
+                },
+                {
+                    "caption": "swipeup",
+                    "value": "swipeup"
+                },
+                {
+                    "caption": "switchplayer",
+                    "value": "switchplayer"
+                },
+                {
+                    "caption": "symbols",
+                    "value": "symbols"
+                },
+                {
+                    "caption": "tap",
+                    "value": "tap"
+                },
+                {
+                    "caption": "tempodown",
+                    "value": "tempodown"
+                },
+                {
+                    "caption": "tempoup",
+                    "value": "tempoup"
+                },
+                {
+                    "caption": "togglecommskip",
+                    "value": "togglecommskip"
+                },
+                {
+                    "caption": "togglefont",
+                    "value": "togglefont"
+                },
+                {
+                    "caption": "togglefullscreen",
+                    "value": "togglefullscreen"
+                },
+                {
+                    "caption": "togglestereomode",
+                    "value": "togglestereomode"
+                },
+                {
+                    "caption": "togglewatched",
+                    "value": "togglewatched"
+                },
+                {
+                    "caption": "up",
+                    "value": "up"
+                },
+                {
+                    "caption": "verticalshiftdown",
+                    "value": "verticalshiftdown"
+                },
+                {
+                    "caption": "verticalshiftup",
+                    "value": "verticalshiftup"
+                },
+                {
+                    "caption": "videonextstream",
+                    "value": "videonextstream"
+                },
+                {
+                    "caption": "voicerecognizer",
+                    "value": "voicerecognizer"
+                },
+                {
+                    "caption": "volampdown",
+                    "value": "volampdown"
+                },
+                {
+                    "caption": "volampup",
+                    "value": "volampup"
+                },
+                {
+                    "caption": "volumeamplification",
+                    "value": "volumeamplification"
+                },
+                {
+                    "caption": "volumedown",
+                    "value": "volumedown"
+                },
+                {
+                    "caption": "volumeup",
+                    "value": "volumeup"
+                },
+                {
+                    "caption": "wheeldown",
+                    "value": "wheeldown"
+                },
+                {
+                    "caption": "wheelup",
+                    "value": "wheelup"
+                },
+                {
+                    "caption": "yellow",
+                    "value": "yellow"
+                },
+                {
+                    "caption": "zoomgesture",
+                    "value": "zoomgesture"
+                },
+                {
+                    "caption": "zoomin",
+                    "value": "zoomin"
+                },
+                {
+                    "caption": "zoomlevel1",
+                    "value": "zoomlevel1"
+                },
+                {
+                    "caption": "zoomlevel2",
+                    "value": "zoomlevel2"
+                },
+                {
+                    "caption": "zoomlevel3",
+                    "value": "zoomlevel3"
+                },
+                {
+                    "caption": "zoomlevel4",
+                    "value": "zoomlevel4"
+                },
+                {
+                    "caption": "zoomlevel5",
+                    "value": "zoomlevel5"
+                },
+                {
+                    "caption": "zoomlevel6",
+                    "value": "zoomlevel6"
+                },
+                {
+                    "caption": "zoomlevel7",
+                    "value": "zoomlevel7"
+                },
+                {
+                    "caption": "zoomlevel8",
+                    "value": "zoomlevel8"
+                },
+                {
+                    "caption": "zoomlevel9",
+                    "value": "zoomlevel9"
+                },
+                {
+                    "caption": "zoomnormal",
+                    "value": "zoomnormal"
+                },
+                {
+                    "caption": "zoomout",
+                    "value": "zoomout"
+                }
+            ]
+        }
+    ],
+    "action": "KODIINPUT_ExecuteAction($_IPS['TARGET'], $_IPS['ACTION']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{9F3BE8BB-4610-49F4-A41A-40E14F641F43}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Execute input action": "Eingabeaktion ausführen",
+            "Action": "Aktion",
+            "Executes an action like a key press on the remote control (e.g. up, select, back, playpause).": "Führt eine Aktion wie einen Tastendruck auf der Fernbedienung aus (z.B. up, select, back, playpause).",
+            "Execute input action {ACTION} on {TARGET, object}": "Eingabeaktion {ACTION} auf {TARGET, object} ausführen"
+        }
+    },
+    "format": "Execute input action {ACTION} on {TARGET, object}",
+    "description": "Executes an action like a key press on the remote control (e.g. up, select, back, playpause)."
+}

@@ -56,8 +56,24 @@ Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` un
 | Name | Eigenschaft | Typ | Standardwert | Funktion |
 | :--- | :--- | :---: | :--- | :--- |
 | Zeige Addonliste | showAddonlist | bool | true | HTML-Tabelle mit den Addons erzeugen |
-| Style Addonliste | Addonlistconfig | int | 0 | Skript mit dem Style für die HTML-Tabelle |
+| Aussehen der HTML-Box | Table, Columns, Rows, Buttons | string | siehe unten | Design der HTML-Tabelle |
 | Thumbnail Größe | ThumbSize | int | 100 | Breite der Thumbnails in Pixeln |
+
+**Aussehen der HTML-Box:**
+
+Spalten, Farben und CSS der Addon-Tabelle werden in vier Listen eingestellt. Die Listen liegen im Formular unter „Aussehen der HTML-Box“ und sind nur sichtbar, wenn die HTML-Box aktiviert ist.
+
+| Liste | Inhalt |
+| :--- | :--- |
+| Tabelle | CSS für die Tags `<table>`, `<thead>`, die Kopfzeile (`<thead><tr>`) und `<tbody>` |
+| Spalten | Je Datenfeld: sichtbar, Position, Überschrift, Breite (em), Ausrichtung, Textfarbe der Überschrift und zusätzliches CSS für Überschrift und Zellen |
+| Zeilen | Hintergrundfarbe, Textfarbe und zusätzliches CSS für gerade und ungerade Zeilen |
+| Buttons | CSS der Klassen für die Schaltflächen in der Tabelle: `isenabled`/`isdisabled` (Zustand), `doenabled`/`dodisabled` (schalten) und `execute` (Addon starten) |
+
+Die Eigenschaften `Table`, `Columns`, `Rows` und `Buttons` sind JSON-Strings (Arrays der Listeneinträge) und können per `IPS_SetProperty` gesetzt werden. Einfacher ist das Bearbeiten im Formular.
+
+> [!NOTE]
+> Bis Version 3.02 wurde das Aussehen über ein verstecktes Konfigurations-Skript unterhalb der Instanz eingestellt. Beim Update wird dessen Inhalt einmalig in die Listen übernommen. Das Skript wird danach nicht mehr benutzt und kann gelöscht werden.
 
 ## 5. Statusvariablen
 

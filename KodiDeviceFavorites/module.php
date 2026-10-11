@@ -27,6 +27,17 @@ class KodiDeviceFavorites extends KodiBase
     public const PropertyThumbSize = 'ThumbSize';
     public const ActionVisibleFormElementsFavProperties = 'showFavlist';
     public const Hook = 'KodiFavlist';
+    /** Alte Eigenschaft mit der ID des Konfigurations-Skripts (bis 3.02), nur noch in Migrate vorhanden. */
+    public const LegacyPropertyConfigScript = 'Favlistconfig';
+    public const FormPanelDesign = 'HTMLDesign';
+
+    /** Spalten der Favoriten-Tabelle: Schlüssel, Überschrift, Breite (em), sichtbar. */
+    private const TableColumns = [
+        ['Thumbnail', '', 100, true],
+        ['Title', 'Name', 300, true],
+        ['Path', 'Path', 600, true],
+        ['Type', 'Type', 100, true]
+    ];
 
     protected static $Namespace = 'Favourites';
     protected static $Properties = [];
@@ -47,15 +58,23 @@ class KodiDeviceFavorites extends KodiBase
         parent::Create();
         $this->RegisterPropertyBoolean(self::PropertyShowFavlist, true);
         $this->RegisterPropertyInteger(self::PropertyThumbSize, 100);
+        $this->RegisterTableProperties('', $this->GetDefaultTableConfig(self::TableColumns));
+        $this->RegisterTimer('RefreshFavs', 0, 'KODIFAV_RefreshFavoriteList(' . $this->InstanceID . ');');
+    }
 
-        // Todo 7.0 -> Style per Konfig-Formular
-        $ID = @$this->GetIDForIdent('FavlistDesign');
-        if ($ID == false) {
-            $this->RegisterScript('FavlistDesign', 'Favoriteslist Config', $this->CreateFavlistConfigScript(), -7);
-            IPS_SetHidden($this->GetIDForIdent('FavlistDesign'), true);
+    /**
+     * Interne Funktion des SDK.
+     * Überträgt das Design aus dem alten Konfigurations-Skript in die Eigenschaften.
+     *
+     * @access public
+     */
+    public function Migrate(string $JSONData): string
+    {
+        $Data = json_decode($JSONData);
+        if ($this->MigrateTableScript($Data->configuration, self::LegacyPropertyConfigScript, '', $this->GetDefaultTableConfig(self::TableColumns))) {
+            return json_encode($Data);
         }
-        $this->RegisterPropertyInteger('Favlistconfig', $ID);
-        $this->RegisterTimer('RefreshFavs', 0, 'KODIFAV_RefreshFavouriteList(' . $this->InstanceID . ');');
+        return '';
     }
 
     /**
@@ -70,20 +89,11 @@ class KodiDeviceFavorites extends KodiBase
         if ($this->ReadPropertyBoolean(self::PropertyShowFavlist)) {
             $this->RegisterVariableString('Favlist', $this->Translate('Favorites'), '~HTMLBox', 1);
             $this->RegisterHook(self::Hook . $this->InstanceID);
-            $ID = @$this->GetIDForIdent('FavlistDesign');
-            if ($ID == false) {
-                $this->RegisterScript('FavlistDesign', 'Favoriteslist Config', $this->CreateFavlistConfigScript(), -7);
-                IPS_SetHidden($this->GetIDForIdent('FavlistDesign'), true);
-            }
             $this->SetTimerInterval('RefreshFavs', 15 * 60 * 1000);
         } else {
             $this->UnregisterVariable('Favlist');
             $this->UnregisterHook(self::Hook . $this->InstanceID);
             $this->SetTimerInterval('RefreshFavs', 0);
-        }
-        $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
-        if ($ScriptID > 0) {
-            $this->RegisterReference($ScriptID);
         }
         parent::ApplyChanges();
     }
@@ -96,78 +106,118 @@ class KodiDeviceFavorites extends KodiBase
     public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $Form['elements'][1]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowFavlist);
-        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowFavlist);
-        $this->SendDebug('FORM', json_encode($Form), 0);
-        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        $Show = $this->ReadPropertyBoolean(self::PropertyShowFavlist);
+        $this->FillTableFormPanel($Form['elements'], self::FormPanelDesign, '', $Show);
+        $Form['elements'][2]['visible'] = $Show;
         return json_encode($Form);
-    }
-    ################## ActionHandler
-    /**
-     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     *
-     * @access public
-     * @param string $Ident Der Ident der Statusvariable.
-     * @param bool|float|int|string $Value Der angeforderte neue Wert.
-     */
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        switch ($Ident) {
-            case self::ActionVisibleFormElementsFavProperties:
-                $this->UpdateFormField('HTMLRow', 'visible', (bool) $Value);
-                $this->UpdateFormField('ThumbRow', 'visible', (bool) $Value);
-                return;
-            default:
-                trigger_error('Invalid Ident.', E_USER_NOTICE);
-                return;
-        }
     }
     ################## PUBLIC
     /**
-     * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteMedia'. Lädt einen Media Favoriten.
+     * IPS-Instanz-Funktion 'KODIFAV_LoadFavoriteMedia'. Lädt einen Media-Favoriten.
      *
      * @access public
-     * @param string $Path Der Path des Favoriten.
+     * @param string $Path Der Pfad des Favoriten.
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function LoadFavouriteMedia(string $Path): bool
+    public function LoadFavoriteMedia(string $Path): bool
     {
         $KodiData = new Kodi_RPC_Data('Player');
-        $KodiData->Open(['item' => ['file' => rawurlencode($Path)]]);
+        $KodiData->Open(['item' => ['file' => $Path]]);
         $ret = $this->Send($KodiData);
         return $ret === 'OK';
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIFAV_LoadFavoritescript'. Lädt einen Media Favoriten.
+     * IPS-Instanz-Funktion 'KODIFAV_LoadFavoriteScript'. Startet einen Skript-Favoriten.
      *
      * @access public
      * @param string $Script Das Script des Favoriten.
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function LoadFavoritescript(string $Script): bool
+    public function LoadFavoriteScript(string $Script): bool
     {
         $KodiData = new Kodi_RPC_Data('Addons');
-        $KodiData->ExecuteAddon(['addonid' => rawurlencode($Script)]);
+        $KodiData->ExecuteAddon(['addonid' => $Script]);
         $ret = $this->SendDirect($KodiData);
         return $ret === 'OK';
     }
 
     /**
-     * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteWindow'. Lädt einen Window Favoriten.
+     * IPS-Instanz-Funktion 'KODIFAV_LoadFavoriteWindow'. Lädt einen Fenster-Favoriten.
      *
      * @access public
      * @param string $Window Das Ziel-Fenster des Favoriten.
      * @param string $WindowParameter Die Parameter für das Ziel-Fenster des Favoriten.
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function LoadFavouriteWindow(string $Window, string $WindowParameter): bool
+    public function LoadFavoriteWindow(string $Window, string $WindowParameter): bool
     {
         $KodiData = new Kodi_RPC_Data('GUI');
-        $KodiData->ActivateWindow(['window' => $Window, 'parameters' => [rawurlencode($WindowParameter)]]);
+        if ($WindowParameter == '') {
+            $KodiData->ActivateWindow(['window' => $Window]);
+        } else {
+            $KodiData->ActivateWindow(['window' => $Window, 'parameters' => [$WindowParameter]]);
+        }
         $ret = $this->Send($KodiData);
         return $ret === 'OK';
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIFAV_AddFavorite'. Legt einen Favoriten in Kodi an.
+     * Achtung: Kodi schaltet um. Existiert der Favorit bereits, wird er entfernt.
+     *
+     * @access public
+     * @param string $Title Name des Favoriten.
+     * @param string $Type Typ des Favoriten: 'media', 'window', 'script' oder 'androidapp'.
+     * @param string $Path Pfad zur Datei, ID des Skript-Addons bzw. der Android-App (Pflicht bei media, script, androidapp).
+     * @param string $Window Ziel-Fenster (Pflicht bei window).
+     * @param string $WindowParameter Parameter für das Fenster (optional, nur bei window).
+     * @param string $Thumbnail Pfad zum Vorschaubild (optional).
+     * @return bool True bei Erfolg, sonst false.
+     */
+    public function AddFavorite(string $Title, string $Type, string $Path, string $Window, string $WindowParameter, string $Thumbnail): bool
+    {
+        $Type = strtolower($Type);
+        if (!in_array($Type, ['media', 'window', 'script', 'androidapp'], true)) {
+            trigger_error($this->Translate('Type must be "media", "window", "script" or "androidapp".'), E_USER_NOTICE);
+            return false;
+        }
+        if (trim($Title) === '') {
+            trigger_error($this->Translate('Title must not be empty.'), E_USER_NOTICE);
+            return false;
+        }
+        $Params = ['title' => $Title, 'type' => $Type];
+        if ($Type == 'window') {
+            if ($Window === '') {
+                trigger_error($this->Translate('Window must not be empty.'), E_USER_NOTICE);
+                return false;
+            }
+            $Params['window'] = $Window;
+            if ($WindowParameter !== '') {
+                $Params['windowparameter'] = $WindowParameter;
+            }
+        } else {
+            if ($Path === '') {
+                trigger_error($this->Translate('Path must not be empty.'), E_USER_NOTICE);
+                return false;
+            }
+            $Params['path'] = $Path;
+        }
+        if ($Thumbnail !== '') {
+            $Params['thumbnail'] = $Thumbnail;
+        }
+        $KodiData = new Kodi_RPC_Data(self::$Namespace);
+        $KodiData->AddFavourite($Params);
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        if ($ret !== 'OK') {
+            trigger_error($this->Translate('Error on add favorite.'), E_USER_NOTICE);
+            return false;
+        }
+        $this->RefreshFavoriteList();
+        return true;
     }
 
     /**
@@ -182,7 +232,7 @@ class KodiDeviceFavorites extends KodiBase
     {
         $Type = strtolower($Type);
         if (!in_array($Type, ['all', 'media', 'window', 'script', 'unknown'])) {
-            trigger_error('Type must be "all", "media", "window", "script" or "unknown".', E_USER_NOTICE);
+            trigger_error($this->Translate('Type must be "all", "media", "window", "script" or "unknown".'), E_USER_NOTICE);
             return false;
         }
         $KodiData = new Kodi_RPC_Data(self::$Namespace);
@@ -204,29 +254,18 @@ class KodiDeviceFavorites extends KodiBase
     }
 
     /**
-     * Erzeugt aus der Liste der Favoriten eine HTML-Tabelle für eine ~HTMLBox-Variable.
+     * IPS-Instanz-Funktion 'KODIFAV_RefreshFavoriteList'.
+     * Erzeugt aus der Liste der Favoriten eine HTML-Tabelle für eine ~HTMLBox-Variable (wird auch vom Timer aufgerufen).
      *
-     * @access private
+     * @access public
+     * @return bool True bei Erfolg, sonst false.
      */
-    public function RefreshFavouriteList(): bool
+    public function RefreshFavoriteList(): bool
     {
         if (!$this->ReadPropertyBoolean(self::PropertyShowFavlist)) {
             return false;
         }
-        $ScriptID = $this->ReadPropertyInteger('Favlistconfig');
-        if ($ScriptID == 0) {
-            return false;
-        }
-        if (!IPS_ScriptExists($ScriptID)) {
-            return false;
-        }
-
-        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
-        $Config = @unserialize($result);
-        if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read Favlistconfig-Script'));
-            return false;
-        }
+        $Config = $this->GetTableConfig();
         $AllFavs = $this->GetFavorites('all');
         if ($AllFavs === false) {
             return false;
@@ -249,8 +288,8 @@ class KodiDeviceFavorites extends KodiBase
                         $Line[$key] = $value;
                     } //$key is not a string
                 }
-                if (array_key_exists('Thumbnail', $Config['Spalten'])) {
-                    if ($Line['Thumbnail'] != '') {
+                if (isset($Config['Columns']['Thumbnail'])) {
+                    if (($Line['Thumbnail'] ?? '') != '') {
                         $CoverRAW = $this->GetThumbnail($Line['Thumbnail'], $this->ReadPropertyInteger(self::PropertyThumbSize), 0);
                         if ($CoverRAW === false) {
                             $Line['Thumbnail'] = '';
@@ -267,28 +306,89 @@ class KodiDeviceFavorites extends KodiBase
                     }
                 }
 
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($pos % 2 ? 'U' : 'G')] . '"
-                        ' . $this->GetWebHookLink($Line, $NewSecret) . '>';
-
-                foreach ($Config['Spalten'] as $feldIndex => $value) {
-                    if (!array_key_exists($feldIndex, $Line)) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if ($Line[$feldIndex] === -1) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if (is_array($Line[$feldIndex])) {
-                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
-                    }
-                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($pos % 2 ? 'U' : 'G') . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
-                }
-                $HTMLData .= '</tr>' . PHP_EOL;
+                $HTMLData .= $this->GetTableRow($Config, $pos % 2 ? \KodiBase\TableRow::Odd : \KodiBase\TableRow::Even, $Line, $this->GetWebHookLink($Line, $NewSecret));
                 $pos++;
             }
         }
         $HTMLData .= $this->GetTableFooter();
         $this->SetValueString('Favlist', $HTMLData);
         return true;
+    }
+
+    ################## DEPRECATED (Entfernung in Version 3.20)
+    /**
+     * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteMedia'.
+     *
+     * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_LoadFavoriteMedia.
+     */
+    public function LoadFavouriteMedia(string $Path): bool
+    {
+        $this->DeprecatedFunction('KODIFAV_LoadFavouriteMedia', 'KODIFAV_LoadFavoriteMedia');
+        return $this->LoadFavoriteMedia($Path);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteScript'.
+     *
+     * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_LoadFavoriteScript.
+     */
+    public function LoadFavouriteScript(string $Script): bool
+    {
+        $this->DeprecatedFunction('KODIFAV_LoadFavouriteScript', 'KODIFAV_LoadFavoriteScript');
+        return $this->LoadFavoriteScript($Script);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteWindow'.
+     *
+     * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_LoadFavoriteWindow.
+     */
+    public function LoadFavouriteWindow(string $Window, string $WindowParameter): bool
+    {
+        $this->DeprecatedFunction('KODIFAV_LoadFavouriteWindow', 'KODIFAV_LoadFavoriteWindow');
+        return $this->LoadFavoriteWindow($Window, $WindowParameter);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIFAV_GetFavourites'.
+     *
+     * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_GetFavorites.
+     */
+    public function GetFavourites(string $Type): false|array
+    {
+        $this->DeprecatedFunction('KODIFAV_GetFavourites', 'KODIFAV_GetFavorites');
+        return $this->GetFavorites($Type);
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIFAV_RefreshFavouriteList'.
+     *
+     * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_RefreshFavoriteList.
+     */
+    public function RefreshFavouriteList(): bool
+    {
+        $this->DeprecatedFunction('KODIFAV_RefreshFavouriteList', 'KODIFAV_RefreshFavoriteList');
+        return $this->RefreshFavoriteList();
+    }
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        switch ($Ident) {
+            case self::ActionVisibleFormElementsFavProperties:
+                $this->UpdateFormField(self::FormPanelDesign, 'visible', (bool) $Value);
+                $this->UpdateFormField('ThumbRow', 'visible', (bool) $Value);
+                return;
+            default:
+                trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
+                return;
+        }
     }
 
     /**
@@ -300,7 +400,7 @@ class KodiDeviceFavorites extends KodiBase
         $this->SetTimerInterval('RefreshFavs', 0);
         parent::IOChangeState($State);
         if ($State == IS_ACTIVE) {
-            $this->RefreshFavouriteList();
+            $this->RefreshFavoriteList();
             if ($this->ReadPropertyBoolean(self::PropertyShowFavlist)) {
                 $this->SetTimerInterval('RefreshFavs', 15 * 60 * 1000);
             }
@@ -414,92 +514,5 @@ class KodiDeviceFavorites extends KodiBase
         }
         $LineSecret = rawurlencode(base64_encode(sha1($NewSecret . '0' . $Data['Path'], true)));
         return 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiFavlist' . $this->InstanceID . '?Type=' . $Data['Type'] . '&Path=' . rawurlencode($Data['Path']) . '&Secret=' . $LineSecret . $Extra . '\' })"';
-    }
-
-    /**
-     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Favoriten-Tabelle enthält.
-     *
-     * @access private
-     * @return string Ein PHP-Script welche als Grundlage für die User dient.
-     */
-    private function CreateFavlistConfigScript(): string
-    {
-        $Script = '<?php
-### Konfig ab Zeile 10 !!!
-
-if ($_IPS["SENDER"] <> "Kodi")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-##########   KONFIGURATION
-#### Tabellarische Ansicht
-# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die Favoriten dargestellt werden.
-
-// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
-// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
-$Config["Spalten"] = array(
-    "Thumbnail"=>"",
-    "Title" =>"Name",
-    "Path"=>"Path",
-    "Type" => "Typ"
-);
-#### Mögliche Index-Felder
-/*
-        
-| Index       | Typ     | Beschreibung                        |
-| :---------: | :-----: | :---------------------------------: |
-| Path        | string  | Path des Favoriten                  |
-| Thumbnail   | string  | Vorschaubild des Favoriten          |
-| Title       | string  | Name des Favoriten                  |
-| Type        | string  | Art des Favoriten                   |
-*/
-// Breite der Spalten (Reihenfolge ist egal)
-$Config["Breite"] = array(
-    "Thumbnail"=>"100em",
-    "Title"=>"300em",
-    "Path"=>"600em",
-    "Type" => "100em"
-);
-// Style Informationen der Tabelle
-$Config["Style"] = array(
-    // <table>-Tag:
-    "T"    => "margin:0 auto; font-size:0.8em;",
-    // <thead>-Tag:
-    "H"    => "",
-    // <tr>-Tag im thead-Bereich:
-    "HR"   => "",
-    // <th>-Tag Feld Thumbnail:
-    "HFThumbnail"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Title:
-    "HFTitle"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Path:
-    "HFPath"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Type:
-    "HFType"  => "color:#ffffff; width:35px; align:left;",
-    // <tbody>-Tag:
-    "B"    => "",
-    // <tr>-Tag:
-    "BRG"  => "background-color:#000000; color:#ffffff;",
-    "BRU"  => "background-color:#080808; color:#ffffff;",
-    // <td>-Tag Feld Thumbnail:
-    "DFGThumbnail" => "text-align:center;",
-    "DFUThumbnail" => "text-align:center;",
-    // <td>-Tag Feld Title:
-    "DFGTitle" => "text-align:center;",
-    "DFUTitle" => "text-align:center;",
-    // <td>-Tag Feld Path:
-    "DFGPath" => "text-align:center;",
-    "DFUPath" => "text-align:center;",
-    // <td>-Tag Feld Type:
-    "DFGType" => "text-align:center;",
-    "DFUType" => "text-align:center;",
-    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade.
- );
- 
-### Konfig ENDE !!!
-echo serialize($Config);
-';
-        return $Script;
     }
 }

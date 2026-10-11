@@ -17,7 +17,17 @@
             "Error on set setting.": "Fehler beim setzen der Einstellung.",
             "Invalid ident.": "Ungültiger Ident.",
             "Instance has no active parent.": "Instanz hat kein aktives übergeordnetes Element.",
-            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:"
+            "This module is free for non-commercial use,\r\nDonations in support of the author are accepted here:": "Dieses Modul ist für die nicht kommerzielle Nutzung kostenlos,\r\nSchenkungen als Unterstützung für den Autor werden hier akzeptiert:",
+            "Error on set skin setting.": "Fehler beim Setzen der Skin-Einstellung.",
+            "Property not found.": "Eigenschaft nicht gefunden.",
+            "Id": "Id",
+            "Variable": "Variable",
+            "Invalid Ident.": "Ungültiger Ident.",
+            "Invalid Value.": "Ungültiger Wert.",
+            "Instance inactive.": "Instanz ist inaktiv.",
+            "Kodi unreachable.": "Kodi ist nicht erreichbar.",
+            "Error (%d) on %s: %s": "Fehler (%d) bei %s: %s",
+            "%s is deprecated and will be removed in version 3.20. Use %s instead.": "%s ist veraltet und wird in Version 3.20 entfernt. Bitte %s verwenden."
         }
     }
 }

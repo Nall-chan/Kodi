@@ -1,0 +1,54 @@
+{
+    "id": "{1849BB69-D3C3-48B8-C391-76C332DF3121}",
+    "caption": "Request state",
+    "form": [],
+    "action": [
+        "switch (IPS_GetInstance($_IPS['TARGET'])['ModuleInfo']['ModuleID']) {",
+        "    case '{0731DD94-99E6-43D8-9BE3-2854B0C6EF24}':",
+        "        KODIADDONS_RequestState($_IPS['TARGET'], 'ALL');",
+        "        break;",
+        "    case '{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}':",
+        "        KODIAPP_RequestState($_IPS['TARGET'], 'ALL');",
+        "        break;",
+        "    case '{E15F2C11-0B28-4CFB-AEE6-463BD313A964}':",
+        "        KODIGUI_RequestState($_IPS['TARGET'], 'ALL');",
+        "        break;",
+        "    case '{9D73D46E-7B80-4814-A7B2-31768DC6AB7E}':",
+        "        KODIPVR_RequestState($_IPS['TARGET'], 'ALL');",
+        "        break;",
+        "    case '{BA014AD9-9568-4F12-BE31-17D37BFED06D}':",
+        "        KODIPLAYER_RequestState($_IPS['TARGET'], 'ALL');",
+        "        break;",
+        "    case '{03E18A60-02FD-45E8-8A2C-1F8E247C92D0}':",
+        "        KODISYS_RequestState($_IPS['TARGET'], 'ALL');",
+        "        break;",
+        "}"
+    ],
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{0731DD94-99E6-43D8-9BE3-2854B0C6EF24}",
+            "{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}",
+            "{E15F2C11-0B28-4CFB-AEE6-463BD313A964}",
+            "{9D73D46E-7B80-4814-A7B2-31768DC6AB7E}",
+            "{BA014AD9-9568-4F12-BE31-17D37BFED06D}",
+            "{03E18A60-02FD-45E8-8A2C-1F8E247C92D0}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Request state": "Status abfragen",
+            "Reads all values of the instance from Kodi and updates the status variables.": "Liest alle Werte der Instanz aus Kodi und aktualisiert die Statusvariablen.",
+            "Request state of {TARGET, object}": "Status von {TARGET, object} abfragen"
+        }
+    },
+    "format": "Request state of {TARGET, object}",
+    "description": "Reads all values of the instance from Kodi and updates the status variables."
+}

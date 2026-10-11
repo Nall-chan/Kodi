@@ -292,6 +292,23 @@ class KodiSplitter extends IPSModuleStrict
     }
 
     /**
+     * IPS-Instanz-Funktion 'KODIRPC_GetImageBase64'. Holt ein Bild vom Kodi-Webfront.
+     * Rückgabe Base64-kodiert, weil Instanz-Funktionen ab der Rust-Edition nur gültiges UTF-8 zurückgeben können.
+     *
+     * @access public
+     * @param string $path Pfad des Bildes (image://-Pfad oder roher Pfad, z.B. smb://, http://, special://).
+     * @return string|false Bildinhalt Base64-kodiert oder false bei Fehler.
+     */
+    public function GetImageBase64(string $path): string|false
+    {
+        $CoverRAW = $this->DoWebserverRequest('/image/' . rawurlencode($path));
+        if ($CoverRAW === false) {
+            return false;
+        }
+        return base64_encode($CoverRAW);
+    }
+
+    /**
      * IPS-Instanz-Funktion 'KODIRPC_KeepAlive'.
      * Sendet einen RPC-Ping an Kodi und prüft die erreichbarkeit.
      *
@@ -303,7 +320,7 @@ class KodiSplitter extends IPSModuleStrict
         $KodiData = new Kodi_RPC_Data('JSONRPC', 'Ping');
         $ret = @$this->Send($KodiData);
         if ($ret !== 'pong') {
-            echo 'Connection to Kodi lost.';
+            trigger_error($this->Translate('Connection to Kodi lost.'), E_USER_NOTICE);
             $this->SetStatus(IS_EBASE + 3);
             return false;
         }
@@ -383,8 +400,8 @@ class KodiSplitter extends IPSModuleStrict
             // Rest vom Stream wieder in den EmpfangsBuffer schieben
             $tail = array_pop($JSONLine);
             if (strlen($tail) > 256 * 1024) { //Drop large Paket
-                $this->SendDebug('Skip date over 265kB', '', 0);
-                $this->LogMessage('Kodi-RPC server send date over 265kB', KL_DEBUG);
+                $this->SendDebug('Skip data over 256 kB', '', 0);
+                $this->LogMessage('Kodi-RPC server sent data over 256 kB', KL_DEBUG);
                 $tail = '';
             }
             $this->BufferIN = $tail;
@@ -396,7 +413,7 @@ class KodiSplitter extends IPSModuleStrict
         foreach ($JSONLine as $i => $JSON) {
             $KodiData = new Kodi_RPC_Data();
             if (!$KodiData->CreateFromJSONString($JSON)) {
-                if (($i != 0) || ($JSON[0] != '{')) {
+                if (($JSON !== '') && (($i != 0) || !str_starts_with($JSON, '{'))) {
                     $this->SendDebug('Skip error on receive', $JSON, 0);
                 }
                 continue;
@@ -507,11 +524,11 @@ class KodiSplitter extends IPSModuleStrict
     {
         try {
             if ($this->ReadPropertyBoolean(self::PropertyOpen) === false) {
-                throw new Exception('Instance inactive.', E_USER_NOTICE);
+                throw new Exception($this->Translate('Instance inactive.'), E_USER_NOTICE);
             }
 
             if (!$this->HasActiveParent()) {
-                throw new Exception('Instance has no active parent.', E_USER_NOTICE);
+                throw new Exception($this->Translate('Instance has no active parent.'), E_USER_NOTICE);
             }
             $this->SendDebug('Send', $KodiData, 0);
             $this->SendQueuePush((int) $KodiData->Id);
@@ -520,7 +537,7 @@ class KodiSplitter extends IPSModuleStrict
             $ReplyKodiData = $this->WaitForResponse((int) $KodiData->Id);
 
             if (is_null($ReplyKodiData)) {
-                throw new Exception('No answer from Kodi', E_USER_NOTICE);
+                throw new Exception($this->Translate('No answer from Kodi.'), E_USER_NOTICE);
             }
 
             $ret = $ReplyKodiData->GetResult();
@@ -531,10 +548,10 @@ class KodiSplitter extends IPSModuleStrict
             return $ret;
         } catch (KodiRPCException $ex) {
             $this->SendDebug('Receive', $ex, 0);
-            echo $ex->getMessage();
+            trigger_error(sprintf($this->Translate('Error (%d) on %s: %s'), $ex->getCode(), $KodiData->GetCalledMethod(), $ex->getMessage()), E_USER_NOTICE);
         } catch (Exception $ex) {
             $this->SendDebug('Receive', $ex->getMessage(), 0);
-            echo $ex->getMessage();
+            trigger_error($ex->getMessage(), E_USER_NOTICE);
         }
         return null;
     }
@@ -570,7 +587,7 @@ class KodiSplitter extends IPSModuleStrict
         $ret = $KodiResult->GetResult();
 
         if (is_a($ret, 'KodiRPCException')) {
-            trigger_error('Error (' . $ret->getCode() . '): ' . $ret->getMessage(), E_USER_NOTICE);
+            trigger_error(sprintf($this->Translate('Error (%d): %s'), $ret->getCode(), $ret->getMessage()), E_USER_NOTICE);
         }
 
         $Result = false;
@@ -597,7 +614,7 @@ class KodiSplitter extends IPSModuleStrict
             $KodiResult->CreateFromJSONString($Result);
             $ret = $KodiResult->GetResult();
             if (is_a($ret, 'KodiRPCException')) {
-                trigger_error('Error (' . $ret->getCode() . '): ' . $ret->getMessage(), E_USER_NOTICE);
+                trigger_error(sprintf($this->Translate('Error (%d): %s'), $ret->getCode(), $ret->getMessage()), E_USER_NOTICE);
             }
             if ($KodiResult->GetResult() == 'pong') {
                 return true;
@@ -756,7 +773,7 @@ class KodiSplitter extends IPSModuleStrict
     private function SendQueuePush(int $Id): void
     {
         if (!$this->lock('ReplyJSONData')) {
-            throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
+            throw new Exception($this->Translate('Internal error: receive buffer is locked.'), E_USER_NOTICE);
         }
         $data = $this->ReplyJSONData;
         $data[$Id] = '';
@@ -774,7 +791,7 @@ class KodiSplitter extends IPSModuleStrict
     private function SendQueueUpdate(int $Id, Kodi_RPC_Data $KodiData): void
     {
         if (!$this->lock('ReplyJSONData')) {
-            throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
+            throw new Exception($this->Translate('Internal error: receive buffer is locked.'), E_USER_NOTICE);
         }
         $data = $this->ReplyJSONData;
         $data[$Id] = $KodiData->ToJSONString('');
@@ -808,7 +825,7 @@ class KodiSplitter extends IPSModuleStrict
     private function SendQueueRemove(int $Id): void
     {
         if (!$this->lock('ReplyJSONData')) {
-            throw new Exception('ReplyJSONData is locked', E_USER_NOTICE);
+            throw new Exception($this->Translate('Internal error: receive buffer is locked.'), E_USER_NOTICE);
         }
         $data = $this->ReplyJSONData;
         unset($data[$Id]);

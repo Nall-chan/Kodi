@@ -34,6 +34,9 @@ class KodiDevicePlaylist extends KodiBase
     public const PropertyShowPlaylist = 'showPlaylist';
     public const ActionVisibleFormElementsPlaylist = 'showPlaylist';
     public const Hook = 'KodiPlaylist';
+    /** Alte Eigenschaft mit der ID des Konfigurations-Skripts (bis 3.02), nur noch in Migrate vorhanden. */
+    public const LegacyPropertyConfigScript = 'Playlistconfig';
+    public const FormPanelDesign = 'HTMLDesign';
     /**
      * PlaylistID für Audio
      *
@@ -60,6 +63,26 @@ class KodiDevicePlaylist extends KodiBase
      * @value 2
      */
     public const Pictures = 2;
+
+    /** Spalten der Playlist-Tabelle: Schlüssel, Überschrift, Breite (em), sichtbar. */
+    private const TableColumns = [
+        ['Play', '', 50, true],
+        ['Position', 'Pos', 50, true],
+        ['Type', 'Type', 100, true],
+        ['Title', 'Title', 300, true],
+        ['Showtitle', 'Series', 300, true],
+        ['Season', 'S', 50, true],
+        ['Episode', 'E', 50, true],
+        ['Album', 'Album', 200, true],
+        ['Track', 'Track', 50, true],
+        ['Disc', 'Disc', 50, true],
+        ['Genre', 'Genre', 200, true],
+        ['Artist', 'Artist', 200, true],
+        ['Year', 'Year', 50, true],
+        ['Runtime', 'Duration', 100, true],
+        ['Id', 'ID', 50, false],
+        ['File', 'File', 300, false]
+    ];
 
     protected static $Namespace = ['Playlist', 'Player'];
     protected static $Properties = [];
@@ -180,14 +203,22 @@ class KodiDevicePlaylist extends KodiBase
         $this->PlaylistId = 0;
         $this->RegisterPropertyInteger(self::PropertyPlaylistID, 0);
         $this->RegisterPropertyBoolean(self::PropertyShowPlaylist, true);
+        $this->RegisterTableProperties('', $this->GetDefaultTableConfig(self::TableColumns, true));
+    }
 
-        // Todo 7.0 -> Style per Konfig-Formular
-        $ID = @$this->GetIDForIdent('PlaylistDesign');
-        if ($ID == false) {
-            $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
-            IPS_SetHidden($this->GetIDForIdent('PlaylistDesign'), true);
+    /**
+     * Interne Funktion des SDK.
+     * Überträgt das Design aus dem alten Konfigurations-Skript in die Eigenschaften.
+     *
+     * @access public
+     */
+    public function Migrate(string $JSONData): string
+    {
+        $Data = json_decode($JSONData);
+        if ($this->MigrateTableScript($Data->configuration, self::LegacyPropertyConfigScript, '', $this->GetDefaultTableConfig(self::TableColumns, true))) {
+            return json_encode($Data);
         }
-        $this->RegisterPropertyInteger('Playlistconfig', $ID);
+        return '';
     }
 
     /**
@@ -215,18 +246,9 @@ class KodiDevicePlaylist extends KodiBase
         if ($this->ReadPropertyBoolean(self::PropertyShowPlaylist)) {
             $this->RegisterVariableString('Playlist', 'Playlist', '~HTMLBox', 2);
             $this->RegisterHook(self::Hook . $this->InstanceID);
-            $ID = @$this->GetIDForIdent('PlaylistDesign');
-            if ($ID == false) {
-                $this->RegisterScript('PlaylistDesign', 'Playlist Config', $this->CreatePlaylistConfigScript(), -7);
-                IPS_SetHidden($this->GetIDForIdent('PlaylistDesign'), true);
-            }
         } else {
             $this->UnregisterVariable('Playlist');
             $this->UnregisterHook(self::Hook . $this->InstanceID);
-        }
-        $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
-        if ($ScriptID > 0) {
-            $this->RegisterReference($ScriptID);
         }
         $this->RegisterProfileInteger('Tracklist.' . $this->InstanceID . '.Kodi', '', '', '', 1, 1, 1);
         $this->RegisterVariableInteger('position', $this->Translate('Playlist position'), 'Tracklist.' . $this->InstanceID . '.Kodi', 1);
@@ -241,39 +263,8 @@ class KodiDevicePlaylist extends KodiBase
     public function GetConfigurationForm(): string
     {
         $Form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $Form['elements'][2]['visible'] = $this->ReadPropertyBoolean(self::PropertyShowPlaylist);
-        $this->SendDebug('FORM', json_encode($Form), 0);
-        $this->SendDebug('FORM', json_last_error_msg(), 0);
+        $this->FillTableFormPanel($Form['elements'], self::FormPanelDesign, '', $this->ReadPropertyBoolean(self::PropertyShowPlaylist));
         return json_encode($Form);
-    }
-    ################## ActionHandler
-    /**
-     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     *
-     * @access public
-     * @param string $Ident Der Ident der Statusvariable.
-     * @param bool|float|int|string $Value Der angeforderte neue Wert.
-     */
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        switch ($Ident) {
-            case self::ActionVisibleFormElementsPlaylist:
-                $this->UpdateFormField('HTMLRow', 'visible', (bool) $Value);
-                return;
-            case 'position':
-                $this->GoTo($Value - 1);
-                return;
-            case 'CurrentPlaylist':
-                $this->GoTo(json_decode($Value, true)['current']);
-                return;
-            default:
-                trigger_error('Invalid Ident.', E_USER_NOTICE);
-                return;
-        }
     }
 
     public function GoTo(int $Index): bool
@@ -310,6 +301,23 @@ class KodiDevicePlaylist extends KodiBase
             return $KodiData->ToArray($ret->items);
         }
         return [];
+    }
+
+    /**
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_GetPlaylists'.
+     * Gibt alle Playlisten von Kodi mit ihrer ID und ihrem Typ zurück.
+     *
+     * @access public
+     * @return array|bool Array mit den Playlisten (playlistid, type) oder false bei Fehler.
+     */
+    public function GetPlaylists(): false|array
+    {
+        $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'GetPlaylists');
+        $ret = $this->SendDirect($KodiData);
+        if (is_null($ret)) {
+            return false;
+        }
+        return $KodiData->ToArray($ret);
     }
 
     /**
@@ -382,7 +390,7 @@ class KodiDevicePlaylist extends KodiBase
      */
     public function AddDirectoryRecursive(string $Directory): bool
     {
-        return $this->Add('Directory', $Directory, ['recursive' => true]);
+        return $this->Add('directory', $Directory, ['recursive' => true]);
     }
 
     /**
@@ -542,7 +550,7 @@ class KodiDevicePlaylist extends KodiBase
      */
     public function InsertDirectoryRecursive(string $Directory, int $Position): bool
     {
-        return $this->Insert($Position, 'Directory', $Directory, ['recursive' => true]);
+        return $this->Insert($Position, 'directory', $Directory, ['recursive' => true]);
     }
 
     /**
@@ -678,6 +686,31 @@ class KodiDevicePlaylist extends KodiBase
         }
         trigger_error($this->Translate('Error on swap items.'), E_USER_NOTICE);
         return false;
+    }
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        switch ($Ident) {
+            case self::ActionVisibleFormElementsPlaylist:
+                $this->UpdateFormField(self::FormPanelDesign, 'visible', (bool) $Value);
+                return;
+            case 'position':
+                $this->GoTo($Value - 1);
+                return;
+            case 'CurrentPlaylist':
+                $this->GoTo(json_decode($Value, true)['current']);
+                return;
+            default:
+                trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
+                return;
+        }
     }
 
     ################## PRIVATE
@@ -991,20 +1024,7 @@ class KodiDevicePlaylist extends KodiBase
         if (!$this->ReadPropertyBoolean(self::PropertyShowPlaylist)) {
             return;
         }
-        $ScriptID = $this->ReadPropertyInteger('Playlistconfig');
-        if ($ScriptID == 0) {
-            return;
-        }
-        if (!IPS_ScriptExists($ScriptID)) {
-            return;
-        }
-
-        $result = IPS_RunScriptWaitEx($ScriptID, ['SENDER' => 'Kodi']);
-        $Config = unserialize($result);
-        if (($Config === false) || (!is_array($Config))) {
-            trigger_error($this->Translate('Error on read Playlistconfig-Script.'), E_USER_NOTICE);
-            return;
-        }
+        $Config = $this->GetTableConfig();
 
         $NewSecret = base64_encode(openssl_random_pseudo_bytes(12));
         $this->WebHookSecret = $NewSecret;
@@ -1039,23 +1059,9 @@ class KodiDevicePlaylist extends KodiBase
 
                 $Line['Play'] = ($Line['Position'] == $CurrentTrack ? '<div class="iconMediumSpinner ipsIconArrowRight" style="width: 100%; background-position: center center;"></div>' : '');
                 $LineSecret = rawurlencode(base64_encode(sha1($NewSecret . '0' . $Line['Position'], true)));
-                $HTMLData .= '<tr style="' . $Config['Style']['BR' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G'))] . '"onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '&Secret=' . $LineSecret . '\' })">';
-                foreach ($Config['Spalten'] as $feldIndex => $value) {
-                    if (!array_key_exists($feldIndex, $Line)) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if ($Line[$feldIndex] === -1) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if ($Line[$feldIndex] === 0) {
-                        $Line[$feldIndex] = '';
-                    }
-                    if (is_array($Line[$feldIndex])) {
-                        $Line[$feldIndex] = implode(', ', $Line[$feldIndex]);
-                    }
-                    $HTMLData .= '<td style="' . $Config['Style']['DF' . ($Line['Position'] == $CurrentTrack ? 'A' : ($pos % 2 ? 'U' : 'G')) . $feldIndex] . '">' . (string) $Line[$feldIndex] . '</td>';
-                }
-                $HTMLData .= '</tr>' . PHP_EOL;
+                $Row = $Line['Position'] == $CurrentTrack ? \KodiBase\TableRow::Active : ($pos % 2 ? \KodiBase\TableRow::Odd : \KodiBase\TableRow::Even);
+                $OnClick = 'onclick="xhrGet' . $this->InstanceID . '({ url: \'hook/KodiPlaylist' . $this->InstanceID . '?Index=' . $Line['Position'] . '&Secret=' . $LineSecret . '\' })"';
+                $HTMLData .= $this->GetTableRow($Config, $Row, $Line, $OnClick, true);
                 $pos++;
             }
         }
@@ -1064,202 +1070,18 @@ class KodiDevicePlaylist extends KodiBase
     }
 
     /**
-     * Gibt den Inhalt des PHP-Script zurück, welche die Konfiguration und das Design der Playlist-Tabelle enthält.
-     *
-     * @access private
-     * @return string Ein PHP-Script welche als Grundlage für die User dient.
-     */
-    private function CreatePlaylistConfigScript(): string
-    {
-        $Script = '<?php
-### Konfig ab Zeile 10 !!!
-
-if ($_IPS["SENDER"] <> "Kodi")
-{
-	echo "Dieses Script kann nicht direkt ausgeführt werden!";
-	return;
-}
-##########   KONFIGURATION
-#### Tabellarische Ansicht
-# Folgende Parameter bestimmen das Aussehen der HTML-Tabelle in der die Playlist dargestellt wird.
-
-// Reihenfolge und Überschriften der Tabelle. Der vordere Wert darf nicht verändert werden.
-// Die Reihenfolge, der hintere Wert (Anzeigetext) und die Reihenfolge sind beliebig änderbar.
-$Config["Spalten"] = array(
-    "Play" =>"",
-    "Position"=>"Pos",
-    "Type" => "Type",
-    "Title"=>"Titel",
-    "Showtitle"=>"Serie",    
-    "Season"=>"S",
-    "Episode"=>"E",
-    "Album" => "Album",
-    "Track" => "Track",
-    "Disc" => "Disc",
-    "Genre" => "Stil",
-    "Artist"=>"Interpret",
-    "Year" => "Jahr",
-    "Runtime"=>"Dauer"
-
-);
-#### Mögliche Index-Felder
-/*
-
-| Index            | Typ     | Beschreibung                        |
-| :--------------: | :-----: | :---------------------------------: |
-| Play             |  kein   | Play-Icon                           |
-| Position         | integer | Position in der Playlist            |
-| Type             | string  | Typ des Eintrags                    |
-| Id               | integer | UID der Datei in der Kodi-Datenbank |
-| Title            | string  | Titel                               |
-| Showtitle        | string  | Serienname                          |
-| Season           | integer | Season                              |
-| Episode          | integer | Episode                             | 
-| Genre            | string  | Genre                               |
-| Album            | string  | Album                               |
-| Artist           | string  | Interpret                           |
-| Runtime          | integer | Länge in Sekunden                   |
-| Disc             | integer | Disc                                |
-| Track            | integer | Tracknummer im Album                |
-| Url              | string  | Pfad der Playlist                   |
-| Year             | integer | Jahr, soweit hinterlegt             |
-*/
-// Breite der Spalten (Reihenfolge ist egal)
-$Config["Breite"] = array(
-    "Play" =>"50em",
-    "Position" => "50em",
-    "Type" => "100em",
-    "Showtitle" => "300em",
-    "Title" => "300em",
-    "Season" => "50em",
-    "Episode" => "50em",
-    "Genre" => "200em",
-    "Album" => "200em",
-    "Disc" => "50em",
-    "Track" => "50em",
-    "Artist" => "200em",
-    "Year" => "50em",
-    "Runtime" => "100em"
-);
-// Style Informationen der Tabelle
-$Config["Style"] = array(
-    // <table>-Tag:
-    "T"    => "margin:0 auto; font-size:0.8em;",
-    // <thead>-Tag:
-    "H"    => "",
-    // <tr>-Tag im thead-Bereich:
-    "HR"   => "",
-    // <th>-Tag Feld Play:
-    "HFPlay"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Position:
-    "HFPosition"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Type:
-    "HFType"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Title:
-    "HFTitle"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Showtitle:
-    "HFShowtitle"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Season:
-    "HFSeason"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Episode:
-    "HFEpisode"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Album:
-    "HFAlbum"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Disc:
-    "HFDisc"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Track:
-    "HFTrack"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Genre:
-    "HFGenre"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Artist:
-    "HFArtist"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Year:
-    "HFYear"  => "color:#ffffff; width:35px; align:left;",
-    // <th>-Tag Feld Runtime:
-    "HFRuntime"  => "color:#ffffff; width:35px; align:left;",
-    // <tbody>-Tag:
-    "B"    => "",
-    // <tr>-Tag:
-    "BRG"  => "background-color:#000000; color:#ffffff;",
-    "BRU"  => "background-color:#080808; color:#ffffff;",
-    "BRA"  => "background-color:#808000; color:#ffffff;",
-    // <td>-Tag Feld Play:
-    "DFGPlay" => "text-align:center;",
-    "DFUPlay" => "text-align:center;",
-    "DFAPlay" => "text-align:center;",
-    // <td>-Tag Feld Position:
-    "DFGPosition" => "text-align:center;",
-    "DFUPosition" => "text-align:center;",
-    "DFAPosition" => "text-align:center;",
-    // <td>-Tag Feld Type:
-    "DFGType" => "text-align:center;",
-    "DFUType" => "text-align:center;",
-    "DFAType" => "text-align:center;",
-    // <td>-Tag Feld Showtitle:
-    "DFGShowtitle" => "text-align:center;",
-    "DFUShowtitle" => "text-align:center;",
-    "DFAShowtitle" => "text-align:center;",
-    // <td>-Tag Feld Title:
-    "DFGTitle" => "text-align:center;",
-    "DFUTitle" => "text-align:center;",
-    "DFATitle" => "text-align:center;",
-    // <td>-Tag Feld Season:
-    "DFGSeason" => "text-align:center;",
-    "DFUSeason" => "text-align:center;",
-    "DFASeason" => "text-align:center;",
-    // <td>-Tag Feld Episode:
-    "DFGEpisode" => "text-align:center;",
-    "DFUEpisode" => "text-align:center;",
-    "DFAEpisode" => "text-align:center;",
-    // <td>-Tag Feld Album:
-    "DFGAlbum" => "text-align:center;",
-    "DFUAlbum" => "text-align:center;",
-    "DFAAlbum" => "text-align:center;",
-    // <td>-Tag Feld Disc:
-    "DFGDisc" => "text-align:center;",
-    "DFUDisc" => "text-align:center;",
-    "DFADisc" => "text-align:center;",
-    // <td>-Tag Feld Track:
-    "DFGTrack" => "text-align:center;",
-    "DFUTrack" => "text-align:center;",
-    "DFATrack" => "text-align:center;",
-    // <td>-Tag Feld Genre:
-    "DFGGenre" => "text-align:center;",
-    "DFUGenre" => "text-align:center;",
-    "DFAGenre" => "text-align:center;",
-    // <td>-Tag Feld Artist:
-    "DFGArtist" => "text-align:center;",
-    "DFUArtist" => "text-align:center;",
-    "DFAArtist" => "text-align:center;",
-    // <td>-Tag Feld Year:
-    "DFGYear" => "text-align:center;",
-    "DFUYear" => "text-align:center;",
-    "DFAYear" => "text-align:center;",
-    // <td>-Tag Feld Runtime:
-    "DFGRuntime" => "text-align:center;",
-    "DFURuntime" => "text-align:center;",
-    "DFARuntime" => "text-align:center;"
-    // ^- Der Buchstabe "G" steht für gerade, "U" für ungerade., "A" für Aktiv
- );
-### Konfig ENDE !!!
-echo serialize($Config);
-';
-        return $Script;
-    }
-
-    /**
      * Fügt der Playlist ein Item hinzu.
      *
      * @access private
      * @param string $ItemTyp Der Typ des Item.
      * @param mixed $ItemValue Der Wert des Item.
-     * @param array $Ext Array welches mit übergeben werden soll (optional).
+     * @param array $Ext Zusätzliche Felder des Item, z.B. ['recursive' => true] (optional).
      * @return bool True bei Erfolg. Sonst false.
      */
     private function Add(string $ItemTyp, $ItemValue, $Ext = []): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[0]);
-        $KodiData->Add(array_merge(['playlistid' => $this->PlaylistId, 'item' => [$ItemTyp => $ItemValue]], $Ext));
+        $KodiData->Add(['playlistid' => $this->PlaylistId, 'item' => array_merge([$ItemTyp => $ItemValue], $Ext)]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;
@@ -1278,12 +1100,12 @@ echo serialize($Config);
      * @param int $Position Position des Item in der Playlist.
      * @param string $ItemTyp Der Typ des Item.
      * @param mixed $ItemValue Der Wert des Item.
-     * @param array $Ext Array welches mit übergeben werden soll (optional).
+     * @param array $Ext Zusätzliche Felder des Item, z.B. ['recursive' => true] (optional).
      * @return bool True bei Erfolg. Sonst false.
      */
     private function Insert(int $Position, string $ItemTyp, mixed $ItemValue, $Ext = []): bool
     {
-        $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Insert', array_merge(['playlistid' => $this->PlaylistId, 'position' => $Position, 'item' => [$ItemTyp => $ItemValue]], $Ext));
+        $KodiData = new Kodi_RPC_Data(self::$Namespace[0], 'Insert', ['playlistid' => $this->PlaylistId, 'position' => $Position, 'item' => array_merge([$ItemTyp => $ItemValue], $Ext)]);
         $ret = $this->SendDirect($KodiData);
         if (is_null($ret)) {
             return false;

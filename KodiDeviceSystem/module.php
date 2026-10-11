@@ -26,6 +26,7 @@ class KodiDeviceSystem extends KodiBase
     public const PropertyPowerOff = 'PowerOff';
     public const PropertyMACAddress = 'MACAddress';
     public const PropertyWOLAction = 'WOLAction';
+    /** Alte Eigenschaft (Einschalt-Skript), nur noch für Migrate(). */
     public const PropertyPowerScript = 'PowerScript';
     public const ActionVisibleFormElementsPowerOnType = 'PowerOnType';
     protected static $Namespace = 'System';
@@ -44,11 +45,41 @@ class KodiDeviceSystem extends KodiBase
     public function Create(): void
     {
         parent::Create();
-        $this->RegisterPropertyInteger(self::PropertyPowerScript, 1); // OLD
         $this->RegisterPropertyInteger(self::PropertyPowerOnType, 1);
         $this->RegisterPropertyInteger(self::PropertyPowerOff, 0);
         $this->RegisterPropertyString(self::PropertyMACAddress, '');
         $this->RegisterPropertyString(self::PropertyWOLAction, '');
+    }
+
+    /**
+     * Interne Funktion des SDK.
+     * Überträgt das alte Einschalt-Skript (Eigenschaft PowerScript) einmalig in die Aktion WOLAction und entfernt die Eigenschaft.
+     *
+     * @access public
+     */
+    public function Migrate(string $JSONData): string
+    {
+        $Data = json_decode($JSONData);
+        if (!property_exists($Data->configuration, self::PropertyPowerScript)) {
+            return '';
+        }
+        $ScriptID = (int) $Data->configuration->{self::PropertyPowerScript};
+        unset($Data->configuration->{self::PropertyPowerScript});
+        if ($ScriptID > 1) {
+            // Aktion 'Skript ausführen' mit dem bisherigen Skript
+            $Action = [
+                'actionID'   => '{7938A5A2-0981-5FE0-BE6C-8AA610D654EB}',
+                'parameters' => [
+                    'ENVIRONMENT' => 'Default',
+                    'PARENT'      => $this->InstanceID,
+                    'TARGET'      => $ScriptID
+                ]
+            ];
+            $Data->configuration->{self::PropertyWOLAction} = json_encode($Action);
+            $Data->configuration->{self::PropertyPowerOnType} = 1;
+            $this->LogMessage(sprintf($this->Translate('Power-on script %d migrated to the power-on action.'), $ScriptID), KL_NOTIFY);
+        }
+        return json_encode($Data);
     }
 
     /**
@@ -58,25 +89,6 @@ class KodiDeviceSystem extends KodiBase
      */
     public function ApplyChanges(): void
     {
-        /** Update Config
-         * @deprecated Wird zur 7.0 entfernt
-         */
-        if ($this->ReadPropertyInteger(self::PropertyPowerScript) > 1) {
-            // dann Aktion erstellen
-            $Action = [
-                'actionID'  => '{7938A5A2-0981-5FE0-BE6C-8AA610D654EB}',
-                'parameters'=> [
-                    'ENVIRONMENT'=> 'Default',
-                    'PARENT'     => $this->InstanceID,
-                    'TARGET'     => $this->ReadPropertyInteger(self::PropertyPowerScript)
-                ]
-            ];
-            IPS_SetProperty($this->InstanceID, self::PropertyWOLAction, json_encode($Action)); // Action setzen
-            IPS_SetProperty($this->InstanceID, self::PropertyPowerOnType, 1); // PowerOnType auf Action (1) setzen
-            IPS_SetProperty($this->InstanceID, self::PropertyPowerScript, 1); // PowerScript auf 1 setzen
-            IPS_ApplyChanges($this->InstanceID); // speichern
-            return; // verlassen
-        }
 
         $this->RegisterProfileIntegerEx('Action.Kodi', '', '', '', [
             [0, $this->Translate('Execute'), '', -1]
@@ -110,40 +122,6 @@ class KodiDeviceSystem extends KodiBase
         $this->SendDebug('FORM', json_encode($Form), 0);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
-    }
-    ################## ActionHandler
-    /**
-     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
-     *
-     * @access public
-     * @param string $Ident Der Ident der Statusvariable.
-     * @param bool|float|int|string $Value Der angeforderte neue Wert.
-     */
-    public function RequestAction(string $Ident, mixed $Value, bool &$done = false): void
-    {
-        parent::RequestAction($Ident, $Value, $done);
-        if ($done) {
-            return;
-        }
-        switch ($Ident) {
-            case self::ActionVisibleFormElementsPowerOnType:
-                $this->UpdateFormField('MACAddress', 'visible', $Value == 0);
-                $this->UpdateFormField('WOLActionPopup', 'visible', $Value == 1);
-                break;
-            case 'Power':
-                $this->Power($Value);
-                return;
-            case 'shutdown':
-            case 'reboot':
-            case 'hibernate':
-            case 'suspend':
-            case 'ejectOpticalDrive':
-                $this->{ucfirst($Ident)}();
-                return;
-            default:
-                trigger_error('Invalid Ident.', E_USER_NOTICE);
-                break;
-        }
     }
 
     ################## PUBLIC
@@ -314,9 +292,53 @@ class KodiDeviceSystem extends KodiBase
      * @param string $Ident Enthält den Names des "properties" welches angefordert werden soll.
      * @return bool true bei erfolgreicher Ausführung, sonst false.
      */
-    public function RequestState(string $Ident): void
+    public function RequestState(string $Ident): bool
     {
-        parent::RequestState($Ident);
+        return parent::RequestState($Ident);
+    }
+    ################## ActionHandler
+    /**
+     * Actionhandler der Statusvariablen. Interne SDK-Funktion.
+     *
+     * @access public
+     * @param string $Ident Der Ident der Statusvariable.
+     * @param bool|float|int|string $Value Der angeforderte neue Wert.
+     */
+    protected function ActionHandler(string $Ident, mixed $Value): void
+    {
+        switch ($Ident) {
+            case self::ActionVisibleFormElementsPowerOnType:
+                $this->UpdateFormField('MACAddress', 'visible', $Value == 0);
+                $this->UpdateFormField('WOLActionPopup', 'visible', $Value == 1);
+                break;
+            case 'Power':
+                $this->Power($Value);
+                return;
+            case 'shutdown':
+            case 'reboot':
+            case 'hibernate':
+            case 'suspend':
+            case 'ejectOpticalDrive':
+                $this->{ucfirst($Ident)}();
+                return;
+            default:
+                trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
+                break;
+        }
+    }
+
+    /**
+     * Wird ausgeführt wenn sich der Status vom Parent ändert.
+     * Setzt das Ereignis 'Batterie schwach' bei einer neuen Verbindung zurück.
+     *
+     * @access protected
+     */
+    protected function IOChangeState(int $State): void
+    {
+        if ($State == IS_ACTIVE) {
+            $this->SetValueBoolean('LowBatteryEvent', false);
+        }
+        parent::IOChangeState($State);
     }
 
     /**
@@ -330,12 +352,23 @@ class KodiDeviceSystem extends KodiBase
     {
         switch ($Method) {
             case 'GetProperties':
+                // Aktionen nur anbieten, wenn Kodi sie auf diesem System ausführen kann
+                foreach (['canshutdown' => 'shutdown', 'canhibernate' => 'hibernate', 'cansuspend' => 'suspend', 'canreboot' => 'reboot'] as $Property => $Ident) {
+                    if (!property_exists($KodiPayload, $Property)) {
+                        continue;
+                    }
+                    if ((bool) $KodiPayload->{$Property}) {
+                        $this->EnableAction($Ident);
+                    } else {
+                        $this->DisableAction($Ident);
+                    }
+                }
                 break;
             case 'Power':
                 $this->SetValueBoolean('Power', $KodiPayload);
                 break;
             case 'OnLowBattery':
-                $this->SetValue('LowBatteryEvent', true);
+                $this->SetValueBoolean('LowBatteryEvent', true);
                 break;
             case 'OnQuit':
             case 'OnRestart':
@@ -344,6 +377,7 @@ class KodiDeviceSystem extends KodiBase
                 break;
             case 'OnWake':
                 $this->SetValueBoolean('Power', true);
+                $this->SetValueBoolean('LowBatteryEvent', false);
                 break;
         }
     }

@@ -1,0 +1,35 @@
+{
+    "id": "{34BD19E1-A2C6-AACF-0F1A-BF3C6E4E8CD9}",
+    "caption": "Scan library",
+    "form": [],
+    "action": [
+        "if (IPS_GetInstance($_IPS['TARGET'])['ModuleInfo']['ModuleID'] == '{AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC}') {",
+        "    KODIAUDIOLIB_Scan($_IPS['TARGET']);",
+        "} else {",
+        "    KODIVIDEOLIB_Scan($_IPS['TARGET']);",
+        "}"
+    ],
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{AA078FB4-30C1-4EF1-A2DE-5F957F58BDDC}",
+            "{07943DF4-FAB9-454F-AA9E-702A5F9C9D57}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Scan library": "Datenbank durchsuchen",
+            "Starts a search for new media in the sources of the library.": "Startet die Suche nach neuen Medien in den Quellen der Datenbank.",
+            "Scan library {TARGET, object} for new media": "Datenbank {TARGET, object} nach neuen Medien durchsuchen"
+        }
+    },
+    "format": "Scan library {TARGET, object} for new media",
+    "description": "Starts a search for new media in the sources of the library."
+}

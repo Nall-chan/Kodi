@@ -29,7 +29,8 @@ trait DebugHelper
      * @access protected
      * @param string $Message Nachricht für Data.
      * @param \Kodi_RPC_Data|\KodiRPCException|mixed $Data Daten für die Ausgabe.
-     * @return int $Format Ausgabeformat für Strings.
+     * @param int $Format Ausgabeformat für Strings.
+     * @return bool True bei Erfolg, sonst False.
      */
     protected function SendDebug(string $Message, mixed $Data, int $Format): bool
     {
@@ -66,7 +67,7 @@ trait DebugHelper
             parent::SendDebug($Message, ($Data ? 'TRUE' : 'FALSE'), 0);
         } else {
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                parent::SendDebug($Message, $Data, $Format);
+                parent::SendDebug($Message, (string) $Data, $Format);
             } else {
                 $this->LogMessage($Message . ':' . (string) $Data, KL_DEBUG);
             }

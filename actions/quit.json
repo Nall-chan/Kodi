@@ -1,0 +1,28 @@
+{
+    "id": "{E73FC876-4F46-F571-13D9-7E99DE396644}",
+    "caption": "Quit Kodi",
+    "form": [],
+    "action": "KODIAPP_Quit($_IPS['TARGET']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Quit Kodi": "Kodi beenden",
+            "Quits the Kodi application. The operating system keeps running.": "Beendet die Anwendung Kodi. Das Betriebssystem läuft weiter.",
+            "Quit {TARGET, object}": "{TARGET, object} beenden"
+        }
+    },
+    "format": "Quit {TARGET, object}",
+    "description": "Quits the Kodi application. The operating system keeps running."
+}

@@ -26,19 +26,10 @@
             "onChange": "IPS_RequestAction($id,'showPlaylist',$showPlaylist);"
         },
         {
-            "type": "RowLayout",
-            "name": "HTMLRow",
-            "items": [
-                {
-                    "type": "Label",
-                    "caption": "Script for HTML-Box Desgin:"
-                },
-                {
-                    "name": "Playlistconfig",
-                    "type": "SelectScript",
-                    "caption": "Script:"
-                }
-            ]
+            "type": "ExpansionPanel",
+            "name": "HTMLDesign",
+            "caption": "HTML-Box design",
+            "items": []
         }
     ],
     "actions": [

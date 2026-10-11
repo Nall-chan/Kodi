@@ -1,0 +1,37 @@
+{
+    "id": "{AF590BE2-FA13-8330-B19E-915267F1DEF4}",
+    "caption": "Jump to title",
+    "form": [
+        {
+            "type": "NumberSpinner",
+            "name": "VALUE",
+            "caption": "Title number in the playlist",
+            "minimum": 1,
+            "value": 1
+        }
+    ],
+    "action": "KODIPLAYER_GoToTrack($_IPS['TARGET'], $_IPS['VALUE']);",
+    "category": "target",
+    "restrictions": {
+        "objectType": [
+            1
+        ],
+        "moduleID": [
+            "{BA014AD9-9568-4F12-BE31-17D37BFED06D}"
+        ],
+        "includeEnvironments": [
+            "TestCommands",
+            "Default"
+        ]
+    },
+    "locale": {
+        "de": {
+            "Jump to title": "Zu Titel springen",
+            "Title number in the playlist": "Nummer des Titels in der Playlist",
+            "Jumps to a title of the current playlist (1 = first entry).": "Springt zu einem Titel der aktuellen Playlist (1 = erster Eintrag).",
+            "Jump to title {VALUE} on {TARGET, object}": "Auf {TARGET, object} zu Titel {VALUE} springen"
+        }
+    },
+    "format": "Jump to title {VALUE} on {TARGET, object}",
+    "description": "Jumps to a title of the current playlist (1 = first entry)."
+}

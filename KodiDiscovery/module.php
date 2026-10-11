@@ -83,7 +83,7 @@ class KodiDiscovery extends IPSModuleStrict
             // not supported. Docker cannot forward Multicast :(
             $Form['actions'][2]['popup']['items'][1]['caption'] = $this->Translate("The combination of Docker and NAT is not supported because Docker does not support multicast.\r\nPlease run the container in the host network.\r\nOr create and configure the required Kodi Configurator instance manually.");
             $Form['actions'][2]['visible'] = true;
-            $this->SendDebug('FORM', json_encode($Form), 0);
+            $this->SendFormDebug($Form);
             $this->SendDebug('FORM', json_last_error_msg(), 0);
             return json_encode($Form);
         }
@@ -153,11 +153,25 @@ class KodiDiscovery extends IPSModuleStrict
             $Form['actions'][2]['visible'] = true;
             $Form['actions'][2]['popup']['items'][1]['visible'] = false;
         }
-        $this->SendDebug('FORM', json_encode($Form), 0);
+        $this->SendFormDebug($Form);
         $this->SendDebug('FORM', json_last_error_msg(), 0);
         return json_encode($Form);
     }
 
+    /**
+     * Gibt das Formular im Debug aus, das Passwort wird dabei maskiert.
+     *
+     * @param array $Form Das Konfigurationsformular.
+     */
+    private function SendFormDebug(array $Form): void
+    {
+        $Json = (string) json_encode($Form);
+        $Password = $this->ReadAttributeString(self::Password);
+        if ($Password !== '') {
+            $Json = str_replace(substr((string) json_encode($Password), 1, -1), '***', $Json);
+        }
+        $this->SendDebug('FORM', $Json, 0);
+    }
     private function GetIPSInstances(): array
     {
         $InstanceIDList = IPS_GetInstanceListByModuleID(self::GUID_Configurator);
@@ -196,6 +210,8 @@ class KodiDiscovery extends IPSModuleStrict
             if (empty($deviceInfo) || empty($deviceWebPort)) {
                 continue;
             }
+            // Ohne uuid im TXT-Record dient der Gerätename als Schlüssel
+            $UUID = $device['Name'];
             foreach ($deviceInfo[0]['TXTRecords'] as $Line) {
                 $Data = explode('=', $Line);
                 $Typ = strtoupper(array_shift($Data));
