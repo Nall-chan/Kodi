@@ -370,6 +370,3 @@ Wunschliste:
 
 IPS-Modul:  
 [Custom NC-SA](LICENSE)  
-
-Kodi JSON-RPC API Schema unter [docs/](docs/README.md) (nur Entwicklungsreferenz):  
-Copyright (C) 2005-2018 Team Kodi, [GPL-2.0-or-later](https://github.com/xbmc/xbmc/blob/Omega/LICENSES/GPL-2.0-or-later)
