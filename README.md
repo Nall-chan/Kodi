@@ -187,6 +187,7 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
 
 > [!IMPORTANT]
 > **Vor dem Update beachten:**
+> - Voraussetzung ist jetzt Symcon ab Version 9.0.
 > - Die alten Konfigurations-Skripte der HTML-Tabellen (Addons, Favoriten, Playlist, PVR) werden einmalig übernommen und danach nicht mehr benutzt. Sie können manuell gelöscht werden. War ein Skript nicht lesbar, gilt das Standard-Design (Warnung im Log).
 > - Veraltete Statusvariablen des Players werden umbenannt (Ident) oder gelöscht, wenn es eine Nachfolgevariable gibt bzw. keine Nachfolge existiert. Skripte, Ereignisse und Links, die diese Variablen nutzen, prüfen.
 > - Die neuen optionalen Player-Variablen (Videospur, Audio-Verzögerung, Bildformat, Tempo) sind bei bestehenden Instanzen ausgeschaltet und im Formular unter „Zusätzliche Statusvariablen“ einschaltbar.
@@ -213,8 +214,13 @@ Neue Funktionen und Aktionen:
 - Favoriten: `KODIFAV_AddFavorite`.  
 - Einstellungen: `KODISETTINGS_SetSettingValueFloat` und Statusvariablen für Kommazahl-Einstellungen, `KODISETTINGS_GetSkinSettings`, `KODISETTINGS_GetSkinSettingValue`, `KODISETTINGS_SetSkinSettingValueBoolean`, `KODISETTINGS_SetSkinSettingValueString`.  
 - Splitter: `KODIRPC_GetImageBase64`.  
+- Discovery: Benutzername und Passwort für neue Splitter direkt in der Discovery eingeben.  
 
 Änderungen:  
+- Voraussetzung ist Symcon ab Version 9.0.  
+- Modul „KodiDeviceFavourites“ heißt jetzt „KodiDeviceFavorites“, Modulnamen einheitlich englisch. Bestehende Instanzen bleiben erhalten.  
+- Discovery sucht nur noch per mDNS, vorhandene Konfiguratoren werden über den Host erkannt, die Spalte „Version“ entfällt.  
+- Player: Audiospuren zeigen Sprache und Name.  
 - Das Aussehen der HTML-Tabellen (Addons, Favoriten, Playlist, PVR) wird im Konfigurationsformular eingestellt. Die bisherigen Konfigurations-Skripte werden beim Update übernommen und danach nicht mehr benutzt.  
 - Einstellungen und Statusvariablen älterer Versionen werden beim Update automatisch übernommen bzw. bereinigt.  
 - Funktionsnamen der Favoriten einheitlich „Favorite“ (`KODIFAV_LoadFavoriteMedia`, `KODIFAV_LoadFavoriteScript`, `KODIFAV_LoadFavoriteWindow`, `KODIFAV_GetFavorites`, `KODIFAV_RefreshFavoriteList`). Die alten Namen sowie `KODIADDONS_EnableAddon` (ersetzt durch `KODIADDONS_SetAddonEnabled`) sind veraltet, schreiben eine Warnung ins Log und werden in Version 3.20 entfernt.  
@@ -231,6 +237,7 @@ Behobene falsche Werte in Statusvariablen:
 - Player „Artist“ blieb leer, wenn Kodi nur den Album-Interpreten lieferte.  
 - Player „Dauer“ und Zeiten aus Sekunden hingen von Zeitzone und Sommerzeit ab (jetzt rechnerisch, Stunden ohne führende Null, z.B. `1:30:00`).  
 - Player „Staffel“ und „Episode“ standen nach dem Stoppen auf `0` statt `-1`.  
+- Player „Untertitel“ zeigte nach einem Wechsel nicht den aktiven Untertitel.  
 - System „Batterie schwach“ wurde nie zurückgesetzt (jetzt beim Verbinden und Aufwachen).  
 - Addons: Texte „An“, „Aus“ und „Ausführen“ in der Tabelle waren nicht übersetzt.  
 
@@ -239,6 +246,7 @@ Fehlerbehebungen:
 - `KODIGUI_ShowNotification` und `KODIGUI_ActivateWindow` meldeten auch bei Erfolg `false`.  
 - `KODIPLAYER_Play` meldete bei inaktivem Player nach dem Laden der Playlist `false`.  
 - `KODIPLAYER_GoToTrack` sprang einen Eintrag zu weit.  
+- Player las die Daten nach Start oder Wechsel der Wiedergabe teilweise zu früh und unvollständig.  
 - `KODIPLAYER_SetSubtitle(-1)` schaltete die Untertitel nicht aus.  
 - `KODIPVR_Record` endete bei Erfolg mit einem Typfehler.  
 - `KODIAUDIOLIB_Export` und `KODIVIDEOLIB_Export` sendeten eine von Kodi nicht unterstützte Kombination der Optionen.  
