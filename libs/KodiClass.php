@@ -22,7 +22,7 @@ require_once __DIR__ . '/HTMLTableHelper.php';  // HTML-Tabellen
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.02
+ * @version       3.10
  * @example <b>Ohne</b>
  * @property int $ParentID
  * @property string $WebHookSecret

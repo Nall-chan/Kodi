@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.02
+ * @version       3.10
  * @example <b>Ohne</b>
  */
 class KodiRPCException extends Exception
@@ -31,7 +31,7 @@ class KodiRPCException extends Exception
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.02
+ * @version       3.10
  * @example <b>Ohne</b>
  *
  * @method null ExecuteAddon(array $Params)

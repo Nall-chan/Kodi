@@ -14,7 +14,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.02
+ * @version       3.10
  * @example <b>Ohne</b>
  *
  * @property bool $isActive
@@ -334,7 +334,7 @@ class KodiDevicePlayer extends KodiBase
     /**
      * Interne Funktion des SDK.
      * Wird beim Start von Symcon und nach einem Modul-Update ausgeführt.
-     * Migriert Statusvariablen alter Versionen. Bestehende Instanzen erhalten die mit 3.03 neuen
+     * Migriert Statusvariablen alter Versionen. Bestehende Instanzen erhalten die mit 3.10 neuen
      * Statusvariablen (Videospur, Audio-Verzögerung, Bildformat, Tempo) nicht ungefragt, die Eigenschaften
      * werden für sie auf false gesetzt. Neue Instanzen (ohne Migrate) legen sie an.
      *
