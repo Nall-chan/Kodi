@@ -1,12 +1,11 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
-[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
-
 # Kodi Favoriten (KodiDeviceFavorites)  <!-- omit in toc -->
 
 Ermöglicht das Auslesen, Ausführen und Darstellen von Kodi-Favoriten in IP-Symcon.
@@ -37,8 +36,7 @@ Ermöglicht das Auslesen, Ausführen und Darstellen von Kodi-Favoriten in IP-Sym
 ## 2. Voraussetzungen
 
 - Symcon ab Version 9.0
-- Funktionierender KodiSplitter
-- Konfigurierte Verbindung zu einem Kodi-Gerät
+- Verbundener [Kodi-Splitter](../KodiSplitter/README.md)
 - Eingerichtete Favoriten in Kodi
 
 ## 3. Software-Installation
@@ -48,27 +46,29 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
-Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.  
+
+![Instanz hinzufügen](../imgs/create.png)  
 
 **Konfigurationsseite:**
 
-![Konfigurationsseite](imgs/conf1.png)
+![Konfigurationsseite](imgs/config.png)
 
-| Name                 | Eigenschaft   |  Typ  | Standardwert | Funktion                                  |
-| :------------------- | :------------ | :---: | :----------- | :---------------------------------------- |
-| Zeige Favoritenliste | showFavlist   | bool  | true         | HTML-Tabelle mit den Favoriten erzeugen   |
-| Aussehen der HTML-Box | Table, Columns, Rows | string | siehe unten | Design der HTML-Tabelle |
-| Thumbnail Größe      | ThumbSize     |  int  | 100          | Breite der Thumbnails in Pixeln           |
+| Eigenschaft           | Name                 |   Typ   | Standardwert | Beschreibung                            |
+| :-------------------- | :------------------- | :-----: | :----------: | :-------------------------------------- |
+| Zeige Favoritenliste  | showFavlist          | boolean |     true     | HTML-Tabelle mit den Favoriten erzeugen |
+| Aussehen der HTML-Box | Table, Columns, Rows | string  | siehe unten  | Design der HTML-Tabelle                 |
+| Thumbnail Größe       | ThumbSize            | integer |     100      | Breite der Thumbnails in Pixeln         |
 
 **Aussehen der HTML-Box:**
 
 Spalten, Farben und CSS der Favoriten-Tabelle werden in drei Listen eingestellt. Die Listen liegen im Formular unter „Aussehen der HTML-Box“ und sind nur sichtbar, wenn die HTML-Box aktiviert ist.
 
-| Liste | Inhalt |
-| :--- | :--- |
-| Tabelle | CSS für die Tags `<table>`, `<thead>`, die Kopfzeile (`<thead><tr>`) und `<tbody>` |
+| Liste   | Inhalt                                                                                                                                             |
+| :------ | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tabelle | CSS für die Tags `<table>`, `<thead>`, die Kopfzeile (`<thead><tr>`) und `<tbody>`                                                                 |
 | Spalten | Je Datenfeld: sichtbar, Position, Überschrift, Breite (em), Ausrichtung, Textfarbe der Überschrift und zusätzliches CSS für Überschrift und Zellen |
-| Zeilen | Hintergrundfarbe, Textfarbe und zusätzliches CSS für gerade und ungerade Zeilen |
+| Zeilen  | Hintergrundfarbe, Textfarbe und zusätzliches CSS für gerade und ungerade Zeilen                                                                    |
 
 Die Eigenschaften `Table`, `Columns` und `Rows` sind JSON-Strings (Arrays der Listeneinträge) und können per `IPS_SetProperty` gesetzt werden. Einfacher ist das Bearbeiten im Formular.
 
@@ -77,21 +77,21 @@ Die Eigenschaften `Table`, `Columns` und `Rows` sind JSON-Strings (Arrays der Li
 
 ## 5. Statusvariablen
 
-Folgende Statusvariablen werden automatisch angelegt.
+Folgende Statusvariablen werden automatisch angelegt. Je nach Konfiguration der Instanz werden einzelne Variablen nicht angelegt.
 
-| Name            |  Typ   | Ident     | Beschreibung                              |
-| :-------------- | :----: | :-------- | :---------------------------------------- |
-| Favoriten-Liste | string | Favorites | HTML-Box mit der Liste der Kodi-Favoriten |
+| Name      | Ident   |  Typ   | Beschreibung                                                  |
+| :-------- | :------ | :----: | :------------------------------------------------------------ |
+| Favoriten | Favlist | string | HTML-Box mit der Liste der Kodi-Favoriten (Profil `~HTMLBox`) |
 
 ## 6. Visualisierung
 
 ### Kachel Visualisierung
 
-*Keine Kachel-Visualisierung vorhanden.*
+![Kachel HTML-Box](imgs/tile_html.png)  
 
 ### WebFront Visualisierung
 
-![Favorites WebFront](imgs/wf1.png)
+![Favorites WebFront](imgs/webfront.png)
 
 ## 7. PHP-Befehlsreferenz
 
@@ -99,7 +99,7 @@ Für alle Befehle gilt:
 Tritt ein Fehler auf, wird eine Warnung erzeugt.
 
 ```php
-array|bool KODIFAV_GetFavorites(int $InstanzID, string $Type)
+array|bool KODIFAV_GetFavorites(integer $InstanzID, string $Type);
 ```
 
 Liest die Eigenschaften der Favoriten aus, welche dem übergebenen Typ entsprechen (`all`, `media`, `window`, `script` oder `unknown`).  
@@ -117,7 +117,7 @@ Liefert ein assoziatives Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIFAV_LoadFavoriteMedia(int $InstanzID, string $Path)
+bool KODIFAV_LoadFavoriteMedia(integer $InstanzID, string $Path);
 ```
 
 Lädt einen Favoriten vom Typ Media.  
@@ -126,7 +126,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIFAV_LoadFavoriteScript(int $InstanzID, string $Script)
+bool KODIFAV_LoadFavoriteScript(integer $InstanzID, string $Script);
 ```
 
 Lädt einen Favoriten vom Typ Script.  
@@ -135,7 +135,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIFAV_LoadFavoriteWindow(int $InstanzID, string $Window, string $WindowParameter)
+bool KODIFAV_LoadFavoriteWindow(integer $InstanzID, string $Window, string $WindowParameter);
 ```
 
 Lädt einen Favoriten vom Typ Window.  
@@ -143,6 +143,34 @@ Liefert `true` bei Erfolg, sonst `false`.
 
 > [!WARNING]
 > Die Funktionen `KODIFAV_LoadFavouriteMedia`, `KODIFAV_LoadFavouriteScript`, `KODIFAV_LoadFavouriteWindow`, `KODIFAV_GetFavourites` und `KODIFAV_RefreshFavouriteList` (Schreibweise „Favourite“) sind veraltet. Sie funktionieren bis Version 3.20 weiter, schreiben aber bei jedem Aufruf eine Warnung ins Log.
+
+---
+
+```php
+bool KODIFAV_AddFavorite(integer $InstanzID, string $Title, string $Type, string $Path, string $Window, string $WindowParameter, string $Thumbnail);
+```
+
+Legt einen Favoriten in Kodi an.  
+Achtung: Kodi schaltet um. Existiert der Favorit bereits, wird er entfernt.  
+
+- `$Title`: Name des Favoriten.
+- `$Type`: Typ des Favoriten: 'media', 'window', 'script' oder 'androidapp'.
+- `$Path`: Pfad zur Datei, ID des Skript-Addons bzw. der Android-App (Pflicht bei media, script, androidapp).
+- `$Window`: Ziel-Fenster (Pflicht bei window).
+- `$WindowParameter`: Parameter für das Fenster (optional, nur bei window).
+- `$Thumbnail`: Pfad zum Vorschaubild (optional).
+
+Rückgabe: True bei Erfolg, sonst false.  
+
+---
+
+```php
+bool KODIFAV_RefreshFavoriteList(integer $InstanzID);
+```
+
+Erzeugt aus der Liste der Favoriten eine HTML-Tabelle für eine ~HTMLBox-Variable (wird auch vom Timer aufgerufen).  
+
+Rückgabe: True bei Erfolg, sonst false.  
 
 ## 8. Aktionen
 

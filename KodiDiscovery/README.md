@@ -1,12 +1,11 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
-[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
-
 # Kodi Discovery (KodiDiscovery)  <!-- omit in toc -->
 
 Ermöglicht das einfache Auffinden von Kodi-Geräten im lokalen Netzwerk.
@@ -30,7 +29,7 @@ Ermöglicht das einfache Auffinden von Kodi-Geräten im lokalen Netzwerk.
 
 ## 1. Funktionsumfang
 
-- Einfaches Auffinden von Kodi-Geräten im lokalen Netzwerk per mDNS / SSDP.
+- Einfaches Auffinden von Kodi-Geräten im lokalen Netzwerk per mDNS (Bonjour).
 - Einfaches Einrichten von Konfiguratoren für gefundene Kodi-Instanzen.
 
 ## 2. Voraussetzungen
@@ -48,14 +47,11 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 Nach der Installation über den Module-Store fragt IP-Symcon, ob die enthaltene Discovery-Instanz erstellt werden soll.  
 Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
 
-![Discovery Dialog](imgs/Discovery1.png)  
-![Discovery](imgs/Discovery.png)
-
-![Instanz hinzufügen](imgs/add1.png)  
+![Instanz hinzufügen](../imgs/create.png)  
 
 **Konfigurationsseite:**
 
-![Konfigurationsseite](imgs/conf1.png)
+![Konfigurationsseite](imgs/config.png)
 
 Keine spezifischen Eigenschaften vorhanden.
 

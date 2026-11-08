@@ -14,7 +14,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.10
+ * @version       3.12
  * @example <b>Ohne</b>
  *
  * @property string $Namespace RPC-Namespace
@@ -267,6 +267,14 @@ class KodiDevicePlaylist extends KodiBase
         return json_encode($Form);
     }
 
+    /**
+     * IPS-Instanz-Funktion 'KODIPLAYLIST_GoTo'.
+     * Springt zu einem Eintrag der Playlist und startet die Wiedergabe.
+     *
+     * @access public
+     * @param int $Index Position des Eintrags in der Playlist (beginnend bei 0).
+     * @return bool TRUE bei erfolgreicher Ausführung, sonst FALSE.
+     */
     public function GoTo(int $Index): bool
     {
         $KodiData = new Kodi_RPC_Data(self::$Namespace[1]);
@@ -691,7 +699,7 @@ class KodiDevicePlaylist extends KodiBase
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
-     * @access public
+     * @access protected
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */

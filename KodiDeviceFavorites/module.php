@@ -14,7 +14,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.10
+ * @version       3.12
  * @example <b>Ohne</b>
  *
  * @property string $Namespace RPC-Namespace
@@ -320,6 +320,8 @@ class KodiDeviceFavorites extends KodiBase
      * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteMedia'.
      *
      * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_LoadFavoriteMedia.
+     *
+     * @return bool true bei Erfolg, sonst false.
      */
     public function LoadFavouriteMedia(string $Path): bool
     {
@@ -331,6 +333,8 @@ class KodiDeviceFavorites extends KodiBase
      * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteScript'.
      *
      * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_LoadFavoriteScript.
+     *
+     * @return bool true bei Erfolg, sonst false.
      */
     public function LoadFavouriteScript(string $Script): bool
     {
@@ -342,6 +346,8 @@ class KodiDeviceFavorites extends KodiBase
      * IPS-Instanz-Funktion 'KODIFAV_LoadFavouriteWindow'.
      *
      * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_LoadFavoriteWindow.
+     *
+     * @return bool true bei Erfolg, sonst false.
      */
     public function LoadFavouriteWindow(string $Window, string $WindowParameter): bool
     {
@@ -353,6 +359,8 @@ class KodiDeviceFavorites extends KodiBase
      * IPS-Instanz-Funktion 'KODIFAV_GetFavourites'.
      *
      * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_GetFavorites.
+     *
+     * @return array|false Liste der Favoriten oder false bei Fehler.
      */
     public function GetFavourites(string $Type): false|array
     {
@@ -364,6 +372,8 @@ class KodiDeviceFavorites extends KodiBase
      * IPS-Instanz-Funktion 'KODIFAV_RefreshFavouriteList'.
      *
      * @deprecated 3.10 Wird in Version 3.20 entfernt, ersetzt durch KODIFAV_RefreshFavoriteList.
+     *
+     * @return bool true bei Erfolg, sonst false.
      */
     public function RefreshFavouriteList(): bool
     {
@@ -374,7 +384,7 @@ class KodiDeviceFavorites extends KodiBase
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
-     * @access public
+     * @access protected
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */

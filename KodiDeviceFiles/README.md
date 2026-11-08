@@ -1,12 +1,11 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
-[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
-
 # Kodi Datei- und Verzeichnisverwaltung (KodiDeviceFiles)  <!-- omit in toc -->
 
 Ermöglicht das Auslesen von Medienquellen, Verzeichnissen und Datei-Eigenschaften von Kodi in IP-Symcon.
@@ -37,8 +36,7 @@ Ermöglicht das Auslesen von Medienquellen, Verzeichnissen und Datei-Eigenschaft
 ## 2. Voraussetzungen
 
 - Symcon ab Version 9.0
-- Funktionierender KodiSplitter
-- Konfigurierte Verbindung zu einem Kodi-Gerät
+- Verbundener [Kodi-Splitter](../KodiSplitter/README.md)
 - Eingerichtete Quellen in Kodi
 
 ## 3. Software-Installation
@@ -48,7 +46,9 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
-Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.  
+
+![Instanz hinzufügen](../imgs/create.png)  
 
 **Konfigurationsseite:**
 
@@ -76,21 +76,21 @@ Für alle Befehle gilt:
 Tritt ein Fehler auf, wird eine Warnung erzeugt.
 
 ```php
-array|bool KODIFILES_GetSources(int $InstanzID, string $Media)
+array|bool KODIFILES_GetSources(integer $InstanzID, string $Media);
 ```
 
 Liefert alle bekannten Quellen nach Typ `$Media` (`video`, `music`, `pictures`, `files`, `programs`).  
 Liefert ein Array mit den Quellen bei Erfolg, sonst `false`.
 
-| Index | Typ | Beschreibung |
-| :--- | :---: | :--- |
-| file | string | Pfad/Verzeichnis der Quelle |
-| label | string | Name der Quelle |
+| Index |  Typ   | Beschreibung                |
+| :---- | :----: | :-------------------------- |
+| file  | string | Pfad/Verzeichnis der Quelle |
+| label | string | Name der Quelle             |
 
 ---
 
 ```php
-array|bool KODIFILES_GetFileDetails(int $InstanzID, string $File, string $Media)
+array|bool KODIFILES_GetFileDetails(integer $InstanzID, string $File, string $Media);
 ```
 
 Liefert alle Details einer Datei (`$Media`: `video`, `music`, `pictures`, `files`, `programs`).  
@@ -99,7 +99,7 @@ Liefert ein assoziatives Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-array|bool KODIFILES_GetDirectory(int $InstanzID, string $Directory)
+array|bool KODIFILES_GetDirectory(integer $InstanzID, string $Directory);
 ```
 
 Liefert Inhaltsinformationen zu einem Verzeichnis.  
@@ -108,7 +108,7 @@ Liefert ein Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-array|bool KODIFILES_GetDirectoryDetails(int $InstanzID, string $Directory, string $Media)
+array|bool KODIFILES_GetDirectoryDetails(integer $InstanzID, string $Directory, string $Media);
 ```
 
 Liefert alle Details eines Verzeichnisses nach Medien-Typ `$Media`.  

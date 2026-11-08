@@ -121,12 +121,12 @@
                         {
                             "type": "Button",
                             "caption": "Create links",
-                            "onClick": "IPS_RequestAction($id, 'CreateTileLinks', true);"
+                            "onClick": "echo KODIPLAYER_CreateTileLinks($id);"
                         },
                         {
                             "type": "Button",
                             "caption": "Remove links",
-                            "onClick": "IPS_RequestAction($id, 'RemoveTileLinks', true);"
+                            "onClick": "echo KODIPLAYER_RemoveTileLinks($id);"
                         }
                     ]
                 }

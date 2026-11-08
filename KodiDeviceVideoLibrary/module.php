@@ -14,7 +14,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.10
+ * @version       3.12
  * @example <b>Ohne</b>
  *
  * @todo Suche über WF einbauen. String und Int-Var für Text suche in Titel/Genre etc... Ergebnis als HTML-Tabelle.
@@ -738,7 +738,7 @@ class KodiDeviceVideoLibrary extends KodiBase
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
-     * @access public
+     * @access protected
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */

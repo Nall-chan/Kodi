@@ -1,12 +1,11 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
-[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
-
 # Kodi Splitter (KodiSplitter)  <!-- omit in toc -->
 
 Zentrale Kommunikationsinstanz für die JSON-RPC-Verbindung zu Kodi in IP-Symcon.
@@ -47,20 +46,34 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
-Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.  
+
+![Instanz hinzufügen](../imgs/create.png)  
 
 **Konfigurationsseite:**
 
-![Konfigurationsseite](imgs/conf1.png)
+![Konfigurationsseite](imgs/config.png)
 
-| Name | Eigenschaft | Typ | Standardwert | Funktion |
-| :--- | :--- | :---: | :--- | :--- |
-| Verbindung öffnen | Open | bool | false | Verbindung zu Kodi herstellen |
-| Host | Host | string | | Hostname oder IP-Adresse von Kodi |
-| JSON-RPC Port | Port | int | 9090 | Ziel-Port in Kodi für die RPC-JSON-API via TCP |
-| Webserver Port | Webport | int | 80 | Webfront-Port von Kodi (wird für Downloads genutzt) |
-| Aktiviere Watchdog | Watchdog | bool | false | Mit Ping prüfen, bevor eine Verbindung aufgebaut wird |
-| Prüfintervall | Interval | int | 5 | Intervall der Ping-Prüfung in Sekunden |
+| Eigenschaft             | Name              |   Typ   | Standardwert | Beschreibung                                                                                                                  |
+| :---------------------- | :---------------- | :-----: | :----------: | :---------------------------------------------------------------------------------------------------------------------------- |
+| Verbindung öffnen       | Open              | boolean |    false     | Verbindung zu Kodi herstellen                                                                                                 |
+| Host (Client Socket)    | Host              | string  |              | Hostname oder IP-Adresse von Kodi; Eigenschaft des übergeordneten Client Sockets, die der Splitter verwaltet                  |
+| JSON-RPC Port           | Port              | integer |     9090     | Ziel-Port in Kodi für die RPC-JSON-API via TCP                                                                                |
+| Webserver Port          | Webport           | integer |      80      | Webfront-Port von Kodi (wird für Downloads genutzt)                                                                           |
+| Basis-Authentifizierung | BasisAuth         | boolean |    false     | HTTP Basic-Authentifizierung für den Webserver von Kodi (Bilder-Download) verwenden                                           |
+| Benutzername            | Username          | string  |              | Benutzername des Kodi-Webservers                                                                                              |
+| Passwort                | Password          | string  |              | Passwort des Kodi-Webservers                                                                                                  |
+| Aktiviere Watchdog      | Watchdog          | boolean |    false     | Mit Ping prüfen, bevor eine Verbindung aufgebaut wird                                                                         |
+| Prüfintervall           | Interval          | integer |      5       | Intervall der Ping-Prüfung in Sekunden                                                                                        |
+| Bedingung               | ConditionType     | integer |      0       | `0` = Netzwerk-Ping, `1` = erweiterte Bedingung (Eigenschaft `WatchdogCondition`)                                             |
+| Erweiterte Bedingung    | WatchdogCondition | string  |              | Bedingung (Symcon-Ereignisbedingung als JSON), die vor dem Verbindungsaufbau erfüllt sein muss; nur bei `ConditionType` = `1` |
+
+Beispiel:
+
+```php
+IPS_SetProperty(12345, 'Open', true);
+IPS_ApplyChanges(12345);
+```
 
 ## 5. Statusvariablen
 
@@ -81,6 +94,50 @@ Keine WebFront-Visualisierung vorhanden.
 ## 7. PHP-Befehlsreferenz
 
 Keine öffentlichen PHP-Befehle vorhanden.
+
+---
+
+```php
+string|false KODIRPC_GetImage(integer $InstanzID, string $path);
+```
+
+Holt ein Bild vom Kodi-Webfront.  
+
+- `$path`: Pfad des Bildes.
+
+Rückgabe: Bildinhalt als Bytestring.  
+
+---
+
+```php
+string|false KODIRPC_GetImageBase64(integer $InstanzID, string $path);
+```
+
+Holt ein Bild vom Kodi-Webfront.  
+Rückgabe Base64-kodiert, weil Instanz-Funktionen ab der Rust-Edition nur gültiges UTF-8 zurückgeben können.  
+
+- `$path`: Pfad des Bildes (image://-Pfad oder roher Pfad, z.B. smb://, http://, special://).
+
+Rückgabe: Bildinhalt Base64-kodiert oder false bei Fehler.  
+
+---
+
+```php
+bool KODIRPC_KeepAlive(integer $InstanzID);
+```
+
+Sendet einen RPC-Ping an Kodi und prüft die erreichbarkeit.  
+
+Rückgabe: true wenn Kodi erreichbar, sonst false.  
+
+---
+
+```php
+void KODIRPC_Watchdog(integer $InstanzID);
+```
+
+Sendet einen TCP-Ping an Kodi und prüft die Erreichbarkeit des OS.  
+Wird erkannt, dass das OS erreichbar ist, wird versucht eine RPC-Verbindung zu Kodi aufzubauen.  
 
 ## 8. Aktionen
 

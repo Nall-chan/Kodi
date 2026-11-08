@@ -14,7 +14,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.10
+ * @version       3.12
  * @todo Settings.SetSkinSettingValue ab v10
  * @example <b>Ohne</b>
  *
@@ -35,6 +35,7 @@ class KodiDeviceSettings extends KodiBase
     public const PropertyRefreshState = 'RefreshState';
     public const ActionReloadForm = 'ReloadForm';
     public const ActionCreateVariable = 'CreateVariable';
+    public const ActionDeleteVariable = 'DeleteVariable';
 
     protected static $Namespace = 'Settings';
     protected static $Properties = [];
@@ -290,6 +291,10 @@ class KodiDeviceSettings extends KodiBase
             $this->CreateSettingsVariable(json_decode($Value, true));
             return;
         }
+        if ($Ident == self::ActionDeleteVariable) {
+            $this->DeleteSettingsVariable($Value);
+            return;
+        }
         if ($Ident == self::ActionReloadForm) {
             $this->ReloadForm();
             return;
@@ -395,7 +400,7 @@ class KodiDeviceSettings extends KodiBase
      * @param  mixed $Setting
      * @return bool
      */
-    private function FilterSymconVariables(&$Setting): bool
+    private function FilterSymconVariables($Setting): bool
     {
         switch ($Setting['type']) {
             case 'string':
@@ -562,13 +567,22 @@ class KodiDeviceSettings extends KodiBase
                 break;
         }
 
+        // Die Zellen der Spalten Create und Delete sind nur bei Bedarf gefüllt (onClick wird bei leeren Zellen nicht ausgeführt),
+        // die Symbole kommen über 'icons' je Zeile.
+        $NewSetting['Create'] = '';
+        $NewSetting['Delete'] = '';
+        $NewSetting['icons'] = [];
         if ($Creatable) {
             $VariableId = @$this->GetIDForIdent($Data['Ident']);
             if ($VariableId > 0) {
                 $Color = '#FFFFFF';
+                $NewSetting['Delete'] = ' ';
+                $NewSetting['icons']['Delete'] = 'ips:delete';
             } else {
-                $VariableId = $this->Translate('Click to create variable');
+                $VariableId = '';
                 $Color = '#C0FFC0';
+                $NewSetting['Create'] = ' ';
+                $NewSetting['icons']['Create'] = 'ips:edit';
             }
         } else {
             $VariableId = '';
@@ -582,13 +596,31 @@ class KodiDeviceSettings extends KodiBase
         $NewSetting['type'] = $Setting['type'] . ':' . $Setting['control']['type'];
         if (array_key_exists('help', $Setting)) {
             $NewSetting['help'] = $Setting['help'];
-            $NewSetting['Help'] = $this->Translate('Click for help');
+            $NewSetting['Help'] = ' ';
+            $NewSetting['icons']['Help'] = 'icons:help';
         } else {
             $NewSetting['help'] = '';
-            $NewSetting['Help'] = $this->Translate('No help available');
+            $NewSetting['Help'] = '';
         }
         $Setting = $NewSetting;
     }
+    /**
+     * Löscht die Statusvariable einer Einstellung. Das zugehörige Profil entfernt MessageSink (VM_DELETE).
+     * Wird über die Spalte Delete der Liste im Konfigurationsformular ausgelöst, die Rückfrage stellt das Formular.
+     *
+     * @access private
+     * @param string $Ident Ident der Variable (Einstellungs-Id mit '_' statt '.').
+     */
+    private function DeleteSettingsVariable(string $Ident): void
+    {
+        if (@$this->GetIDForIdent($Ident) === false) {
+            trigger_error($this->Translate('Invalid ident.'), E_USER_NOTICE);
+            return;
+        }
+        $this->UnregisterVariable($Ident);
+        $this->ReloadForm();
+    }
+
     private function CreateSettingsVariable(array $VariableData)
     {
         if (($VariableData['Profile']['Name'] !== '') && ($VariableData['Profile']['Name'][0] !== '~')) {

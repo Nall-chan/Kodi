@@ -1,12 +1,11 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
-[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
-
 # Kodi Video Datenbank (KodiDeviceVideoLibrary)  <!-- omit in toc -->
 
 Ermöglicht das Auslesen, Scannen, Bereinigen und Exportieren der Video-Datenbank von Kodi in IP-Symcon.
@@ -38,8 +37,7 @@ Ermöglicht das Auslesen, Scannen, Bereinigen und Exportieren der Video-Datenban
 ## 2. Voraussetzungen
 
 - Symcon ab Version 9.0
-- Funktionierender KodiSplitter
-- Konfigurierte Verbindung zu einem Kodi-Gerät
+- Verbundener [Kodi-Splitter](../KodiSplitter/README.md)
 - Eingerichtete Videobibliothek in Kodi
 
 ## 3. Software-Installation
@@ -49,37 +47,48 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
-Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.  
+
+![Instanz hinzufügen](../imgs/create.png)  
 
 **Konfigurationsseite:**
 
-![Konfigurationsseite](imgs/conf1.png)
+![Konfigurationsseite](imgs/config.png)
 
-| Name | Eigenschaft | Typ | Standardwert | Funktion |
-| :--- | :--- | :---: | :--- | :--- |
-| Zeige Scan-Status | showScan | bool | true | Statusvariable für DB-Scan anzeigen |
-| Zeige Clean-Status | showClean | bool | true | Statusvariable für DB-Bereinigung anzeigen |
-| Zeige Scan-Aktion | showDoScan | bool | true | Aktionsvariable zum Starten des Scans anlegen |
-| Zeige Clean-Aktion | showDoClean | bool | true | Aktionsvariable zum Starten der Bereinigung anlegen |
+| Eigenschaft        | Name        |   Typ   | Standardwert | Beschreibung                                        |
+| :----------------- | :---------- | :-----: | :----------: | :-------------------------------------------------- |
+| Zeige Scan-Status  | showScan    | boolean |     true     | Statusvariable für DB-Scan anzeigen                 |
+| Zeige Clean-Status | showClean   | boolean |     true     | Statusvariable für DB-Bereinigung anzeigen          |
+| Zeige Scan-Aktion  | showDoScan  | boolean |     true     | Aktionsvariable zum Starten des Scans anlegen       |
+| Zeige Clean-Aktion | showDoClean | boolean |     true     | Aktionsvariable zum Starten der Bereinigung anlegen |
+
+Beispiel:
+
+```php
+IPS_SetProperty(12345, 'showScan', false);
+IPS_ApplyChanges(12345);
+```
 
 ## 5. Statusvariablen
 
-Folgende Statusvariablen werden automatisch angelegt.
+Folgende Statusvariablen werden automatisch angelegt. Je nach Konfiguration der Instanz werden einzelne Variablen nicht angelegt.
 
-| Name | Typ | Ident | Beschreibung |
-| :--- | :---: | :--- | :--- |
-| Scannen | bool | Scan | Status des Datenbank-Scans |
-| Bereinigen | bool | Clean | Status der Datenbank-Bereinigung |
+| Name                                    | Ident   |   Typ   | Beschreibung                         |
+| :-------------------------------------- | :------ | :-----: | :----------------------------------- |
+| Suche nach neuen / veränderten Inhalten | doscan  | integer | Schaltfläche: Datenbanksuche starten |
+| Datenbanksuche läuft                    | scan    | boolean | Datenbanksuche aktiv                 |
+| Bereinigen der Datenbank                | doclean | integer | Schaltfläche: Datenbank bereinigen   |
+| Bereinigung der Datenbank läuft         | clean   | boolean | Bereinigung aktiv                    |
 
 ## 6. Visualisierung
 
 ### Kachel Visualisierung
 
-*Keine Kachel-Visualisierung vorhanden.*
+![Kachel Liste](imgs/tile_list.png)  
 
 ### WebFront Visualisierung
 
-![VideoLibrary WebFront](imgs/wf1.png)
+![VideoLibrary WebFront](imgs/webfront.png)
 
 ## 7. PHP-Befehlsreferenz
 
@@ -87,7 +96,7 @@ Für alle Befehle gilt:
 Tritt ein Fehler auf, wird eine Warnung erzeugt.
 
 ```php
-bool KODIVIDEOLIB_Scan(int $InstanzID)
+bool KODIVIDEOLIB_Scan(integer $InstanzID);
 ```
 
 Startet das Scannen der Video-Datenbank.  
@@ -96,7 +105,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIVIDEOLIB_Clean(int $InstanzID)
+bool KODIVIDEOLIB_Clean(integer $InstanzID);
 ```
 
 Startet das Bereinigen der Video-Datenbank.  
@@ -105,7 +114,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIVIDEOLIB_Export(int $InstanzID, string $Path, bool $Overwrite, bool $includeImages)
+bool KODIVIDEOLIB_Export(integer $InstanzID, string $Path, bool $Overwrite, bool $includeImages);
 ```
 
 Exportiert die Video-Datenbank.  
@@ -114,7 +123,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-array|bool KODIVIDEOLIB_GetMovieDetails(int $InstanzID, int $MovieId)
+array|bool KODIVIDEOLIB_GetMovieDetails(integer $InstanzID, integer $MovieId);
 ```
 
 Liest die Eigenschaften eines Films aus.  
@@ -123,7 +132,7 @@ Liefert ein assoziatives Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-array|bool KODIVIDEOLIB_GetMovies(int $InstanzID)
+array|bool KODIVIDEOLIB_GetMovies(integer $InstanzID);
 ```
 
 Liest alle Filme aus.  
@@ -132,7 +141,7 @@ Liefert ein Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-array|bool KODIVIDEOLIB_GetTVShowDetails(int $InstanzID, int $TvShowId)
+array|bool KODIVIDEOLIB_GetTVShowDetails(integer $InstanzID, integer $TvShowId);
 ```
 
 Liest die Eigenschaften einer TV-Serie aus.  
@@ -141,7 +150,7 @@ Liefert ein assoziatives Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-array|bool KODIVIDEOLIB_GetTVShows(int $InstanzID)
+array|bool KODIVIDEOLIB_GetTVShows(integer $InstanzID);
 ```
 
 Liest alle TV-Serien aus.  
@@ -150,7 +159,7 @@ Liefert ein Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-array|bool KODIVIDEOLIB_GetEpisodeDetails(int $InstanzID, int $EpisodeId)
+array|bool KODIVIDEOLIB_GetEpisodeDetails(integer $InstanzID, integer $EpisodeId);
 ```
 
 Liest die Eigenschaften einer Episode aus.  
@@ -159,11 +168,209 @@ Liefert ein assoziatives Array bei Erfolg, sonst `false`.
 ---
 
 ```php
-array|bool KODIVIDEOLIB_GetEpisodes(int $InstanzID)
+array|bool KODIVIDEOLIB_GetEpisodes(integer $InstanzID);
 ```
 
 Liest alle Episoden aus.  
 Liefert ein Array bei Erfolg, sonst `false`.
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetEpisodesEx(integer $InstanzID, integer $Start, integer $Count);
+```
+
+Liest eine Seite der Episoden (für große Bibliotheken).  
+
+- `$Start`: Erster Eintrag (ab 0).
+- `$Count`: Anzahl der Einträge.
+
+Rückgabe: Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetGenres(integer $InstanzID, string $Type);
+```
+
+Liest die Eigenschaften aller Genres aus.  
+enum["movie"=Filme, "tvshow"=Serien, "musicvideo"=Musikvideos]  
+* @return array | bool Array mit den Daten oder false bei Fehlern.  
+
+- `$Type`: Der Typ der zu suchenden Genres.
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetInProgressTVShows(integer $InstanzID);
+```
+
+Liest die Eigenschaften aller angefangenen TV-Serien aus.  
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetMoviesEx(integer $InstanzID, integer $Start, integer $Count);
+```
+
+Liest eine Seite der Filme (für große Bibliotheken).  
+
+- `$Start`: Erster Eintrag (ab 0).
+- `$Count`: Anzahl der Einträge.
+
+Rückgabe: Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetMovieSetDetails(integer $InstanzID, integer $SetId);
+```
+
+Liest die Eigenschaften eines Film-Sets aus.  
+
+- `$SetId`: SetId des zu lesenden Film-Sets.
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetMovieSets(integer $InstanzID);
+```
+
+Liest die Eigenschaften aller Film-Sets.  
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetMovieSetsEx(integer $InstanzID, integer $Start, integer $Count);
+```
+
+Liest eine Seite der Film-Sets (für große Bibliotheken).  
+
+- `$Start`: Erster Eintrag (ab 0).
+- `$Count`: Anzahl der Einträge.
+
+Rückgabe: Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetMusicVideoDetails(integer $InstanzID, integer $MusicVideoId);
+```
+
+Liest die Eigenschaften eines Musikvideos aus.  
+
+- `$MusicVideoId`: MusicVideoId des zu lesenden Musikvideos.
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetMusicVideos(integer $InstanzID);
+```
+
+Liest die Eigenschaften aller Musikvideos.  
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetMusicVideosEx(integer $InstanzID, integer $Start, integer $Count);
+```
+
+Liest eine Seite der Musikvideos (für große Bibliotheken).  
+
+- `$Start`: Erster Eintrag (ab 0).
+- `$Count`: Anzahl der Einträge.
+
+Rückgabe: Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetRecentlyAddedEpisodes(integer $InstanzID);
+```
+
+Liest die Eigenschaften der zuletzt hinzugefügten Episoden aus.  
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetRecentlyAddedMovies(integer $InstanzID);
+```
+
+Liest die Eigenschaften der zuletzt hinzugefügten Filme aus.  
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetRecentlyAddedMusicVideos(integer $InstanzID);
+```
+
+Liest die Eigenschaften der zuletzt hinzugefügten Filme aus.  
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetSeasonDetails(integer $InstanzID, integer $SeasonId);
+```
+
+Liest die Eigenschaften einer Staffel aus.  
+
+- `$SeasonId`: SeasonId der zu lesenden Staffel (aus GetSeasons, nicht die Staffelnummer).
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetSeasons(integer $InstanzID, integer $TvShowId);
+```
+
+Liest die Eigenschaften aller Staffeln einer TV-Serie aus.  
+
+- `$TvShowId`: TvShowId der zu lesenden Serie.
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetTags(integer $InstanzID, string $Type);
+```
+
+Liest alle Tags eines Medientyps aus.  
+enum["movie"=Filme, "tvshow"=Serien, "musicvideo"=Musikvideos]  
+
+- `$Type`: Der Typ der Medien.
+
+Rückgabe: | bool Array mit den Daten oder false bei Fehlern.  
+
+---
+
+```php
+false|array KODIVIDEOLIB_GetTVShowsEx(integer $InstanzID, integer $Start, integer $Count);
+```
+
+Liest eine Seite der TV-Serien (für große Bibliotheken).  
+
+- `$Start`: Erster Eintrag (ab 0).
+- `$Count`: Anzahl der Einträge.
+
+Rückgabe: Array mit 'total' (Gesamtzahl) und 'items' (Einträge) oder false bei Fehler.  
 
 ## 8. Aktionen
 

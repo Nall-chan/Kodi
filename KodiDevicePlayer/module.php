@@ -14,7 +14,7 @@ require_once __DIR__ . '/../libs/KodiClass.php';  // diverse Klassen
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.10
+ * @version       3.12
  * @example <b>Ohne</b>
  *
  * @property bool $isActive
@@ -71,8 +71,6 @@ class KodiDevicePlayer extends KodiBase
         'zoom110width'
     ];
     public const TimerName = 'PlayerStatus';
-    public const ActionCreateTileLinks = 'CreateTileLinks';
-    public const ActionRemoveTileLinks = 'RemoveTileLinks';
     public const GUIDApplication = '{3AF936C4-9B31-48EC-84D8-A30F0BEF104C}';
     public const GUIDPlaylist = '{7D73D0FF-0CC7-43D0-A196-0D6143E52756}';
 
@@ -1735,11 +1733,70 @@ class KodiDevicePlayer extends KodiBase
         return $this->Load($Field, $ItemValue, $Ext, $Options);
     }
 
+    /**
+     * Legt unterhalb der Instanz Links auf Lautstärke und Stummschaltung der Application-Instanz
+     * sowie auf die Playlist der passenden Playlist-Instanz an, damit die Mediaplayer-Kachel alle Elemente zeigt.
+     * Gesucht wird nur bei Instanzen am selben Splitter. Bestehende Links erhalten das aktuelle Ziel.
+     * Wird über eine Schaltfläche im Konfigurationsformular aufgerufen (`echo KODIPLAYER_CreateTileLinks($id);`).
+     *
+     * @access public
+     * @return string|false Meldung für den Nutzer, false bei einem Fehler.
+     */
+    public function CreateTileLinks(): string|false
+    {
+        $SplitterId = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if ($SplitterId == 0) {
+            echo $this->Translate('Instance has no parent.') . PHP_EOL;
+            return false;
+        }
+        $Missing = [];
+        foreach (self::TileLinks as $LinkIdent => $Link) {
+            $TargetId = $this->FindTileLinkTarget($SplitterId, $Link['Module'], $Link['Ident']);
+            if ($TargetId === false) {
+                $Missing[] = $LinkIdent;
+                continue;
+            }
+            $LinkId = @$this->GetIDForIdent($LinkIdent);
+            if ($LinkId === false) {
+                $LinkId = IPS_CreateLink();
+                IPS_SetParent($LinkId, $this->InstanceID);
+                IPS_SetIdent($LinkId, $LinkIdent);
+                IPS_SetName($LinkId, IPS_GetName($TargetId));
+                IPS_SetPosition($LinkId, $Link['Position']);
+            }
+            IPS_SetLinkTargetID($LinkId, $TargetId);
+            $this->SendDebug('TileLink', $LinkIdent . ' => ' . $TargetId, 0);
+        }
+        if (count($Missing) > 0) {
+            echo $this->Translate('Source variables not found. Create the Kodi Application and the matching Kodi Playlist instance first.') . PHP_EOL;
+            return false;
+        }
+        return $this->Translate('Links created.');
+    }
+
+    /**
+     * Löscht die mit CreateTileLinks angelegten Links.
+     * Wird über eine Schaltfläche im Konfigurationsformular aufgerufen (`echo KODIPLAYER_RemoveTileLinks($id);`).
+     *
+     * @access public
+     * @return string Meldung für den Nutzer.
+     */
+    public function RemoveTileLinks(): string
+    {
+        foreach (array_keys(self::TileLinks) as $LinkIdent) {
+            $LinkId = @$this->GetIDForIdent($LinkIdent);
+            if (($LinkId !== false) && IPS_LinkExists($LinkId)) {
+                IPS_DeleteLink($LinkId);
+            }
+        }
+        return $this->Translate('Links removed.');
+    }
+
     ################## ActionHandler
     /**
      * Actionhandler der Statusvariablen. Interne SDK-Funktion.
      *
-     * @access public
+     * @access protected
      * @param string $Ident Der Ident der Statusvariable.
      * @param bool|float|int|string $Value Der angeforderte neue Wert.
      */
@@ -1807,12 +1864,6 @@ class KodiDevicePlayer extends KodiBase
                 return;
             case 'tempo':
                 $this->SetTempo((float) $Value);
-                return;
-            case self::ActionCreateTileLinks:
-                $this->CreateTileLinks();
-                return;
-            case self::ActionRemoveTileLinks:
-                $this->RemoveTileLinks();
                 return;
             default:
                 trigger_error($this->Translate('Invalid Ident.'), E_USER_NOTICE);
@@ -2177,62 +2228,6 @@ class KodiDevicePlayer extends KodiBase
             $this->UnregisterVariable($OldIdent);
             $this->SendDebug('Migrate', 'delete ' . $OldIdent, 0);
         }
-    }
-
-    /**
-     * Legt unterhalb der Instanz Links auf Lautstärke und Stummschaltung der Application-Instanz
-     * sowie auf die Playlist der passenden Playlist-Instanz an, damit die Mediaplayer-Kachel alle Elemente zeigt.
-     * Gesucht wird nur bei Instanzen am selben Splitter. Bestehende Links erhalten das aktuelle Ziel.
-     * Wird über eine Schaltfläche im Konfigurationsformular ausgelöst, Meldungen daher per echo.
-     *
-     * @access private
-     */
-    private function CreateTileLinks(): void
-    {
-        $SplitterId = IPS_GetInstance($this->InstanceID)['ConnectionID'];
-        if ($SplitterId == 0) {
-            echo $this->Translate('Instance has no parent.');
-            return;
-        }
-        $Missing = [];
-        foreach (self::TileLinks as $LinkIdent => $Link) {
-            $TargetId = $this->FindTileLinkTarget($SplitterId, $Link['Module'], $Link['Ident']);
-            if ($TargetId === false) {
-                $Missing[] = $LinkIdent;
-                continue;
-            }
-            $LinkId = @$this->GetIDForIdent($LinkIdent);
-            if ($LinkId === false) {
-                $LinkId = IPS_CreateLink();
-                IPS_SetParent($LinkId, $this->InstanceID);
-                IPS_SetIdent($LinkId, $LinkIdent);
-                IPS_SetName($LinkId, IPS_GetName($TargetId));
-                IPS_SetPosition($LinkId, $Link['Position']);
-            }
-            IPS_SetLinkTargetID($LinkId, $TargetId);
-            $this->SendDebug('TileLink', $LinkIdent . ' => ' . $TargetId, 0);
-        }
-        if (count($Missing) > 0) {
-            echo $this->Translate('Source variables not found. Create the Kodi Application and the matching Kodi Playlist instance first.');
-            return;
-        }
-        echo $this->Translate('Links created.');
-    }
-
-    /**
-     * Löscht die mit CreateTileLinks angelegten Links.
-     *
-     * @access private
-     */
-    private function RemoveTileLinks(): void
-    {
-        foreach (array_keys(self::TileLinks) as $LinkIdent) {
-            $LinkId = @$this->GetIDForIdent($LinkIdent);
-            if (($LinkId !== false) && IPS_LinkExists($LinkId)) {
-                IPS_DeleteLink($LinkId);
-            }
-        }
-        echo $this->Translate('Links removed.');
     }
 
     /**

@@ -22,7 +22,7 @@ require_once __DIR__ . '/HTMLTableHelper.php';  // HTML-Tabellen
  * @author        Michael Tröger <nall4chan@gmail.com>
  * @copyright     2026 Michael Tröger
  * @license       Custom Non-Commercial Share-Alike License (see LICENSE)
- * @version       3.10
+ * @version       3.12
  * @example <b>Ohne</b>
  * @property int $ParentID
  * @property string $WebHookSecret
@@ -372,7 +372,7 @@ abstract class KodiBase extends IPSModuleStrict
     /**
      * Holt das über $file übergebene Thumbnail vom Kodi-Webinterface, skaliert und konvertiert dieses.
      *
-     * @access private
+     * @access protected
      * @param string $file Path zum Thumbnail im Kodi-Webserver
      */
     protected function GetThumbnail(string $file, int $SizeWidth = 0, int $SizeHeight = 0): string|false

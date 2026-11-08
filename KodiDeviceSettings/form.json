@@ -43,15 +43,27 @@
                 {
                     "caption": "Help",
                     "name": "Help",
-                    "width": "170px",
+                    "width": "60px",
                     "onClick": "echo $Settings['help'];"
                 },
                 {
-                    "caption": "Variable",
+                    "caption": "Variable ID",
                     "name": "VariableId",
-                    "width": "250px",
+                    "width": "100px"
+                },
+                {
+                    "caption": "Create",
+                    "name": "Create",
+                    "width": "90px",
                     "confirm": "Create variable for this setting?",
-                    "onClick": "if (!is_numeric($Settings['VariableId']))IPS_RequestAction($id,'CreateVariable',json_encode($Settings['Data']));"
+                    "onClick": "IPS_RequestAction($id,'CreateVariable',json_encode($Settings['Data']));"
+                },
+                {
+                    "caption": "Delete",
+                    "name": "Delete",
+                    "width": "70px",
+                    "confirm": "Delete the variable of this setting?",
+                    "onClick": "IPS_RequestAction($id,'DeleteVariable',$Settings['Data']['Ident']);"
                 }
             ],
             "values": []

@@ -1,12 +1,11 @@
 [![SDK](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Module Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.version&label=Modul%20Version&color=blue)](https://community.symcon.de/t/modul-kodi/41646)
-[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)
+[![Symcon Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FNall-chan%2FKodi%2Frefs%2Fheads%2Fmaster%2Flibrary.json&query=%24.compatibility.version&suffix=%3E&label=Symcon%20Version&color=green)](https://www.symcon.de/de/service/dokumentation/installation/migrationen/v80-v81-q3-2025/)  
 [![License](https://img.shields.io/badge/License-Custom--NC--SA-green.svg)](#10-lizenz)
 [![Check Style](https://github.com/Nall-chan/Kodi/workflows/Check%20Style/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
-[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)
+[![Run Tests](https://github.com/Nall-chan/Kodi/workflows/Run%20Tests/badge.svg)](https://github.com/Nall-chan/Kodi/actions)  
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#2-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#2-spenden)
-
 # Kodi Application (KodiDeviceApplication)  <!-- omit in toc -->
 
 Ermöglicht die Steuerung sowie die Darstellung von Lautstärke, Stummschaltung und Anwendungsstatus von Kodi in IP-Symcon.
@@ -38,8 +37,7 @@ Ermöglicht die Steuerung sowie die Darstellung von Lautstärke, Stummschaltung 
 ## 2. Voraussetzungen
 
 - Symcon ab Version 9.0
-- Funktionierender KodiSplitter
-- Konfigurierte Verbindung zu einem Kodi-Gerät
+- Verbundener [Kodi-Splitter](../KodiSplitter/README.md)
 
 ## 3. Software-Installation
 
@@ -48,38 +46,48 @@ Dieses Modul ist Bestandteil der [Kodi-Library](../README.md#3-software-installa
 ## 4. Einrichten der Instanzen in IP-Symcon
 
 Eine einfache Einrichtung ist über den Konfigurator [Kodi Konfigurator](../KodiConfigurator/README.md) möglich.  
-Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.
+Bei der manuellen Einrichtung ist die Instanz im Dialog `Instanz hinzufügen` unter dem Hersteller `Kodi` zu finden.  
+
+![Instanz hinzufügen](../imgs/create.png)  
 
 **Konfigurationsseite:**
 
-![Konfigurationsseite](imgs/conf1.png)
+![Konfigurationsseite](imgs/config.png)
 
-| Name | Eigenschaft | Typ | Standardwert | Funktion |
-| :--- | :--- | :---: | :--- | :--- |
-| Zeige Name | showName | bool | true | Statusvariable für Name verwenden |
-| Zeige Version | showVersion | bool | true | Statusvariable für Version verwenden |
-| Zeige Beenden | showExit | bool | true | Aktions-Variable für Beenden anlegen |
+| Eigenschaft   | Name        |   Typ   | Standardwert | Beschreibung                         |
+| :------------ | :---------- | :-----: | :----------: | :----------------------------------- |
+| Zeige Name    | showName    | boolean |     true     | Statusvariable für Name verwenden    |
+| Zeige Version | showVersion | boolean |     true     | Statusvariable für Version verwenden |
+| Zeige Beenden | showExit    | boolean |     true     | Aktions-Variable für Beenden anlegen |
+
+Beispiel:
+
+```php
+IPS_SetProperty(12345, 'showName', false);
+IPS_ApplyChanges(12345);
+```
 
 ## 5. Statusvariablen
 
-Folgende Statusvariablen werden automatisch angelegt.
+Folgende Statusvariablen werden automatisch angelegt. Je nach Konfiguration der Instanz werden einzelne Variablen nicht angelegt.
 
-| Name | Typ | Ident | Beschreibung |
-| :--- | :---: | :--- | :--- |
-| Lautstärke | int | Volume | Lautstärke (0 - 100) |
-| Stummschaltung | bool | Mute | Stummschaltung aktiv / inaktiv |
-| Name | string | Name | Name der Kodi-Anwendung |
-| Version | string | Version | Version der Kodi-Anwendung |
+| Name         | Ident   |   Typ   | Beschreibung                              |
+| :----------- | :------ | :-----: | :---------------------------------------- |
+| Name         | name    | string  | Name der Kodi-Anwendung                   |
+| Version      | version | string  | Version der Kodi-Anwendung                |
+| Kodi beenden | quit    | integer | Schaltfläche: Kodi beenden                |
+| Stumm        | mute    | boolean | Stummschaltung ein / aus (Profil `~Mute`) |
+| Volume       | volume  | integer | Lautstärke 0 bis 100 (Profil `~Volume`)   |
 
 ## 6. Visualisierung
 
 ### Kachel Visualisierung
 
-*Keine Kachel-Visualisierung vorhanden.*
+![Kachel Liste](imgs/tile_list.png)  
 
 ### WebFront Visualisierung
 
-![Application WebFront](imgs/wf1.png)
+![Application WebFront](imgs/webfront.png)
 
 ## 7. PHP-Befehlsreferenz
 
@@ -87,7 +95,7 @@ Für alle Befehle gilt:
 Tritt ein Fehler auf, wird eine Warnung erzeugt.
 
 ```php
-bool KODIAPP_SetMute(int $InstanzID, bool $Value)
+bool KODIAPP_SetMute(integer $InstanzID, bool $Value);
 ```
 
 De-/Aktiviert die Stummschaltung.  
@@ -96,7 +104,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIAPP_SetVolume(int $InstanzID, int $Value)
+bool KODIAPP_SetVolume(integer $InstanzID, integer $Value);
 ```
 
 Setzt die Lautstärke (0 - 100).  
@@ -105,7 +113,7 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIAPP_Quit(int $InstanzID)
+bool KODIAPP_Quit(integer $InstanzID);
 ```
 
 Beendet die Kodi-Anwendung.  
@@ -114,12 +122,52 @@ Liefert `true` bei Erfolg, sonst `false`.
 ---
 
 ```php
-bool KODIAPP_RequestState(int $InstanzID, string $Ident)
+bool KODIAPP_RequestState(integer $InstanzID, string $Ident);
 ```
 
 Fordert den Wert einer Statusvariable an.  
 Es ist der Ident der Statusvariable zu übergeben (`Volume`, `Mute`, `Name`, `Version`).  
 Liefert `true` bei Erfolg, sonst `false`.
+
+---
+
+```php
+bool KODIAPP_VolumeUp(integer $InstanzID);
+```
+
+Erhöht die Lautstärke um eine Stufe von Kodi.  
+
+Rückgabe: true bei erfolgreicher Ausführung, sonst false.  
+
+---
+
+```php
+bool KODIAPP_VolumeDown(integer $InstanzID);
+```
+
+Verringert die Lautstärke um eine Stufe von Kodi.  
+
+Rückgabe: true bei erfolgreicher Ausführung, sonst false.  
+
+---
+
+```php
+false|array KODIAPP_GetProfiles(integer $InstanzID);
+```
+
+Liefert alle Benutzerprofile von Kodi.  
+
+Rückgabe: Array mit den Profilen (label, thumbnail, lockmode) oder false bei Fehler.  
+
+---
+
+```php
+false|array KODIAPP_GetCurrentProfile(integer $InstanzID);
+```
+
+Liefert das aktive Benutzerprofil von Kodi.  
+
+Rückgabe: Array mit dem Profil (label, thumbnail, lockmode) oder false bei Fehler.  
 
 ## 8. Aktionen
 

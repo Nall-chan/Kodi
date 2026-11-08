@@ -7,14 +7,14 @@
 [![PayPal.Me](https://img.shields.io/badge/PayPal-Me-lightblue.svg)](#3-spenden)
 [![Wunschliste](https://img.shields.io/badge/Wunschliste-Amazon-ff69fb.svg)](#3-spenden)
 
-# Symcon-Modul: Kodi  <!-- omit in toc -->
+# Kodi für Symcon <!-- omit in toc -->
 
 Implementierung der Kodi JSON-RPC API in IP-Symcon.
 
 ## Inhaltsverzeichnis <!-- omit in toc -->
 
 - [1. Funktionsumfang](#1-funktionsumfang)
-- [1. Vorbemerkungen](#1-vorbemerkungen)
+- [Vorbemerkungen](#vorbemerkungen)
   - [Zur Library](#zur-library)
   - [Zur Integration von Geräten](#zur-integration-von-geräten)
 - [2. Voraussetzungen](#2-voraussetzungen)
@@ -48,7 +48,7 @@ Ermöglicht das Steuern und das Empfangen von Statusänderungen von der Mediacen
 Direkte Bedienung im WebFront möglich.  
 Abbilden fast der gesamten Kodi-API im vollen Funktionsumfang in PHP-Befehlen für eigene Scripte in IPS.
 
-## 1. Vorbemerkungen
+## Vorbemerkungen
 
 ### Zur Library
 
@@ -78,7 +78,11 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
 - In Einstellungen/Dienste/UpnP/DLNA
    - UPnP-Support aktivieren.
 
-> **Hinweis:** Damit Geräte über die Discovery-Instanz gefunden werden können, müssen bei gerouteten Netzen und bei NAT-Systemen Multicast-Pakete korrekt weitergeleitet werden.
+![Kodi Einstellungen Steuerung](imgs/kodi1.png)  
+![Kodi Einstellungen UPnP / DLNA](imgs/kodi2.png)  
+
+> [!NOTE]
+> Damit Geräte über die Discovery-Instanz gefunden werden können, müssen bei gerouteten Netzen und bei NAT-Systemen Multicast-Pakete korrekt weitergeleitet werden.
 
 ## 2. Voraussetzungen
 
@@ -89,11 +93,13 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
 
 Über den 'Module-Store' in IPS das Modul 'Kodi' hinzufügen.  
 
+![Module-Store](imgs/install.png)  
+
 ## 4. Enthaltende Module
 
 ### [Kodi Discovery:](KodiDiscovery/)
 
-- Automatische Erkennung von Kodi-Geräten im Netzwerk per mDNS / SSDP.
+- Automatische Erkennung von Kodi-Geräten im Netzwerk per mDNS (Bonjour).
 - Einfaches Einrichten von Konfiguratoren für gefundene Kodi-Instanzen.
 
 ### [Kodi Konfigurator:](KodiConfigurator/)
@@ -183,6 +189,13 @@ In den Kodi-Systemen müssen vorab folgende Einstellungen vorgenommen werden:
 
 ### 2. Changelog
 
+**Version 3.12:**  
+
+**Neue Funktionen und Aktionen**
+
+- Player: `KODIPLAYER_CreateTileLinks` und `KODIPLAYER_RemoveTileLinks` zum Anlegen und Entfernen der Links für die Mediaplayer-Kachel. Die Schaltflächen im Formular nutzen diese Funktionen.
+- Einstellungen: Die Liste im Formular zeigt Symbole für Hilfe, Variable erzeugen und Variable löschen. Die Variablen-ID steht in einer eigenen Spalte, vorhandene Variablen lassen sich direkt aus der Liste löschen.  
+  
 **Version 3.10:**  
 
 > [!IMPORTANT]
